@@ -1,0 +1,65 @@
+{
+  "Navigation": {
+    "login": "Войти",
+    "join_community": "Вступить в общину",
+    "my_community": "Моя община",
+
+    "community_group": "Община",
+    "about": "О нас",
+    "services": "Услуги",
+    "contact": "Контакты",
+
+    "events_group": "Афиша",
+    "schedule": "Расписание",
+    "events": "Мероприятия",
+
+    "media_group": "Медиа",
+    "torah": "Уроки Торы",
+
+    "chai_club": "Клуб Партнеров",
+    "donate": "Цдака"
+  },
+  "Zmanim": {
+    "loading": "Загрузка...",
+    "now": "Сейчас",
+    "locating": "Уточняем...",
+    "error_gps": "Ошибка GPS",
+    "candleLighting": "Зажигание свечей",
+    "havdalah": "Исход Шаббата",
+    "alot": "Рассвет (Алот)",
+    "misheyakir": "Талит и Тфилин",
+    "sunrise": "Восход (Нец)",
+    "sofZmanShma": "Конец Шма",
+    "sofZmanTfila": "Конец Молитвы",
+    "chatzot": "Хацот (Полдень)",
+    "minchaGedola": "Минха Гдола",
+    "minchaKetana": "Минха Ктана",
+    "plagHaMincha": "Плаг а-Минха",
+    "sunset": "Заход (Шкиа)",
+    "tzeit": "Выход звезд (Цейт)",
+    "morning": "Утро",
+    "afternoon": "День",
+    "evening": "Вечер",
+    "shacharit": "Шахарит",
+    "mincha": "Минха",
+    "arvit": "Маарив"
+  },
+  "Dashboard": {
+    "family": {
+      "invite": {
+        "trigger": "Пригласить",
+        "title": "Пригласить в семью",
+        "description": "Сгенерируйте уникальную ссылку. Она будет действительна 7 дней.",
+        "select_role": "Роль члена семьи",
+        "role_placeholder": "Выберите роль",
+        "role_spouse": "Супруг / Супруга",
+        "role_child": "Ребенок",
+        "role_dependent": "Подопечный (Родственник)",
+        "generate_button": "Сгенерировать ссылку",
+        "success_message": "Ссылка успешно создана",
+        "error_message": "Ошибка генерации",
+        "copied": "Ссылка скопирована в буфер обмена"
+      }
+    }
+  }
+}

@@ -1,0 +1,68 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id               String         @id
+  email            String         @unique
+  telegramChatId   BigInt?        @unique
+  isAdmin          Boolean        @default(false)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  familyMember     FamilyMember?
+}
+
+model Family {
+  id          String         @id @default(uuid())
+  name        String
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  members     FamilyMember[]
+  invites     FamilyInvite[]
+}
+
+model FamilyMember {
+  id                     String    @id @default(uuid())
+  
+  familyId               String
+  family                 Family    @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  
+  userId                 String?   @unique
+  user                   User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  role                   String    
+  fullName               String
+  hebrewName             String?
+  gender                 String?   
+  birthDateGeorgian      DateTime? 
+  isJewishBirthday       Boolean   @default(true) 
+  yahrzeitDateGeorgian   DateTime? 
+  
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  @@index([familyId])
+}
+
+model FamilyInvite {
+  id           String   @id @default(uuid()) 
+  familyId     String
+  family       Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  targetRole   String   
+  inviterId    String   
+  isAccepted   Boolean  @default(false)
+  expiresAt    DateTime 
+  createdAt    DateTime @default(now())
+  
+  @@index([familyId])
+}

@@ -1,0 +1,65 @@
+{
+  "Navigation": {
+    "login": "Log In",
+    "join_community": "Join Community",
+    "my_community": "My Community",
+
+    "community_group": "Community",
+    "about": "About Us",
+    "services": "Services",
+    "contact": "Contact",
+
+    "events_group": "Events",
+    "schedule": "Schedule",
+    "events": "Upcoming Events",
+
+    "media_group": "Media",
+    "torah": "Torah Classes",
+
+    "chai_club": "Chai Club",
+    "donate": "Donate"
+  },
+  "Zmanim": {
+    "loading": "Loading...",
+    "now": "Now",
+    "locating": "Locating...",
+    "error_gps": "GPS Error",
+    "candleLighting": "Candle Lighting",
+    "havdalah": "Shabbat Ends",
+    "alot": "Dawn (Alot)",
+    "misheyakir": "Tallit & Tefillin",
+    "sunrise": "Sunrise (Netz)",
+    "sofZmanShma": "Latest Shema",
+    "sofZmanTfila": "Latest Tefilah",
+    "chatzot": "Midday (Chatzot)",
+    "minchaGedola": "Mincha Gedola",
+    "minchaKetana": "Mincha Ketana",
+    "plagHaMincha": "Plag HaMincha",
+    "sunset": "Sunset (Shkia)",
+    "tzeit": "Nightfall (Tzeit)",
+    "morning": "Morning",
+    "afternoon": "Afternoon",
+    "evening": "Evening",
+    "shacharit": "Shacharit",
+    "mincha": "Mincha",
+    "arvit": "Arvit"
+  },
+  "Dashboard": {
+    "family": {
+      "invite": {
+        "trigger": "Invite",
+        "title": "Invite to Family",
+        "description": "Generate a unique link. It will be valid for 7 days.",
+        "select_role": "Family Member Role",
+        "role_placeholder": "Select a role",
+        "role_spouse": "Spouse",
+        "role_child": "Child",
+        "role_dependent": "Dependent (Relative)",
+        "generate_button": "Generate Link",
+        "success_message": "Link successfully created",
+        "error_message": "Generation error",
+        "copied": "Link copied to clipboard"
+      }
+    }
+  }
+}

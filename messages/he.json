@@ -1,0 +1,65 @@
+{
+  "Navigation": {
+    "login": "התחבר",
+    "join_community": "הצטרף לקהילה",
+    "my_community": "הקהילה שלי",
+
+    "community_group": "קהילה",
+    "about": "אודות",
+    "services": "שירותים",
+    "contact": "צור קשר",
+
+    "events_group": "אירועים",
+    "schedule": "לוח זמנים",
+    "events": "אירועים קרובים",
+
+    "media_group": "מדיה",
+    "torah": "שיעורי תורה",
+
+    "chai_club": "מועדון השותפים",
+    "donate": "תרומה"
+  },
+  "Zmanim": {
+    "loading": "טוען...",
+    "now": "עכשיו",
+    "locating": "מאתר...",
+    "error_gps": "לא ניתן לאתר מיקום",
+    "candleLighting": "הדלקת נרות",
+    "havdalah": "צאת השבת",
+    "alot": "עלות השחר",
+    "misheyakir": "זמן ציצית ותפילין",
+    "sunrise": "הנץ החמה",
+    "sofZmanShma": "סו\"ז קריאת שמע",
+    "sofZmanTfila": "סו\"ז תפילה",
+    "chatzot": "חצות היום",
+    "minchaGedola": "מנחה גדולה",
+    "minchaKetana": "מנחה קטנה",
+    "plagHaMincha": "פלג המנחה",
+    "sunset": "שקיעת החמה",
+    "tzeit": "צאת הכוכבים",
+    "morning": "בוקר",
+    "afternoon": "צהריים",
+    "evening": "ערב",
+    "shacharit": "שחרית",
+    "mincha": "מנחה",
+    "arvit": "ערבית"
+  },
+  "Dashboard": {
+    "family": {
+      "invite": {
+        "trigger": "הזמן",
+        "title": "הזמן למשפחה",
+        "description": "צור קישור ייחודי. הקישור יהיה תקף ל-7 ימים.",
+        "select_role": "תפקיד בן/בת משפחה",
+        "role_placeholder": "בחר תפקיד",
+        "role_spouse": "בן/בת זוג",
+        "role_child": "ילד/ילדה",
+        "role_dependent": "קרוב משפחה (נתמך)",
+        "generate_button": "צור קישור",
+        "success_message": "הקישור נוצר בהצלחה",
+        "error_message": "שגיאה ביצירת הקישור",
+        "copied": "הקישור הועתק ללוח"
+      }
+    }
+  }
+}
