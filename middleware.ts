@@ -7,9 +7,9 @@ const locales = ["en", "ru", "he"] as const;
 const defaultLocale = "ru" as const;
 
 const intlMiddleware = createIntlMiddleware({
-  locales: [...locales],
-  defaultLocale,
-  localePrefix: "always", // <-- ключ: всегда добавляем /ru /en /he
+  locales: ["en", "ru", "he"],
+  defaultLocale: "ru",
+  localePrefix: "always",
   localeDetection: true,
 });
 
