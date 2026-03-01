@@ -6,18 +6,16 @@ import { prisma } from "@/lib/prisma";
 import { InviteDialog } from "./InviteDialog";
 import { CreateFamilyForm } from "./CreateFamilyForm";
 
-type PageProps = {
-  params: { locale: "ru" | "en" | "he" | string };
-};
+export default async function FamilyPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
 
-export default async function FamilyPage({ params }: PageProps) {
-  const locale = params.locale;
-
-  // Формат дат под язык интерфейса
   const dateLocale =
     locale === "he" ? "he-IL" : locale === "en" ? "en-US" : "ru-RU";
 
-  // Заголовки/тексты (минимально, без next-intl, но мультиязычно)
   const t =
     locale === "he"
       ? {
@@ -47,7 +45,6 @@ export default async function FamilyPage({ params }: PageProps) {
               "Критическая ошибка: Семья не найдена в базе данных.",
           };
 
-  // Перевод ролей по locale
   const roleTranslationsByLocale: Record<string, Record<string, string>> = {
     ru: {
       HEAD: "Глава семьи",
@@ -72,14 +69,12 @@ export default async function FamilyPage({ params }: PageProps) {
   const roleTranslations =
     roleTranslationsByLocale[locale] ?? roleTranslationsByLocale.ru;
 
-  // 1) Пользователь
   const user = await checkUser();
 
   if (!user) {
     redirect(`/${locale}/sign-in`);
   }
 
-  // 2) Семьи нет -> форма создания
   if (!user.familyMember || !user.familyMember.familyId) {
     return (
       <div className="space-y-6 max-w-4xl mx-auto w-full">
@@ -96,7 +91,6 @@ export default async function FamilyPage({ params }: PageProps) {
     );
   }
 
-  // 3) Семья есть -> грузим семью
   const familyId = user.familyMember.familyId;
 
   const family = await prisma.family.findUnique({
@@ -116,7 +110,6 @@ export default async function FamilyPage({ params }: PageProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-start">
@@ -127,11 +120,9 @@ export default async function FamilyPage({ params }: PageProps) {
           </p>
         </div>
 
-        {/* Invite только для HEAD */}
         {user.familyMember.role === "HEAD" && <InviteDialog locale={locale} />}
       </div>
 
-      {/* Members */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {family.members.map((member) => (
           <div
@@ -143,7 +134,6 @@ export default async function FamilyPage({ params }: PageProps) {
                 <h3 className="font-semibold leading-none tracking-tight">
                   {member.fullName}
                 </h3>
-
                 {member.hebrewName && (
                   <p className="text-sm text-muted-foreground font-serif mt-1">
                     {member.hebrewName}
@@ -157,7 +147,6 @@ export default async function FamilyPage({ params }: PageProps) {
             </div>
 
             <div className="mt-auto space-y-3 text-sm text-muted-foreground pt-4 border-t border-border/50">
-              {/* Birthday */}
               <div className="flex justify-between items-center">
                 <span>{t.birthday}</span>
                 <span
@@ -175,7 +164,6 @@ export default async function FamilyPage({ params }: PageProps) {
                 </span>
               </div>
 
-              {/* Yahrzeit */}
               {member.yahrzeitDateGeorgian && (
                 <div className="flex justify-between items-center text-amber-600 dark:text-amber-500">
                   <span>{t.yahrzeit}</span>
