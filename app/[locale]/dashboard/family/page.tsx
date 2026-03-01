@@ -1,36 +1,94 @@
 // app/[locale]/dashboard/family/page.tsx
+import React from "react";
+import { redirect } from "next/navigation";
 import { checkUser } from "@/lib/check-user";
 import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
 import { InviteDialog } from "./InviteDialog";
 import { CreateFamilyForm } from "./CreateFamilyForm";
 
-export default async function FamilyPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  // В Next.js 15+ params - это промис
-  const resolvedParams = await params;
-  const locale = resolvedParams.locale;
+type PageProps = {
+  params: { locale: "ru" | "en" | "he" | string };
+};
 
-  // 1. Получаем пользователя из базы (checkUser должен возвращать юзера с familyMember, если он есть)
+export default async function FamilyPage({ params }: PageProps) {
+  const locale = params.locale;
+
+  // Формат дат под язык интерфейса
+  const dateLocale =
+    locale === "he" ? "he-IL" : locale === "en" ? "en-US" : "ru-RU";
+
+  // Заголовки/тексты (минимально, без next-intl, но мультиязычно)
+  const t =
+    locale === "he"
+      ? {
+          pageTitle: "פרופיל משפחה",
+          pageSubtitle: "ניהול בני המשפחה ותאריכים חשובים",
+          birthday: "יום הולדת:",
+          yahrzeit: "יורצייט:",
+          notSet: "לא צוין",
+          criticalError: "שגיאה קריטית: המשפחה לא נמצאה במסד הנתונים.",
+        }
+      : locale === "en"
+        ? {
+            pageTitle: "Family profile",
+            pageSubtitle: "Manage family members and memorable dates",
+            birthday: "Birthday:",
+            yahrzeit: "Yahrzeit:",
+            notSet: "Not set",
+            criticalError: "Critical error: Family not found in the database.",
+          }
+        : {
+            pageTitle: "Профиль семьи",
+            pageSubtitle: "Управление составом семьи и памятными датами",
+            birthday: "День рождения:",
+            yahrzeit: "Йорцайт:",
+            notSet: "Не указано",
+            criticalError:
+              "Критическая ошибка: Семья не найдена в базе данных.",
+          };
+
+  // Перевод ролей по locale
+  const roleTranslationsByLocale: Record<string, Record<string, string>> = {
+    ru: {
+      HEAD: "Глава семьи",
+      SPOUSE: "Супруг(а)",
+      CHILD: "Ребёнок",
+      DEPENDENT: "Родственник",
+    },
+    en: {
+      HEAD: "Head of family",
+      SPOUSE: "Spouse",
+      CHILD: "Child",
+      DEPENDENT: "Dependent",
+    },
+    he: {
+      HEAD: "ראש המשפחה",
+      SPOUSE: "בן/בת זוג",
+      CHILD: "ילד/ה",
+      DEPENDENT: "תלוי/ה",
+    },
+  };
+
+  const roleTranslations =
+    roleTranslationsByLocale[locale] ?? roleTranslationsByLocale.ru;
+
+  // 1) Пользователь
   const user = await checkUser();
 
   if (!user) {
-    return redirect(`/${locale}/sign-in`);
+    redirect(`/${locale}/sign-in`);
   }
 
-  // 2. СОСТОЯНИЕ: СЕМЬИ НЕТ -> Показываем форму создания
+  // 2) Семьи нет -> форма создания
   if (!user.familyMember || !user.familyMember.familyId) {
     return (
       <div className="space-y-6 max-w-4xl mx-auto w-full">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-start">
-            Профиль семьи
+            {t.pageTitle}
           </h1>
           <p className="text-muted-foreground mt-1 text-start">
-            Управление составом семьи и памятными датами
+            {t.pageSubtitle}
           </p>
         </div>
         <CreateFamilyForm />
@@ -38,51 +96,42 @@ export default async function FamilyPage({
     );
   }
 
-  // 3. СОСТОЯНИЕ: СЕМЬЯ ЕСТЬ -> Получаем всю семью целиком
+  // 3) Семья есть -> грузим семью
   const familyId = user.familyMember.familyId;
+
   const family = await prisma.family.findUnique({
     where: { id: familyId },
     include: {
       members: {
-        orderBy: { createdAt: "asc" }, // Глава семьи обычно будет первым
+        orderBy: { createdAt: "asc" },
       },
     },
   });
 
   if (!family) {
     return (
-      <div className="p-8 text-center text-destructive">
-        Критическая ошибка: Семья не найдена в базе данных.
-      </div>
+      <div className="p-8 text-center text-destructive">{t.criticalError}</div>
     );
   }
 
-  // Перевод системных ролей для UI
-  const roleTranslations: Record<string, string> = {
-    HEAD: "Глава семьи",
-    SPOUSE: "Супруг(а)",
-    CHILD: "Ребенок",
-    DEPENDENT: "Родственник",
-  };
-
   return (
     <div className="space-y-6">
-      {/* Заголовок страницы */}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-start">
             {family.name}
           </h1>
           <p className="text-muted-foreground text-start mt-1">
-            Управляйте составом семьи и памятными датами
+            {t.pageSubtitle}
           </p>
         </div>
 
-        {/* Кнопка приглашения (Доступна только Главе семьи) */}
+        {/* Invite только для HEAD */}
         {user.familyMember.role === "HEAD" && <InviteDialog locale={locale} />}
       </div>
 
-      {/* Список членов семьи */}
+      {/* Members */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {family.members.map((member) => (
           <div
@@ -94,21 +143,23 @@ export default async function FamilyPage({
                 <h3 className="font-semibold leading-none tracking-tight">
                   {member.fullName}
                 </h3>
+
                 {member.hebrewName && (
                   <p className="text-sm text-muted-foreground font-serif mt-1">
                     {member.hebrewName}
                   </p>
                 )}
               </div>
+
               <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-secondary/50 text-secondary-foreground whitespace-nowrap">
                 {roleTranslations[member.role] || member.role}
               </span>
             </div>
 
             <div className="mt-auto space-y-3 text-sm text-muted-foreground pt-4 border-t border-border/50">
-              {/* Светский день рождения */}
+              {/* Birthday */}
               <div className="flex justify-between items-center">
-                <span>День рождения:</span>
+                <span>{t.birthday}</span>
                 <span
                   className={
                     member.birthDateGeorgian
@@ -118,19 +169,19 @@ export default async function FamilyPage({
                 >
                   {member.birthDateGeorgian
                     ? new Date(member.birthDateGeorgian).toLocaleDateString(
-                        "ru-RU",
+                        dateLocale,
                       )
-                    : "Не указано"}
+                    : t.notSet}
                 </span>
               </div>
 
-              {/* Йорцайт */}
+              {/* Yahrzeit */}
               {member.yahrzeitDateGeorgian && (
                 <div className="flex justify-between items-center text-amber-600 dark:text-amber-500">
-                  <span>Йорцайт:</span>
+                  <span>{t.yahrzeit}</span>
                   <span className="font-medium">
                     {new Date(member.yahrzeitDateGeorgian).toLocaleDateString(
-                      "ru-RU",
+                      dateLocale,
                     )}
                   </span>
                 </div>

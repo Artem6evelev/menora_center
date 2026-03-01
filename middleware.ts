@@ -1,41 +1,64 @@
+// middleware.ts
+import { NextResponse } from "next/server";
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-import createMiddleware from "next-intl/middleware";
+import createIntlMiddleware from "next-intl/middleware";
 
-const intlMiddleware = createMiddleware({
-  locales: ["en", "ru", "he"],
-  defaultLocale: "ru",
+const locales = ["en", "ru", "he"] as const;
+const defaultLocale = "ru" as const;
+
+const intlMiddleware = createIntlMiddleware({
+  locales: [...locales],
+  defaultLocale,
+  localePrefix: "always", // <-- ключ: всегда добавляем /ru /en /he
+  localeDetection: true,
 });
 
+// защищаем только локализованные роуты
 const isProtectedRoute = createRouteMatcher([
   "/:locale/dashboard(.*)",
   "/:locale/admin(.*)",
-  "/dashboard(.*)",
-  "/admin(.*)",
 ]);
 
-export default clerkMiddleware(async (auth, req) => {
-  // 1. Проверяем, защищен ли маршрут
-  if (isProtectedRoute(req)) {
-    // 2. Ждем получения данных аутентификации
-    const authObj = await auth();
+function getLocaleFromPath(pathname: string) {
+  const maybe = pathname.split("/")[1];
+  return (locales as readonly string[]).includes(maybe) ? maybe : defaultLocale;
+}
 
-    // 3. Ручная защита: Если нет userId — перенаправляем на вход
+export default clerkMiddleware(async (auth, req) => {
+  const { pathname } = req.nextUrl;
+
+  // 1) Пропускаем API / TRPC сразу
+  if (pathname.startsWith("/api") || pathname.startsWith("/trpc")) {
+    return NextResponse.next();
+  }
+
+  // 2) Сначала i18n: добавит /ru, /en, /he если их нет
+  const intlResponse = intlMiddleware(req);
+
+  // Если next-intl уже решил сделать redirect (например, / -> /ru),
+  // возвращаем его сразу, а защита сработает на следующем запросе.
+  const location = intlResponse.headers.get("location");
+  if (location) return intlResponse;
+
+  // 3) Затем защита Clerk
+  if (isProtectedRoute(req)) {
+    const authObj = await auth();
     if (!authObj.userId) {
-      return (await auth()).redirectToSignIn({ returnBackUrl: req.url });
+      const locale = getLocaleFromPath(pathname);
+
+      // Локализованный sign-in + возврат назад
+      const signInUrl = new URL(`/${locale}/sign-in`, req.url);
+      signInUrl.searchParams.set("redirect_url", req.url);
+
+      return NextResponse.redirect(signInUrl);
     }
   }
 
-  // --- НОВОЕ ПРАВИЛО ---
-  // Если это запрос к нашему API (например, /api/redis-test или вебхук бота),
-  // мы просто выходим из middleware и позволяем Next.js обработать его как есть.
-  if (req.nextUrl.pathname.startsWith("/api")) {
-    return;
-  }
-
-  // 4. Если это обычная страница — отдаем управление локализации
-  return intlMiddleware(req);
+  // 4) Обычная страница — отдаём intl-ответ (rewrite/next)
+  return intlResponse;
 });
 
+// Важно: не матчим статику, _next, файлы, api/trpc
 export const config = {
-  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: ["/((?!api|trpc|_next|.*\\..*).*)"],
 };
