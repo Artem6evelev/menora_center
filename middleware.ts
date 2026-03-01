@@ -17,6 +17,7 @@ const intlMiddleware = createIntlMiddleware({
 const isProtectedRoute = createRouteMatcher([
   "/:locale/dashboard(.*)",
   "/:locale/admin(.*)",
+  "/:locale/invite(.*)",
 ]);
 
 function getLocaleFromPath(pathname: string) {
