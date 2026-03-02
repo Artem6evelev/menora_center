@@ -5,14 +5,23 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images: { domains: ["i.pravatar.cc", "images.unsplash.com"] },
   pageExtensions: ["ts", "tsx", "mdx"],
-  remotePatterns: [
-    {
-      protocol: "https",
-      hostname: "images.unsplash.com",
-    },
-  ],
+
+  images: {
+    // можно оставить domains, но лучше уже на remotePatterns
+    domains: ["i.pravatar.cc", "images.unsplash.com"],
+
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "i.pravatar.cc",
+      },
+    ],
+  },
 };
 
 // ВАЖНО: Указываем путь к i18n.ts

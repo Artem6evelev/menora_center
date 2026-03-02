@@ -1,145 +1,128 @@
-// app/[locale]/dashboard/family/InviteDialog.tsx
 "use client";
 
-import { useState } from "react";
-import { useTranslations } from "next-intl";
-import { createFamilyInvite } from "@/app/actions/family";
+import * as React from "react";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { toast } from "sonner";
-import { Copy, UserPlus, Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { createInviteAction } from "./actions";
 
-// Строгая типизация ответа от Server Action (Discriminated Union)
-type InviteResponse =
-  | { success: true; token: string }
-  | { success: false; error: string };
+type InviteDialogProps = {
+  locale: string;
+};
 
-export function InviteDialog({ locale }: { locale: string }) {
-  // Инициализация локализации (если ключей пока нет, можно временно заменить t() на обычный текст)
-  const t = useTranslations("Dashboard.family.invite");
+export function InviteDialog({ locale }: InviteDialogProps) {
+  const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [inviteId, setInviteId] = React.useState<string | null>(null);
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [inviteLink, setInviteLink] = useState<string | null>(null);
-  const [role, setRole] = useState("SPOUSE");
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
 
-  const handleGenerate = async () => {
-    setIsLoading(true);
-    setInviteLink(null);
+  const inviteUrl = React.useMemo(() => {
+    if (!inviteId || !origin) return "";
+    return new URL(`/${locale}/invite/${inviteId}`, origin).toString();
+  }, [inviteId, origin, locale]);
 
+  async function handleCreateInvite() {
     try {
-      // Явно указываем TypeScript ожидаемый тип ответа
-      const result = (await createFamilyInvite(role)) as InviteResponse;
-
-      if (result.success) {
-        // Формируем абсолютную ссылку для текущей локали
-        const link = `${window.location.origin}/${locale}/invite/${result.token}`;
-        setInviteLink(link);
-        toast.success(t("success_message") || "Ссылка успешно создана");
-      } else {
-        toast.error(result.error || t("error_message") || "Ошибка генерации");
-      }
-    } catch (error) {
-      toast.error(t("error_message") || "Произошла системная ошибка");
+      setLoading(true);
+      const res = await createInviteAction();
+      setInviteId(res.inviteId);
+      toast.success("Приглашение создано");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Не удалось создать приглашение");
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
-  };
+  }
 
-  const copyToClipboard = () => {
-    if (inviteLink) {
-      navigator.clipboard.writeText(inviteLink);
-      toast.success(t("copied") || "Ссылка скопирована в буфер обмена");
+  async function handleCopy() {
+    if (!inviteUrl) return;
+    try {
+      await navigator.clipboard.writeText(inviteUrl);
+      toast.success("Ссылка скопирована");
+    } catch {
+      toast.error("Не удалось скопировать");
     }
-  };
+  }
+
+  function handleOpenLink() {
+    if (!inviteUrl) return;
+    window.open(inviteUrl, "_blank", "noopener,noreferrer");
+  }
+
+  function handleClose() {
+    setOpen(false);
+    // хочешь — можешь чистить inviteId при закрытии:
+    // setInviteId(null);
+  }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="gap-2">
-          <UserPlus className="h-4 w-4" />
-          {t("trigger") || "Пригласить"}
-        </Button>
+        <Button onClick={() => setOpen(true)}>Пригласить</Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{t("title") || "Пригласить в семью"}</DialogTitle>
+          <DialogTitle>Приглашение в семью</DialogTitle>
           <DialogDescription>
-            {t("description") ||
-              "Сгенерируйте уникальную ссылку. Она будет действительна 7 дней."}
+            Создай ссылку и отправь её человеку. После входа он сможет принять
+            приглашение.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4 py-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">
-              {t("select_role") || "Роль члена семьи"}
-            </label>
-            <Select onValueChange={setRole} defaultValue={role}>
-              {/* dir="auto" позволяет корректно отображать выпадающий список на иврите */}
-              <SelectTrigger dir="auto">
-                <SelectValue
-                  placeholder={t("role_placeholder") || "Выберите роль"}
-                />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="SPOUSE">
-                  {t("role_spouse") || "Супруг / Супруга"}
-                </SelectItem>
-                <SelectItem value="CHILD">
-                  {t("role_child") || "Ребенок"}
-                </SelectItem>
-                <SelectItem value="DEPENDENT">
-                  {t("role_dependent") || "Подопечный (Родственник)"}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {!inviteLink ? (
+        <div className="space-y-3">
+          {!inviteId ? (
             <Button
-              onClick={handleGenerate}
-              disabled={isLoading}
+              onClick={handleCreateInvite}
+              disabled={loading}
               className="w-full"
             >
-              {isLoading && <Loader2 className="me-2 h-4 w-4 animate-spin" />}
-              {t("generate_button") || "Сгенерировать ссылку"}
+              {loading ? "Создаём..." : "Создать ссылку"}
             </Button>
           ) : (
-            <div className="flex flex-col gap-2 mt-2">
-              <div className="flex items-center gap-2">
-                {/* dir="ltr" КРИТИЧЕСКИ ВАЖЕН ЗДЕСЬ, чтобы ссылка не ломалась при RTL (иврит) */}
-                <Input
-                  readOnly
-                  value={inviteLink}
-                  className="bg-muted text-xs font-mono"
-                  dir="ltr"
-                />
-                <Button size="icon" variant="outline" onClick={copyToClipboard}>
-                  <Copy className="h-4 w-4" />
+            <>
+              <div className="space-y-2">
+                <div className="text-sm text-muted-foreground">Ссылка:</div>
+                <Input value={inviteUrl} readOnly />
+              </div>
+
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleCopy}
+                  variant="secondary"
+                  className="flex-1"
+                >
+                  Copy
+                </Button>
+                <Button onClick={handleOpenLink} className="flex-1">
+                  Open
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground text-center mt-2">
-                Отправьте эту ссылку члену вашей семьи в Telegram или WhatsApp.
-              </p>
-            </div>
+
+              <div className="text-xs text-muted-foreground">
+                Если человек открывает ссылку на телефоне без входа — его
+                отправит на страницу входа и затем вернёт назад на приглашение.
+              </div>
+            </>
           )}
         </div>
+
+        <DialogFooter>
+          <Button onClick={handleClose} variant="outline">
+            Закрыть
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

@@ -13,53 +13,50 @@ const intlMiddleware = createIntlMiddleware({
   localeDetection: true,
 });
 
-// защищаем только локализованные роуты
+// ✅ Защищаем ТОЛЬКО закрытые зоны
 const isProtectedRoute = createRouteMatcher([
   "/:locale/dashboard(.*)",
   "/:locale/admin(.*)",
-  "/:locale/invite(.*)",
 ]);
 
 function getLocaleFromPath(pathname: string) {
   const maybe = pathname.split("/")[1];
-  return (locales as readonly string[]).includes(maybe) ? maybe : defaultLocale;
+  return (locales as readonly string[]).includes(maybe as any)
+    ? maybe
+    : defaultLocale;
 }
 
 export default clerkMiddleware(async (auth, req) => {
-  const { pathname } = req.nextUrl;
+  const { pathname, search } = req.nextUrl;
 
-  // 1) Пропускаем API / TRPC сразу
+  // API/TRPC не трогаем
   if (pathname.startsWith("/api") || pathname.startsWith("/trpc")) {
     return NextResponse.next();
   }
 
-  // 2) Сначала i18n: добавит /ru, /en, /he если их нет
+  // i18n first
   const intlResponse = intlMiddleware(req);
 
-  // Если next-intl уже решил сделать redirect (например, / -> /ru),
-  // возвращаем его сразу, а защита сработает на следующем запросе.
-  const location = intlResponse.headers.get("location");
-  if (location) return intlResponse;
+  // если next-intl уже редиректит (/ -> /ru), отдаём редирект
+  if (intlResponse.headers.get("location")) return intlResponse;
 
-  // 3) Затем защита Clerk
+  // protect dashboard/admin only
   if (isProtectedRoute(req)) {
-    const authObj = await auth();
-    if (!authObj.userId) {
+    const { userId } = await auth();
+    if (!userId) {
       const locale = getLocaleFromPath(pathname);
-
-      // Локализованный sign-in + возврат назад
       const signInUrl = new URL(`/${locale}/sign-in`, req.url);
-      signInUrl.searchParams.set("redirect_url", req.url);
+
+      // ✅ return back after login
+      signInUrl.searchParams.set("redirect_url", pathname + search);
 
       return NextResponse.redirect(signInUrl);
     }
   }
 
-  // 4) Обычная страница — отдаём intl-ответ (rewrite/next)
   return intlResponse;
 });
 
-// Важно: не матчим статику, _next, файлы, api/trpc
 export const config = {
   matcher: ["/((?!api|trpc|_next|.*\\..*).*)"],
 };

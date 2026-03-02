@@ -10,59 +10,94 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model User {
-  id               String         @id
-  email            String         @unique
-  telegramChatId   BigInt?        @unique
-  isAdmin          Boolean        @default(false)
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+enum FamilyRole {
+  HEAD
+  SPOUSE
+  CHILD
+  DEPENDENT
+}
 
-  familyMember     FamilyMember?
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+model User {
+  id             String   @id @default(uuid())
+  clerkUserId    String   @unique
+  email          String   @unique
+  telegramChatId BigInt?  @unique
+
+  isAdmin        Boolean  @default(false)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  familyMember   FamilyMember?
+  invitesCreated FamilyInvite[] @relation("InvitesCreated")
 }
 
 model Family {
-  id          String         @id @default(uuid())
-  name        String
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  id        String         @id @default(uuid())
+  name      String
 
-  members     FamilyMember[]
-  invites     FamilyInvite[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  members   FamilyMember[]
+  invites   FamilyInvite[]
 }
 
 model FamilyMember {
-  id                     String    @id @default(uuid())
-  
-  familyId               String
-  family                 Family    @relation(fields: [familyId], references: [id], onDelete: Cascade)
-  
-  userId                 String?   @unique
-  user                   User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
-  
-  role                   String    
-  fullName               String
-  hebrewName             String?
-  gender                 String?   
-  birthDateGeorgian      DateTime? 
-  isJewishBirthday       Boolean   @default(true) 
-  yahrzeitDateGeorgian   DateTime? 
-  
-  createdAt              DateTime  @default(now())
-  updatedAt              DateTime  @updatedAt
+  id                   String    @id @default(uuid())
+
+  familyId             String
+  family               Family    @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  // Один пользователь может быть только в одной семье (и максимум 1 запись FamilyMember)
+  userId               String?   @unique
+  user                 User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  role                 FamilyRole
+  fullName             String
+  hebrewName           String?
+  gender               Gender?
+  birthDateGeorgian    DateTime?
+  isJewishBirthday     Boolean   @default(true)
+  yahrzeitDateGeorgian DateTime?
+
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 
   @@index([familyId])
 }
 
 model FamilyInvite {
-  id           String   @id @default(uuid()) 
-  familyId     String
-  family       Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
-  targetRole   String   
-  inviterId    String   
-  isAccepted   Boolean  @default(false)
-  expiresAt    DateTime 
-  createdAt    DateTime @default(now())
-  
+  id              String     @id @default(uuid())
+
+  familyId        String
+  family          Family     @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  // кто создал инвайт (глава семьи)
+  inviterUserId   String
+  inviter         User       @relation("InvitesCreated", fields: [inviterUserId], references: [id], onDelete: Cascade)
+
+  // какую роль выдаём при принятии
+  targetRole      FamilyRole @default(DEPENDENT)
+
+  // одноразовый / многоразовый
+  maxUses         Int        @default(1)
+  usedCount       Int        @default(0)
+
+  // контроль жизни
+  expiresAt       DateTime?
+  revokedAt       DateTime?
+
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
   @@index([familyId])
+  @@index([inviterUserId])
+  @@index([expiresAt])
 }
