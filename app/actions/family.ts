@@ -9,17 +9,29 @@ type CreateInviteResult =
   | { success: true; inviteId: string }
   | { success: false; error: string };
 
-async function getDbUserOrThrow(clerkUserId: string) {
-  const user = await prisma.user.findUnique({
+async function getOrCreateDbUser(clerkUserId: string) {
+  const existing = await prisma.user.findUnique({
     where: { clerkUserId },
     select: { id: true, email: true },
   });
-  if (!user) {
-    throw new Error(
-      "User is not synced in DB. Проверь webhook Clerk / checkUser().",
-    );
+  if (existing) return existing;
+
+  const cu = await currentUser();
+  const email =
+    cu?.emailAddresses?.find((e) => e.id === cu.primaryEmailAddressId)
+      ?.emailAddress ?? cu?.emailAddresses?.[0]?.emailAddress;
+
+  if (!email) {
+    throw new Error("Не найден email у пользователя Clerk");
   }
-  return user;
+
+  return await prisma.user.create({
+    data: {
+      clerkUserId,
+      email,
+    },
+    select: { id: true, email: true },
+  });
 }
 
 function sanitizeTargetRole(input?: string): FamilyRole {
@@ -37,8 +49,7 @@ export async function createNewFamily(formData: FormData) {
     const { userId: clerkUserId } = await auth();
     if (!clerkUserId) throw new Error("Unauthorized");
 
-    const dbUser = await getDbUserOrThrow(clerkUserId);
-
+    const dbUser = await getOrCreateDbUser(clerkUserId);
     const familyName = String(formData.get("familyName") ?? "").trim();
     if (!familyName) {
       return { success: false, error: "Название семьи обязательно" };
@@ -91,8 +102,7 @@ export async function createFamilyInvite(
     const { userId: clerkUserId } = await auth();
     if (!clerkUserId) throw new Error("Unauthorized");
 
-    const dbUser = await getDbUserOrThrow(clerkUserId);
-
+    const dbUser = await getOrCreateDbUser(clerkUserId);
     const member = await prisma.familyMember.findUnique({
       where: { userId: dbUser.id },
       select: { familyId: true, role: true },
@@ -145,8 +155,7 @@ export async function acceptFamilyInvite(inviteId: string) {
     if (!clerkUserId)
       return { success: false, error: "Необходима авторизация" };
 
-    const dbUser = await getDbUserOrThrow(clerkUserId);
-
+    const dbUser = await getOrCreateDbUser(clerkUserId);
     const cu = await currentUser();
     const fullName = cu
       ? `${cu.firstName || ""} ${cu.lastName || ""}`.trim()
@@ -194,6 +203,7 @@ export async function acceptFamilyInvite(inviteId: string) {
         where: { userId: dbUser.id },
         select: { id: true, familyId: true, role: true },
       });
+      const fromFamilyId = existing?.familyId ?? null;
 
       // если уже в нужной семье — просто обновим роль (опционально)
       if (existing && existing.familyId === invite.familyId) {
@@ -245,6 +255,15 @@ export async function acceptFamilyInvite(inviteId: string) {
           where: { id: inviteId },
           data: { revokedAt: new Date() },
         });
+      }
+
+      if (fromFamilyId && fromFamilyId !== invite.familyId) {
+        const leftCount = await tx.familyMember.count({
+          where: { familyId: fromFamilyId },
+        });
+        if (leftCount === 0) {
+          await tx.family.delete({ where: { id: fromFamilyId } });
+        }
       }
     });
 

@@ -1,8 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { acceptFamilyInvite } from "@/app/actions/family";
 
 export function AcceptInviteButton({
   inviteId,
@@ -11,28 +13,27 @@ export function AcceptInviteButton({
   inviteId: string;
   locale: string;
 }) {
-  const [loading, setLoading] = React.useState(false);
+  const router = useRouter();
+  const [pending, startTransition] = React.useTransition();
 
-  async function onAccept() {
-    try {
-      setLoading(true);
+  const onAccept = () => {
+    startTransition(async () => {
+      const res = await acceptFamilyInvite(inviteId);
 
-      // TODO: здесь будет server action acceptInviteAction(inviteId)
-      // пока просто показываем, что token дошёл
-      toast.success(`Invite accepted: ${inviteId}`);
+      if (!res.success) {
+        toast.error(res.error ?? "Не удалось принять приглашение");
+        return;
+      }
 
-      // например, редирект после принятия:
-      window.location.href = `/${locale}/dashboard/family`;
-    } catch (e: any) {
-      toast.error(e?.message ?? "Не удалось принять приглашение");
-    } finally {
-      setLoading(false);
-    }
-  }
+      toast.success("Готово! Вы добавлены в семью");
+      router.replace(`/${locale}/dashboard/family`);
+      router.refresh();
+    });
+  };
 
   return (
-    <Button onClick={onAccept} disabled={loading} className="w-full">
-      {loading ? "Принимаем..." : "Принять приглашение"}
+    <Button className="w-full" onClick={onAccept} disabled={pending}>
+      {pending ? "Принимаем..." : "Принять приглашение"}
     </Button>
   );
 }
