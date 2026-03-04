@@ -14,7 +14,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { createInviteAction } from "./actions";
+import { createFamilyInvite } from "@/app/actions/family";
 
 type InviteDialogProps = {
   locale: string;
@@ -35,7 +35,14 @@ export function InviteDialog({ locale }: InviteDialogProps) {
   async function handleCreateInvite() {
     try {
       setLoading(true);
-      const res = await createInviteAction();
+
+      const res = await createFamilyInvite("DEPENDENT");
+
+      if (!res.success) {
+        toast.error(res.error ?? "Не удалось создать приглашение");
+        return;
+      }
+
       setInviteId(res.inviteId);
       toast.success("Приглашение создано");
     } catch (e: any) {
@@ -55,6 +62,25 @@ export function InviteDialog({ locale }: InviteDialogProps) {
     }
   }
 
+  async function handleShare() {
+    if (!inviteUrl) return;
+
+    try {
+      // @ts-ignore
+      if (navigator.share) {
+        // @ts-ignore
+        await navigator.share({
+          title: "Приглашение в семью",
+          url: inviteUrl,
+        });
+        return;
+      }
+      await handleCopy();
+    } catch {
+      // пользователь мог отменить share — не ругаемся
+    }
+  }
+
   function handleOpenLink() {
     if (!inviteUrl) return;
     window.open(inviteUrl, "_blank", "noopener,noreferrer");
@@ -62,8 +88,6 @@ export function InviteDialog({ locale }: InviteDialogProps) {
 
   function handleClose() {
     setOpen(false);
-    // хочешь — можешь чистить inviteId при закрытии:
-    // setInviteId(null);
   }
 
   return (
@@ -105,14 +129,21 @@ export function InviteDialog({ locale }: InviteDialogProps) {
                 >
                   Copy
                 </Button>
+                <Button
+                  onClick={handleShare}
+                  variant="secondary"
+                  className="flex-1"
+                >
+                  Share
+                </Button>
                 <Button onClick={handleOpenLink} className="flex-1">
                   Open
                 </Button>
               </div>
 
               <div className="text-xs text-muted-foreground">
-                Если человек открывает ссылку на телефоне без входа — его
-                отправит на страницу входа и затем вернёт назад на приглашение.
+                На телефоне лучше отправлять через <b>Share</b> — мессенджеры
+                иногда “режут” длинные ссылки.
               </div>
             </>
           )}

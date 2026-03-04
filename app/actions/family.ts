@@ -4,61 +4,69 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
-// helper: получаем DB user (по clerkUserId) и гарантируем что он существует
+type FamilyRole = "HEAD" | "SPOUSE" | "CHILD" | "DEPENDENT";
+type CreateInviteResult =
+  | { success: true; inviteId: string }
+  | { success: false; error: string };
+
 async function getDbUserOrThrow(clerkUserId: string) {
-  const dbUser = await prisma.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: { clerkUserId },
     select: { id: true, email: true },
   });
-  if (!dbUser) {
+  if (!user) {
     throw new Error(
-      "User is not synced to DB. Проверь checkUser() / webhook Clerk.",
+      "User is not synced in DB. Проверь webhook Clerk / checkUser().",
     );
   }
-  return dbUser;
+  return user;
 }
 
-// ==========================================
-// 1) СОЗДАНИЕ НОВОЙ СЕМЬИ (HEAD)
-// ==========================================
+function sanitizeTargetRole(input?: string): FamilyRole {
+  const v = (input ?? "").toUpperCase();
+  if (v === "SPOUSE" || v === "CHILD" || v === "DEPENDENT") return v;
+  // никогда не даём выдать HEAD через invite
+  return "DEPENDENT";
+}
+
+/**
+ * 1) Создание семьи (пользователь становится HEAD)
+ */
 export async function createNewFamily(formData: FormData) {
   try {
     const { userId: clerkUserId } = await auth();
     if (!clerkUserId) throw new Error("Unauthorized");
+
+    const dbUser = await getDbUserOrThrow(clerkUserId);
 
     const familyName = String(formData.get("familyName") ?? "").trim();
     if (!familyName) {
       return { success: false, error: "Название семьи обязательно" };
     }
 
-    const dbUser = await getDbUserOrThrow(clerkUserId);
-
-    // имя
-    const clerkUser = await currentUser();
-    const fullName = clerkUser
-      ? `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim()
+    const cu = await currentUser();
+    const fullName = cu
+      ? `${cu.firstName || ""} ${cu.lastName || ""}`.trim()
       : "";
     const safeName = fullName || "Глава семьи";
 
     await prisma.$transaction(async (tx) => {
-      // если пользователь уже в семье — не создаём новую
-      const existingMember = await tx.familyMember.findUnique({
+      // если уже состоит в семье — не создаём новую
+      const existing = await tx.familyMember.findUnique({
         where: { userId: dbUser.id },
         select: { id: true },
       });
-      if (existingMember) {
-        throw new Error("Вы уже состоите в профиле семьи");
-      }
+      if (existing) throw new Error("Вы уже состоите в семье");
 
-      const newFamily = await tx.family.create({
+      const family = await tx.family.create({
         data: { name: familyName },
         select: { id: true },
       });
 
       await tx.familyMember.create({
         data: {
-          familyId: newFamily.id,
-          userId: dbUser.id, // ✅ DB user id
+          familyId: family.id,
+          userId: dbUser.id,
           role: "HEAD",
           fullName: safeName,
         },
@@ -67,51 +75,46 @@ export async function createNewFamily(formData: FormData) {
 
     revalidatePath("/[locale]/dashboard/family");
     return { success: true };
-  } catch (error) {
-    console.error("Create family error:", error);
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Ошибка при создании семьи",
-    };
+  } catch (e: any) {
+    console.error("createNewFamily error:", e);
+    return { success: false, error: e?.message ?? "Ошибка при создании семьи" };
   }
 }
 
-// ==========================================
-// 2) ГЕНЕРАЦИЯ ИНВАЙТ-ССЫЛКИ (HEAD only)
-// ==========================================
-export async function createFamilyInvite(targetRole: string) {
+/**
+ * 2) Создание инвайта (только HEAD)
+ */
+export async function createFamilyInvite(
+  targetRole?: string,
+): Promise<CreateInviteResult> {
   try {
     const { userId: clerkUserId } = await auth();
     if (!clerkUserId) throw new Error("Unauthorized");
 
     const dbUser = await getDbUserOrThrow(clerkUserId);
 
-    const userMember = await prisma.familyMember.findUnique({
-      where: { userId: dbUser.id }, // ✅ DB user id
+    const member = await prisma.familyMember.findUnique({
+      where: { userId: dbUser.id },
       select: { familyId: true, role: true },
     });
 
-    // Рекомендация: приглашать должен только HEAD (упростит безопасность)
-    if (!userMember?.familyId || userMember.role !== "HEAD") {
+    if (!member?.familyId) {
+      return { success: false, error: "Сначала создайте семью" } as const;
+    }
+    if (member.role !== "HEAD") {
       return {
         success: false,
-        error: "У вас нет прав для приглашения новых участников",
-      };
+        error: "Приглашать может только глава семьи",
+      } as const;
     }
 
-    // В новой схеме targetRole — enum FamilyRole (HEAD не даём выдавать)
-    const allowedRoles = ["SPOUSE", "CHILD", "DEPENDENT"] as const;
-    const safeRole = allowedRoles.includes(targetRole as any)
-      ? (targetRole as (typeof allowedRoles)[number])
-      : "DEPENDENT";
-
+    const safeRole = sanitizeTargetRole(targetRole);
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
-    const newInvite = await prisma.familyInvite.create({
+    const invite = await prisma.familyInvite.create({
       data: {
-        familyId: userMember.familyId,
-        inviterUserId: dbUser.id, // ✅ DB user id
+        familyId: member.familyId,
+        inviterUserId: dbUser.id,
         targetRole: safeRole,
         maxUses: 1,
         usedCount: 0,
@@ -120,20 +123,22 @@ export async function createFamilyInvite(targetRole: string) {
       select: { id: true },
     });
 
-    return { success: true, inviteId: newInvite.id };
-  } catch (error) {
-    console.error("Create family invite error:", error);
+    return { success: true, inviteId: invite.id } as const;
+  } catch (e: any) {
+    console.error("createFamilyInvite error:", e);
     return {
       success: false,
-      error:
-        error instanceof Error ? error.message : "Ошибка при генерации ссылки",
-    };
+      error: e?.message ?? "Ошибка генерации ссылки",
+    } as const;
   }
 }
 
-// ==========================================
-// 3) ПРИНЯТИЕ ИНВАЙТА
-// ==========================================
+/**
+ * 3) Принятие инвайта
+ * - работает для зарегистрированных и для новых (после sign-in)
+ * - если пользователь уже в другой семье -> "переезд" в семью из инвайта
+ * - защита: если он HEAD и в его семье есть другие участники — не даём уйти
+ */
 export async function acceptFamilyInvite(inviteId: string) {
   try {
     const { userId: clerkUserId } = await auth();
@@ -142,62 +147,99 @@ export async function acceptFamilyInvite(inviteId: string) {
 
     const dbUser = await getDbUserOrThrow(clerkUserId);
 
-    // если уже в семье — стоп
-    const existingMember = await prisma.familyMember.findUnique({
-      where: { userId: dbUser.id },
-      select: { id: true },
-    });
-    if (existingMember) {
-      return { success: false, error: "Вы уже состоите в профиле семьи" };
-    }
-
-    // Имя
-    const clerkUser = await currentUser();
-    const fullName = clerkUser
-      ? `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim()
+    const cu = await currentUser();
+    const fullName = cu
+      ? `${cu.firstName || ""} ${cu.lastName || ""}`.trim()
       : "";
     const safeName = fullName || "Новый участник";
+
+    const now = new Date();
 
     await prisma.$transaction(async (tx) => {
       const invite = await tx.familyInvite.findUnique({
         where: { id: inviteId },
+        select: {
+          id: true,
+          familyId: true,
+          targetRole: true,
+          expiresAt: true,
+          revokedAt: true,
+          maxUses: true,
+          usedCount: true,
+        },
       });
 
       if (!invite) throw new Error("Приглашение не найдено");
       if (invite.revokedAt) throw new Error("Приглашение отозвано");
-      if (invite.expiresAt && invite.expiresAt < new Date()) {
-        throw new Error("Срок действия приглашения истек");
+      if (invite.expiresAt && invite.expiresAt <= now) {
+        throw new Error("Срок действия приглашения истёк");
       }
       if (invite.usedCount >= invite.maxUses) {
-        throw new Error("Приглашение уже было использовано");
+        throw new Error("Приглашение уже использовано");
       }
 
-      // атомарно увеличиваем usedCount
+      // атомарно увеличиваем usedCount (защита от двойного клика)
       const updated = await tx.familyInvite.update({
         where: { id: inviteId },
         data: { usedCount: { increment: 1 } },
-        select: {
-          usedCount: true,
-          maxUses: true,
-          familyId: true,
-          targetRole: true,
-        },
+        select: { usedCount: true, maxUses: true },
       });
 
       if (updated.usedCount > updated.maxUses) {
-        throw new Error("Приглашение уже было использовано");
+        throw new Error("Приглашение уже использовано");
       }
 
-      await tx.familyMember.create({
-        data: {
-          familyId: updated.familyId,
-          userId: dbUser.id, // ✅ DB user id
-          role: updated.targetRole,
-          fullName: safeName,
-        },
+      // текущий member пользователя (если есть) — будем переносить
+      const existing = await tx.familyMember.findUnique({
+        where: { userId: dbUser.id },
+        select: { id: true, familyId: true, role: true },
       });
 
-      // если одноразовый — можно закрыть
+      // если уже в нужной семье — просто обновим роль (опционально)
+      if (existing && existing.familyId === invite.familyId) {
+        await tx.familyMember.update({
+          where: { id: existing.id },
+          data: { role: invite.targetRole },
+        });
+        return;
+      }
+
+      // если HEAD в другой семье и там есть другие — запрещаем “свалить”
+      if (existing && existing.role === "HEAD") {
+        const others = await tx.familyMember.count({
+          where: {
+            familyId: existing.familyId,
+            NOT: { id: existing.id },
+          },
+        });
+        if (others > 0) {
+          throw new Error(
+            "Вы глава текущей семьи. Сначала назначьте другого главой или удалите участников.",
+          );
+        }
+      }
+
+      // переносим или создаём
+      if (existing) {
+        await tx.familyMember.update({
+          where: { id: existing.id },
+          data: {
+            familyId: invite.familyId,
+            role: invite.targetRole,
+          },
+        });
+      } else {
+        await tx.familyMember.create({
+          data: {
+            familyId: invite.familyId,
+            userId: dbUser.id,
+            role: invite.targetRole,
+            fullName: safeName,
+          },
+        });
+      }
+
+      // если одноразовый — можно “закрыть”
       if (updated.usedCount >= updated.maxUses) {
         await tx.familyInvite.update({
           where: { id: inviteId },
@@ -208,14 +250,11 @@ export async function acceptFamilyInvite(inviteId: string) {
 
     revalidatePath("/[locale]/dashboard/family");
     return { success: true };
-  } catch (error) {
-    console.error("Accept invite error:", error);
+  } catch (e: any) {
+    console.error("acceptFamilyInvite error:", e);
     return {
       success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Системная ошибка при добавлении в семью",
+      error: e?.message ?? "Ошибка принятия приглашения",
     };
   }
 }

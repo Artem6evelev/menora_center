@@ -1,6 +1,7 @@
 // app/[locale]/dashboard/family/page.tsx
 import React from "react";
 import { redirect } from "next/navigation";
+import { unstable_noStore as noStore } from "next/cache";
 import { checkUser } from "@/lib/check-user";
 import { prisma } from "@/lib/prisma";
 import { InviteDialog } from "./InviteDialog";
@@ -11,6 +12,8 @@ export default async function FamilyPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
+  noStore();
+
   const { locale } = await params;
 
   const dateLocale =
@@ -71,9 +74,7 @@ export default async function FamilyPage({
 
   const user = await checkUser();
 
-  if (!user) {
-    redirect(`/${locale}/sign-in`);
-  }
+  if (!user) redirect(`/${locale}/sign-in`);
 
   if (!user.familyMember || !user.familyMember.familyId) {
     return (
@@ -93,11 +94,23 @@ export default async function FamilyPage({
 
   const familyId = user.familyMember.familyId;
 
+  // Текущая семья пользователя
   const family = await prisma.family.findUnique({
     where: { id: familyId },
     include: {
       members: {
         orderBy: { createdAt: "asc" },
+        include: {
+          user: {
+            select: {
+              id: true,
+              email: true,
+              // если есть в схеме
+              // @ts-ignore
+              clerkUserId: true,
+            },
+          },
+        },
       },
     },
   });
@@ -107,6 +120,27 @@ export default async function FamilyPage({
       <div className="p-8 text-center text-destructive">{t.criticalError}</div>
     );
   }
+
+  // ✅ DEBUG: все семьи и все члены
+  const allFamilies = await prisma.family.findMany({
+    orderBy: { createdAt: "desc" },
+    include: {
+      members: {
+        orderBy: { createdAt: "asc" },
+        include: {
+          user: {
+            select: {
+              id: true,
+              email: true,
+              // @ts-ignore
+              clerkUserId: true,
+            },
+          },
+        },
+      },
+      invites: true,
+    },
+  });
 
   return (
     <div className="space-y-6">
@@ -123,6 +157,55 @@ export default async function FamilyPage({
         {user.familyMember.role === "HEAD" && <InviteDialog locale={locale} />}
       </div>
 
+      {/* DEBUG: Текущая семья */}
+      <div className="rounded-xl border p-4 bg-muted/30">
+        <div className="text-sm font-medium">DEBUG: Current family</div>
+        <div className="text-xs text-muted-foreground mt-1 space-y-1">
+          <div>
+            <span className="font-mono">familyId:</span>{" "}
+            <span className="font-mono">{familyId}</span>
+          </div>
+          <div>
+            <span className="font-mono">members count:</span>{" "}
+            <span className="font-mono">{family.members.length}</span>
+          </div>
+        </div>
+        <div className="mt-3 space-y-2">
+          {family.members.map((m) => (
+            <div
+              key={m.id}
+              className="text-xs font-mono rounded-md border bg-background/60 p-2"
+            >
+              <div>
+                memberId: <span className="font-semibold">{m.id}</span>
+              </div>
+              <div>
+                userId:{" "}
+                <span className="font-semibold">{m.userId ?? "null"}</span>
+              </div>
+              <div>
+                email:{" "}
+                <span className="font-semibold">{m.user?.email ?? "null"}</span>
+              </div>
+              <div>
+                clerkUserId:{" "}
+                <span className="font-semibold">
+                  {/* @ts-ignore */}
+                  {m.user?.clerkUserId ?? "null"}
+                </span>
+              </div>
+              <div>
+                role: <span className="font-semibold">{m.role}</span>
+              </div>
+              <div>
+                fullName: <span className="font-semibold">{m.fullName}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Обычные карточки */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {family.members.map((member) => (
           <div
@@ -177,6 +260,70 @@ export default async function FamilyPage({
             </div>
           </div>
         ))}
+      </div>
+
+      {/* ✅ DEBUG: Все семьи */}
+      <div className="rounded-xl border p-4 bg-muted/30">
+        <div className="text-sm font-medium">DEBUG: All families</div>
+        <div className="mt-3 space-y-3">
+          {allFamilies.map((f) => (
+            <div key={f.id} className="rounded-md border bg-background/60 p-3">
+              <div className="text-xs font-mono">
+                familyId: <span className="font-semibold">{f.id}</span>
+              </div>
+              <div className="text-xs font-mono">
+                name: <span className="font-semibold">{f.name}</span>
+              </div>
+              <div className="text-xs font-mono">
+                members:{" "}
+                <span className="font-semibold">{f.members.length}</span>
+              </div>
+              <div className="text-xs font-mono">
+                invites:{" "}
+                <span className="font-semibold">{f.invites.length}</span>
+              </div>
+
+              <div className="mt-2 space-y-2">
+                {f.members.map((m) => (
+                  <div
+                    key={m.id}
+                    className="text-xs font-mono rounded border p-2"
+                  >
+                    <div>
+                      memberId: <span className="font-semibold">{m.id}</span>
+                    </div>
+                    <div>
+                      userId:{" "}
+                      <span className="font-semibold">
+                        {m.userId ?? "null"}
+                      </span>
+                    </div>
+                    <div>
+                      email:{" "}
+                      <span className="font-semibold">
+                        {m.user?.email ?? "null"}
+                      </span>
+                    </div>
+                    <div>
+                      clerkUserId:{" "}
+                      <span className="font-semibold">
+                        {/* @ts-ignore */}
+                        {m.user?.clerkUserId ?? "null"}
+                      </span>
+                    </div>
+                    <div>
+                      role: <span className="font-semibold">{m.role}</span>
+                    </div>
+                    <div>
+                      fullName:{" "}
+                      <span className="font-semibold">{m.fullName}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
