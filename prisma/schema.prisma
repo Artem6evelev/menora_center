@@ -23,81 +23,128 @@ enum Gender {
   OTHER
 }
 
+enum RelationshipType {
+  SPOUSE
+  PARENT
+  CHILD
+  SIBLING
+  GRANDPARENT
+  GRANDCHILD
+  AUNT_UNCLE
+  NIECE_NEPHEW
+  COUSIN
+  IN_LAW
+  GUARDIAN
+  WARD
+  OTHER
+}
+
 model User {
-  id             String   @id @default(uuid())
-  clerkUserId    String   @unique
-  email          String   @unique
-  telegramChatId BigInt?  @unique
+  id             String  @id @default(uuid())
+  clerkUserId    String  @unique
+  email          String  @unique
+  telegramChatId BigInt? @unique
 
-  isAdmin        Boolean  @default(false)
+  isAdmin Boolean @default(false)
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   familyMember   FamilyMember?
   invitesCreated FamilyInvite[] @relation("InvitesCreated")
 }
 
 model Family {
-  id        String         @id @default(uuid())
-  name      String
+  id   String @id @default(uuid())
+  name String
 
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   members   FamilyMember[]
   invites   FamilyInvite[]
+  relations FamilyRelation[]
 }
 
 model FamilyMember {
-  id                   String    @id @default(uuid())
+  id String @id @default(uuid())
 
-  familyId             String
-  family               Family    @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  familyId String
+  family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
 
   // Один пользователь может быть только в одной семье (и максимум 1 запись FamilyMember)
-  userId               String?   @unique
-  user                 User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   role                 FamilyRole
   fullName             String
   hebrewName           String?
   gender               Gender?
   birthDateGeorgian    DateTime?
-  isJewishBirthday     Boolean   @default(true)
+  isJewishBirthday     Boolean    @default(true)
   yahrzeitDateGeorgian DateTime?
 
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
+  treePlaced Boolean @default(false)
+  treeOrder  Int     @default(0)
+
+  // Relations graph
+  relationsFrom FamilyRelation[] @relation("FromMember")
+  relationsTo   FamilyRelation[] @relation("ToMember")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([familyId])
 }
 
 model FamilyInvite {
-  id              String     @id @default(uuid())
+  id String @id @default(uuid())
 
-  familyId        String
-  family          Family     @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  familyId String
+  family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
 
   // кто создал инвайт (глава семьи)
-  inviterUserId   String
-  inviter         User       @relation("InvitesCreated", fields: [inviterUserId], references: [id], onDelete: Cascade)
+  inviterUserId String
+  inviter       User   @relation("InvitesCreated", fields: [inviterUserId], references: [id], onDelete: Cascade)
 
   // какую роль выдаём при принятии
-  targetRole      FamilyRole @default(DEPENDENT)
+  targetRole FamilyRole @default(DEPENDENT)
 
   // одноразовый / многоразовый
-  maxUses         Int        @default(1)
-  usedCount       Int        @default(0)
+  maxUses   Int @default(1)
+  usedCount Int @default(0)
 
   // контроль жизни
-  expiresAt       DateTime?
-  revokedAt       DateTime?
+  expiresAt DateTime?
+  revokedAt DateTime?
 
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([familyId])
   @@index([inviterUserId])
   @@index([expiresAt])
+}
+
+model FamilyRelation {
+  id String @id @default(uuid())
+
+  familyId String
+  family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  fromMemberId String
+  fromMember   FamilyMember @relation("FromMember", fields: [fromMemberId], references: [id], onDelete: Cascade)
+
+  toMemberId String
+  toMember   FamilyMember @relation("ToMember", fields: [toMemberId], references: [id], onDelete: Cascade)
+
+  type RelationshipType
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([fromMemberId, toMemberId])
+  @@index([familyId])
+  @@index([fromMemberId])
+  @@index([toMemberId])
 }
