@@ -1,23 +1,21 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import {
   Loader2,
-  BookOpen,
-  Navigation,
   Sunrise,
   Sun,
   Moon,
   Sunset,
   Flame,
   MapPin,
-  ChevronRight,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { getZmanimData, type ZmanimData } from "@/lib/zmanim/zmanim";
 import { cn } from "@/lib/utils";
 
+// Иконка Меноры осталась без изменений
 const MenorahIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -44,29 +42,38 @@ export function ZmanimWidget() {
   const ref = useRef<HTMLDivElement>(null);
   const isRTL = locale === "he";
 
-  const fetchCityName = async (lat: number, lng: number) => {
-    try {
-      const res = await fetch(
-        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=${locale}`,
-      );
-      const json = await res.json();
-      if (json.city || json.locality)
-        setRealCityName(json.city || json.locality);
-    } catch (e) {
-      console.error(e);
-    }
-  };
+  // 1. Оборачиваем в useCallback, чтобы стабилизировать ссылку
+  const fetchCityName = useCallback(
+    async (lat: number, lng: number) => {
+      try {
+        const res = await fetch(
+          `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=${locale}`,
+        );
+        const json = await res.json();
+        if (json.city || json.locality)
+          setRealCityName(json.city || json.locality);
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    [locale],
+  );
 
-  const fetchData = async (lat?: number, lng?: number) => {
-    setLoading(true);
-    const zmanim = await getZmanimData(lat, lng);
-    setData(zmanim);
-    if (lat && lng) fetchCityName(lat, lng);
-    else setRealCityName(null);
-    setLoading(false);
-    setIsLocating(false);
-  };
+  // 2. Оборачиваем в useCallback, добавляем fetchCityName в зависимости
+  const fetchData = useCallback(
+    async (lat?: number, lng?: number) => {
+      setLoading(true);
+      const zmanim = await getZmanimData(lat, lng);
+      setData(zmanim);
+      if (lat && lng) fetchCityName(lat, lng);
+      else setRealCityName(null);
+      setLoading(false);
+      setIsLocating(false);
+    },
+    [fetchCityName],
+  );
 
+  // 3. Теперь useEffect чист и не вызывает warning от ESLint
   useEffect(() => {
     const init = () => {
       if (navigator.geolocation) {
@@ -82,13 +89,15 @@ export function ZmanimWidget() {
       }
     };
     init();
+
     function handleClickOutside(event: MouseEvent) {
       if (ref.current && !ref.current.contains(event.target as Node))
         setIsOpen(false);
     }
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [fetchData]); // Добавили зависимость
 
   const handleLocateMe = () => {
     if (!navigator.geolocation) return;
@@ -114,7 +123,6 @@ export function ZmanimWidget() {
     realCityName || data?.locationName || "Rishon LeTsiyon";
 
   return (
-    // УБРАЛ "hidden xl:block". Теперь виджет виден всегда.
     <div className="relative z-50" ref={ref} dir={isRTL ? "rtl" : "ltr"}>
       <button
         onClick={() => setIsOpen(!isOpen)}
@@ -123,7 +131,6 @@ export function ZmanimWidget() {
           isOpen ? "bg-white dark:bg-zinc-800 shadow-sm" : "hover:bg-white/50",
         )}
       >
-        {/* Индикатор */}
         <div className="relative flex items-center justify-center w-4 h-4">
           {loading ? (
             <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />
@@ -137,7 +144,6 @@ export function ZmanimWidget() {
           )}
         </div>
 
-        {/* Текст: На мобильном можно скрывать текст, если совсем тесно, но пока оставим */}
         <div className="flex flex-col items-start leading-none gap-0.5">
           {!loading ? (
             <span className="text-[10px] font-bold text-foreground/90 whitespace-nowrap">
@@ -157,23 +163,20 @@ export function ZmanimWidget() {
         </div>
       </button>
 
-      {/* POPUP */}
       <AnimatePresence>
         {isOpen && data && (
           <motion.div
             initial={{ opacity: 0, y: 12, scale: 0.95, filter: "blur(4px)" }}
             animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: 12, scale: 0.95, filter: "blur(4px)" }}
-            transition={{ type: "spring", stiffness: 350, damping: 25 }} // Плавная пружина
+            transition={{ type: "spring", stiffness: 350, damping: 25 }}
             className={cn(
               "absolute top-full mt-2 w-[300px] rounded-[24px] overflow-hidden shadow-2xl ring-1 ring-black/5 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl z-[110]",
-              // Адаптация положения попапа для мобильных (чтобы не улетал за экран)
               isRTL
                 ? "left-0 sm:left-auto sm:right-0"
                 : "right-auto left-[-50px] sm:left-auto sm:right-[-60px]",
             )}
           >
-            {/* Header */}
             <div className="relative h-24 overflow-hidden shrink-0 bg-zinc-900">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-900/50 via-indigo-900/50 to-amber-900/30" />
               <div className="relative z-10 p-4 flex flex-col h-full justify-between text-white">
@@ -209,7 +212,6 @@ export function ZmanimWidget() {
               </div>
             </div>
 
-            {/* Список времен - тот же код, что и был, для экономии места не дублирую внутренности */}
             <div className="p-3 overflow-y-auto custom-scrollbar text-xs space-y-3 max-h-[50vh]">
               {(data.times.candleLighting || data.times.havdalah) && (
                 <TimeGroup>
@@ -233,7 +235,6 @@ export function ZmanimWidget() {
                   )}
                 </TimeGroup>
               )}
-              {/* ... Остальные блоки (Утро, День, Вечер) как в DesktopNavbar ... */}
               <div>
                 <SectionTitle
                   active={data.currentPrayer === "shacharit"}
@@ -324,7 +325,6 @@ export function ZmanimWidget() {
   );
 }
 
-// Helpers остаются теми же
 function TimeGroup({
   children,
   active,
@@ -345,6 +345,7 @@ function TimeGroup({
     </div>
   );
 }
+
 function SectionTitle({
   children,
   active,
@@ -370,6 +371,7 @@ function SectionTitle({
     </div>
   );
 }
+
 function TimeRow({ label, time, highlight, special, icon }: any) {
   return (
     <div
