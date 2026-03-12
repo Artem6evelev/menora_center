@@ -1,5 +1,3 @@
-// prisma/schema.prisma
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -39,6 +37,74 @@ enum RelationshipType {
   OTHER
 }
 
+enum TagTarget {
+  MEMBER
+  FAMILY
+}
+
+enum MessageDirection {
+  IN
+  OUT
+}
+
+enum MessageChannel {
+  TELEGRAM
+}
+
+enum MessageStatus {
+  QUEUED
+  SENT
+  FAILED
+}
+
+enum BroadcastChannel {
+  EMAIL
+}
+
+enum BroadcastStatus {
+  DRAFT
+  QUEUED
+  SENDING
+  DONE
+  FAILED
+}
+
+enum BroadcastRecipientStatus {
+  QUEUED
+  SENT
+  FAILED
+}
+
+// --- EVENTS / LESSONS / PROGRAMS ---
+
+enum EventKind {
+  ANNOUNCEMENT
+  LESSON
+  PROGRAM
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum EventVisibility {
+  PUBLIC
+  MEMBERS_ONLY
+}
+
+enum EventRegistrationStatus {
+  REGISTERED
+  CANCELLED
+  WAITLIST
+}
+
+enum AdminNotificationType {
+  EVENT_REGISTRATION_CREATED
+  EVENT_REGISTRATION_CANCELLED
+}
+
 model User {
   id             String  @id @default(uuid())
   clerkUserId    String  @unique
@@ -50,8 +116,16 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  familyMember   FamilyMember?
-  invitesCreated FamilyInvite[] @relation("InvitesCreated")
+  familyMember       FamilyMember?
+  invitesCreated     FamilyInvite[]       @relation("InvitesCreated")
+  Conversation       Conversation?
+  Broadcast          Broadcast[]
+  BroadcastRecipient BroadcastRecipient[]
+
+  // Events
+  eventsCreated      Event[]
+  eventRegistrations EventRegistration[]
+  adminNotifications AdminNotification[]
 }
 
 model Family {
@@ -64,6 +138,9 @@ model Family {
   members   FamilyMember[]
   invites   FamilyInvite[]
   relations FamilyRelation[]
+  tags      FamilyTag[]
+
+  @@index([name])
 }
 
 model FamilyMember {
@@ -72,7 +149,7 @@ model FamilyMember {
   familyId String
   family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
 
-  // Один пользователь может быть только в одной семье (и максимум 1 запись FamilyMember)
+  // Один пользователь может быть только в одной семье
   userId String? @unique
   user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
@@ -84,10 +161,11 @@ model FamilyMember {
   isJewishBirthday     Boolean    @default(true)
   yahrzeitDateGeorgian DateTime?
 
+  tags FamilyMemberTag[]
+
   treePlaced Boolean @default(false)
   treeOrder  Int     @default(0)
 
-  // Relations graph
   relationsFrom FamilyRelation[] @relation("FromMember")
   relationsTo   FamilyRelation[] @relation("ToMember")
 
@@ -95,6 +173,9 @@ model FamilyMember {
   updatedAt DateTime @updatedAt
 
   @@index([familyId])
+  @@index([familyId, role])
+  @@index([fullName])
+  @@index([hebrewName])
 }
 
 model FamilyInvite {
@@ -103,18 +184,14 @@ model FamilyInvite {
   familyId String
   family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
 
-  // кто создал инвайт (глава семьи)
   inviterUserId String
   inviter       User   @relation("InvitesCreated", fields: [inviterUserId], references: [id], onDelete: Cascade)
 
-  // какую роль выдаём при принятии
   targetRole FamilyRole @default(DEPENDENT)
 
-  // одноразовый / многоразовый
   maxUses   Int @default(1)
   usedCount Int @default(0)
 
-  // контроль жизни
   expiresAt DateTime?
   revokedAt DateTime?
 
@@ -147,4 +224,238 @@ model FamilyRelation {
   @@index([familyId])
   @@index([fromMemberId])
   @@index([toMemberId])
+}
+
+model Tag {
+  id     String    @id @default(uuid())
+  target TagTarget @default(MEMBER)
+  name   String
+  color  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberLinks FamilyMemberTag[]
+  familyLinks FamilyTag[]
+
+  @@unique([target, name])
+  @@index([name])
+}
+
+model FamilyMemberTag {
+  memberId String
+  member   FamilyMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  tagId String
+  tag   Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@id([memberId, tagId])
+  @@index([tagId])
+  @@index([memberId])
+}
+
+model FamilyTag {
+  familyId String
+  family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  tagId String
+  tag   Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@id([familyId, tagId])
+  @@index([tagId])
+  @@index([familyId])
+}
+
+// --- ЕДИНЫЙ ЦЕНТР СООБЩЕНИЙ ---
+
+model Conversation {
+  id String @id @default(uuid())
+
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  telegramChatId BigInt? @unique
+
+  lastMessageAt   DateTime?
+  lastMessageText String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages Message[]
+
+  @@index([lastMessageAt])
+}
+
+model Message {
+  id String @id @default(uuid())
+
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  direction MessageDirection
+  channel   MessageChannel   @default(TELEGRAM)
+
+  text   String
+  status MessageStatus?
+
+  telegramMessageId BigInt?
+  error             String?
+
+  createdAt DateTime @default(now())
+
+  @@index([conversationId, createdAt])
+  @@index([createdAt])
+}
+
+// --- РАССЫЛКИ ---
+
+model Broadcast {
+  id String @id @default(uuid())
+
+  channel BroadcastChannel @default(EMAIL)
+  subject String?
+
+  title    String?
+  bodyText String
+
+  filters Json?
+
+  status BroadcastStatus @default(DRAFT)
+
+  createdByUserId String
+  createdBy       User   @relation(fields: [createdByUserId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  recipients BroadcastRecipient[]
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model BroadcastRecipient {
+  broadcastId String
+  broadcast   Broadcast @relation(fields: [broadcastId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  email String?
+
+  status BroadcastRecipientStatus @default(QUEUED)
+  sentAt DateTime?
+  error  String?
+
+  @@id([broadcastId, userId])
+  @@index([status])
+  @@index([userId])
+}
+
+// --- EVENTS / LESSONS / PROGRAMS ---
+
+model Event {
+  id String @id @default(uuid())
+
+  kind       EventKind
+  status     EventStatus     @default(DRAFT)
+  visibility EventVisibility @default(PUBLIC)
+
+  titleRu String
+  titleEn String?
+  titleHe String?
+
+  shortDescriptionRu String?
+  shortDescriptionEn String?
+  shortDescriptionHe String?
+
+  descriptionRu String?
+  descriptionEn String?
+  descriptionHe String?
+
+  coverImageUrl String?
+
+  startsAt DateTime?
+  endsAt   DateTime?
+
+  locationName    String?
+  locationAddress String?
+
+  capacity             Int?
+  registrationEnabled  Boolean   @default(true)
+  registrationDeadline DateTime?
+
+  isFeatured Boolean @default(false)
+
+  createdByUserId String
+  createdBy       User   @relation(fields: [createdByUserId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  registrations      EventRegistration[]
+  adminNotifications AdminNotification[]
+
+  @@index([kind])
+  @@index([status])
+  @@index([visibility])
+  @@index([startsAt])
+  @@index([isFeatured])
+  @@index([createdByUserId])
+}
+
+model EventRegistration {
+  id String @id @default(uuid())
+
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  status EventRegistrationStatus @default(REGISTERED)
+  notes  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  adminNotifications AdminNotification[]
+
+  @@unique([eventId, userId])
+  @@index([eventId])
+  @@index([userId])
+  @@index([status])
+}
+
+model AdminNotification {
+  id String @id @default(uuid())
+
+  type AdminNotificationType
+
+  title String
+  body  String
+
+  relatedEventId String?
+  relatedEvent   Event?  @relation(fields: [relatedEventId], references: [id], onDelete: SetNull)
+
+  relatedUserId String?
+  relatedUser   User?   @relation(fields: [relatedUserId], references: [id], onDelete: SetNull)
+
+  relatedRegistrationId String?
+  relatedRegistration   EventRegistration? @relation(fields: [relatedRegistrationId], references: [id], onDelete: SetNull)
+
+  isRead Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@index([type])
+  @@index([isRead])
+  @@index([createdAt])
+  @@index([relatedEventId])
+  @@index([relatedUserId])
 }

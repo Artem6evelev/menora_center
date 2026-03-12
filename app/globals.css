@@ -22,13 +22,44 @@ html {
   scroll-behavior: smooth;
 }
 
+/* app/globals.css */
+@layer components {
+  .article-content h2,
+  .article-content h3 {
+    @apply text-neutral-900 font-bold tracking-tight mt-10 mb-4;
+  }
+  .article-content h2 {
+    @apply text-3xl;
+  }
+  .article-content h3 {
+    @apply text-2xl;
+  }
+  .article-content p {
+    @apply mb-6 text-neutral-600;
+  }
+  .article-content blockquote {
+    @apply pl-6 border-l-4 border-amber-400 text-neutral-900 italic font-medium my-8;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #e5e5e5; /* neutral-200 */
+    border-radius: 20px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #d4d4d4; /* neutral-300 */
+  }
 }
-
-
 
 @layer base {
   :root {

@@ -1,16 +1,25 @@
+"use client";
+
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import type { UserRole } from "./nav-config";
 import { MobileSidebar } from "./mobile-sidebar";
 import { UserMenu } from "./user-menu";
-import { Search } from "lucide-react";
+import { Search, Shield } from "lucide-react";
 
 export function Navbar({
   role,
   badges,
+  isAdmin,
 }: {
   role: UserRole;
   badges?: { openKvitels?: number };
+  isAdmin?: boolean;
 }) {
+  const params = useParams();
+  const locale = (params?.locale as string) ?? "ru";
+
   return (
     <header
       className={cn(
@@ -49,7 +58,23 @@ export function Navbar({
           </div>
         </div>
 
-        <UserMenu />
+        <div className="flex items-center gap-2">
+          {isAdmin && (
+            <Link
+              href={`/${locale}/admin`}
+              className={cn(
+                "inline-flex items-center gap-2 rounded-2xl px-3 py-2 text-sm",
+                "bg-white/70 ring-1 ring-black/5 shadow-sm hover:bg-white",
+                "dark:bg-neutral-900/60 dark:ring-white/10 dark:hover:bg-neutral-900/80",
+              )}
+            >
+              <Shield className="h-4 w-4 text-neutral-500" />
+              <span className="hidden sm:inline">Админ</span>
+            </Link>
+          )}
+
+          <UserMenu />
+        </div>
       </div>
     </header>
   );

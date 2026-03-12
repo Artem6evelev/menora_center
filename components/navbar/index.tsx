@@ -22,27 +22,22 @@ export function NavBar() {
       title: t("community_group"), // Добавьте ключ "community_group": "Община" в ru.json
       items: [
         { title: t("about"), link: "/about" },
-        { title: t("services"), link: "/services" },
         { title: t("contact"), link: "/contact" },
       ],
     },
-    // 2. Группа "Афиша"
     {
-      title: t("events_group"), // Ключ "events_group": "Афиша"
+      title: "Афиша", // Ключ "media_group": "Медиа"
       items: [
-        { title: t("schedule"), link: "/schedule" },
-        { title: t("events"), link: "/events" },
-      ],
-    },
-    // 3. Группа "Медиа"
-    {
-      title: t("media_group"), // Ключ "media_group": "Медиа"
-      items: [
-        { title: t("torah"), link: "/torah" },
+        { title: "События", link: "/events" },
+        { title: "Уроки", link: "/lessons" },
+
         // Можно добавить сюда "Фотоотчеты" в будущем
       ],
     },
     // 4. Отдельные важные ссылки
+    { title: t("services"), link: "/services" },
+    { title: "Новости Общины", link: "/news" },
+    { title: "О нас", link: "/about" },
     { title: t("chai_club"), link: "/chai-club", special: true },
     { title: t("donate"), link: "/donate" },
   ];

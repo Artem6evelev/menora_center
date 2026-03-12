@@ -1,31 +1,21 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 
-/**
- * Ensures the currently authenticated Clerk user exists in our DB (synced via `clerkUserId`).
- * Also ensures a default Family + FamilyMember(HEAD) exists on first sync.
- */
 export const checkUser = async () => {
   const user = await currentUser();
 
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   try {
     const clerkUserId = user.id;
 
-    // Prefer primary email if available
+    // 1. Безопасное получение Email
     const primaryEmail =
-      user.emailAddresses?.find((e) => e.id === user.primaryEmailAddressId)
-        ?.emailAddress ?? user.emailAddresses?.[0]?.emailAddress;
+      user.emailAddresses.find((e) => e.id === user.primaryEmailAddressId)
+        ?.emailAddress || user.emailAddresses[0]?.emailAddress;
 
-    // Our schema requires email to be present
     if (!primaryEmail) {
-      console.error(
-        "checkUser: missing primary email for Clerk user",
-        clerkUserId,
-      );
+      console.error("[checkUser] No email found for Clerk user:", clerkUserId);
       return null;
     }
 
@@ -33,20 +23,19 @@ export const checkUser = async () => {
       `${user.firstName || ""} ${user.lastName || ""}`.trim() ||
       "Новый прихожанин";
 
-    // 1) Find user by clerkUserId (NOT by id)
+    // 2. Поиск пользователя с вложенными данными семьи
+    // ВАЖНО: Проверь в schema.prisma, называется ли поле familyMember или familyMembers
     const existing = await prisma.user.findUnique({
       where: { clerkUserId },
       include: {
         familyMember: {
-          include: {
-            family: true,
-          },
+          include: { family: true },
         },
       },
     });
 
     if (existing) {
-      // keep email up-to-date (optional but useful)
+      // Background update если email изменился в Clerk
       if (existing.email !== primaryEmail) {
         await prisma.user.update({
           where: { clerkUserId },
@@ -56,49 +45,44 @@ export const checkUser = async () => {
       return existing;
     }
 
-    // 2) Fallback: webhook might not have run yet.
-    // Create user + default family + HEAD member atomically.
-    const created = await prisma.$transaction(async (tx) => {
-      const createdUser = await tx.user.create({
+    // 3. Атомарная транзакция создания (User -> Family -> Member)
+    // Это гарантирует, что мы не создадим юзера без семьи
+    return await prisma.$transaction(async (tx) => {
+      const newUser = await tx.user.create({
         data: {
           clerkUserId,
           email: primaryEmail,
         },
-        select: { id: true },
       });
 
-      const family = await tx.family.create({
+      const newFamily = await tx.family.create({
         data: {
-          name:
-            `Семья ${user.lastName || user.firstName || ""}`.trim() || "Семья",
+          name: `Семья ${user.lastName || user.firstName || "Новая"}`.trim(),
         },
-        select: { id: true },
       });
 
       await tx.familyMember.create({
         data: {
-          userId: createdUser.id,
-          familyId: family.id,
-          role: "HEAD",
-          fullName,
+          userId: newUser.id,
+          familyId: newFamily.id,
+          role: "HEAD", // Глава семьи по умолчанию
+          fullName: fullName,
         },
       });
 
-      return createdUser;
-    });
-
-    return await prisma.user.findUnique({
-      where: { id: created.id },
-      include: {
-        familyMember: {
-          include: {
-            family: true,
+      // Возвращаем полный объект со связями
+      return await tx.user.findUnique({
+        where: { id: newUser.id },
+        include: {
+          familyMember: {
+            include: { family: true },
           },
         },
-      },
+      });
     });
   } catch (error) {
-    console.error("Error in checkUser:", error);
+    // В продакшене тут должен быть Sentry или LogSnag
+    console.error("[checkUser Critical Error]:", error);
     return null;
   }
 };
