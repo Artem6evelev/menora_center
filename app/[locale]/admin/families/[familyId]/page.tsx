@@ -3,15 +3,23 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
 
-export default async function AdminFamilyPage({
-  params,
-}: {
-  params: { locale: string; familyId: string };
-}) {
+// 1. Оборачиваем типизацию в Promise
+interface PageProps {
+  params: Promise<{
+    locale: string;
+    familyId: string;
+  }>;
+}
+
+export default async function AdminFamilyPage({ params }: PageProps) {
   await requireAdmin();
 
+  // 2. Распаковываем параметры через await
+  const { locale, familyId } = await params;
+
+  // 3. Используем чистую переменную familyId
   const family = await prisma.family.findUnique({
-    where: { id: params.familyId },
+    where: { id: familyId },
     include: {
       members: {
         include: {
@@ -26,7 +34,7 @@ export default async function AdminFamilyPage({
 
   if (!family) notFound();
 
-  // сортировка: HEAD первым, затем остальные
+  // Сортировка: HEAD первым, затем остальные
   const members = [...family.members].sort((a, b) => {
     if (a.role === "HEAD" && b.role !== "HEAD") return -1;
     if (a.role !== "HEAD" && b.role === "HEAD") return 1;
@@ -43,8 +51,9 @@ export default async function AdminFamilyPage({
           </div>
         </div>
 
+        {/* 4. Используем чистую переменную locale */}
         <Link
-          href={`/${params.locale}/admin/families`}
+          href={`/${locale}/admin/families`}
           className="text-sm text-muted-foreground hover:text-foreground"
         >
           ← Back
@@ -58,7 +67,7 @@ export default async function AdminFamilyPage({
           {members.map((m) => (
             <Link
               key={m.id}
-              href={`/${params.locale}/admin/families/${family.id}/members/${m.id}`}
+              href={`/${locale}/admin/families/${family.id}/members/${m.id}`}
               className="block px-4 py-3 hover:bg-muted/50 transition-colors"
             >
               <div className="flex items-center justify-between gap-3">

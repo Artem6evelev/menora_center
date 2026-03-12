@@ -1,4 +1,3 @@
-// app/[locale]/dashboard/family/page.tsx
 import React from "react";
 import { redirect } from "next/navigation";
 import { checkUser } from "@/lib/check-user";
@@ -7,12 +6,17 @@ import { InviteDialog } from "./InviteDialog";
 import { CreateFamilyForm } from "./CreateFamilyForm";
 import { FamilyHeadRelationsClient } from "./FamilyHeadRelationsClient";
 
-export default async function FamilyPage({
-  params,
-}: {
-  params: { locale: string };
-}) {
-  const { locale } = params;
+// 1. Обязательно типизируем как Promise (Требование Next.js 15)
+interface PageProps {
+  params: Promise<{
+    locale: string;
+  }>;
+}
+
+export default async function FamilyPage({ params }: PageProps) {
+  // 2. Распаковываем параметры через await
+  const resolvedParams = await params;
+  const locale = resolvedParams.locale;
 
   const t =
     locale === "he"

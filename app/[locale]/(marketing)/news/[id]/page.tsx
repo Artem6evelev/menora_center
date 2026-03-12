@@ -5,11 +5,8 @@ import Balancer from "react-wrap-balancer";
 import { cn } from "@/lib/utils";
 import { CTA } from "@/components/cta";
 
-// 🚀 В реальном приложении здесь будет fetch из Supabase по параметру params.id
-// const post = await supabase.from('posts').select('*').eq('slug', params.id).single();
-
+// 🚀 В реальном приложении здесь будет fetch из Supabase
 const getPostData = (id: string) => {
-  // Моковые данные для демонстрации
   return {
     id,
     title:
@@ -17,16 +14,15 @@ const getPostData = (id: string) => {
     category: "Статья",
     date: "20 Марта 2026",
     readTime: "5 мин чтения",
-    image: "/images/news-1.webp", // Убедись, что картинка есть в public/images/
+    image: "/images/news-1.webp",
     color: "bg-blue-100 text-blue-700",
     content: `
       <p>Подготовка к Песаху — это не просто генеральная уборка, это духовный процесс очищения нашего дома и сердца от «хамеца» (закваски), которая символизирует гордыню.</p>
       <h3>С чего начать?</h3>
-      <p>Самое важное правило: не пытайтесь сделать всё в последний день. Разделите кухню на зоны. Начните с тех шкафов, которыми вы пользуетесь реже всего. Уберите оттуда все продукты, содержащие хамец, тщательно протрите полки и заклейте их лентой, чтобы случайно не открыть до праздника.</p>
+      <p>Самое важное правило: не пытайтесь сделать всё в последний день. Разделите кухню на зоны. Начните с тех шкафов, которыми вы пользуетесь реже всего.</p>
       <blockquote>«Очищая дом от хамеца, мы освобождаем место для свободы, которую приносит Песах», — отмечает раввин.</blockquote>
       <h3>Кашерование поверхностей</h3>
       <p>Столешницы из камня или металла можно откашеровать с помощью кипящей воды (ируй). Раковину необходимо тщательно вымыть со средством, оставить на 24 часа без использования горячей воды, а затем обдать кипятком.</p>
-      <p>Если вам нужна помощь в кашеровании плиты или духовки, наша община предоставляет такую услугу абсолютно бесплатно. Просто оставьте заявку в разделе «Услуги».</p>
     `,
     author: {
       name: "Раввин Имя Фамилия",
@@ -36,22 +32,33 @@ const getPostData = (id: string) => {
   };
 };
 
-// Next.js генерация метаданных для SEO и шаринга в Telegram/WhatsApp
-export async function generateMetadata({ params }: { params: { id: string } }) {
-  const post = getPostData(params.id);
+// 1. Выносим тип в интерфейс (params ОБЯЗАТЕЛЬНО Promise)
+interface PageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+// 2. generateMetadata: распаковываем params через await
+export async function generateMetadata({ params }: PageProps) {
+  const resolvedParams = await params;
+  const post = getPostData(resolvedParams.id);
+
   return {
     title: `${post.title} | Menora Center`,
-    description: post.content.substring(3, 150) + "...", // Вырезаем теги для описания
+    description: post.content.substring(3, 150) + "...",
   };
 }
 
-export default function SingleNewsPage({ params }: { params: { id: string } }) {
-  const post = getPostData(params.id);
+// 3. SingleNewsPage: делаем async и распаковываем params через await
+export default async function SingleNewsPage({ params }: PageProps) {
+  const resolvedParams = await params;
+  const post = getPostData(resolvedParams.id);
 
   return (
     <main className="relative min-h-screen bg-white pt-24 pb-20">
       <article className="max-w-4xl mx-auto px-4 sm:px-6">
-        {/* 1. Навигация назад */}
+        {/* Навигация назад */}
         <div className="mb-8 pt-8">
           <Link
             href="/news"
@@ -62,7 +69,7 @@ export default function SingleNewsPage({ params }: { params: { id: string } }) {
           </Link>
         </div>
 
-        {/* 2. Шапка статьи (Hero) */}
+        {/* Шапка статьи (Hero) */}
         <header className="mb-12">
           <div className="flex flex-wrap items-center gap-4 mb-6">
             <span
@@ -100,9 +107,9 @@ export default function SingleNewsPage({ params }: { params: { id: string } }) {
           </div>
         </header>
 
-        {/* 3. Контент и боковая панель */}
+        {/* Контент и боковая панель */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
-          {/* Левая боковая панель (Share + Автор на десктопе липкая) */}
+          {/* Левая боковая панель */}
           <aside className="md:col-span-3 order-2 md:order-1">
             <div className="sticky top-32 flex flex-col gap-8">
               {/* Блок автора */}
@@ -140,18 +147,15 @@ export default function SingleNewsPage({ params }: { params: { id: string } }) {
 
           {/* Основной текст статьи */}
           <div className="md:col-span-9 order-1 md:order-2">
-            {/* 🚀 Используем кастомные стили для типографики (вместо стандартного prose), 
-              чтобы сохранить контроль над дизайном (Linear-style).
-            */}
             <div
               className="article-content text-neutral-700 text-lg leading-relaxed space-y-6"
-              dangerouslySetInnerHTML={{ __html: post.content }} // В реальном проекте используем next-mdx-remote или html-react-parser
+              dangerouslySetInnerHTML={{ __html: post.content }}
             />
           </div>
         </div>
       </article>
 
-      {/* 4. Блок призыва к действию внизу (чтобы юзер не уходил с сайта) */}
+      {/* CTA */}
       <div className="mt-24">
         <CTA />
       </div>

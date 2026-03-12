@@ -6,7 +6,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X, ChevronRight, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
-import { SignedIn, SignedOut, UserButton, SignUpButton } from "@clerk/nextjs";
+// Убрали SignedIn/SignedOut, добавили useAuth
+import { useAuth, UserButton, SignUpButton } from "@clerk/nextjs";
 import { LanguageSwitcher } from "@/components/shared/language-switcher";
 import { ZmanimWidget } from "@/components/shared/zmanim-widget";
 import { cn } from "@/lib/utils";
@@ -36,6 +37,9 @@ interface MobileNavbarProps {
 export const MobileNavbar = ({ navItems }: MobileNavbarProps) => {
   const [open, setOpen] = useState(false);
   const t = useTranslations("Navigation");
+
+  // Добавили хук авторизации
+  const { isLoaded, isSignedIn } = useAuth();
 
   useEffect(() => {
     if (open) document.body.style.overflow = "hidden";
@@ -125,7 +129,7 @@ export const MobileNavbar = ({ navItems }: MobileNavbarProps) => {
               className="fixed inset-y-0 right-0 z-[9999] w-full max-w-[80%] sm:max-w-xs bg-white dark:bg-zinc-950 shadow-2xl flex flex-col h-[100dvh] overflow-y-auto border-l border-border/10"
             >
               <div className="flex flex-col h-full px-5 py-4 bg-white dark:bg-zinc-950">
-                {/* Кнопка закрытия (без текста) */}
+                {/* Кнопка закрытия */}
                 <div className="flex justify-end mb-2">
                   <button
                     onClick={() => setOpen(false)}
@@ -185,9 +189,34 @@ export const MobileNavbar = ({ navItems }: MobileNavbarProps) => {
                   })}
                 </motion.nav>
 
-                {/* Нижняя часть */}
-                <div className="mt-auto pt-4 flex flex-col gap-3 pb-6 border-t border-border/40">
-                  <SignedOut>
+                {/* Нижняя часть с авторизацией */}
+                <div className="mt-auto pt-4 flex flex-col gap-3 pb-6 border-t border-border/40 min-h-[120px] justify-end">
+                  {!isLoaded ? (
+                    // Скелетон загрузки
+                    <div className="w-full h-11 bg-muted/50 animate-pulse rounded-xl" />
+                  ) : isSignedIn ? (
+                    // Авторизованный пользователь
+                    <>
+                      <div className="flex items-center gap-3 px-1 mb-1">
+                        <div className="scale-90 origin-left">
+                          {/* Убрали afterSignOutUrl, оставили голый компонент */}
+                          <UserButton />
+                        </div>
+                        <span className="text-xs font-medium text-muted-foreground">
+                          Вы вошли в систему
+                        </span>
+                      </div>
+                      <Link href="/dashboard" onClick={() => setOpen(false)}>
+                        <Button
+                          className="w-full h-11 rounded-xl border border-border/60 bg-secondary/30 text-foreground hover:bg-secondary/50 text-[15px] font-medium active:scale-[0.98]"
+                          size="lg"
+                        >
+                          {t("my_community")}
+                        </Button>
+                      </Link>
+                    </>
+                  ) : (
+                    // Гость
                     <SignUpButton mode="modal">
                       <Button
                         size="lg"
@@ -196,26 +225,7 @@ export const MobileNavbar = ({ navItems }: MobileNavbarProps) => {
                         {t("join_community")}
                       </Button>
                     </SignUpButton>
-                  </SignedOut>
-
-                  <SignedIn>
-                    <div className="flex items-center gap-3 px-1 mb-1">
-                      <div className="scale-90 origin-left">
-                        <UserButton afterSignOutUrl="/" />
-                      </div>
-                      <span className="text-xs font-medium text-muted-foreground">
-                        Вы вошли в систему
-                      </span>
-                    </div>
-                    <Link href="/dashboard" onClick={() => setOpen(false)}>
-                      <Button
-                        className="w-full h-11 rounded-xl border border-border/60 bg-secondary/30 text-foreground hover:bg-secondary/50 text-[15px] font-medium active:scale-[0.98]"
-                        size="lg"
-                      >
-                        {t("my_community")}
-                      </Button>
-                    </Link>
-                  </SignedIn>
+                  )}
                 </div>
               </div>
             </motion.div>

@@ -4,15 +4,24 @@ import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { updateFamilyMemberAction } from "./actions";
 
-export default async function AdminMemberPage({
-  params,
-}: {
-  params: { locale: string; familyId: string; memberId: string };
-}) {
+// 1. Строго типизируем params как Promise (Требование Next.js 15)
+interface PageProps {
+  params: Promise<{
+    locale: string;
+    familyId: string;
+    memberId: string;
+  }>;
+}
+
+export default async function AdminMemberPage({ params }: PageProps) {
   await requireAdmin();
 
+  // 2. Обязательно распаковываем параметры перед использованием
+  const { locale, familyId, memberId } = await params;
+
+  // 3. Используем чистые переменные в запросе
   const member = await prisma.familyMember.findFirst({
-    where: { id: params.memberId, familyId: params.familyId },
+    where: { id: memberId, familyId: familyId },
     include: {
       user: {
         select: { email: true, telegramChatId: true, clerkUserId: true },
@@ -33,9 +42,10 @@ export default async function AdminMemberPage({
     "use server";
 
     await updateFamilyMemberAction({
-      locale: params.locale,
-      familyId: params.familyId,
-      memberId: params.memberId,
+      // Используем распакованные переменные из замыкания
+      locale,
+      familyId,
+      memberId,
       fullName: String(formData.get("fullName") ?? ""),
       hebrewName: String(formData.get("hebrewName") ?? ""),
       gender: String(formData.get("gender") ?? ""),
@@ -60,8 +70,9 @@ export default async function AdminMemberPage({
           </div>
         </div>
 
+        {/* Используем чистые переменные в ссылках */}
         <Link
-          href={`/${params.locale}/admin/families/${params.familyId}`}
+          href={`/${locale}/admin/families/${familyId}`}
           className="text-sm text-muted-foreground hover:text-foreground"
         >
           ← Back to family

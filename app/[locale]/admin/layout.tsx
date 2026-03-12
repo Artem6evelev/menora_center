@@ -1,16 +1,20 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
 
-export default async function AdminLayout({
-  children,
-  params,
-}: {
+// 1. Строго типизируем LayoutProps
+interface LayoutProps {
   children: React.ReactNode;
-  params: { locale: string } | Promise<{ locale: string }>;
-}) {
+  params: Promise<{
+    locale: string;
+  }>;
+}
+
+export default async function AdminLayout({ children, params }: LayoutProps) {
   await requireAdmin();
 
-  const { locale } = await Promise.resolve(params);
+  // 2. Распаковываем параметры через await
+  const resolvedParams = await params;
+  const locale = resolvedParams.locale;
   const safeLocale = locale || "ru";
 
   return (

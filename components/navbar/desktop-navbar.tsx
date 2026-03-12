@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useScroll, useMotionValueEvent } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { SignedIn, SignedOut, UserButton, SignUpButton } from "@clerk/nextjs";
+import { useAuth, UserButton, SignUpButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
 import { NavBarItem } from "./navbar-item";
@@ -22,6 +22,9 @@ export const DesktopNavbar = ({ navItems }: DesktopNavbarProps) => {
   const { scrollY } = useScroll();
   const [scrolled, setScrolled] = useState(false);
   const t = useTranslations("Navigation");
+
+  // 1. ИНИЦИАЛИЗИРУЕМ ХУК АВТОРИЗАЦИИ
+  const { isLoaded, isSignedIn } = useAuth();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     setScrolled(latest > 10);
@@ -68,7 +71,7 @@ export const DesktopNavbar = ({ navItems }: DesktopNavbarProps) => {
 
         {/* 3. ПРАВАЯ ЧАСТЬ: Инструменты и Действие */}
         <div className="flex shrink-0 items-center justify-end gap-3 w-[200px] xl:w-auto">
-          {/* Chai Club (скрываем на маленьких экранах для чистоты) */}
+          {/* Chai Club */}
           {navItems.map((item) =>
             item.special && item.link ? (
               <Link
@@ -83,7 +86,7 @@ export const DesktopNavbar = ({ navItems }: DesktopNavbarProps) => {
             ) : null,
           )}
 
-          {/* Виджеты: Зманим + Язык (Компактная капсула) */}
+          {/* Виджеты: Зманим + Язык */}
           <div className="flex items-center bg-secondary/50 rounded-full px-1.5 py-1 border border-border/20 backdrop-blur-sm">
             <ZmanimWidget />
             <div className="w-px h-3 bg-border/40 mx-1" />
@@ -92,22 +95,13 @@ export const DesktopNavbar = ({ navItems }: DesktopNavbarProps) => {
             </div>
           </div>
 
-          {/* ГЛАВНАЯ КНОПКА (Умная) */}
-          <div className="pl-1">
-            <SignedOut>
-              {/* Если не вошел -> Показываем "Вступить" */}
-              <SignUpButton mode="modal">
-                <Button
-                  size="sm"
-                  className="rounded-full bg-blue-900 hover:bg-blue-800 text-white px-5 h-9 font-bold shadow-md shadow-blue-900/10 transition-transform hover:scale-105"
-                >
-                  {t("join_community")}
-                </Button>
-              </SignUpButton>
-            </SignedOut>
-
-            <SignedIn>
-              {/* Если вошел -> Показываем "Моя община" + Аватар */}
+          {/* 4. ГЛАВНАЯ КНОПКА (ИСПРАВЛЕННАЯ ЛОГИКА) */}
+          <div className="pl-1 flex items-center h-9 min-w-[120px] justify-end">
+            {!isLoaded ? (
+              // Скелетон во время загрузки состояния Clerk
+              <div className="h-9 w-32 bg-neutral-200/50 dark:bg-neutral-800/50 animate-pulse rounded-full" />
+            ) : isSignedIn ? (
+              // Пользователь ВОШЕЛ в систему
               <div className="flex items-center gap-2">
                 <Link href="/dashboard">
                   <Button
@@ -118,9 +112,19 @@ export const DesktopNavbar = ({ navItems }: DesktopNavbarProps) => {
                     {t("my_community")}
                   </Button>
                 </Link>
-                <UserButton afterSignOutUrl="/" />
+                <UserButton />{" "}
               </div>
-            </SignedIn>
+            ) : (
+              // Пользователь НЕ ВОШЕЛ (Гость)
+              <SignUpButton mode="modal">
+                <Button
+                  size="sm"
+                  className="rounded-full bg-blue-900 hover:bg-blue-800 text-white px-5 h-9 font-bold shadow-md shadow-blue-900/10 transition-transform hover:scale-105"
+                >
+                  {t("join_community")}
+                </Button>
+              </SignUpButton>
+            )}
           </div>
         </div>
       </div>

@@ -11,14 +11,19 @@ function calcAge(d?: Date | null) {
   return age;
 }
 
-export default async function AdminFamiliesCRMPage({
-  params,
-}: {
-  params: { locale: string } | Promise<{ locale: string }>;
-}) {
+// 1. Строго типизируем params как Promise для Next.js 15
+interface PageProps {
+  params: Promise<{
+    locale: string;
+  }>;
+}
+
+export default async function AdminFamiliesCRMPage({ params }: PageProps) {
   await requireAdmin();
 
-  const { locale } = await Promise.resolve(params);
+  // 2. Распаковываем Promise штатным образом без всяких хаков
+  const resolvedParams = await params;
+  const locale = resolvedParams.locale;
   const safeLocale = locale || "ru";
 
   const [families, tags, broadcasts] = await Promise.all([
