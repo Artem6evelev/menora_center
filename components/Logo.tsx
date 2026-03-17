@@ -1,23 +1,23 @@
 "use client";
+
 import Link from "next/link";
-import React from "react";
+import Image from "next/image";
 
 export const Logo = () => {
-  // const handleLogoClick = (e: React.MouseEvent) => {
-  //   e.preventDefault();
-  //   window.scrollTo({
-  //     top: 0,
-  //     behavior: "smooth",
-  //   });
-  // };
   return (
     <Link
       href="/"
-      // onClick={handleLogoClick}
-      className="font-normal flex space-x-2 items-center text-sm mr-4  text-black px-2 py-1  relative z-20"
+      className="relative z-20 flex items-center justify-center outline-none transition-transform active:scale-95 hover:opacity-90"
     >
-      <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm" />
-      <span className="font-medium text-black dark:text-white">Every AI</span>
+      <Image
+        src="/logos/menora-logo.svg"
+        alt="Menora Center"
+        width={180} // Увеличили базовую ширину
+        height={60} // Увеличили базовую высоту
+        priority
+        // Увеличили высоту с h-8/10 до h-10/14. object-contain не даст ему сплющиться.
+        className="h-13 md:h-14 w-auto object-contain dark:drop-shadow-md"
+      />
     </Link>
   );
 };

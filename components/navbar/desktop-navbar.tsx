@@ -1,133 +1,186 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { useScroll, useMotionValueEvent } from "framer-motion";
-import { cn } from "@/lib/utils";
-import { useAuth, UserButton, SignUpButton } from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
-import { Logo } from "@/components/ui/logo";
+import { Logo } from "../Logo";
 import { NavBarItem } from "./navbar-item";
-import { NavDropdown } from "./nav-dropdown";
-import { LanguageSwitcher } from "@/components/shared/language-switcher";
-import { ZmanimWidget } from "@/components/shared/zmanim-widget";
-import type { NavItem } from "./index";
-import { useTranslations } from "next-intl";
+import {
+  useMotionValueEvent,
+  useScroll,
+  motion,
+  AnimatePresence,
+} from "framer-motion";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { Link } from "next-view-transitions";
+import { ModeToggle } from "../mode-toggle";
+import { ChevronDown } from "lucide-react";
+import { SignInButton, SignUpButton, UserButton, useAuth } from "@clerk/nextjs";
 
-interface DesktopNavbarProps {
-  navItems: NavItem[];
-}
+type Props = {
+  navItems: any[];
+};
 
-export const DesktopNavbar = ({ navItems }: DesktopNavbarProps) => {
+const NavItemWithDropdown = ({ item }: { item: any }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  if (!item.children) {
+    return <NavBarItem href={item.link}>{item.title}</NavBarItem>;
+  }
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
+    >
+      <NavBarItem href={item.link} className="flex items-center gap-1.5">
+        {item.title}
+        <ChevronDown
+          className={cn(
+            "w-4 h-4 transition-transform duration-300 opacity-50",
+            isOpen && "rotate-180",
+          )}
+        />
+      </NavBarItem>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 15, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.98 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute top-full left-1/2 -translate-x-1/2 pt-5 w-[700px] z-50"
+          >
+            <div className="bg-white dark:bg-neutral-900 rounded-3xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] border border-gray-100 dark:border-neutral-800 p-6 flex gap-6 overflow-hidden">
+              <div className="flex-1 flex flex-col gap-1">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-3 mb-2">
+                  Навигация
+                </span>
+                {item.children.map((child: any, idx: number) => {
+                  const Icon = child.icon;
+                  return (
+                    <Link
+                      key={idx}
+                      href={child.link}
+                      className="flex items-center gap-4 p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-neutral-800/50 transition-all duration-300 group"
+                    >
+                      <div className="text-[#FFB800] opacity-90 group-hover:opacity-100 transition-opacity bg-[#FFB800]/10 p-2 rounded-xl">
+                        <Icon size={20} strokeWidth={1.5} />
+                      </div>
+                      <div>
+                        <div className="font-bold text-sm text-gray-900 dark:text-gray-100 group-hover:text-[#1E3A8A] dark:group-hover:text-[#FFB800] transition-colors">
+                          {child.title}
+                        </div>
+                        <div className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 leading-tight">
+                          {child.description}
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+
+              {item.featured && (
+                <div className="w-[260px] shrink-0 bg-gray-50 dark:bg-neutral-800/30 rounded-2xl overflow-hidden flex flex-col group border border-gray-100/50 dark:border-neutral-700/30 relative">
+                  <div className="h-36 overflow-hidden relative">
+                    <img
+                      src={item.featured.image}
+                      alt={item.featured.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                    />
+                  </div>
+                  <div className="p-5 flex-1 flex flex-col justify-center bg-white dark:bg-neutral-800/50 z-10 relative">
+                    <div className="text-[10px] font-bold tracking-widest text-[#FFB800] uppercase mb-1.5">
+                      {item.featured.tag}
+                    </div>
+                    <div className="font-bold text-sm leading-snug text-gray-900 dark:text-gray-100 group-hover:text-[#1E3A8A] transition-colors">
+                      {item.featured.title}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+export const DesktopNavbar = ({ navItems }: Props) => {
   const { scrollY } = useScroll();
-  const [scrolled, setScrolled] = useState(false);
-  const t = useTranslations("Navigation");
+  const [showBackground, setShowBackground] = useState(false);
+  const { isSignedIn } = useAuth();
 
-  // 1. ИНИЦИАЛИЗИРУЕМ ХУК АВТОРИЗАЦИИ
-  const { isLoaded, isSignedIn } = useAuth();
-
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    setScrolled(latest > 10);
+  useMotionValueEvent(scrollY, "change", (value) => {
+    setShowBackground(value > 80);
   });
 
   return (
-    <header
+    <div
       className={cn(
-        "hidden lg:flex fixed top-0 left-0 right-0 z-[100] w-full items-center transition-all duration-300",
-        scrolled
-          ? "h-16 bg-white/90 dark:bg-black/90 backdrop-blur-md border-b border-border/10 shadow-sm"
-          : "h-20 bg-transparent border-b border-transparent",
+        "w-full flex relative justify-between px-5 py-3 rounded-full bg-transparent transition-all duration-300",
+        showBackground &&
+          "bg-white/95 dark:bg-neutral-900/95 backdrop-blur-lg shadow-lg dark:shadow-[0px_-2px_0px_0px_var(--neutral-800),0px_2px_0px_0px_var(--neutral-800)]",
       )}
     >
-      <div className="w-full max-w-[1600px] mx-auto px-6 flex items-center justify-between h-full">
-        {/* 1. ЛЕВАЯ ЧАСТЬ: Логотип */}
-        <div className="flex shrink-0 w-[200px]">
-          <Link href="/" className="hover:opacity-80 transition-opacity">
-            <Logo className={cn("transition-all", scrolled ? "h-7" : "h-9")} />
-          </Link>
-        </div>
+      <AnimatePresence>
+        {showBackground && (
+          <motion.div
+            key={String(showBackground)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="absolute inset-0 h-full w-full bg-white/50 dark:bg-neutral-800 pointer-events-none rounded-full"
+          />
+        )}
+      </AnimatePresence>
 
-        {/* 2. ЦЕНТР: Меню */}
-        <nav className="flex-1 flex items-center justify-center gap-1 px-4">
-          {navItems.map((item, idx) => {
-            if (item.special) return null;
-
-            if (item.items) {
-              return (
-                <NavDropdown key={idx} label={item.title} items={item.items} />
-              );
-            }
-
-            if (item.link) {
-              return (
-                <NavBarItem key={item.link} href={item.link}>
-                  {item.title}
-                </NavBarItem>
-              );
-            }
-            return null;
-          })}
-        </nav>
-
-        {/* 3. ПРАВАЯ ЧАСТЬ: Инструменты и Действие */}
-        <div className="flex shrink-0 items-center justify-end gap-3 w-[200px] xl:w-auto">
-          {/* Chai Club */}
-          {navItems.map((item) =>
-            item.special && item.link ? (
-              <Link
-                key={item.link}
-                href={item.link}
-                className="hidden 2xl:block"
-              >
-                <span className="text-xs font-bold text-amber-600 dark:text-amber-400 hover:text-amber-700 bg-amber-50 dark:bg-amber-900/20 px-3 py-1.5 rounded-full border border-amber-100 dark:border-amber-800/30 whitespace-nowrap transition-colors">
-                  ♥ Club
-                </span>
-              </Link>
-            ) : null,
-          )}
-
-          {/* Виджеты: Зманим + Язык */}
-          <div className="flex items-center bg-secondary/50 rounded-full px-1.5 py-1 border border-border/20 backdrop-blur-sm">
-            <ZmanimWidget />
-            <div className="w-px h-3 bg-border/40 mx-1" />
-            <div className="scale-90 origin-right">
-              <LanguageSwitcher />
-            </div>
-          </div>
-
-          {/* 4. ГЛАВНАЯ КНОПКА (ИСПРАВЛЕННАЯ ЛОГИКА) */}
-          <div className="pl-1 flex items-center h-9 min-w-[120px] justify-end">
-            {!isLoaded ? (
-              // Скелетон во время загрузки состояния Clerk
-              <div className="h-9 w-32 bg-neutral-200/50 dark:bg-neutral-800/50 animate-pulse rounded-full" />
-            ) : isSignedIn ? (
-              // Пользователь ВОШЕЛ в систему
-              <div className="flex items-center gap-2">
-                <Link href="/dashboard">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="rounded-full h-9 border-blue-200/50 bg-blue-50/50 text-blue-900 hover:bg-blue-100 hover:text-blue-950 font-semibold shadow-sm"
-                  >
-                    {t("my_community")}
-                  </Button>
-                </Link>
-                <UserButton />{" "}
-              </div>
-            ) : (
-              // Пользователь НЕ ВОШЕЛ (Гость)
-              <SignUpButton mode="modal">
-                <Button
-                  size="sm"
-                  className="rounded-full bg-blue-900 hover:bg-blue-800 text-white px-5 h-9 font-bold shadow-md shadow-blue-900/10 transition-transform hover:scale-105"
-                >
-                  {t("join_community")}
-                </Button>
-              </SignUpButton>
-            )}
-          </div>
+      <div className="flex flex-row gap-8 items-center z-10">
+        <Logo />
+        <div className="flex items-center gap-1">
+          {navItems.map((item) => (
+            <NavItemWithDropdown key={item.title} item={item} />
+          ))}
         </div>
       </div>
-    </header>
+
+      <div className="flex space-x-3 items-center z-10">
+        <ModeToggle />
+
+        {!isSignedIn ? (
+          <>
+            <SignInButton mode="modal" fallbackRedirectUrl="/dashboard">
+              <button className="font-bold text-[15px] px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors cursor-pointer">
+                Войти
+              </button>
+            </SignInButton>
+            <SignUpButton mode="modal" fallbackRedirectUrl="/dashboard">
+              <button className="bg-[#FFB800] hover:bg-[#E5A600] text-gray-900 font-bold rounded-full px-7 py-2.5 shadow-lg shadow-[#FFB800]/30 transition-all active:scale-95 cursor-pointer text-[15px]">
+                Регистрация
+              </button>
+            </SignUpButton>
+          </>
+        ) : (
+          <>
+            <Link
+              href="/dashboard"
+              className="font-bold text-[15px] px-5 py-2.5 bg-[#FFB800] hover:bg-[#E5A600] text-gray-900 rounded-full transition-colors mr-2 shadow-lg shadow-[#FFB800]/20"
+            >
+              Кабинет
+            </Link>
+            <div className="rounded-full p-[2px] bg-[#FFB800] shadow-sm shadow-[#FFB800]/20 flex items-center justify-center">
+              <UserButton
+                appearance={{
+                  elements: {
+                    userButtonAvatarBox: "w-10 h-10", // <-- Задаем нужный размер здесь
+                  },
+                }}
+              />
+            </div>
+          </>
+        )}
+      </div>
+    </div>
   );
 };

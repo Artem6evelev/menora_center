@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import { Heading } from "./heading";
 import { Subheading } from "./subheading";
@@ -9,98 +7,118 @@ import { SkeletonOne } from "./skeletons/first";
 import { SkeletonTwo } from "./skeletons/second";
 import { SkeletonFour } from "./skeletons/fourth";
 import { SkeletonThree } from "./skeletons/third";
-import { motion } from "framer-motion";
 
 export const Features = () => {
   const features = [
     {
-      title: "Праздники и традиции",
+      title: "Generate images with text",
       description:
-        "Мы создаем атмосферу настоящего праздника. От теплого семейного Шаббата до грандиозных событий на Хануку и Песах.",
+        "Generate images from a text prompt, a video, or a video segment in bulk at the speed of light.",
       skeleton: <SkeletonOne />,
       className:
-        "col-span-1 lg:col-span-4 border-b border-r border-neutral-200",
+        "col-span-1 lg:col-span-4 border-b border-r dark:border-neutral-800",
     },
     {
-      title: "Молодежный клуб",
+      title: "Create stupid simple chatbots",
       description:
-        "Пространство для общения, знакомств и энергии. Встречи, поездки и еврейская гордость для студентов и подростков.",
+        "Create Chatbots with a single button click. Customize as per your requirements and the AI will take care of the rest.",
       skeleton: <SkeletonTwo />,
-      className: "col-span-1 lg:col-span-2 border-b border-neutral-200",
+      className: "border-b col-span-1 lg:col-span-2 dark:border-neutral-800",
     },
     {
-      title: "Академия знаний",
+      title: "We support every single LLM",
       description:
-        "Ежедневные уроки Торы, женский клуб, курсы и лекции. Мудрость тысячелетий, доступная каждому.",
+        "Whether it's OpenAI, GroQ or Your Mom's Basement LLM, we support everything.",
       skeleton: <SkeletonThree />,
-      className:
-        "col-span-1 lg:col-span-3 border-r border-neutral-200 lg:border-b-0 border-b",
+      className: "col-span-1 lg:col-span-3 border-r dark:border-neutral-800",
     },
     {
-      title: "Хесед и помощь",
+      title: "Deploy in seconds",
       description:
-        "Мы поддерживаем тех, кто нуждается. Продуктовые наборы, помощь пожилым и волонтерские программы.",
+        "With our blazing fast, state of the art, cutting edge, we are so back cloud servies (read AWS) - you can deploy your model in seconds.",
       skeleton: <SkeletonFour />,
       className: "col-span-1 lg:col-span-3",
     },
   ];
-
   return (
-    <section className="relative z-20 py-16 lg:py-32 overflow-hidden bg-white">
-      {/* 🚀 PERFORMANCE: Анимация только при появлении на экране, один раз */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 0.5 }}
-        className="transform-gpu will-change-transform"
-      >
-        <Heading as="h2">Больше, чем просто синагога</Heading>
-        <Subheading className="text-center max-w-2xl mx-auto px-4">
-          Menora Center — это экосистема еврейской жизни. Мы объединяем
-          духовность, образование и социальную помощь в одном современном
-          пространстве.
-        </Subheading>
-      </motion.div>
+    <div className="relative z-20 py-10 lg:py-40 overflow-hidden">
+      <Heading as="h2">Packed with thousands of features</Heading>
+      <Subheading className="text-center ">
+        From Image generation to video generation, Everything AI has APIs for
+        literally everything. It can even create this website copy for you.
+      </Subheading>
 
-      <div className="relative max-w-7xl mx-auto mt-12 px-4 sm:px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-6 border border-neutral-200 rounded-2xl overflow-hidden bg-white shadow-sm">
-          {features.map((feature, index) => (
-            // 🚀 Появление карточек по очереди
-            <motion.div
-              key={feature.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className={cn(
-                "p-6 sm:p-8 relative overflow-hidden transform-gpu will-change-transform",
-                feature.className,
-              )}
-            >
-              <Heading
-                as="h3"
-                size="sm"
-                className="text-left mb-2 text-neutral-900"
-              >
-                {feature.title}
-              </Heading>
-              <Subheading className="text-left max-w-sm mx-0 text-sm my-2 mb-8 text-neutral-500">
-                {feature.description}
-              </Subheading>
-              <div className="h-full w-full">{feature.skeleton}</div>
-            </motion.div>
+      <div className="relative">
+        <div className="grid grid-cols-1 lg:grid-cols-6 mt-12">
+          {features.map((feature) => (
+            <FeatureCard key={feature.title} className={feature.className}>
+              <FeatureTitle>{feature.title}</FeatureTitle>
+              <FeatureDescription>{feature.description}</FeatureDescription>
+              <div className=" h-full w-full">{feature.skeleton}</div>
+            </FeatureCard>
           ))}
         </div>
-
-        {/* Декоративная сетка (Облегченная) */}
-        <GridLineHorizontal style={{ top: 0, left: "-10%", width: "120%" }} />
         <GridLineHorizontal
-          style={{ bottom: 0, left: "-10%", width: "120%" }}
+          style={{
+            top: 0,
+            left: "-10%",
+            width: "120%",
+          }}
         />
-        <GridLineVertical style={{ top: "-10%", right: 0, height: "120%" }} />
-        <GridLineVertical style={{ top: "-10%", left: 0, height: "120%" }} />
+
+        <GridLineHorizontal
+          style={{
+            bottom: 0,
+            left: "-10%",
+            width: "120%",
+          }}
+        />
+
+        <GridLineVertical
+          style={{
+            top: "-10%",
+            right: 0,
+            height: "120%",
+          }}
+        />
+        <GridLineVertical
+          style={{
+            top: "-10%",
+            left: 0,
+            height: "120%",
+          }}
+        />
       </div>
-    </section>
+    </div>
+  );
+};
+
+const FeatureCard = ({
+  children,
+  className,
+}: {
+  children?: React.ReactNode;
+  className?: string;
+}) => {
+  return (
+    <div className={cn(`p-4 sm:p-8 relative overflow-hidden`, className)}>
+      {children}
+    </div>
+  );
+};
+
+const FeatureTitle = ({ children }: { children?: React.ReactNode }) => {
+  return (
+    <Heading as="h3" size="sm" className="text-left">
+      {children}
+    </Heading>
+  );
+};
+
+const FeatureDescription = ({ children }: { children?: React.ReactNode }) => {
+  return (
+    <Subheading className="text-left max-w-sm mx-0 lg:text-sm my-2">
+      {children}
+    </Subheading>
   );
 };

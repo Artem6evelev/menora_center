@@ -1,78 +1,69 @@
-"use client";
-
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 import {
-  IconBuildingCommunity,
-  IconHeartHandshake,
-  IconBook,
-  IconCandle,
-  IconWoman,
-  IconMoodKid,
-  IconSoup,
-  IconMessageChatbot,
+  IconAdjustmentsBolt,
+  IconCloud,
+  IconCurrencyDollar,
+  IconEaseInOut,
+  IconHeart,
+  IconHelp,
+  IconRouteAltLeft,
+  IconTerminal2,
 } from "@tabler/icons-react";
 
 export const GridFeatures = () => {
   const features = [
     {
-      title: "Открыты для каждого",
+      title: "Built for developers",
       description:
-        "Неважно, соблюдаете вы традиции или только начинаете свой путь. Двери нашего центра открыты для всех евреев.",
-      icon: <IconBuildingCommunity className="text-blue-500 w-8 h-8" />,
+        "Built for engineers, developers, dreamers, thinkers and doers.",
+      icon: <IconTerminal2 />,
     },
     {
-      title: "Поддержка и Хесед",
+      title: "Ease of use",
       description:
-        "Мы не оставляем своих в беде. Продуктовая помощь, волонтеры и просто доброе слово в трудную минуту.",
-      icon: <IconHeartHandshake className="text-red-500 w-8 h-8" />,
+        "It's as easy as using an Apple, and as expensive as buying one.",
+      icon: <IconEaseInOut />,
     },
     {
-      title: "Образование для всех",
+      title: "Pricing like no other",
       description:
-        "Уроки Торы, лекции по истории, курсы иврита. Знания доступны мужчинам, женщинам и детям любого возраста.",
-      icon: <IconBook className="text-indigo-500 w-8 h-8" />,
+        "Our prices are best in the market. No cap, no lock, no credit card required.",
+      icon: <IconCurrencyDollar />,
     },
     {
-      title: "Яркие праздники",
-      description:
-        "Шаббаты, Ханука, Пурим, Песах. Мы умеем веселиться по-еврейски, сохраняя глубину и святость момента.",
-      icon: <IconCandle className="text-amber-500 w-8 h-8" />,
+      title: "100% Uptime guarantee",
+      description: "We just cannot be taken down by anyone.",
+      icon: <IconCloud />,
     },
     {
-      title: "Женский клуб",
-      description:
-        "Особое пространство для еврейских женщин. Встречи, мастер-классы, общение и вдохновение.",
-      icon: <IconWoman className="text-pink-500 w-8 h-8" />,
+      title: "Multi-tenant Architecture",
+      description: "You can simply share passwords instead of buying new seats",
+      icon: <IconRouteAltLeft />,
     },
     {
-      title: "Будущее поколения",
+      title: "24/7 Customer Support",
       description:
-        "Детский сад, воскресная школа и молодежный клуб. Мы передаем традиции нашим детям с любовью.",
-      icon: <IconMoodKid className="text-green-500 w-8 h-8" />,
+        "We are available a 100% of the time. Atleast our AI Agents are.",
+      icon: <IconHelp />,
     },
     {
-      title: "Кошерная кухня",
+      title: "Money back guarantee",
       description:
-        "Вкусные трапезы, доставка кошерной еды и помощь в организации кошерного быта у вас дома.",
-      icon: <IconSoup className="text-orange-500 w-8 h-8" />,
+        "If you donot like EveryAI, we will convince you to like us.",
+      icon: <IconAdjustmentsBolt />,
     },
     {
-      title: "Связь с Раввином",
-      description:
-        "Возможность задать личный вопрос, получить совет или благословение в любой жизненной ситуации.",
-      icon: <IconMessageChatbot className="text-cyan-500 w-8 h-8" />,
+      title: "And everything else",
+      description: "I just ran out of copy ideas. Accept my sincere apologies",
+      icon: <IconHeart />,
     },
   ];
-
   return (
-    <section className="relative z-10 py-16 max-w-7xl mx-auto px-4 sm:px-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-sm">
-        {features.map((feature, index) => (
-          <Feature key={feature.title} {...feature} index={index} />
-        ))}
-      </div>
-    </section>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4  relative z-10 py-10">
+      {features.map((feature, index) => (
+        <Feature key={feature.title} {...feature} index={index} />
+      ))}
+    </div>
   );
 };
 
@@ -88,49 +79,29 @@ const Feature = ({
   index: number;
 }) => {
   return (
-    // 🚀 PERFORMANCE: Framer Motion с whileInView.
-    // delay вычисляется динамически (index * 0.05), создавая быструю волну.
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.4, delay: index * 0.05, ease: "easeOut" }}
+    <div
       className={cn(
-        "flex flex-col py-8 px-6 md:py-10 md:px-8 relative group transform-gpu will-change-transform",
-        "border-neutral-200 bg-white",
-
-        // --- Логика рамок (очищенная от dark mode) ---
-        "border-b last:border-b-0", // Mobile
-
-        // Tablet
-        "md:border-r-0 md:even:border-r",
-        "md:border-b md:[&:nth-child(n+7)]:border-b-0",
-
-        // Desktop
-        "lg:border-none",
-        "lg:border-r lg:[&:nth-child(4n)]:border-r-0",
-        (index === 0 || index === 4) && "lg:border-l-0", // Убрали левую рамку, так как есть общий контейнер
-        index < 4 && "lg:border-b",
+        "flex flex-col lg:border-r  py-10 relative group dark:border-neutral-800",
+        (index === 0 || index === 4) && "lg:border-l dark:border-neutral-800",
+        index < 4 && "lg:border-b dark:border-neutral-800"
       )}
     >
-      {/* 🚀 PERFORMANCE: Упрощенный градиент, transition-opacity (дешевая анимация) */}
-      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute inset-0 h-full w-full bg-gradient-to-t from-blue-50/50 to-transparent pointer-events-none" />
-
-      <div className="mb-4 relative z-10">{icon}</div>
-
-      <div className="text-lg font-bold mb-2 relative z-10 flex items-center">
-        {/* Боковая полоска-акцент */}
-        <div className="absolute left-0 inset-y-0 h-5 w-1 rounded-r-full bg-neutral-200 group-hover:bg-blue-500 transition-colors duration-300" />
-
-        {/* 🚀 PERFORMANCE: Добавлен transform-gpu, чтобы сдвиг текста не тормозил рендер */}
-        <span className="group-hover:translate-x-2 transition-transform duration-300 transform-gpu will-change-transform inline-block text-neutral-900 pl-3">
+      {index < 4 && (
+        <div className="opacity-0 group-hover:opacity-100 transition duration-200 group absolute inset-0 h-full w-full bg-gradient-to-t from-neutral-100 dark:from-neutral-800 to-transparent pointer-events-none" />
+      )}
+      {index >= 4 && (
+        <div className="opacity-0 group-hover:opacity-100 transition duration-200 group absolute inset-0 h-full w-full bg-gradient-to-b from-neutral-100 dark:from-neutral-800 to-transparent pointer-events-none" />
+      )}
+      <div className="mb-4 relative z-10 px-10">{icon}</div>
+      <div className="text-lg font-bold mb-2 relative z-10 px-10">
+        <div className="absolute left-0 inset-y-0 h-6 w-1 rounded-tr-full rounded-br-full bg-neutral-300 dark:bg-neutral-700 group-hover:bg-blue-500 transition duration-200" />
+        <span className="group-hover:translate-x-2 transition duration-200 inline-block">
           {title}
         </span>
       </div>
-
-      <p className="text-sm text-neutral-500 max-w-xs relative z-10 leading-relaxed pl-3">
+      <p className="text-sm text-muted dark:text-muted-dark max-w-xs mx-auto relative z-10 px-10">
         {description}
       </p>
-    </motion.div>
+    </div>
   );
 };

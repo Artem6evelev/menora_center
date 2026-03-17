@@ -1,34 +1,37 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link } from "next-view-transitions";
 import { ReactNode } from "react";
+import { usePathname } from "next/navigation";
 
 type Props = {
   href: string;
   children: ReactNode;
+  active?: boolean;
   className?: string;
   target?: "_blank";
 };
 
-export function NavBarItem({ children, href, target, className }: Props) {
+export function NavBarItem({
+  children,
+  href,
+  active,
+  target,
+  className,
+}: Props) {
   const pathname = usePathname();
-  // Активное состояние, если путь начинается с href (для вложенных страниц)
-  // Исключение для главной "/", чтобы она не горела всегда
-  const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   return (
     <Link
       href={href}
-      target={target}
       className={cn(
-        "relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-full",
-        isActive
-          ? "text-blue-900 dark:text-blue-100 bg-blue-50 dark:bg-blue-900/20 font-semibold"
-          : "text-muted-foreground hover:text-foreground hover:bg-muted/40",
+        "flex items-center justify-center text-[15px] font-semibold leading-none px-5 py-2.5 rounded-full transition-all text-gray-700 dark:text-gray-300 hover:text-gray-900 hover:bg-gray-100/80 dark:hover:bg-neutral-800 dark:hover:text-white",
+        (active || pathname === href) &&
+          "bg-gray-100 dark:bg-neutral-800 text-gray-900 dark:text-white",
         className,
       )}
+      target={target}
     >
       {children}
     </Link>
