@@ -6,6 +6,7 @@ export const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   const links = [
+    { name: "О нас (Команда)", href: "/about" },
     { name: "Мероприятия", href: "/events" },
     { name: "Новости общины", href: "/news" },
     { name: "Услуги центра", href: "/services" },

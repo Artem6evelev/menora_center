@@ -36,7 +36,7 @@ export async function NavBar() {
           }
         : null,
     },
-    { title: "Контакты", link: "/contact" },
+    { title: "О нас", link: "/about" },
   ];
 
   return (
