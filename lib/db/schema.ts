@@ -1,5 +1,13 @@
 // lib/db/schema.ts
-import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
+import {
+  pgTable,
+  text,
+  timestamp,
+  boolean,
+  uuid,
+  integer,
+} from "drizzle-orm/pg-core";
 
 // ==========================================
 // 1. ПОЛЬЗОВАТЕЛИ
@@ -196,4 +204,60 @@ export const botSettings = pgTable("bot_settings", {
   ),
   superadminTelegramId: text("superadmin_telegram_id"), // Сюда бот будет писать с вопросом "Отправить цдаку?"
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// 1. Таблица Новостей
+export const news = pgTable("news", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  title: text("title").notNull(),
+  slug: text("slug").notNull().unique(), // Красивая ссылка (например: /news/pesah-2026)
+  content: text("content").notNull(), // Здесь будет храниться HTML-код статьи
+  imageUrl: text("image_url"), // Главная картинка новости
+  isPublished: boolean("is_published").default(true), // Черновик или опубликовано
+  isPinned: boolean("is_pinned").default(false), // Закреплена ли наверху
+  views: integer("views").default(0), // Счетчик просмотров
+  authorId: text("author_id").notNull(), // Кто создал (ID суперадмина)
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  categoryId: uuid("category_id").references(() => newsCategories.id, {
+    onDelete: "set null",
+  }),
+});
+
+// 2. Таблица Комментариев
+export const newsComments = pgTable("news_comments", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  newsId: uuid("news_id")
+    .references(() => news.id, { onDelete: "cascade" })
+    .notNull(),
+  userId: text("user_id").notNull(), // ID резидента, который оставил коммент
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Отношения (Relations) для Drizzle, чтобы легко доставать комменты вместе с новостью
+export const newsRelations = relations(news, ({ many }) => ({
+  comments: many(newsComments),
+}));
+
+export const newsCommentsRelations = relations(newsComments, ({ one }) => ({
+  news: one(news, {
+    fields: [newsComments.newsId],
+    references: [news.id],
+  }),
+  // Если у тебя таблица юзеров называется users, связываем коммент с автором:
+  user: one(users, {
+    fields: [newsComments.userId],
+    references: [users.id],
+  }),
+}));
+
+// Таблица категорий (тем) новостей
+export const newsCategories = pgTable("news_categories", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: text("name").notNull(), // Например: "Жизнь общины"
+  description: text("description"), // "Интервью, фотоотчеты и истории"
+  icon: text("icon"), // Название иконки (например 'users', 'book')
+  slug: text("slug").notNull().unique(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

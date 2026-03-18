@@ -230,3 +230,17 @@ export async function getUserRegisteredServices(userId: string) {
     return [];
   }
 }
+
+export async function getActivePublicServiceCategories() {
+  try {
+    // Достаем все категории услуг из базы и сортируем по алфавиту
+    const categories = await db.query.serviceCategories.findMany({
+      orderBy: (serviceCategories, { asc }) => [asc(serviceCategories.name)],
+    });
+
+    return categories;
+  } catch (error) {
+    console.error("Ошибка при получении категорий услуг:", error);
+    return []; // Если произошла ошибка, возвращаем пустой массив, чтобы страница не упала
+  }
+}

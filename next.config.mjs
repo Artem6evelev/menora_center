@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 const nextConfig = {
   images: { domains: ["i.pravatar.cc", "images.unsplash.com"] },
   pageExtensions: ["ts", "tsx", "mdx"],
+  turbopack: {},
 };
 
 const withMDX = nextMDX({

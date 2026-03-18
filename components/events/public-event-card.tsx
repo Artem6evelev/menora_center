@@ -48,7 +48,6 @@ export default function PublicEventCard({
       router.push("/sign-in?redirect_url=/dashboard/my-events");
       return;
     }
-    // Если юзер авторизован - показываем модалку для ввода телефона
     setShowPhoneModal(true);
   };
 
@@ -71,6 +70,7 @@ export default function PublicEventCard({
     };
   }, [isModalOpen, showPhoneModal]);
 
+  // Красивое форматирование даты
   const formattedDate = event.date
     ? new Date(event.date).toLocaleDateString("ru-RU", {
         day: "numeric",
@@ -83,17 +83,17 @@ export default function PublicEventCard({
   // МОДАЛКА ВВОДА ТЕЛЕФОНА
   const phoneModalContent = showPhoneModal ? (
     <div
-      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40 backdrop-blur-md p-4"
       onClick={() => setShowPhoneModal(false)}
     >
       <div
-        className="bg-white p-6 md:p-8 rounded-3xl max-w-sm w-full shadow-2xl animate-in fade-in zoom-in-95 duration-200"
+        className="bg-white p-8 rounded-[32px] max-w-sm w-full shadow-2xl animate-in fade-in zoom-in-95 duration-200 border border-neutral-100"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="text-2xl font-bold text-gray-900 mb-2">
-          Оставьте контакт
+        <h3 className="text-2xl font-black text-neutral-900 mb-2 tracking-tighter">
+          Ваш контакт
         </h3>
-        <p className="text-gray-500 text-sm mb-6">
+        <p className="text-neutral-500 text-sm mb-6 font-medium">
           Укажите номер телефона для связи с вами по поводу мероприятия.
         </p>
         <input
@@ -101,20 +101,20 @@ export default function PublicEventCard({
           placeholder="+972 5X XXX XXXX"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          className="w-full border border-gray-300 p-3.5 rounded-xl mb-6 focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 outline-none transition-all"
+          className="w-full bg-neutral-50 border-2 border-neutral-200 p-4 rounded-2xl mb-6 focus:border-neutral-900 focus:ring-0 outline-none transition-all font-medium"
           autoFocus
         />
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-col sm:flex-row">
           <button
             onClick={() => setShowPhoneModal(false)}
-            className="flex-1 py-3.5 bg-gray-100 hover:bg-gray-200 rounded-xl font-semibold text-gray-700 transition-colors"
+            className="flex-1 py-4 bg-neutral-100 hover:bg-neutral-200 rounded-2xl font-bold text-neutral-600 transition-colors text-sm"
           >
             Отмена
           </button>
           <button
             onClick={submitRegistration}
             disabled={!phone.trim() || isRegistering}
-            className="flex-1 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold disabled:opacity-50 transition-colors flex justify-center items-center"
+            className="flex-1 py-4 bg-neutral-900 hover:bg-black text-white rounded-2xl font-bold disabled:opacity-50 transition-all active:scale-95 flex justify-center items-center text-sm"
           >
             {isRegistering ? (
               <Loader2 size={18} className="animate-spin" />
@@ -128,57 +128,69 @@ export default function PublicEventCard({
   ) : null;
 
   // ОСНОВНАЯ МОДАЛКА ОПИСАНИЯ
-  const modalContent = (
+  const modalContent = isModalOpen ? (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 md:p-6"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-md p-4 md:p-6"
       onClick={() => setIsModalOpen(false)}
     >
       <div
-        className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden relative animate-in fade-in zoom-in-95 duration-200"
+        className="bg-white rounded-[32px] shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden relative animate-in fade-in zoom-in-95 duration-200 border border-neutral-100"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={() => setIsModalOpen(false)}
-          className="absolute top-4 right-4 z-20 p-2 bg-black/40 hover:bg-black/60 text-white rounded-full backdrop-blur-md transition-colors"
+          className="absolute top-4 right-4 z-20 p-2.5 bg-white/20 hover:bg-white/40 text-white rounded-full backdrop-blur-md transition-colors"
         >
           <X size={20} />
         </button>
-        <div className="relative w-full h-48 sm:h-64 shrink-0">
+
+        <div className="relative w-full h-56 sm:h-72 shrink-0">
           <img
             src={eventImageUrl}
             alt={event.title}
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+          <div className="absolute bottom-6 left-6 right-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest mb-3 border border-white/20">
+              <Calendar size={12} />
+              <span>{formattedDate}</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tighter leading-tight">
+              {event.title}
+            </h2>
+          </div>
         </div>
+
         <div className="p-6 sm:p-8 overflow-y-auto flex-1">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-6">
-            {event.title}
-          </h2>
-          <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+          <h3 className="text-sm font-black uppercase tracking-widest text-neutral-400 mb-4">
+            О мероприятии
+          </h3>
+          <p className="text-neutral-600 leading-relaxed font-medium whitespace-pre-wrap">
             {event.description}
           </p>
         </div>
-        <div className="p-6 border-t border-gray-100 bg-white shrink-0 flex justify-between items-center gap-4">
+
+        <div className="p-6 border-t border-neutral-100 bg-neutral-50 shrink-0 flex flex-col sm:flex-row justify-between items-center gap-4">
           {!isLoading && (
             <button
               onClick={handleRegisterClick}
               disabled={isRegistered || isRegistering}
-              className={`w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all ${
+              className={`w-full py-4 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all active:scale-95 ${
                 isRegistered
-                  ? "bg-green-50 text-green-600 cursor-default border border-green-200"
+                  ? "bg-green-100 text-green-700 cursor-default border-2 border-green-200"
                   : !userId
-                    ? "bg-gray-900 text-white hover:bg-gray-800"
-                    : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-md hover:shadow-lg"
+                    ? "bg-white text-neutral-900 border-2 border-neutral-200 hover:border-neutral-900 hover:bg-neutral-50"
+                    : "bg-neutral-900 text-white hover:bg-black shadow-xl shadow-black/10"
               }`}
             >
               {isRegistered ? (
                 <>
-                  <Check size={18} /> Вы успешно записаны
+                  <Check size={16} /> Вы записаны
                 </>
               ) : !userId ? (
                 <>
-                  Войти для записи <ArrowRight size={16} />
+                  Войти для записи <ArrowRight size={14} />
                 </>
               ) : (
                 "Записаться на событие"
@@ -188,30 +200,47 @@ export default function PublicEventCard({
         </div>
       </div>
     </div>
-  );
+  ) : null;
 
   return (
     <>
+      {/* КАРТОЧКА СОБЫТИЯ */}
       <div
         onClick={() => setIsModalOpen(true)}
-        className="group relative rounded-3xl overflow-hidden aspect-[3/4] bg-gray-100 shadow-sm transition-all hover:shadow-xl border border-gray-100 cursor-pointer"
+        className="group relative rounded-[32px] overflow-hidden aspect-[3/4] bg-neutral-100 shadow-sm transition-all duration-500 hover:shadow-2xl cursor-pointer isolate"
       >
         <img
           src={eventImageUrl}
           alt={event.title}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 -z-10"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-          <h3 className="text-white text-xl font-bold mb-2">{event.title}</h3>
-          <button className="w-full py-3 rounded-xl font-bold text-sm bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm transition-colors border border-white/20">
-            Подробнее
-          </button>
+
+        {/* Постоянный нижний градиент, чтобы текст читался всегда */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent -z-10" />
+
+        <div className="absolute inset-0 flex flex-col justify-end p-6 z-10">
+          <div className="translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+            <p className="text-[#FFB800] text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-1.5">
+              <Calendar size={14} />
+              {formattedDate.split(",")[0]}{" "}
+              {/* Показываем только дату без времени на превью */}
+            </p>
+            <h3 className="text-white text-2xl font-black tracking-tighter leading-tight mb-4">
+              {event.title}
+            </h3>
+
+            {/* Кнопка плавно появляется при наведении (на десктопе) */}
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-500 md:block hidden">
+              <button className="w-full py-3.5 rounded-2xl font-bold text-sm bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-colors border border-white/20">
+                Узнать подробности
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-      {isModalOpen && mounted && createPortal(modalContent, document.body)}
-      {showPhoneModal &&
-        mounted &&
-        createPortal(phoneModalContent, document.body)}
+
+      {mounted && createPortal(modalContent, document.body)}
+      {mounted && createPortal(phoneModalContent, document.body)}
     </>
   );
 }

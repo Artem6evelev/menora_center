@@ -19,113 +19,121 @@ import {
   UsersRound,
   Menu,
   X,
+  Smartphone,
+  Newspaper,
+  ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function Sidebar({ userRole }: { userRole: string }) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const isAdmin = userRole === "admin" || userRole === "superadmin";
 
-  // Автоматически закрываем меню на мобилках при переходе по ссылке
-  useEffect(() => {
-    setIsOpen(false);
-  }, [pathname]);
+  useEffect(() => setIsOpen(false), [pathname]);
 
-  // Блокируем скролл страницы, когда мобильное меню открыто
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
+    document.body.style.overflow = isOpen ? "hidden" : "unset";
     return () => {
       document.body.style.overflow = "unset";
     };
   }, [isOpen]);
 
-  const routes = [
+  // ГРУППА 1: Для всех (Резиденты и Админы)
+  const clientRoutes = [
+    { label: "Мой кабинет", icon: LayoutDashboard, href: "/dashboard" },
+    { label: "События", icon: Calendar, href: "/dashboard/events" },
+    { label: "Мои билеты", icon: Ticket, href: "/dashboard/my-events" },
+    { label: "Услуги", icon: HeartHandshake, href: "/dashboard/services" },
+    { label: "Мои заявки", icon: Briefcase, href: "/dashboard/my-services" },
+    { label: "Сообщения", icon: MessageSquare, href: "/dashboard/chat" },
+  ];
+
+  // ГРУППА 2: Только для администрации
+  const adminRoutes = [
     {
-      label: "Мой кабинет",
-      icon: LayoutDashboard,
-      href: "/dashboard",
-      active: pathname === "/dashboard",
-      roles: ["superadmin", "admin", "client"],
+      label: "Telegram Бот",
+      icon: Smartphone,
+      href: "/dashboard/telegram",
+      roles: ["superadmin", "admin"],
     },
     {
-      label: "Команда",
-      icon: Users,
-      href: "/dashboard/team",
-      active: pathname === "/dashboard/team",
-      roles: ["superadmin"],
+      label: "Блог и Новости",
+      icon: Newspaper,
+      href: "/dashboard/news",
+      roles: ["superadmin", "admin"],
+    },
+    {
+      label: "База людей",
+      icon: UsersRound,
+      href: "/dashboard/users",
+      roles: ["superadmin", "admin"],
     },
     {
       label: "Канбан-доска",
       icon: Trello,
       href: "/dashboard/kanban",
-      active: pathname === "/dashboard/kanban",
       roles: ["superadmin", "admin"],
-    },
-    {
-      label: "События",
-      icon: Calendar,
-      href: "/dashboard/events",
-      active: pathname === "/dashboard/events",
-      roles: ["superadmin", "admin", "client"],
-    },
-    {
-      label: "Мои события",
-      icon: Ticket,
-      href: "/dashboard/my-events",
-      active: pathname === "/dashboard/my-events",
-      roles: ["superadmin", "admin", "client"],
     },
     {
       label: "Заявки",
       icon: ClipboardList,
       href: "/dashboard/applications",
-      active: pathname === "/dashboard/applications",
       roles: ["superadmin", "admin"],
     },
     {
-      label: "Услуги",
-      icon: HeartHandshake,
-      href: "/dashboard/services",
-      active: pathname === "/dashboard/services",
-      roles: ["superadmin", "admin", "client"],
-    },
-    {
-      label: "Мои услуги",
-      icon: Briefcase,
-      href: "/dashboard/my-services",
-      active: pathname === "/dashboard/my-services",
-      roles: ["superadmin", "admin", "client"],
-    },
-    {
-      label: "Пользователи",
-      icon: UsersRound,
-      href: "/dashboard/users",
-      active: pathname === "/dashboard/users",
-      roles: ["superadmin", "admin"],
-    },
-    {
-      label: "Сообщения",
-      icon: MessageSquare,
-      href: "/dashboard/chat",
-      active: pathname === "/dashboard/chat",
-      roles: ["client", "admin", "superadmin"],
-    },
-  ];
+      label: "Команда",
+      icon: Users,
+      href: "/dashboard/team",
+      roles: ["superadmin"],
+    }, // Только супер
+  ].filter((route) => route.roles.includes(userRole));
 
-  const filteredRoutes = routes.filter((route) =>
-    route.roles.includes(userRole),
-  );
+  // Вспомогательный компонент для рендеринга ссылки
+  const NavLink = ({ route }: { route: any }) => {
+    // Делаем активным и точные совпадения, и вложенные страницы (например /dashboard/news/create)
+    const isActive =
+      pathname === route.href || pathname.startsWith(`${route.href}/`);
+    const Icon = route.icon;
+
+    return (
+      <Link
+        href={route.href}
+        className={cn(
+          "group flex items-center gap-x-3 text-sm font-bold px-4 py-3 rounded-2xl transition-all duration-300 relative",
+          isActive
+            ? "bg-[#FFB800]/10 text-neutral-900 dark:text-white"
+            : "text-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 hover:text-neutral-900 dark:hover:text-white",
+        )}
+      >
+        {isActive && (
+          <motion.div
+            layoutId="sidebar-active"
+            className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-[#FFB800] rounded-r-full"
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          />
+        )}
+        <div
+          className={cn(
+            "transition-colors",
+            isActive
+              ? "text-[#FFB800]"
+              : "text-neutral-400 group-hover:text-[#FFB800]",
+          )}
+        >
+          <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
+        </div>
+        <span>{route.label}</span>
+      </Link>
+    );
+  };
 
   return (
     <>
       {/* Кнопка открытия меню (гамбургер) — ВИДНА ТОЛЬКО НА МОБИЛКАХ */}
       <button
         onClick={() => setIsOpen(true)}
-        className="lg:hidden fixed top-4 left-4 z-[60] p-2.5 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border border-neutral-200/50 dark:border-neutral-800/50 rounded-2xl shadow-lg text-neutral-700 dark:text-neutral-200 hover:text-[#FFB800] dark:hover:text-[#FFB800] transition-colors"
+        className="lg:hidden fixed top-4 left-4 z-[60] p-2.5 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-lg"
       >
         <Menu size={24} />
       </button>
@@ -146,99 +154,87 @@ export default function Sidebar({ userRole }: { userRole: string }) {
       {/* САМ САЙДБАР */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-[70] w-[280px] bg-white/95 dark:bg-neutral-950/95 backdrop-blur-2xl border-r border-neutral-200/50 dark:border-neutral-800/50 flex flex-col shadow-2xl lg:shadow-none transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] lg:translate-x-0",
-          isOpen ? "translate-x-0" : "-translate-x-full", // Прячем на мобилках, если закрыт
+          "fixed lg:sticky top-0 left-0 z-[70] h-[100dvh] w-[280px] bg-white dark:bg-neutral-950 border-r border-neutral-100 dark:border-neutral-800 flex flex-col transition-transform duration-500",
+          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         )}
       >
         {/* Шапка сайдбара */}
-        <div className="p-8 pb-4 flex items-center justify-between">
-          <Link href="/" className="flex flex-col">
-            <span className="text-2xl font-black text-neutral-900 dark:text-white tracking-tighter leading-none">
-              Menora
-            </span>
-            <span className="text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#FFB800] to-orange-500 uppercase tracking-[0.2em] mt-1">
-              Center CRM
-            </span>
+        <div className="p-6 pb-2 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="w-10 h-10 bg-[#FFB800] rounded-xl flex items-center justify-center text-black font-black text-xl shadow-lg shadow-[#FFB800]/20 group-hover:scale-105 transition-transform">
+              M
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xl font-black text-neutral-900 dark:text-white tracking-tighter leading-none">
+                Menora
+              </span>
+              <span className="text-[9px] font-black text-[#FFB800] uppercase tracking-widest mt-1">
+                Workspace
+              </span>
+            </div>
           </Link>
-
-          {/* Кнопка закрытия (крестик) — ВИДНА ТОЛЬКО НА МОБИЛКАХ внутри меню */}
           <button
             onClick={() => setIsOpen(false)}
-            className="lg:hidden p-2 text-neutral-400 hover:text-red-500 bg-neutral-100 dark:bg-neutral-900 rounded-full transition-colors active:scale-95"
+            className="lg:hidden p-2 text-neutral-400 bg-neutral-100 dark:bg-neutral-900 rounded-full"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
-        {/* Роль пользователя (бейдж) */}
-        <div className="px-8 pb-6">
-          <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800">
-            <div
-              className={cn(
-                "w-2 h-2 rounded-full mr-2 shadow-sm",
+        {/* Бейдж роли */}
+        <div className="px-6 pb-6 pt-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800">
+            <ShieldCheck
+              size={14}
+              className={
                 userRole === "superadmin"
-                  ? "bg-purple-500 shadow-purple-500/50"
+                  ? "text-purple-500"
                   : userRole === "admin"
-                    ? "bg-blue-500 shadow-blue-500/50"
-                    : "bg-[#FFB800] shadow-[#FFB800]/50",
-              )}
+                    ? "text-blue-500"
+                    : "text-[#FFB800]"
+              }
             />
-            <span className="text-[10px] font-black uppercase tracking-widest text-neutral-500 dark:text-neutral-400">
+            <span className="text-[10px] font-black uppercase tracking-widest text-neutral-500">
               {userRole}
             </span>
           </div>
         </div>
 
-        {/* Навигация */}
-        <div className="flex flex-col w-full flex-1 px-4 gap-1.5 overflow-y-auto no-scrollbar pb-6">
-          {filteredRoutes.map((route) => {
-            const isActive = route.active;
-            const Icon = route.icon;
+        {/* Навигация (Скроллируемая область) */}
+        <div className="flex-1 overflow-y-auto no-scrollbar px-3 space-y-6 pb-8">
+          {/* Блок 1: Резидент */}
+          <div>
+            <div className="text-[10px] font-black uppercase tracking-widest text-neutral-400 mb-2 px-3">
+              Меню резидента
+            </div>
+            <div className="flex flex-col gap-1">
+              {clientRoutes.map((route) => (
+                <NavLink key={route.href} route={route} />
+              ))}
+            </div>
+          </div>
 
-            return (
-              <Link
-                key={route.href}
-                href={route.href}
-                className={cn(
-                  "group flex items-center gap-x-3 text-[15px] font-bold px-4 py-3.5 rounded-2xl transition-all duration-300 relative overflow-hidden",
-                  isActive
-                    ? "text-black dark:text-white bg-neutral-100 dark:bg-neutral-800/50"
-                    : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-50 dark:hover:bg-neutral-900",
-                )}
-              >
-                {isActive && (
-                  <motion.div
-                    layoutId="sidebar-active-indicator"
-                    className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-[#FFB800] rounded-r-full"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                  />
-                )}
-                <div
-                  className={cn(
-                    "transition-colors duration-300",
-                    isActive
-                      ? "text-[#FFB800]"
-                      : "text-neutral-400 group-hover:text-[#FFB800]",
-                  )}
-                >
-                  <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
-                </div>
-                <span className="z-10 relative">{route.label}</span>
-              </Link>
-            );
-          })}
+          {/* Блок 2: Админка */}
+          {isAdmin && adminRoutes.length > 0 && (
+            <div>
+              <div className="text-[10px] font-black uppercase tracking-widest text-blue-500 dark:text-blue-400 mb-2 px-3 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                Управление общиной
+              </div>
+              <div className="flex flex-col gap-1">
+                {adminRoutes.map((route) => (
+                  <NavLink key={route.href} route={route} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Кнопка ВЫХОДА */}
-        <div className="p-4 mt-auto border-t border-neutral-200/50 dark:border-neutral-800/50 bg-neutral-50/50 dark:bg-neutral-900/50">
+        {/* Кнопка ВЫХОДА в самом низу */}
+        <div className="p-4 mt-auto border-t border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-950">
           <SignOutButton redirectUrl="/sign-in">
-            <button className="group flex items-center justify-center gap-x-3 text-[15px] font-bold text-neutral-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 px-4 py-4 rounded-2xl w-full transition-all duration-300 border border-transparent hover:border-red-100 dark:hover:border-red-500/20 active:scale-95">
-              <LogOut
-                size={20}
-                className="transition-transform group-hover:-translate-x-1"
-              />
+            <button className="flex w-full items-center justify-center gap-3 px-4 py-3.5 rounded-2xl font-bold text-sm text-neutral-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all duration-300">
+              <LogOut size={18} />
               <span>Выйти из системы</span>
             </button>
           </SignOutButton>

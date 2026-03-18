@@ -19,6 +19,10 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+// ИМПОРТИРУЕМ НАШИ НОВЫЕ ГРАФИКИ И ЭКШЕН
+import { getDashboardStats } from "@/actions/dashboard";
+import DashboardClient from "@/components/dashboard/dashboard-client";
+
 export const revalidate = 0;
 
 export default async function DashboardPage() {
@@ -27,6 +31,15 @@ export default async function DashboardPage() {
 
   const [dbUser] = await db.select().from(users).where(eq(users.id, userId));
   const role = dbUser?.role || "client";
+
+  // Проверяем, является ли пользователь администратором
+  const isAdmin = role === "superadmin" || role === "admin";
+
+  // Загружаем статистику ТОЛЬКО если это админ (чтобы не грузить базу для обычных клиентов)
+  let stats = null;
+  if (isAdmin) {
+    stats = await getDashboardStats();
+  }
 
   // Массив всех разделов системы
   const sections = [
@@ -134,7 +147,7 @@ export default async function DashboardPage() {
   return (
     <div className="max-w-7xl mx-auto w-full pb-12">
       {/* ПРИВЕТСТВЕННЫЙ БЛОК (HERO) */}
-      <div className="relative overflow-hidden bg-neutral-900 dark:bg-neutral-950 rounded-[32px] p-8 md:p-12 text-white shadow-2xl mb-8 border border-neutral-800 flex flex-col md:flex-row items-center justify-between gap-8">
+      <div className="relative overflow-hidden bg-neutral-900 dark:bg-neutral-950 rounded-[32px] p-8 md:p-12 text-white shadow-2xl mb-10 border border-neutral-800 flex flex-col md:flex-row items-center justify-between gap-8">
         {/* Ацетернити-сетка на фоне героя */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
         <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/3 w-[600px] h-[600px] bg-[radial-gradient(circle,rgba(255,184,0,0.15)_0%,transparent_70%)] pointer-events-none" />
@@ -171,6 +184,21 @@ export default async function DashboardPage() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* АНАЛИТИКА И ГРАФИКИ (Отображаются только для администраторов) */}
+      {isAdmin && stats && (
+        <div className="mb-12">
+          <DashboardClient stats={stats} />
+        </div>
+      )}
+
+      {/* ЗАГОЛОВОК ДЛЯ РАЗДЕЛОВ (Разделяем визуально) */}
+      <div className="mb-6 flex items-center gap-3">
+        <div className="w-2 h-8 bg-[#FFB800] rounded-r-full" />
+        <h2 className="text-3xl font-black tracking-tighter text-neutral-900 dark:text-white">
+          Разделы системы
+        </h2>
       </div>
 
       {/* BENTO GRID (СЕТКА РАЗДЕЛОВ) */}
