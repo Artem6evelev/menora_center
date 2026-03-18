@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, CalendarDays } from "lucide-react";
-import PublicEventCard from "@/components/events/public-event-card"; // Твоя готовая карточка!
+import PublicEventCard from "@/components/events/public-event-card";
 
 export const UpcomingEvents = ({
   events,
@@ -12,8 +12,9 @@ export const UpcomingEvents = ({
   if (!events || events.length === 0) return null;
 
   return (
-    <section className="py-24 relative bg-neutral-50 dark:bg-neutral-900/30 border-t border-neutral-100 dark:border-neutral-800/50">
-      <div className="max-w-7xl mx-auto px-6">
+    <section className="py-24 relative bg-white dark:bg-neutral-900/30 border-t border-neutral-100 dark:border-neutral-800/50 w-full">
+      {/* ВОТ ЗДЕСЬ ШИРИНА КАК У HERO */}
+      <div className="max-w-[1440px] w-full mx-auto px-6 md:px-10">
         {/* Шапка секции */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
@@ -40,8 +41,8 @@ export const UpcomingEvents = ({
           </Link>
         </div>
 
-        {/* Сетка событий (переиспользуем твой компонент) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Сетка событий */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
           {events.map((event) => (
             <PublicEventCard key={event.id} item={event} userId={userId} />
           ))}

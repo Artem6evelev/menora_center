@@ -79,12 +79,12 @@ export default async function Home() {
       </section>
 
       <Container className="flex flex-col items-center justify-between relative z-10">
-        <Companies />
+        {/* <Companies /> */}
         <Features />
 
         <UpcomingEvents events={upcomingEvents} userId={userId} />
-
         <ServicesSection />
+
         <GridFeatures />
         <Testimonials />
       </Container>

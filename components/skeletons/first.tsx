@@ -1,113 +1,77 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
-import Image from "next/image";
-import { BlurImage } from "../blur-image";
+import { BlurImage } from "@/components/blur-image"; // Убедись, что путь правильный
+import { CalendarDays, Clock, MapPin } from "lucide-react";
 
 export const SkeletonOne = () => {
   return (
     <div className="relative flex p-8 gap-10 h-full">
-      <div className=" w-full md:w-[90%] p-5  mx-auto bg-white dark:bg-neutral-900 shadow-2xl group h-full">
-        <div className="flex flex-1 w-full h-full flex-col space-y-2 opacity-20 dark:opacity-60 ">
-          <UserMessage>
-            I want to generate an image of two people, fighting outside a bar.
-            They fight to the core. Once they&apos;re done, they sit down and
-            drink beer.
-          </UserMessage>
-          <AIMessage>
-            Certainly, I&apos;m generating this picture for you in a while. BTW
-            are you talking about THAT movie?
-          </AIMessage>
-          <UserMessage>
-            I don&apos;t know what you&apos;re talking about.
-          </UserMessage>
-          <AIMessage>Are you sure?</AIMessage>
-          <UserMessage>
-            Yes, I&apos;m sure. But if you&apos;re generating that scene, make
-            sure the fighters have clown shoes and rubber chickens instead of
-            fists!
-          </UserMessage>
-          <AIMessage>Affirmative, here&apos;s your image.</AIMessage>
+      <div className="w-full md:w-[90%] p-5 mx-auto bg-white dark:bg-neutral-900 shadow-2xl group h-full rounded-2xl border border-neutral-100 dark:border-neutral-800">
+        <div className="flex flex-1 w-full h-full flex-col space-y-4 opacity-80">
+          <EventRow
+            title="Большой Шаббат"
+            time="Пт, 19:00"
+            location="Главный зал"
+          />
+          <EventRow
+            title="Урок: Недельная глава"
+            time="Пн, 20:00"
+            location="Библиотека"
+          />
+          <EventRow
+            title="Женский клуб"
+            time="Ср, 18:30"
+            location="Зал мероприятий"
+          />
+          <EventRow title="Фарбренген" time="Чт, 21:00" location="Кафетерий" />
         </div>
       </div>
+
       <div className="flex flex-col gap-4 absolute inset-0">
-        <div className="p-2 border border-neutral-200 bg-neutral-100 dark:bg-neutral-800 dark:border-neutral-700 rounded-[32px]  r h-[250px] w-[250px] md:h-[300px] md:w-[300px] mx-auto  flex-shrink-0  z-20 group-hover:scale-[1.02] transition duration-200">
-          <div className="p-2 bg-white dark:bg-black dark:border-neutral-700 border border-neutral-200 rounded-[24px] flex-shrink-0">
+        <div className="p-2 border border-neutral-200 bg-neutral-100 dark:bg-neutral-800 dark:border-neutral-700 rounded-[32px] h-[250px] w-[250px] md:h-[300px] md:w-[300px] mx-auto flex-shrink-0 z-20 group-hover:scale-[1.02] transition duration-200 ml-auto mr-10 mt-10 shadow-2xl">
+          <div className="p-2 bg-white dark:bg-black dark:border-neutral-700 border border-neutral-200 rounded-[24px] flex-shrink-0 w-full h-full">
             <BlurImage
-              src="/skeleton-one.png"
-              alt="header"
+              src="https://images.unsplash.com/photo-1544723795-3ca315cadc20?w=800&q=80"
+              alt="Событие"
               width={800}
               height={800}
-              className="rounded-[20px] w-full h-full object-cover object-bottom aspect-square flex-shrink-0 grayscale"
-            />
-          </div>
-        </div>
-        <div className="p-2 border border-neutral-200 bg-neutral-100 dark:bg-neutral-800 dark:border-neutral-700 rounded-[32px]  r h-[250px] w-[250px] md:h-[300px] md:w-[300px] mx-auto  flex-shrink-0  z-20 group-hover:scale-[1.02] transition duration-200">
-          <div className="p-2 bg-white dark:bg-black dark:border-neutral-700 border border-neutral-200 rounded-[24px] flex-shrink-0">
-            <BlurImage
-              src="/tyler.jpeg"
-              alt="header"
-              width={800}
-              height={800}
-              className="rounded-[20px] w-full h-full object-cover object-bottom aspect-square flex-shrink-0 grayscale"
+              className="rounded-[20px] w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
             />
           </div>
         </div>
       </div>
-      <div className="absolute bottom-0 z-40 inset-x-0 h-60 bg-gradient-to-t from-white dark:from-black via-white dark:via-black to-transparent w-full pointer-events-none" />
-      <div className="absolute top-0 z-40 inset-x-0 h-60 bg-gradient-to-b from-white dark:from-black via-transparent to-transparent w-full pointer-events-none" />
+      <div className="absolute bottom-0 z-40 inset-x-0 h-40 bg-gradient-to-t from-white dark:from-black to-transparent w-full pointer-events-none" />
+      <div className="absolute top-0 z-40 inset-x-0 h-40 bg-gradient-to-b from-white dark:from-black to-transparent w-full pointer-events-none" />
     </div>
   );
 };
 
-const UserMessage = ({ children }: { children: React.ReactNode }) => {
-  const variants = {
-    initial: {
-      x: 0,
-    },
-    animate: {
-      x: 5,
-      transition: {
-        duration: 0.2,
-      },
-    },
-  };
+const EventRow = ({
+  title,
+  time,
+  location,
+}: {
+  title: string;
+  time: string;
+  location: string;
+}) => {
   return (
     <motion.div
-      variants={variants}
-      className="flex flex-row rounded-2xl  p-2  items-start space-x-2 bg-white dark:bg-neutral-900"
+      whileHover={{ x: 5 }}
+      className="flex flex-col rounded-xl p-4 bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-100 dark:border-neutral-800"
     >
-      <Image
-        src="/avatar.jpeg"
-        alt="avatar"
-        height="100"
-        width="100"
-        className="rounded-full h-4 w-4 md:h-10 md:w-10"
-      />
-      <p className="text-[10px] sm:text-sm text-neutral-500">{children}</p>
-    </motion.div>
-  );
-};
-
-const AIMessage = ({ children }: { children: React.ReactNode }) => {
-  const variantsSecond = {
-    initial: {
-      x: 0,
-    },
-    animate: {
-      x: 10,
-      transition: {
-        duration: 0.2,
-      },
-    },
-  };
-  return (
-    <motion.div
-      variants={variantsSecond}
-      className="flex flex-row rounded-2xl   p-2 items-center justify-start space-x-2  bg-white dark:bg-neutral-900 "
-    >
-      <div className="h-4 w-4 md:h-10 md:w-10 rounded-full bg-gradient-to-r from-pink-500 to-violet-500 flex-shrink-0" />
-      <p className="text-[10px] sm:text-sm text-neutral-500">{children}</p>
+      <p className="text-sm font-bold text-neutral-900 dark:text-white mb-2">
+        {title}
+      </p>
+      <div className="flex gap-4 text-xs text-neutral-500">
+        <span className="flex items-center gap-1">
+          <Clock size={12} /> {time}
+        </span>
+        <span className="flex items-center gap-1">
+          <MapPin size={12} /> {location}
+        </span>
+      </div>
     </motion.div>
   );
 };
