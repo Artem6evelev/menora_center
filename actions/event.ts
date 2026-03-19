@@ -243,33 +243,9 @@ export async function getPublicEventsPaginated(
       conditions = and(conditions, eq(events.categoryId, categoryId)) as any;
     }
 
-    // Фильтр по дате (ищем события внутри выбранного дня от 00:00 до 23:59)
+    // Фильтр по дате (теперь это простое сравнение строк "YYYY-MM-DD")
     if (dateString) {
-      // Разбиваем строку "YYYY-MM-DD" безопасно
-      const [year, month, day] = dateString.split("-");
-      const startOfDay = new Date(
-        parseInt(year),
-        parseInt(month) - 1,
-        parseInt(day),
-        0,
-        0,
-        0,
-      );
-      const endOfDay = new Date(
-        parseInt(year),
-        parseInt(month) - 1,
-        parseInt(day),
-        23,
-        59,
-        59,
-        999,
-      );
-
-      conditions = and(
-        conditions,
-        gte(events.date, startOfDay),
-        lte(events.date, endOfDay),
-      ) as any;
+      conditions = and(conditions, eq(events.date, dateString)) as any;
     }
 
     const data = await db
@@ -280,7 +256,7 @@ export async function getPublicEventsPaginated(
       .from(events)
       .leftJoin(eventCategories, eq(events.categoryId, eventCategories.id))
       .where(conditions)
-      .orderBy(desc(events.date))
+      .orderBy(desc(events.date)) // Сортируем по строковой дате (работает корректно для формата YYYY-MM-DD)
       .limit(limit)
       .offset(offset);
 
