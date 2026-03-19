@@ -56,7 +56,6 @@ export default function EventsClient({
           </p>
         </motion.div>
 
-        {/* Показываем кнопку "Создать" ТОЛЬКО админам */}
         {isAdmin && (
           <motion.button
             initial={{ opacity: 0, scale: 0.9 }}
@@ -77,16 +76,13 @@ export default function EventsClient({
 
       {/* CONTENT */}
       {events.length === 0 ? (
-        // EMPTY STATE (Премиальный блок, если событий нет)
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
           className="bg-white/80 dark:bg-neutral-900/80 backdrop-blur-2xl border border-neutral-200/50 dark:border-neutral-800/50 rounded-[40px] p-16 text-center flex flex-col items-center justify-center shadow-sm relative overflow-hidden"
         >
-          {/* Декоративное свечение */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#FFB800]/5 rounded-full blur-3xl pointer-events-none" />
-
           <div className="relative z-10 w-24 h-24 bg-[#FFB800]/10 dark:bg-[#FFB800]/5 rounded-3xl flex items-center justify-center text-[#FFB800] mb-6">
             <CalendarX size={40} strokeWidth={1.5} />
           </div>
@@ -100,7 +96,6 @@ export default function EventsClient({
           </p>
         </motion.div>
       ) : (
-        // GRID
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -120,12 +115,12 @@ export default function EventsClient({
         </motion.div>
       )}
 
-      {/* Модалка для админов */}
+      {/* МОДАЛКА: ИСПРАВЛЕН ПРОПС editData */}
       {isAdmin && (
         <EventModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          eventToEdit={eventToEdit}
+          editData={eventToEdit}
         />
       )}
     </div>

@@ -12,10 +12,12 @@ export type EventType = {
   title: string;
   description: string | null;
   imageUrl: string | null;
-  date: Date | null;
+  date: string | null; // <-- Было Date, стало string
+  time: string | null; // <-- ДОБАВИЛИ
   location: string | null;
-  isPaid: boolean;
+  isFree: boolean; // <-- Было isPaid, стало isFree
   price: string | null;
+  audience: string; // <-- ДОБАВИЛИ
   status: string;
   categoryId: string | null;
   createdAt: Date;

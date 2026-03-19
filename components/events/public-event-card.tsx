@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Calendar, Check, Loader2, ArrowRight, X, MapPin } from "lucide-react";
+import { Calendar, Check, Loader2, ArrowRight, X } from "lucide-react";
 import { registerForEvent, checkRegistration } from "@/actions/event";
 import { useRouter } from "next/navigation";
 import { useRegistrationStore } from "@/store/useRegistrationStore";
@@ -70,14 +70,12 @@ export default function PublicEventCard({
     };
   }, [isModalOpen, showPhoneModal]);
 
-  // Красивое форматирование даты
+  // ИСПРАВЛЕННОЕ ФОРМАТИРОВАНИЕ ДАТЫ И ВРЕМЕНИ
   const formattedDate = event.date
     ? new Date(event.date).toLocaleDateString("ru-RU", {
         day: "numeric",
         month: "long",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
+      }) + (event.time ? `, ${event.time}` : "")
     : "Дата не указана";
 
   // МОДАЛКА ВВОДА ТЕЛЕФОНА
@@ -215,21 +213,18 @@ export default function PublicEventCard({
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 -z-10"
         />
 
-        {/* Постоянный нижний градиент, чтобы текст читался всегда */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent -z-10" />
 
         <div className="absolute inset-0 flex flex-col justify-end p-6 z-10">
           <div className="translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
             <p className="text-[#FFB800] text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-1.5">
               <Calendar size={14} />
-              {formattedDate.split(",")[0]}{" "}
-              {/* Показываем только дату без времени на превью */}
+              {formattedDate.split(",")[0]}
             </p>
             <h3 className="text-white text-2xl font-black tracking-tighter leading-tight mb-4">
               {event.title}
             </h3>
 
-            {/* Кнопка плавно появляется при наведении (на десктопе) */}
             <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-500 md:block hidden">
               <button className="w-full py-3.5 rounded-2xl font-bold text-sm bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-colors border border-white/20">
                 Узнать подробности

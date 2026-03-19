@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, CalendarDays } from "lucide-react";
 import PublicEventCard from "@/components/events/public-event-card";
+import { index } from "drizzle-orm/gel-core";
 
 export const UpcomingEvents = ({
   events,
@@ -44,7 +45,11 @@ export const UpcomingEvents = ({
         {/* Сетка событий */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
           {events.map((event) => (
-            <PublicEventCard key={event.id} item={event} userId={userId} />
+            <PublicEventCard
+              key={event?.id || index} // <-- Добавили fallback на index
+              item={event}
+              userId={userId}
+            />
           ))}
         </div>
       </div>

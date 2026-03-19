@@ -9,7 +9,6 @@ import {
   Search,
   Calendar as CalendarIcon,
   Users,
-  X,
   RotateCcw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -43,10 +42,12 @@ export default function EventsPageClient({
   const [events, setEvents] = useState(initialEvents || []);
 
   // Точки на календаре для всех дат, где есть события
-  const eventDates = useMemo(
-    () => initialEvents?.map((e: any) => new Date(e.startDate)) || [],
-    [initialEvents],
-  );
+  const eventDates = useMemo(() => {
+    if (!initialEvents) return [];
+    return initialEvents
+      .filter((item: any) => item.event?.date)
+      .map((item: any) => new Date(item.event.date));
+  }, [initialEvents]);
 
   useEffect(() => {
     const filterFromDB = async () => {
@@ -61,21 +62,35 @@ export default function EventsPageClient({
     else setEvents(initialEvents || []);
   }, [activeCategory, initialEvents]);
 
+  // Логика фильтрации на клиенте
   const filteredEvents = useMemo(() => {
-    return events.filter((e: any) => {
-      const titleMatch = (e?.title || "")
+    return events.filter((item: any) => {
+      const ev = item.event;
+      if (!ev) return false;
+
+      // 1. Поиск
+      const titleMatch = (ev.title || "")
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
+
+      // 2. Цена (Смотрим на новое поле isFree)
       const priceMatch =
         priceType === "all"
           ? true
           : priceType === "free"
-            ? !e.price
-            : e.price > 0;
-      const womenMatch = womenOnly ? e.isForWomen === true : true;
-      const dateMatch = selectedDate
-        ? isSameDay(new Date(e.startDate), selectedDate)
+            ? ev.isFree === true
+            : ev.isFree === false;
+
+      // 3. Аудитория (Смотрим на новое поле audience)
+      const womenMatch = womenOnly
+        ? ev.audience === "women" || ev.audience === "all"
         : true;
+
+      // 4. Дата (Смотрим на новое поле date)
+      const dateMatch = selectedDate
+        ? ev.date && isSameDay(new Date(ev.date), selectedDate)
+        : true;
+
       return titleMatch && priceMatch && womenMatch && dateMatch;
     });
   }, [events, searchQuery, priceType, womenOnly, selectedDate]);
@@ -226,15 +241,15 @@ export default function EventsPageClient({
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
       >
         <AnimatePresence mode="popLayout">
-          {filteredEvents.map((event: any) => (
+          {filteredEvents.map((item: any) => (
             <motion.div
-              key={event.id}
+              key={item.event.id}
               layout
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <PublicEventCard item={event} userId={userId} />
+              <PublicEventCard item={item} userId={userId} />
             </motion.div>
           ))}
         </AnimatePresence>

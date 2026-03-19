@@ -13,6 +13,9 @@ export const SkeletonFour = () => {
       <InfiniteMovingCards speed="slow" direction="right">
         <MovingNewsRowTwo />
       </InfiniteMovingCards>
+      <InfiniteMovingCards speed="slow" direction="right">
+        <MovingNewsRowThree />
+      </InfiniteMovingCards>
     </div>
   );
 };
@@ -22,8 +25,9 @@ const MovingNewsRowOne = () => {
     <div className="flex space-x-4 flex-shrink-0 mb-4 relative z-40">
       <NewsChip tag="АКТУАЛЬНО" text="Открытие нового детского сада" />
       <NewsChip tag="ПРАЗДНИК" text="Расписание молитв на Песах" />
-      <NewsChip tag="ОБЩИНА" text="Благотворительный сбор завершен" />
-      <NewsChip tag="УРОКИ" text="Новый курс по изучению Иврита" />
+      <NewsChip tag="ОБЩИНА" text="Благотворительный сбор успешно завершен" />
+      <NewsChip tag="УРОКИ" text="Старт нового курса по изучению Иврита" />
+      <NewsChip tag="ТОРА" text="Еженедельный урок по недельной главе" />
     </div>
   );
 };
@@ -31,10 +35,26 @@ const MovingNewsRowOne = () => {
 const MovingNewsRowTwo = () => {
   return (
     <div className="flex space-x-4 flex-shrink-0 mb-4 relative z-40">
-      <NewsChip tag="СОБЫТИЕ" text="Большой хасидский фарбренген" />
-      <NewsChip tag="УСЛУГИ" text="Открыт заказ кошерного мяса" />
-      <NewsChip tag="ВАЖНО" text="Изменения в расписании Шаббата" />
-      <NewsChip tag="ДЕТЯМ" text="Воскресная школа: набор открыт" />
+      <NewsChip tag="СОБЫТИЕ" text="Большой хасидский фарбренген в четверг" />
+      <NewsChip tag="УСЛУГИ" text="Открыт заказ кошерного мяса и птицы" />
+      <NewsChip tag="ВАЖНО" text="Изменения в расписании зажигания свечей" />
+      <NewsChip tag="ДЕТЯМ" text="Воскресная школа: набор в новые группы" />
+      <NewsChip
+        tag="ЖЕНСКИЙ КЛУБ"
+        text="Мастер-класс по выпечке праздничных хал"
+      />
+    </div>
+  );
+};
+
+const MovingNewsRowThree = () => {
+  return (
+    <div className="flex space-x-4 flex-shrink-0 mb-4 relative z-40">
+      <NewsChip tag="МОЛОДЕЖЬ" text="Поездка студентов по программе STARS" />
+      <NewsChip tag="ИНФРАСТРУКТУРА" text="Завершено обновление миквы" />
+      <NewsChip tag="ГОСТЬ" text="Специальная лекция приглашенного раввина" />
+      <NewsChip tag="ДОБРО" text="Волонтеры развезли 100 продуктовых наборов" />
+      <NewsChip tag="МЕДИА" text="Слушайте новый выпуск общинного подкаста" />
     </div>
   );
 };

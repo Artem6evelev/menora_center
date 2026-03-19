@@ -47,24 +47,33 @@ export const eventCategories = pgTable("event_categories", {
 });
 
 // === ОБНОВЛЕННАЯ ТАБЛИЦА СОБЫТИЙ ===
+// === ОБНОВЛЕННАЯ ТАБЛИЦА СОБЫТИЙ ===
 export const events = pgTable("events", {
   id: text("id").primaryKey(),
   title: text("title").notNull(),
   description: text("description"),
 
-  // Обложка (ссылка из Supabase Storage)
+  // Обложка
   imageUrl: text("image_url"),
 
-  date: timestamp("date", { withTimezone: true }),
+  // --- НОВЫЕ И ОБНОВЛЕННЫЕ ПОЛЯ ДЛЯ ФИЛЬТРОВ ---
+  // Сохраняем дату и время текстом (YYYY-MM-DD и HH:MM),
+  // так намного проще работать с инпутами в React и делать фильтры
+  date: text("date"),
+  time: text("time"),
   location: text("location"),
 
   // Финансы
-  isPaid: boolean("is_paid").default(false).notNull(),
-  price: text("price"), // Текстом, чтобы можно было писать "100 ₪" или "Добровольный взнос"
+  isFree: boolean("is_free").default(false).notNull(), // Заменили isPaid на isFree
+  price: text("price"),
+
+  // Аудитория (для кого событие)
+  audience: text("audience").default("all").notNull(), // 'all', 'men', 'women', 'kids'
+  // ----------------------------------------------
 
   // Статус и Связь с категорией
   status: text("status").default("planned").notNull(), // 'planned', 'completed', 'cancelled'
-  categoryId: text("category_id").references(() => eventCategories.id), // Привязка к категории
+  categoryId: text("category_id").references(() => eventCategories.id),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()

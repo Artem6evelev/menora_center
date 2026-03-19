@@ -29,9 +29,9 @@ export const SkeletonTwo = () => {
           </div>
           <div>
             <div className="font-bold text-sm dark:text-white">
-              Хасидут с кофе ☕
+              Менора Центр
             </div>
-            <div className="text-[10px] text-neutral-500">1,204 участника</div>
+            <div className="text-[10px] text-neutral-500">613 участников</div>
           </div>
         </div>
 
