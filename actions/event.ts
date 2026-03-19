@@ -60,11 +60,27 @@ export async function getEvents() {
 
 export async function createEvent(data: any) {
   try {
-    const newId = `evt_${Math.random().toString(36).substring(2, 11)}`;
-    await db.insert(events).values({ id: newId, ...data });
+    const newId = `evt_${crypto.randomUUID()}`;
+
+    const preparedData = {
+      ...data,
+      categoryId: data.categoryId || null,
+      price: data.price || null,
+      description: data.description || null,
+      location: data.location || null,
+      time: data.time || null,
+      recurringPattern: data.recurringPattern || null,
+      recurringDays: data.recurringDays || null,
+    };
+
+    await db.insert(events).values({ id: newId, ...preparedData });
     revalidatePath("/dashboard/events");
+    revalidatePath("/events");
+    revalidatePath("/");
+
     return { success: true, id: newId };
   } catch (error) {
+    console.error("🔥 ОШИБКА БД ПРИ СОЗДАНИИ:", error);
     return { success: false };
   }
 }
@@ -81,10 +97,25 @@ export async function deleteEvent(id: string) {
 
 export async function updateEvent(id: string, data: any) {
   try {
-    await db.update(events).set(data).where(eq(events.id, id));
+    const preparedData = {
+      ...data,
+      categoryId: data.categoryId || null,
+      price: data.price || null,
+      description: data.description || null,
+      location: data.location || null,
+      time: data.time || null,
+      recurringPattern: data.recurringPattern || null,
+      recurringDays: data.recurringDays || null,
+    };
+
+    await db.update(events).set(preparedData).where(eq(events.id, id));
     revalidatePath("/dashboard/events");
+    revalidatePath("/events");
+    revalidatePath("/");
+
     return { success: true };
   } catch (error) {
+    console.error("🔥 ОШИБКА БД ПРИ ОБНОВЛЕНИИ:", error);
     return { success: false };
   }
 }

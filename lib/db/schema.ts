@@ -55,6 +55,10 @@ export const events = pgTable("events", {
 
   // Обложка
   imageUrl: text("image_url"),
+  // --- НОВЫЕ ПОЛЯ ДЛЯ ЦИКЛИЧНОСТИ ---
+  isRecurring: boolean("is_recurring").default(false).notNull(),
+  recurringPattern: text("recurring_pattern"), // 'daily' или 'weekly'
+  recurringDays: text("recurring_days"), // JSON строка с днями недели, напр. '[1, 3]' (Пн и Ср)
 
   // --- НОВЫЕ И ОБНОВЛЕННЫЕ ПОЛЯ ДЛЯ ФИЛЬТРОВ ---
   // Сохраняем дату и время текстом (YYYY-MM-DD и HH:MM),

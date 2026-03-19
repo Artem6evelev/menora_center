@@ -41,14 +41,6 @@ export default function EventsPageClient({
 
   const [events, setEvents] = useState(initialEvents || []);
 
-  // Точки на календаре для всех дат, где есть события
-  const eventDates = useMemo(() => {
-    if (!initialEvents) return [];
-    return initialEvents
-      .filter((item: any) => item.event?.date)
-      .map((item: any) => new Date(item.event.date));
-  }, [initialEvents]);
-
   useEffect(() => {
     const filterFromDB = async () => {
       try {
@@ -62,18 +54,57 @@ export default function EventsPageClient({
     else setEvents(initialEvents || []);
   }, [activeCategory, initialEvents]);
 
-  // Логика фильтрации на клиенте
+  // 1. УМНАЯ ГЕНЕРАЦИЯ ТОЧЕК ДЛЯ КАЛЕНДАРЯ
+  // Рассчитывает даты для обычных и цикличных событий на год вперед
+  const eventDates = useMemo(() => {
+    const dates: Date[] = [];
+    const maxDate = new Date();
+    maxDate.setFullYear(maxDate.getFullYear() + 1); // Год вперед
+
+    events.forEach((item: any) => {
+      const ev = item.event;
+      if (!ev || !ev.date) return;
+
+      const startDate = new Date(ev.date);
+      startDate.setHours(0, 0, 0, 0);
+
+      // Если событие не повторяется, просто добавляем его дату
+      if (!ev.isRecurring) {
+        dates.push(startDate);
+        return;
+      }
+
+      // Если событие повторяется, размножаем точки
+      let current = new Date(startDate);
+      while (current <= maxDate) {
+        if (ev.recurringPattern === "daily") {
+          dates.push(new Date(current));
+        } else if (ev.recurringPattern === "weekly") {
+          try {
+            const days = JSON.parse(ev.recurringDays || "[]");
+            // JS getDay(): 0=Вс, 1=Пн, 2=Вт, 3=Ср, 4=Чт, 5=Пт, 6=Сб
+            if (days.includes(current.getDay())) {
+              dates.push(new Date(current));
+            }
+          } catch (e) {}
+        }
+        current.setDate(current.getDate() + 1); // Шаг +1 день
+      }
+    });
+    return dates;
+  }, [events]);
+
+  // 2. УМНАЯ ФИЛЬТРАЦИЯ СПИСКА СОБЫТИЙ
   const filteredEvents = useMemo(() => {
     return events.filter((item: any) => {
       const ev = item.event;
       if (!ev) return false;
 
-      // 1. Поиск
+      // Поиск, цена, аудитория
       const titleMatch = (ev.title || "")
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
 
-      // 2. Цена (Смотрим на новое поле isFree)
       const priceMatch =
         priceType === "all"
           ? true
@@ -81,15 +112,38 @@ export default function EventsPageClient({
             ? ev.isFree === true
             : ev.isFree === false;
 
-      // 3. Аудитория (Смотрим на новое поле audience)
       const womenMatch = womenOnly
         ? ev.audience === "women" || ev.audience === "all"
         : true;
 
-      // 4. Дата (Смотрим на новое поле date)
-      const dateMatch = selectedDate
-        ? ev.date && isSameDay(new Date(ev.date), selectedDate)
-        : true;
+      // Логика совпадения даты с учетом цикличности
+      let dateMatch = true;
+      if (selectedDate && ev.date) {
+        const targetDate = new Date(selectedDate);
+        targetDate.setHours(0, 0, 0, 0);
+
+        const startDate = new Date(ev.date);
+        startDate.setHours(0, 0, 0, 0);
+
+        if (targetDate < startDate) {
+          // Если выбранная дата раньше даты старта цикла — событие еще не началось
+          dateMatch = false;
+        } else if (!ev.isRecurring) {
+          // Обычное событие
+          dateMatch = isSameDay(startDate, targetDate);
+        } else if (ev.recurringPattern === "daily") {
+          // Каждый день
+          dateMatch = true;
+        } else if (ev.recurringPattern === "weekly") {
+          // Проверяем день недели
+          try {
+            const days = JSON.parse(ev.recurringDays || "[]");
+            dateMatch = days.includes(targetDate.getDay());
+          } catch (e) {
+            dateMatch = false;
+          }
+        }
+      }
 
       return titleMatch && priceMatch && womenMatch && dateMatch;
     });

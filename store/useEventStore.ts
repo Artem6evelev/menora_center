@@ -21,6 +21,9 @@ export type EventType = {
   status: string;
   categoryId: string | null;
   createdAt: Date;
+  isRecurring: boolean;
+  recurringPattern: string | null;
+  recurringDays: string | null;
 };
 
 export type EventItem = {

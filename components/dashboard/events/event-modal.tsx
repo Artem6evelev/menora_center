@@ -11,11 +11,23 @@ import {
   MapPin,
   Users,
   Coins,
+  Repeat,
 } from "lucide-react";
 
 import { createEvent, updateEvent, createEventCategory } from "@/actions/event"; // Проверь путь к экшенам
 import { useEventStore } from "@/store/useEventStore";
 import { uploadEventImage } from "@/supabase/storage";
+
+// Константы для дней недели
+const WEEKDAYS = [
+  { label: "Пн", val: 1 },
+  { label: "Вт", val: 2 },
+  { label: "Ср", val: 3 },
+  { label: "Чт", val: 4 },
+  { label: "Пт", val: 5 },
+  { label: "Сб", val: 6 },
+  { label: "Вс", val: 0 },
+];
 
 export default function EventModal({ isOpen, onClose, editData }: any) {
   const {
@@ -36,6 +48,11 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
   const [isFree, setIsFree] = useState(false);
   const [price, setPrice] = useState("");
   const [audience, setAudience] = useState("all");
+
+  // === НОВЫЕ СТЕЙТЫ ДЛЯ ЦИКЛИЧНОСТИ ===
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [recurringPattern, setRecurringPattern] = useState("weekly"); // 'daily' | 'weekly'
+  const [recurringDays, setRecurringDays] = useState<number[]>([]);
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -61,6 +78,15 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
       setAudience(ev.audience || "all");
       setImagePreview(ev.imageUrl || null);
 
+      // Загрузка данных цикличности
+      setIsRecurring(ev.isRecurring || false);
+      setRecurringPattern(ev.recurringPattern || "weekly");
+      try {
+        setRecurringDays(ev.recurringDays ? JSON.parse(ev.recurringDays) : []);
+      } catch (e) {
+        setRecurringDays([]);
+      }
+
       setImageFile(null);
       setIsCreatingCategory(false);
     } else {
@@ -75,6 +101,12 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
       setAudience("all");
       setImagePreview(null);
       setImageFile(null);
+
+      // Сброс данных цикличности
+      setIsRecurring(false);
+      setRecurringPattern("weekly");
+      setRecurringDays([]);
+
       setIsCreatingCategory(false);
     }
   }, [editData, isOpen]);
@@ -112,6 +144,14 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
     }
   };
 
+  const toggleRecurringDay = (dayVal: number) => {
+    setRecurringDays((prev) =>
+      prev.includes(dayVal)
+        ? prev.filter((d) => d !== dayVal)
+        : [...prev, dayVal],
+    );
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -141,6 +181,13 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
       price: isFree ? "" : price,
       audience,
       imageUrl: finalImageUrl,
+      // Добавляем данные цикличности в отправляемый объект
+      isRecurring,
+      recurringPattern: isRecurring ? recurringPattern : null,
+      recurringDays:
+        isRecurring && recurringPattern === "weekly"
+          ? JSON.stringify(recurringDays)
+          : null,
     };
 
     if (editData) {
@@ -304,6 +351,71 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
                 />
               </div>
             </div>
+
+            {/* === НОВЫЙ БЛОК ЦИКЛИЧНОСТИ === */}
+            <div className="col-span-1 md:col-span-2 bg-neutral-50 p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-neutral-100 transition-all duration-300">
+              <label className="flex items-center gap-3 cursor-pointer group w-max">
+                <input
+                  type="checkbox"
+                  checked={isRecurring}
+                  onChange={(e) => setIsRecurring(e.target.checked)}
+                  className="w-5 h-5 rounded border-neutral-300 text-[#FFB800] focus:ring-[#FFB800] cursor-pointer"
+                />
+                <span className="text-sm font-bold text-neutral-800 group-hover:text-black flex items-center gap-1.5 transition-colors">
+                  <Repeat size={16} className="text-[#FFB800]" /> Повторяющееся
+                  событие (Урок)
+                </span>
+              </label>
+
+              {isRecurring && (
+                <div className="mt-4 space-y-4 animate-in fade-in slide-in-from-top-2">
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setRecurringPattern("daily")}
+                      className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                        recurringPattern === "daily"
+                          ? "bg-[#FFB800] text-black shadow-md"
+                          : "bg-white border-2 border-neutral-200 text-neutral-500 hover:border-neutral-300"
+                      }`}
+                    >
+                      Каждый день
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRecurringPattern("weekly")}
+                      className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                        recurringPattern === "weekly"
+                          ? "bg-[#FFB800] text-black shadow-md"
+                          : "bg-white border-2 border-neutral-200 text-neutral-500 hover:border-neutral-300"
+                      }`}
+                    >
+                      По дням недели
+                    </button>
+                  </div>
+
+                  {recurringPattern === "weekly" && (
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      {WEEKDAYS.map((day) => (
+                        <button
+                          key={day.val}
+                          type="button"
+                          onClick={() => toggleRecurringDay(day.val)}
+                          className={`w-10 h-10 rounded-full text-sm font-bold transition-all ${
+                            recurringDays.includes(day.val)
+                              ? "bg-black text-white shadow-md scale-110"
+                              : "bg-white border-2 border-neutral-200 text-neutral-500 hover:border-neutral-300 hover:bg-neutral-100"
+                          }`}
+                        >
+                          {day.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            {/* ================================== */}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6 bg-neutral-50 p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-neutral-100 items-start">
