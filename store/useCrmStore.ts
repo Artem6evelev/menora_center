@@ -1,21 +1,29 @@
 import { create } from "zustand";
 
 interface CrmStore {
-  // Выделение (чекбоксы)
   selectedUserIds: string[];
   toggleUserSelection: (id: string) => void;
   selectAll: (ids: string[]) => void;
   clearSelection: () => void;
 
-  // Индивидуальная шторка (слайдер)
   activeUserId: string | null;
   openSlider: (id: string) => void;
   closeSlider: () => void;
 
-  // Модалка массовой рассылки
   isBulkModalOpen: boolean;
   openBulkModal: () => void;
   closeBulkModal: () => void;
+
+  // НОВЫЕ СТЕЙТЫ ДЛЯ ФИЛЬТРОВ
+  isFiltersOpen: boolean;
+  toggleFilters: () => void;
+  activeFilters: {
+    jewishStatus: string;
+    maritalStatus: string;
+    hasChildren: string;
+  };
+  setFilter: (key: string, value: string) => void;
+  clearFilters: () => void;
 }
 
 export const useCrmStore = create<CrmStore>((set) => ({
@@ -36,4 +44,23 @@ export const useCrmStore = create<CrmStore>((set) => ({
   isBulkModalOpen: false,
   openBulkModal: () => set({ isBulkModalOpen: true }),
   closeBulkModal: () => set({ isBulkModalOpen: false }),
+
+  // ФИЛЬТРЫ
+  isFiltersOpen: false,
+  toggleFilters: () =>
+    set((state) => ({ isFiltersOpen: !state.isFiltersOpen })),
+  activeFilters: {
+    jewishStatus: "",
+    maritalStatus: "",
+    hasChildren: "",
+  },
+  setFilter: (key, value) =>
+    set((state) => ({
+      activeFilters: { ...state.activeFilters, [key]: value },
+    })),
+  clearFilters: () =>
+    set({
+      activeFilters: { jewishStatus: "", maritalStatus: "", hasChildren: "" },
+      isFiltersOpen: false,
+    }),
 }));

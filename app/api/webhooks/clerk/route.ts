@@ -1,14 +1,9 @@
-// app/api/webhooks/clerk/route.ts
 import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { WebhookEvent } from "@clerk/nextjs/server";
-import { createClient } from "@supabase/supabase-js";
-
-// Инициализация Supabase с Service Role Key (дает права обходить RLS)
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
+import { db } from "@/lib/db";
+import { users } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
@@ -34,7 +29,7 @@ export async function POST(req: Request) {
   const wh = new Webhook(WEBHOOK_SECRET);
   let evt: WebhookEvent;
 
-  // Верификация: проверяем, что запрос реально пришел от Clerk
+  // Верификация
   try {
     evt = wh.verify(body, {
       "svix-id": svix_id,
@@ -42,61 +37,60 @@ export async function POST(req: Request) {
       "svix-signature": svix_signature,
     }) as WebhookEvent;
   } catch (err) {
-    console.error("Ошибка верификации вебхука:", err);
+    console.error("🔥 Ошибка верификации вебхука:", err);
     return new Response("Ошибка верификации", { status: 400 });
   }
 
   const eventType = evt.type;
 
-  // ЛОГИКА СИНХРОНИЗАЦИИ
+  // === ЛОГИКА СИНХРОНИЗАЦИИ (Используем Drizzle) ===
   if (eventType === "user.created" || eventType === "user.updated") {
     const { id, email_addresses, first_name, last_name, image_url } = evt.data;
-    const primaryEmail = email_addresses?.[0]?.email_address;
-
-    const userData = {
-      id,
-      email: primaryEmail,
-      first_name,
-      last_name,
-      image_url,
-      updated_at: new Date().toISOString(),
-    };
+    const primaryEmail = email_addresses?.[0]?.email_address || "";
 
     try {
-      if (eventType === "user.created") {
-        // Если юзер НОВЫЙ — создаем его и ставим роль по умолчанию 'client'
-        const { error } = await supabase.from("users").upsert({
-          ...userData,
-          role: "client",
+      // Используем Upsert (Вставить или Обновить).
+      // Это супер-надежно: если юзер уже есть, обновит его данные (не трогая role), если нет — создаст.
+      await db
+        .insert(users)
+        .values({
+          id: id,
+          email: primaryEmail,
+          firstName: first_name || "",
+          lastName: last_name || "",
+          imageUrl: image_url || "",
+          role: "client", // Роль по умолчанию
+          isProfileComplete: false,
+        })
+        .onConflictDoUpdate({
+          target: users.id, // Если такой ID уже есть
+          set: {
+            email: primaryEmail,
+            firstName: first_name || "",
+            lastName: last_name || "",
+            imageUrl: image_url || "",
+            // Заметь: мы НЕ обновляем 'role' здесь, чтобы не сбросить 'superadmin' обратно на 'client'
+          },
         });
-        if (error) throw error;
-        console.log(`Юзер ${id} создан в базе.`);
-      } else if (eventType === "user.updated") {
-        // Если юзер ОБНОВИЛСЯ — обновляем данные, но НЕ ТРОГАЕМ поле 'role'
-        // Таким образом ваш 'superadmin' в базе останется на месте
-        const { error } = await supabase
-          .from("users")
-          .update(userData)
-          .eq("id", id);
-        if (error) throw error;
-        console.log(`Данные юзера ${id} обновлены (роль сохранена).`);
-      }
+
+      console.log(`✅ Юзер ${id} успешно синхронизирован через вебхук.`);
     } catch (error) {
-      console.error("Ошибка Supabase:", error);
+      console.error("🔥 Ошибка Drizzle при синхронизации юзера:", error);
       return new Response("Ошибка базы данных", { status: 500 });
     }
   }
 
-  // УДАЛЕНИЕ ПОЛЬЗОВАТЕЛЯ
+  // === УДАЛЕНИЕ ПОЛЬЗОВАТЕЛЯ ===
   if (eventType === "user.deleted") {
     const { id } = evt.data;
-    try {
-      const { error } = await supabase.from("users").delete().eq("id", id);
-      if (error) throw error;
-      console.log(`Юзер ${id} удален из базы.`);
-    } catch (error) {
-      console.error("Ошибка при удалении:", error);
-      return new Response("Ошибка базы данных", { status: 500 });
+    if (id) {
+      try {
+        await db.delete(users).where(eq(users.id, id));
+        console.log(`🗑️ Юзер ${id} удален из базы.`);
+      } catch (error) {
+        console.error("🔥 Ошибка при удалении:", error);
+        return new Response("Ошибка базы данных", { status: 500 });
+      }
     }
   }
 

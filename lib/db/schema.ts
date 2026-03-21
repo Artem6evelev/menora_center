@@ -13,23 +13,26 @@ import {
 // 1. ПОЛЬЗОВАТЕЛИ
 // ==========================================
 export const users = pgTable("users", {
-  id: text("id").primaryKey(), // ID из Clerk (user_...)
+  id: text("id").primaryKey(),
   email: text("email").notNull(),
   firstName: text("first_name"),
   lastName: text("last_name"),
   imageUrl: text("image_url"),
-  role: text("role").default("client").notNull(), // superadmin, admin, client
+  role: text("role").default("client").notNull(),
 
-  // --- НОВЫЕ ПОЛЯ ДЛЯ CRM ---
-  isProfileComplete: boolean("is_profile_complete").default(false).notNull(), // Флаг заполнения анкеты
+  isProfileComplete: boolean("is_profile_complete").default(false).notNull(),
   phone: text("phone"),
   dateOfBirth: timestamp("date_of_birth", { withTimezone: true }),
   city: text("city"),
-  maritalStatus: text("marital_status"), // Холост / В браке
+  maritalStatus: text("marital_status"),
   hasChildren: boolean("has_children").default(false),
-  source: text("source"), // Откуда узнали (необязательно)
-  tags: text("tags").default("[]"), // Будем хранить как JSON массив строк: '["VIP", "Новичок"]'
+  source: text("source"),
+  tags: text("tags").default("[]"),
   telegramChatId: text("telegram_chat_id"),
+
+  // 🔥 ДВЕ НОВЫЕ КОЛОНКИ:
+  jewishStatus: text("jewish_status"),
+  agreedToPrivacy: boolean("agreed_to_privacy").default(false),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
