@@ -1,7 +1,7 @@
 import React from "react";
 
 export const metadata = {
-  title: "Правила посещения | Menora Center",
+  title: "Правила посещения | Menorah Center",
 };
 
 export default function RulesPage() {
@@ -13,7 +13,7 @@ export default function RulesPage() {
             Правила посещения
           </h1>
           <p className="text-neutral-500 font-medium">
-            Для резидентов и гостей Menora Center
+            Для резидентов и гостей Menorah Center
           </p>
         </div>
 
@@ -21,7 +21,7 @@ export default function RulesPage() {
           <section>
             <p className="text-lg">
               Мы стремимся создать безопасную, уважительную и комфортную среду
-              для каждого участника нашей общины. Посещая мероприятия Menora
+              для каждого участника нашей общины. Посещая мероприятия Menorah
               Center, вы соглашаетесь соблюдать следующие правила.
             </p>
           </section>
@@ -73,7 +73,7 @@ export default function RulesPage() {
               3. Дресс-код
             </h2>
             <p>
-              В Menora Center приветствуется скромный и опрятный стиль одежды,
+              В Menorah Center приветствуется скромный и опрятный стиль одежды,
               соответствующий духу и традициям общины. При посещении синагоги
               или религиозных мероприятий для мужчин обязательно наличие
               головного убора (кипы).

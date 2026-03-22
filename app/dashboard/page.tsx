@@ -154,7 +154,7 @@ export default async function DashboardPage() {
 
         <div className="relative z-10 w-full">
           <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-[#FFB800] mb-6">
-            Menora Center CRM
+            Menorah Center CRM
           </div>
 
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-4 tracking-tighter leading-tight">

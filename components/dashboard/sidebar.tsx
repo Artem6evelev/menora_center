@@ -166,7 +166,7 @@ export default function Sidebar({ userRole }: { userRole: string }) {
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-black text-neutral-900 dark:text-white tracking-tighter leading-none">
-                Menora
+                Menorah
               </span>
               <span className="text-[9px] font-black text-[#FFB800] uppercase tracking-widest mt-1">
                 Workspace

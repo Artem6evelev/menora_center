@@ -51,7 +51,7 @@ export const Features = () => {
       <Heading as="h2">Всё для резидентов общины</Heading>
       <Subheading className="text-center">
         От ежедневных уроков Торы до заказа кошерных продуктов — вся жизнь
-        Menora Center в одном удобном пространстве.
+        Menorah Center в одном удобном пространстве.
       </Subheading>
 
       <div className="relative">

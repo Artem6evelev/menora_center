@@ -12,7 +12,7 @@ export const Logo = () => {
       {/* Логотип для СВЕТЛОЙ темы (скрывается в темной) */}
       <Image
         src="/logos/menora-logo.svg"
-        alt="Menora Center"
+        alt="Menorah Center"
         width={180}
         height={60}
         priority
@@ -24,7 +24,7 @@ export const Logo = () => {
       <Image
         // Убедись, что у тебя есть версия логотипа со светлым текстом в папке public/logos/
         src="/logos/menora-logo-dark.svg"
-        alt="Menora Center"
+        alt="Menorah Center"
         width={180}
         height={60}
         priority

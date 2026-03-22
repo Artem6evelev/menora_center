@@ -29,7 +29,7 @@ export const GridFeatures = () => {
     {
       title: "Тепло и уют",
       description:
-        "Menora Center — это ваш второй дом. Место, где вас всегда ждут с улыбкой и горячим кофе.",
+        "Menorah Center — это ваш второй дом. Место, где вас всегда ждут с улыбкой и горячим кофе.",
       icon: (
         <IconHomeHeart className="text-neutral-700 dark:text-neutral-300" />
       ),
@@ -79,7 +79,7 @@ export const GridFeatures = () => {
           Почему мы?
         </h2>
         <p className="text-lg text-neutral-500 dark:text-neutral-400 max-w-2xl mx-auto">
-          Menora Center объединяет традиции и современный подход, создавая
+          Menorah Center объединяет традиции и современный подход, создавая
           идеальную среду для вашей духовной и светской жизни.
         </p>
       </div>

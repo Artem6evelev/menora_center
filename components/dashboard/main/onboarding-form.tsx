@@ -75,7 +75,8 @@ export default function OnboardingForm({ userId }: { userId: string }) {
           </span>
         </h1>
         <p className="text-neutral-500 dark:text-neutral-400 font-medium">
-          Заполните небольшую анкету для завершения регистрации в Menora Center.
+          Заполните небольшую анкету для завершения регистрации в Menorah
+          Center.
         </p>
       </div>
 

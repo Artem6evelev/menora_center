@@ -1,7 +1,7 @@
 import React from "react";
 
 export const metadata = {
-  title: "Пользовательское соглашение | Menora Center",
+  title: "Пользовательское соглашение | Menorah Center",
 };
 
 export default function TermsPage() {
@@ -23,7 +23,7 @@ export default function TermsPage() {
               1. Принятие условий
             </h2>
             <p>
-              Используя сайт и систему Menora Center (далее «Платформа»), вы
+              Используя сайт и систему Menorah Center (далее «Платформа»), вы
               подтверждаете, что прочитали, поняли и согласны с настоящим
               Пользовательским соглашением. Если вы не согласны с какими-либо
               условиями, пожалуйста, прекратите использование Платформы.

@@ -159,7 +159,7 @@ export default function EventsPageClient({
         >
           События{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFB800] to-orange-500">
-            Menora
+            Menorah
           </span>
         </motion.h1>
       </div>

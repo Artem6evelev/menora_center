@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 export const metadata = {
-  title: "О нас | Menora Center",
+  title: "О нас | Menorah Center",
   description:
     "Познакомьтесь с командой и духовными наставниками нашей общины.",
 };
@@ -67,7 +67,7 @@ export default function AboutPage() {
       name: "Марк",
       role: "Координатор общины",
       description:
-        "Следит за тем, чтобы все проекты, мероприятия и технические процессы в Menora Center работали как швейцарские часы.",
+        "Следит за тем, чтобы все проекты, мероприятия и технические процессы в Menorah Center работали как швейцарские часы.",
       icon: HeartHandshake,
       image:
         "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=500&q=80",
@@ -88,7 +88,7 @@ export default function AboutPage() {
           <h1 className="text-5xl md:text-7xl font-black text-neutral-900 dark:text-white tracking-tighter mb-6">
             Люди{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFB800] to-orange-500">
-              Menora Center
+              Menorah Center
             </span>
           </h1>
           <p className="max-w-2xl text-lg text-neutral-500 dark:text-neutral-400 font-medium leading-relaxed">

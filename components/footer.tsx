@@ -96,7 +96,7 @@ export const Footer = () => {
       {/* Огромный текст (теперь без absolute, всегда в самом низу) */}
       <div className="w-full flex justify-center items-end mt-auto pointer-events-none select-none">
         <p className="text-[20vw] font-black leading-[0.75] bg-clip-text text-transparent bg-gradient-to-b from-neutral-100 dark:from-neutral-900 to-white dark:to-neutral-950 tracking-tighter">
-          MENORA
+          MENORAH
         </p>
       </div>
     </footer>

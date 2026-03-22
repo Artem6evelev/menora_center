@@ -88,7 +88,7 @@ export async function completeUserProfile(userId: string, data: any) {
       });
 
       const mailOptions = {
-        from: `"Menora Center" <${process.env.EMAIL_USER}>`,
+        from: `"Menorah Center" <${process.env.EMAIL_USER}>`,
         to: email,
         subject: "Добро пожаловать в общину Менора! 🕎",
         html: `
