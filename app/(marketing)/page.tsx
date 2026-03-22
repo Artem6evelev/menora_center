@@ -89,6 +89,42 @@ export default async function Home() {
 
   return (
     <div className="relative">
+      {/* JSON-LD Schema для Google */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "WebSite",
+                "@id": "https://menorah-rishon.com/#website",
+                url: "https://menorah-rishon.com",
+                name: "Menorah Center",
+                description: "Еврейский общинный центр в Ришон ле-Ционе.",
+                potentialAction: {
+                  "@type": "SearchAction",
+                  target:
+                    "https://menorah-rishon.com/search?q={search_term_string}",
+                  "query-input": "required name=search_term_string",
+                },
+              },
+              {
+                "@type": "Organization",
+                "@id": "https://menorah-rishon.com/#organization",
+                name: "Menorah Center Ришон ле-Цион",
+                url: "https://menorah-rishon.com",
+                logo: "https://menorah-rishon.com/logo.png", // Не забудь заменить на реальный URL логотипа
+                sameAs: [
+                  "https://t.me/menorah_rishon", // Укажи реальные ссылки на соцсети общины
+                  "https://www.instagram.com/menorah.center.rishon/?hl=en",
+                ],
+              },
+            ],
+          }),
+        }}
+      />
+
       {/* Главный экран с каруселью */}
       <section className="relative z-10 w-full">
         <Hero items={heroItems} />

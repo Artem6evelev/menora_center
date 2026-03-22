@@ -6,11 +6,23 @@ import { cn } from "@/lib/utils";
 import { Footer } from "@/components/footer";
 
 export const metadata: Metadata = {
-  title: "Everything AI",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || "https://menorah-rishon.com",
+  ),
+  title: {
+    default: "Menorah Center | Ришон ле-Цион",
+    template: "%s | Menorah Center", // Шаблон для внутренних страниц (например: "Услуги | Menorah Center")
+  },
   description:
-    "Everything AI is a platform that provides a wide range of AI tools and services to help you stay on top of your business. Generate images, text and everything else that you need to get your business off the ground.",
+    "Еврейский общинный центр в Ришон ле-Ционе. Мероприятия, духовная поддержка, изучение Торы и услуги для всей семьи.",
   openGraph: {
-    images: ["https://ai-saas-template-aceternity.vercel.app/banner.png"],
+    type: "website",
+    locale: "ru_RU",
+    url: "/",
+    siteName: "Menorah Center",
+  },
+  twitter: {
+    card: "summary_large_image",
   },
 };
 

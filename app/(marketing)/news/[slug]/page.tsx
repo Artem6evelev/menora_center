@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import { getNewsBySlug } from "@/actions/news";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -7,40 +8,76 @@ import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { ArrowLeft, Calendar, Eye } from "lucide-react";
 
-// ВАЖНО: На твоем скриншоте путь был "@/components/dashboard/news/comments-section".
-// Если будет ошибка "Module not found", проверь, где именно лежит этот файл.
-// Скорее всего он здесь:
 import CommentsSection from "@/components/dashboard/news/comments-section";
 
-// 1. Указываем TS, что params - это Promise (новое требование Next.js)
+// Вспомогательная функция для очистки HTML-тегов из контента (для мета-описания)
+function stripHtml(html: string) {
+  return html.replace(/<[^>]*>?/gm, "").substring(0, 160) + "...";
+}
+
+// 1. ДИНАМИЧЕСКАЯ ГЕНЕРАЦИЯ МЕТАДАТЫ (ДЛЯ TELEGRAM, WHATSAPP, GOOGLE)
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const params = await props.params;
+  const slug = decodeURIComponent(params.slug);
+  const article = await getNewsBySlug(slug);
+
+  if (!article) {
+    return { title: "Новость не найдена | Menorah Center" };
+  }
+
+  const baseUrl =
+    process.env.NEXT_PUBLIC_APP_URL || "https://menorah-rishon.com";
+  const plainTextDescription = stripHtml(article.content);
+
+  return {
+    title: article.title,
+    description: plainTextDescription,
+    openGraph: {
+      title: article.title,
+      description: plainTextDescription,
+      type: "article",
+      publishedTime: new Date(article.createdAt).toISOString(),
+      url: `${baseUrl}/news/${article.slug}`,
+      images: [
+        {
+          url: article.imageUrl || `${baseUrl}/og-default.jpg`,
+          width: 1200,
+          height: 630,
+          alt: article.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: article.title,
+      description: plainTextDescription,
+      images: [article.imageUrl || `${baseUrl}/og-default.jpg`],
+    },
+  };
+}
+
 export default async function NewsArticlePage(props: {
   params: Promise<{ slug: string }>;
 }) {
-  // 2. Дожидаемся распаковки параметров
   const params = await props.params;
-
-  // 3. Раскодируем кириллицу (превращаем абракадабру %D1%82... обратно в "тестовый-заголовок")
   const slug = decodeURIComponent(params.slug);
-
   const { userId } = await auth();
 
-  // 4. Ищем статью в базе по нормальному, раскодированному slug
   const article = await getNewsBySlug(slug);
 
-  // Если статья не найдена — отдаем страницу 404
   if (!article) {
     return notFound();
   }
 
-  // 5. Ищем текущего пользователя (для блока комментариев)
   let currentUser = null;
   if (userId) {
     currentUser = await db.query.users.findFirst({
-      where: eq(users.id, userId), // Используем id, так как clerkId у нас нет
+      where: eq(users.id, userId),
     });
   }
 
-  // Красивое форматирование даты
   const formattedDate = new Date(article.createdAt).toLocaleDateString(
     "ru-RU",
     {
@@ -52,8 +89,39 @@ export default async function NewsArticlePage(props: {
 
   return (
     <main className="min-h-screen bg-white dark:bg-neutral-950 pt-32 pb-20 relative overflow-hidden">
-      {/* Красивая фоновая сетка */}
-      <div className="absolute inset-0 h-full w-full bg-white dark:bg-neutral-950 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+      {/* 2. JSON-LD СХЕМА СТАТЬИ ДЛЯ GOOGLE */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "NewsArticle",
+            headline: article.title,
+            image: article.imageUrl ? [article.imageUrl] : [],
+            datePublished: new Date(article.createdAt).toISOString(),
+            dateModified: article.updatedAt
+              ? new Date(article.updatedAt).toISOString()
+              : new Date(article.createdAt).toISOString(),
+            author: [
+              {
+                "@type": "Organization",
+                name: "Menorah Center",
+                url: "https://menorah-rishon.com",
+              },
+            ],
+            publisher: {
+              "@type": "Organization",
+              name: "Menorah Center",
+              logo: {
+                "@type": "ImageObject",
+                url: "https://menorah-rishon.com/logo.png",
+              },
+            },
+          }),
+        }}
+      />
+
+      <div className="absolute inset-0 h-full w-full bg-white dark:bg-neutral-950 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
 
       <div className="relative z-10 max-w-3xl mx-auto px-6">
         <Link
@@ -67,7 +135,6 @@ export default async function NewsArticlePage(props: {
           Ко всем новостям
         </Link>
 
-        {/* Шапка статьи */}
         <div className="mb-12">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-neutral-900 dark:text-white tracking-tighter leading-[1.1] mb-6">
             {article.title}
@@ -84,7 +151,6 @@ export default async function NewsArticlePage(props: {
           </div>
         </div>
 
-        {/* Обложка */}
         {article.imageUrl && (
           <div className="w-full aspect-video rounded-[32px] overflow-hidden mb-12 shadow-2xl shadow-black/5 border border-neutral-100 dark:border-neutral-800 relative z-0">
             <img
@@ -95,13 +161,11 @@ export default async function NewsArticlePage(props: {
           </div>
         )}
 
-        {/* Контент из визуального редактора */}
         <article
-          className="prose prose-lg md:prose-xl prose-neutral dark:prose-invert max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-a:text-[#FFB800] prose-img:rounded-3xl"
+          className="prose prose-lg md:prose-xl prose-neutral dark:prose-invert max-w-none prose-headings:font-black prose-headings:tracking-tighter prose-a:text-[#FFB800] prose-img:rounded-3xl relative z-10"
           dangerouslySetInnerHTML={{ __html: article.content }}
         />
 
-        {/* Секция комментариев */}
         <CommentsSection
           newsId={article.id}
           initialComments={article.comments}
