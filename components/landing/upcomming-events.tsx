@@ -44,9 +44,9 @@ export const UpcomingEvents = ({
 
         {/* Сетка событий */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
-          {events.map((event) => (
+          {events.map((event, index) => (
             <PublicEventCard
-              key={event?.id || index} // <-- Добавили fallback на index
+              key={event?.event?.id || event?.id || index}
               item={event}
               userId={userId}
             />
