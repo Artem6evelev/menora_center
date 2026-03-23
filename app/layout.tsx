@@ -6,7 +6,7 @@ import { GeistSans } from "geist/font/sans";
 import { cn } from "@/lib/utils";
 import { ViewTransitions } from "next-view-transitions";
 import { ThemeProvider } from "@/context/theme-provider";
-import NextTopLoader from "nextjs-toploader"; // <-- 1. Импортируем
+import NextTopLoader from "nextjs-toploader";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   ),
   title: {
     default: "Menorah Center | Ришон ле-Цион",
-    template: "%s | Menorah Center", // Шаблон для внутренних страниц (например: "Услуги | Menorah Center")
+    template: "%s | Menorah Center",
   },
   description:
     "Еврейский общинный центр в Ришон ле-Ционе. Мероприятия, духовная поддержка, изучение Торы и услуги для всей семьи.",
@@ -23,9 +23,19 @@ export const metadata: Metadata = {
     locale: "ru_RU",
     url: "/",
     siteName: "Menorah Center",
+    // ДОБАВЛЕНА КАРТИНКА ДЛЯ ШЕРИНГА (ТЕЛЕГРАМ / WHATSAPP)
+    images: [
+      {
+        url: "/public/seo/main.webp", // Ссылка на картинку
+        width: 1200,
+        height: 630,
+        alt: "Menorah Center - Еврейский общинный центр",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
+    images: ["/public/seo/main.webp"],
   },
 };
 
@@ -37,7 +47,8 @@ export default function RootLayout({
   return (
     <ClerkProvider localization={ruRU}>
       <ViewTransitions>
-        <html lang="en" suppressHydrationWarning>
+        {/* ИЗМЕНИЛИ lang="en" НА lang="ru" ДЛЯ SEO */}
+        <html lang="ru" suppressHydrationWarning>
           <body
             className={cn(
               GeistSans.className,
@@ -51,15 +62,15 @@ export default function RootLayout({
               defaultTheme="light"
             >
               <NextTopLoader
-                color="#FFB800" // Фирменный золотой/желтый цвет
+                color="#FFB800"
                 initialPosition={0.08}
                 crawlSpeed={200}
-                height={3} // Можно сделать 4, если хочешь, чтобы золото было заметнее
+                height={3}
                 crawl={true}
                 showSpinner={false}
                 easing="ease"
                 speed={200}
-                shadow="0 0 10px #FFB800,0 0 5px #FFB800" // Золотое свечение
+                shadow="0 0 10px #FFB800,0 0 5px #FFB800"
               />
               {children}
             </ThemeProvider>

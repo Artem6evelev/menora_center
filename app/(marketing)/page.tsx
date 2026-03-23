@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { auth } from "@clerk/nextjs/server";
 import { getPublicNews } from "@/actions/news";
 import { getPublicEventsPaginated } from "@/actions/event";
@@ -14,6 +15,33 @@ import { CTA } from "@/components/cta";
 // Секции
 import { UpcomingEvents } from "@/components/landing/upcomming-events";
 import { ServicesSection } from "@/components/sections/service-section";
+
+// ЯВНО УКАЗЫВАЕМ МЕТАДАТУ ДЛЯ ГЛАВНОЙ СТРАНИЦЫ (ДЛЯ КАРТОЧЕК В TELEGRAM И WHATSAPP)
+export const metadata: Metadata = {
+  title: "Menorah Center | Еврейский общинный центр в Ришон ле-Ционе",
+  description:
+    "Еврейский общинный центр в Ришон ле-Ционе. Мероприятия, духовная поддержка, изучение Торы и услуги для всей семьи.",
+  openGraph: {
+    title: "Menorah Center | Ришон ле-Цион",
+    description:
+      "Еврейский общинный центр в Ришон ле-Ционе. Мероприятия, духовная поддержка, изучение Торы.",
+    url: "https://menorah-rishon.com",
+    images: [
+      {
+        url: "/public/seo/main.webp",
+        width: 1200,
+        height: 630,
+        alt: "Menorah Center",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Menorah Center | Ришон ле-Цион",
+    description: "Еврейский общинный центр в Ришон ле-Ционе.",
+    images: ["/public/seo/main.webp"],
+  },
+};
 
 export const revalidate = 60;
 
