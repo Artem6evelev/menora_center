@@ -6,6 +6,54 @@ import { desc, eq, sql, isNotNull, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@supabase/supabase-js";
 
+// --- НОВАЯ ФУНКЦИЯ ДЛЯ ТРАНСЛИТЕРАЦИИ (Без сторонних библиотек) ---
+function transliterate(word: string) {
+  const answer = [];
+  const converter: Record<string, string> = {
+    а: "a",
+    б: "b",
+    в: "v",
+    г: "g",
+    д: "d",
+    е: "e",
+    ё: "e",
+    ж: "zh",
+    з: "z",
+    и: "i",
+    й: "y",
+    к: "k",
+    л: "l",
+    м: "m",
+    н: "n",
+    о: "o",
+    п: "p",
+    р: "r",
+    с: "s",
+    т: "t",
+    у: "u",
+    ф: "f",
+    х: "h",
+    ц: "ts",
+    ч: "ch",
+    ш: "sh",
+    щ: "sch",
+    ь: "",
+    ы: "y",
+    ъ: "",
+    э: "e",
+    ю: "yu",
+    я: "ya",
+  };
+
+  for (let i = 0; i < word.length; ++i) {
+    const char = word[i].toLowerCase();
+    answer.push(converter[char] !== undefined ? converter[char] : char);
+  }
+
+  return answer.join("");
+}
+// -----------------------------------------------------------------
+
 // 1. Получение всех новостей для Админки
 export async function getAdminNews() {
   try {
@@ -21,17 +69,13 @@ export async function getAdminNews() {
 // 2. Получение только опубликованных новостей для сайта (с фильтрацией)
 export async function getPublicNews(categorySlug?: string) {
   try {
-    // Базовое условие: новость должна быть опубликована
     let condition = eq(news.isPublished, true);
 
-    // Если в ссылке передан slug категории (например ?category=prazdniki)
     if (categorySlug) {
-      // Ищем ID этой категории по slug
       const category = await db.query.newsCategories.findFirst({
         where: eq(newsCategories.slug, categorySlug),
       });
 
-      // Если категория найдена, добавляем её ID в условие поиска новостей
       if (category) {
         condition = and(
           eq(news.isPublished, true),
@@ -40,7 +84,6 @@ export async function getPublicNews(categorySlug?: string) {
       }
     }
 
-    // Ищем новости по нашему условию
     return await db.query.news.findMany({
       where: condition,
       orderBy: [desc(news.isPinned), desc(news.createdAt)],
@@ -51,7 +94,7 @@ export async function getPublicNews(categorySlug?: string) {
   }
 }
 
-// 3. Создание новой новости (ДОБАВЛЕН categoryId)
+// 3. Создание новой новости
 export async function createNews(data: {
   title: string;
   content: string;
@@ -59,14 +102,17 @@ export async function createNews(data: {
   isPublished: boolean;
   isPinned: boolean;
   authorId: string;
-  categoryId?: string | null; // <-- Добавили привязку к теме
+  categoryId?: string | null;
 }) {
   try {
-    // Генерируем красивую ссылку (slug) из заголовка + случайные цифры для уникальности
-    const baseSlug = data.title
+    // ИСПОЛЬЗУЕМ ТРАНСЛИТЕРАЦИЮ ЗДЕСЬ
+    const transliteratedTitle = transliterate(data.title);
+
+    const baseSlug = transliteratedTitle
       .toLowerCase()
-      .replace(/[^a-zа-я0-9]+/g, "-")
+      .replace(/[^a-z0-9]+/g, "-") // Оставляем только латиницу и цифры
       .replace(/(^-|-$)+/g, "");
+
     const slug = `${baseSlug}-${Math.floor(Math.random() * 1000)}`;
 
     await db.insert(news).values({
@@ -100,7 +146,6 @@ export async function uploadImageAction(formData: FormData) {
     const file = formData.get("file") as File;
     if (!file) return { success: false, error: "Файл не найден" };
 
-    // Используем SERVICE_ROLE_KEY для обхода любых ограничений безопасности при загрузке
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -111,12 +156,11 @@ export async function uploadImageAction(formData: FormData) {
     const filePath = `news/${fileName}`;
 
     const { error: uploadError } = await supabase.storage
-      .from("images") // Мы будем загружать в бакет 'images'
+      .from("images")
       .upload(filePath, file);
 
     if (uploadError) throw uploadError;
 
-    // Получаем публичную ссылку на картинку
     const {
       data: { publicUrl },
     } = supabase.storage.from("images").getPublicUrl(filePath);
@@ -127,7 +171,7 @@ export async function uploadImageAction(formData: FormData) {
   }
 }
 
-// Обновление существующей новости (ДОБАВЛЕН categoryId)
+// Обновление существующей новости
 export async function updateNews(
   id: string,
   data: {
@@ -136,7 +180,7 @@ export async function updateNews(
     imageUrl?: string;
     isPublished: boolean;
     isPinned: boolean;
-    categoryId?: string | null; // <-- Добавили привязку к теме
+    categoryId?: string | null;
   },
 ) {
   try {
@@ -157,21 +201,19 @@ export async function updateNews(
   }
 }
 
-// 1. Получить статью по Slug (и сразу увеличить счетчик просмотров)
+// 1. Получить статью по Slug
 export async function getNewsBySlug(slug: string) {
   try {
-    // Увеличиваем просмотры на 1
     await db
       .update(news)
       .set({ views: sql`${news.views} + 1` })
       .where(eq(news.slug, slug));
 
-    // Достаем саму статью вместе с комментариями и данными авторов (резидентов)
     const article = await db.query.news.findFirst({
       where: eq(news.slug, slug),
       with: {
         comments: {
-          with: { user: true }, // Подтягиваем аватарку и имя из таблицы users
+          with: { user: true },
           orderBy: [desc(newsComments.createdAt)],
         },
       },
@@ -207,7 +249,7 @@ export async function addNewsComment(
   }
 }
 
-// 3. Удалить комментарий (Для суперадмина)
+// 3. Удалить комментарий
 export async function deleteNewsComment(commentId: string) {
   try {
     await db.delete(newsComments).where(eq(newsComments.id, commentId));
@@ -218,16 +260,14 @@ export async function deleteNewsComment(commentId: string) {
   }
 }
 
-// Получаем данные специально для выпадающего меню в шапке
+// Получаем данные для выпадающего меню
 export async function getNavbarNewsData() {
   try {
-    // 1. Берем самую свежую опубликованную новость
     const latestArticle = await db.query.news.findFirst({
       where: eq(news.isPublished, true),
       orderBy: [desc(news.createdAt)],
     });
 
-    // 2. Берем 4 темы (категории), отсортированные по дате обновления
     const categories = await db.query.newsCategories.findMany({
       limit: 4,
       orderBy: [desc(newsCategories.updatedAt)],
@@ -254,10 +294,14 @@ export async function createNewsCategory(data: {
   icon?: string;
 }) {
   try {
-    const slug = data.name
+    // ИСПОЛЬЗУЕМ ТРАНСЛИТЕРАЦИЮ ЗДЕСЬ
+    const transliteratedName = transliterate(data.name);
+
+    const slug = transliteratedName
       .toLowerCase()
-      .replace(/[^a-zа-я0-9]+/g, "-")
+      .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)+/g, "");
+
     await db.insert(newsCategories).values({
       name: data.name,
       description: data.description || "",

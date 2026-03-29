@@ -56,6 +56,7 @@
     "reading-time": "^1.5.0",
     "recharts": "^3.8.0",
     "remark-gfm": "^4.0.0",
+    "slugify": "^1.6.8",
     "sonner": "^2.0.7",
     "svix": "^1.88.0",
     "tailwind-merge": "^2.3.0",
