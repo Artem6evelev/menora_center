@@ -49,55 +49,70 @@ export const Hero = ({ items }: { items: CarouselItem[] }) => {
   return (
     <div className="relative min-h-[90vh] pt-32 pb-20 overflow-hidden bg-white dark:bg-neutral-950 flex items-center">
       {/* Background Pattern */}
-      <div className="absolute inset-0 h-full w-full bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+      <div className="absolute inset-0 h-full w-full bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
 
-      <div className="max-w-[1440px] w-full mx-auto px-6 md:px-10 relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8">
+      <div className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 md:px-10 relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8">
         {/* ЛЕВАЯ ЧАСТЬ (Текст) */}
         <div className="w-full lg:w-[50%] flex flex-col items-start text-left z-20">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-[10px] font-black uppercase tracking-widest text-neutral-600 dark:text-neutral-400 mb-8"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-[10px] sm:text-xs font-bold uppercase tracking-widest text-neutral-600 dark:text-neutral-400 mb-6"
           >
-            <span className="w-2 h-2 rounded-full bg-[#FFB800] animate-pulse" />
-            Присоединяйтесь к нам
+            <span className="w-2 h-2 rounded-full bg-[#FFB800] animate-pulse shrink-0" />
+            Каждую неделю к нам присоединяются новые люди
           </motion.div>
 
+          {/* Заголовок */}
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-[clamp(42px,5vw,72px)] xl:text-[84px] font-black text-neutral-900 dark:text-white tracking-tighter leading-[1] mb-8"
+            className="text-5xl sm:text-6xl lg:text-7xl font-black text-neutral-900 dark:text-white tracking-tighter leading-[1] mb-4 text-balance"
           >
             Menorah Center <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFB800] to-orange-500">
-              Ришон Лецион объединяет людей
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFB800] to-orange-500 text-3xl sm:text-4xl lg:text-5xl tracking-tight mt-2 block leading-[1.1]">
+              Место, где создаются знакомства, семьи и сильное сообщество
             </span>
           </motion.h1>
 
-          <motion.div
+          {/* Подзаголовок */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400 font-medium mb-8 text-balance max-w-lg"
+          >
+            Для тех, кто ищет больше: общение, поддержку и настоящие связи 🤍
+          </motion.p>
+
+          {/* Компактный список (6 пунктов) */}
+          <motion.ul
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="space-y-4 mb-12 max-w-xl"
+            className="flex flex-col gap-2.5 sm:gap-3 mb-10 max-w-xl w-full"
           >
             {[
-              "Участвуйте во вдохновляющих мероприятиях",
-              "Получайте духовную и материальную поддержку",
-              "Изучайте Тору с лучшими наставниками",
-              "Будьте в курсе событий через личный кабинет",
+              "Участвуйте в живых, тёплых мероприятиях",
+              "Знакомьтесь с новыми людьми и находите свою среду",
+              "Получайте поддержку - личную и общинную",
+              "Узнавайте больше о еврейских традициях в лёгкой форме",
+              "Участвуйте во встречах предпринимателей разных уровней",
+              "Расширяйте круг общения через еврейский нетворкинг",
             ].map((text, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#FFB800]/10 flex items-center justify-center text-[#FFB800]">
-                  <Check size={14} strokeWidth={3} />
+              <li key={i} className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-5 h-5 rounded-full bg-[#FFB800]/10 flex items-center justify-center text-[#FFB800] mt-0.5">
+                  <Check size={12} strokeWidth={3} />
                 </div>
-                <span className="text-base lg:text-lg font-bold text-neutral-600 dark:text-neutral-300">
+                <span className="text-sm sm:text-base font-bold text-neutral-700 dark:text-neutral-300 leading-snug">
                   {text}
                 </span>
-              </div>
+              </li>
             ))}
-          </motion.div>
+          </motion.ul>
 
+          {/* Адаптивные кнопки */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -106,26 +121,26 @@ export const Hero = ({ items }: { items: CarouselItem[] }) => {
           >
             <Link
               href="/dashboard"
-              className="group w-full sm:w-auto px-8 py-4 bg-[#FFB800] hover:bg-orange-500 text-black font-black uppercase tracking-widest text-sm rounded-full transition-all shadow-lg shadow-[#FFB800]/20 text-center flex items-center justify-center gap-3"
+              className="group w-full sm:w-auto px-8 py-3.5 bg-[#FFB800] hover:bg-orange-500 text-black font-black uppercase tracking-widest text-xs sm:text-sm rounded-full transition-all shadow-lg shadow-[#FFB800]/20 text-center flex items-center justify-center gap-2"
             >
-              <Zap size={18} />
-              Стать резидентом
+              <Zap size={18} className="shrink-0" />
+              Присоединиться к сообществу
             </Link>
             <Link
               href="/about"
-              className="group w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 text-neutral-900 dark:text-white font-bold text-sm rounded-full transition-all"
+              className="group w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 text-neutral-900 dark:text-white font-bold text-xs sm:text-sm rounded-full transition-all"
             >
               Узнать больше
               <ArrowRight
                 size={16}
-                className="group-hover:translate-x-1 transition-transform"
+                className="group-hover:translate-x-1 transition-transform shrink-0"
               />
             </Link>
           </motion.div>
         </div>
 
         {/* ПРАВАЯ ЧАСТЬ (Карусель) */}
-        <div className="w-full lg:w-[45%] flex justify-center lg:justify-end perspective-1000">
+        <div className="w-full lg:w-[45%] flex justify-center lg:justify-end perspective-1000 z-20 mt-10 lg:mt-0">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -147,7 +162,6 @@ export const Hero = ({ items }: { items: CarouselItem[] }) => {
                   href={item.link}
                   className={cn(
                     "absolute inset-0 bg-neutral-900 rounded-[32px] overflow-hidden shadow-2xl flex flex-col transition-all duration-700 ease-in-out hover:ring-2 hover:ring-[#FFB800]/50",
-                    // Активируем клик (pointer-events-auto) только для текущей видимой карточки
                     isActive
                       ? "z-30 opacity-100 translate-y-0 scale-100 pointer-events-auto cursor-pointer"
                       : "pointer-events-none",
