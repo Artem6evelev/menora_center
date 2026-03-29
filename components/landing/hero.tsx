@@ -69,7 +69,7 @@ export const Hero = ({ items }: { items: CarouselItem[] }) => {
             transition={{ delay: 0.1 }}
             className="text-[clamp(42px,5vw,72px)] xl:text-[84px] font-black text-neutral-900 dark:text-white tracking-tighter leading-[1] mb-8"
           >
-            Menorah Center <br />
+            Menora Center <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFB800] to-orange-500">
               Ришон Лецион объединяет людей
             </span>
