@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import Image from "next/image";
 import {
@@ -50,7 +51,7 @@ Menorah Center — это не просто место. Это большая, �
 
 С Б-жьей помощью, их вклад укрепляет общину, наполняет её жизнью и помогает ещё большему числу людей найти своё место, связь и свет 🤍`,
     icon: Sparkles,
-    image: "/markus.jpeg",
+    image: "/family3.webp",
   },
   {
     name: "Бася Ходорковская",
@@ -65,7 +66,7 @@ Menorah Center — это не просто место. Это большая, �
 
 С Б-жьей помощью, через её деятельность в общине создаются новые семьи, укрепляются связи и становится больше света и радости.`,
     icon: HeartHandshake,
-    image: "/basya.jpeg",
+    image: "/family1.webp",
   },
   {
     name: "Рав Элиягу Киржнер",
@@ -80,7 +81,7 @@ Menorah Center — это не просто место. Это большая, �
 
 Такие люди — это настоящий пример внутренней силы и постоянства.`,
     icon: BookHeart,
-    image: "/eliyagu.jpeg",
+    image: "/family2.webp",
   },
 ];
 
@@ -106,6 +107,13 @@ export const TeamGrid = () => {
   const [selectedPerson, setSelectedPerson] = useState<(typeof team)[0] | null>(
     null,
   );
+
+  // Состояние монтирования для безопасного использования Portal в Next.js
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const visibleTeam = team.filter(
     (person) => person.name && person.description,
@@ -193,82 +201,84 @@ export const TeamGrid = () => {
         })}
       </motion.div>
 
-      {/* АДАПТИВНОЕ МОДАЛЬНОЕ ОКНО */}
-      <AnimatePresence>
-        {selectedPerson && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setSelectedPerson(null)}
-            className="fixed inset-0 z-[999] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm"
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-neutral-900 w-full max-w-3xl mt-24 sm:mt-0 max-h-[calc(100vh-8rem)] sm:max-h-[90vh] rounded-2xl sm:rounded-[32px] lg:rounded-[48px] overflow-hidden shadow-2xl flex flex-col relative"
-            >
-              <button
+      {/* АДАПТИВНОЕ МОДАЛЬНОЕ ОКНО ЧЕРЕЗ PORTAL */}
+      {mounted &&
+        createPortal(
+          <AnimatePresence>
+            {selectedPerson && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
                 onClick={() => setSelectedPerson(null)}
-                className="absolute top-3 right-3 sm:top-6 sm:right-6 z-30 w-8 h-8 sm:w-10 sm:h-10 bg-black/50 hover:bg-black/70 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-colors"
+                className="fixed inset-0 z-[999999] flex items-center justify-center p-4 pt-24 pb-12 sm:p-6 sm:pt-28 sm:pb-16 bg-black/60 backdrop-blur-sm"
               >
-                <X size={18} className="sm:w-5 sm:h-5" />
-              </button>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                  transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="bg-white dark:bg-neutral-900 w-full max-w-5xl max-h-[85vh] md:h-[600px] rounded-2xl sm:rounded-[32px] overflow-hidden shadow-2xl flex flex-col md:flex-row relative z-[999999]"
+                >
+                  {/* Кнопка закрытия */}
+                  <button
+                    onClick={() => setSelectedPerson(null)}
+                    className="absolute top-4 right-4 sm:top-6 sm:right-6 z-50 w-8 h-8 sm:w-10 sm:h-10 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 rounded-full flex items-center justify-center text-neutral-600 dark:text-neutral-300 transition-colors"
+                  >
+                    <X size={20} />
+                  </button>
 
-              <div className="overflow-y-auto w-full h-full flex flex-col bg-white dark:bg-neutral-900">
-                {/* --- НОВОЕ ЧИСТОЕ РЕШЕНИЕ: Чистый фон + Закругление фото --- */}
-                {/* ИЗМЕНЕНИЕ: Заменен фон контейнера на чистый белый/темный и добавлены сильные отступы для парящего эффекта */}
-                <div className="w-full h-[320px] sm:h-[400px] relative shrink-0 flex items-center justify-center bg-white dark:bg-neutral-900 px-6 pt-12 sm:px-10 sm:pt-16 pointer-events-none">
-                  {selectedPerson.image ? (
-                    // ИЗМЕНЕНИЕ: Самой картинке добавлены rounded, border и тень, чтобы она выглядела как парящий портрет
-                    <Image
-                      src={selectedPerson.image}
-                      alt={selectedPerson.name}
-                      fill
-                      className="object-contain rounded-2xl sm:rounded-3xl shadow-2xl border border-neutral-100 dark:border-neutral-800"
-                    />
-                  ) : (
-                    // ЗАГЛУШКА ДЛЯ МОДАЛЬНОГО ОКНА
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                      <Users
-                        size={64}
-                        className="text-neutral-300 dark:text-neutral-700 sm:w-20 sm:h-20"
-                        strokeWidth={1}
+                  {/* ЛЕВАЯ КОЛОНКА (Фото) */}
+                  <div className="w-full md:w-[45%] lg:w-[40%] h-[280px] sm:h-[350px] md:h-full relative shrink-0 bg-neutral-50 dark:bg-neutral-950 flex items-center justify-center p-6 md:p-10 border-b md:border-b-0 md:border-r border-neutral-100 dark:border-neutral-800">
+                    {selectedPerson.image ? (
+                      <Image
+                        src={selectedPerson.image}
+                        alt={selectedPerson.name}
+                        width={800}
+                        height={800}
+                        className="max-w-full max-h-full w-auto h-auto rounded-2xl drop-shadow-lg"
                       />
-                      <span className="text-xs sm:text-sm text-neutral-400 dark:text-neutral-600 font-bold uppercase tracking-widest">
-                        Фото отсутствует
+                    ) : (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                        <Users
+                          size={64}
+                          className="text-neutral-300 dark:text-neutral-700 sm:w-20 sm:h-20"
+                          strokeWidth={1}
+                        />
+                        <span className="text-xs sm:text-sm text-neutral-400 dark:text-neutral-600 font-bold uppercase tracking-widest">
+                          Фото отсутствует
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* ПРАВАЯ КОЛОНКА (Текст) */}
+                  <div className="flex-1 overflow-y-auto w-full px-5 sm:px-8 lg:px-12 py-8 sm:py-10 relative z-30 flex flex-col bg-white dark:bg-neutral-900">
+                    <div className="inline-flex self-start items-center gap-1.5 sm:gap-2 px-3 py-1 sm:py-1.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-[#FFB800] mb-3 sm:mb-4 shadow-sm border border-neutral-200/50 dark:border-neutral-700/50">
+                      <selectedPerson.icon
+                        size={12}
+                        className="sm:w-3.5 sm:h-3.5"
+                      />
+                      <span className="line-clamp-1">
+                        {selectedPerson.role}
                       </span>
                     </div>
-                  )}
-                </div>
 
-                {/* Текстовый блок: отступы и фон сохранены, убраны отрицательные mt и градиент */}
-                {/* ИЗМЕНЕНИЕ: Скролл текста теперь чисто начинается под фотографией без наплывов */}
-                <div className="px-5 sm:px-8 lg:px-12 pb-10 pt-8 relative z-30 flex flex-col flex-grow bg-white dark:bg-neutral-900">
-                  <div className="inline-flex self-start items-center gap-1.5 sm:gap-2 px-3 py-1 sm:py-1.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-[#FFB800] mb-3 sm:mb-4 shadow-sm border border-neutral-200/50 dark:border-neutral-700/50">
-                    <selectedPerson.icon
-                      size={12}
-                      className="sm:w-3.5 sm:h-3.5"
-                    />
-                    <span className="line-clamp-1">{selectedPerson.role}</span>
+                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-neutral-900 dark:text-white tracking-tight leading-[1.1] mb-4 sm:mb-6 text-balance pr-12">
+                      {selectedPerson.name}
+                    </h2>
+
+                    <div className="text-sm sm:text-base text-neutral-700 dark:text-neutral-300 font-medium leading-relaxed whitespace-pre-line overflow-wrap-break-word">
+                      {selectedPerson.description}
+                    </div>
                   </div>
-
-                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-neutral-900 dark:text-white tracking-tight leading-[1.1] mb-4 sm:mb-6 text-balance">
-                    {selectedPerson.name}
-                  </h2>
-
-                  <div className="text-sm sm:text-base lg:text-lg text-neutral-700 dark:text-neutral-300 font-medium leading-relaxed whitespace-pre-line overflow-wrap-break-word">
-                    {selectedPerson.description}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body,
         )}
-      </AnimatePresence>
     </>
   );
 };
