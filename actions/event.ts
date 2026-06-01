@@ -299,3 +299,18 @@ export async function getPublicEventsPaginated(
     return { events: [], hasMore: false };
   }
 }
+
+export async function getEventById(id: string) {
+  try {
+    const data = await db
+      .select()
+      .from(events)
+      .where(eq(events.id, id))
+      .limit(1);
+
+    return data[0] || null;
+  } catch (error) {
+    console.error("Ошибка при получении мероприятия:", error);
+    return null;
+  }
+}
