@@ -1,22 +1,24 @@
-// app/events/[id]/page.tsx
+// app/(marketing)/events/[id]/page.tsx
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { getEventById } from "@/actions/event";
 
+// 1. ИСПРАВЛЕНИЕ: Теперь params — это Promise
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
-// 1. ГЕНЕРАЦИЯ МЕТАДАННЫХ ДЛЯ TELEGRAM/WHATSAPP
+// 2. ГЕНЕРАЦИЯ МЕТАДАННЫХ ДЛЯ TELEGRAM/WHATSAPP
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const eventData = await getEventById(params.id);
+  // 3. ИСПРАВЛЕНИЕ: Обязательно "ждем" параметры перед использованием
+  const resolvedParams = await params;
+  const eventData = await getEventById(resolvedParams.id);
 
   if (!eventData) {
     return { title: "Событие не найдено" };
   }
 
-  // Создаем дефолтное описание, чтобы не дублировать код
   const fallbackDescription =
     "Присоединяйтесь к нашему мероприятию в Menorah Center.";
   const description = eventData.description || fallbackDescription;
@@ -27,16 +29,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: description,
     openGraph: {
       title: title,
-      description: description, // <-- Ошибка была здесь. Теперь мы передаем 100% строку (string)
-      // Если у события есть обложка, используем её для превью
+      description: description,
       images: [eventData.imageUrl || "/og-default.jpg"],
     },
   };
 }
 
-// 2. САМА СТРАНИЦА СОБЫТИЯ
+// 4. САМА СТРАНИЦА СОБЫТИЯ
 export default async function SingleEventPage({ params }: Props) {
-  const eventData = await getEventById(params.id);
+  // 5. ИСПРАВЛЕНИЕ: Здесь тоже "ждем" параметры
+  const resolvedParams = await params;
+  const eventData = await getEventById(resolvedParams.id);
 
   if (!eventData) {
     notFound(); // Покажет страницу 404, если такого ID нет
