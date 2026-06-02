@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { ViewTransitions } from "next-view-transitions";
 import { ThemeProvider } from "@/context/theme-provider";
 import NextTopLoader from "nextjs-toploader";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -23,10 +24,9 @@ export const metadata: Metadata = {
     locale: "ru_RU",
     url: "/",
     siteName: "Menorah Center",
-    // ДОБАВЛЕНА КАРТИНКА ДЛЯ ШЕРИНГА (ТЕЛЕГРАМ / WHATSAPP)
     images: [
       {
-        url: "/public/seo/main.webp", // Ссылка на картинку
+        url: "/seo/main.webp", // УБРАЛИ /public (это важно!)
         width: 1200,
         height: 630,
         alt: "Menorah Center - Еврейский общинный центр",
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    images: ["/public/seo/main.webp"],
+    images: ["/seo/main.webp"], // УБРАЛИ /public
   },
 };
 
@@ -47,7 +47,6 @@ export default function RootLayout({
   return (
     <ClerkProvider localization={ruRU}>
       <ViewTransitions>
-        {/* ИЗМЕНИЛИ lang="en" НА lang="ru" ДЛЯ SEO */}
         <html lang="ru" suppressHydrationWarning>
           <body
             className={cn(
@@ -73,6 +72,7 @@ export default function RootLayout({
                 shadow="0 0 10px #FFB800,0 0 5px #FFB800"
               />
               {children}
+              <Analytics />
             </ThemeProvider>
           </body>
         </html>

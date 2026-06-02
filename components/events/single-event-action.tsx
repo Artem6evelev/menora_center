@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Check, Loader2, ArrowRight, Share2, X } from "lucide-react";
+import { Check, Loader2, ArrowRight, Share2, X, Lock } from "lucide-react"; // Добавили Lock
 import { registerForEvent, checkRegistration } from "@/actions/event";
 import { useRouter } from "next/navigation";
 import { useRegistrationStore } from "@/store/useRegistrationStore";
@@ -26,6 +26,9 @@ export default function SingleEventActions({
   const [phone, setPhone] = useState("");
 
   const { setPendingEvent } = useRegistrationStore();
+
+  // Проверяем статус закрытия
+  const isClosed = event.isRegistrationClosed === true;
 
   useEffect(() => {
     setMounted(true);
@@ -67,6 +70,7 @@ export default function SingleEventActions({
   };
 
   const handleRegisterClick = () => {
+    if (isClosed) return; // Если закрыто, блокируем нажатие
     if (!userId) {
       setPendingEvent(event.id);
       router.push("/sign-in?redirect_url=/dashboard/my-events");
@@ -156,16 +160,22 @@ export default function SingleEventActions({
         {!isLoading && (
           <button
             onClick={handleRegisterClick}
-            disabled={isRegistered || isRegistering}
+            disabled={isRegistered || isRegistering || isClosed}
             className={`h-[52px] flex-1 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm ${
-              isRegistered
-                ? "bg-green-100 text-green-700 cursor-default border-2 border-green-200"
-                : !userId
-                  ? "bg-white text-neutral-900 border-2 border-neutral-200 hover:border-neutral-900 hover:bg-neutral-50"
-                  : "bg-neutral-900 text-white hover:bg-black shadow-xl shadow-black/10"
+              isClosed
+                ? "bg-red-50 text-red-500 cursor-not-allowed border-2 border-red-100"
+                : isRegistered
+                  ? "bg-green-100 text-green-700 cursor-default border-2 border-green-200"
+                  : !userId
+                    ? "bg-white text-neutral-900 border-2 border-neutral-200 hover:border-neutral-900 hover:bg-neutral-50"
+                    : "bg-neutral-900 text-white hover:bg-black shadow-xl shadow-black/10"
             }`}
           >
-            {isRegistered ? (
+            {isClosed ? (
+              <>
+                <Lock size={16} /> Запись закрыта
+              </>
+            ) : isRegistered ? (
               <>
                 <Check size={16} /> Вы записаны
               </>

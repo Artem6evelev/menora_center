@@ -24,6 +24,7 @@ export type EventType = {
   isRecurring: boolean;
   recurringPattern: string | null;
   recurringDays: string | null;
+  isRegistrationClosed?: boolean | null; // <--- ДОБАВЬ ЭТО
 };
 
 export type EventItem = {

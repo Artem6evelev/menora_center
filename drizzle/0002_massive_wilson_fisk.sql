@@ -1,0 +1,1 @@
+ALTER TABLE "events" ADD COLUMN "is_registration_closed" boolean DEFAULT false;

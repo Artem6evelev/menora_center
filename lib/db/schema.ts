@@ -78,6 +78,8 @@ export const events = pgTable("events", {
   audience: text("audience").default("all").notNull(), // 'all', 'men', 'women', 'kids'
   // ----------------------------------------------
 
+  isRegistrationClosed: boolean("is_registration_closed").default(false),
+
   // Статус и Связь с категорией
   status: text("status").default("planned").notNull(), // 'planned', 'completed', 'cancelled'
   categoryId: text("category_id").references(() => eventCategories.id),

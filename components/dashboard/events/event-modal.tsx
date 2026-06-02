@@ -12,13 +12,13 @@ import {
   Users,
   Coins,
   Repeat,
+  Lock, // <-- Добавили иконку замка
 } from "lucide-react";
 
-import { createEvent, updateEvent, createEventCategory } from "@/actions/event"; // Проверь путь к экшенам
+import { createEvent, updateEvent, createEventCategory } from "@/actions/event";
 import { useEventStore } from "@/store/useEventStore";
 import { uploadEventImage } from "@/supabase/storage";
 
-// Константы для дней недели
 const WEEKDAYS = [
   { label: "Пн", val: 1 },
   { label: "Вт", val: 2 },
@@ -49,10 +49,13 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
   const [price, setPrice] = useState("");
   const [audience, setAudience] = useState("all");
 
-  // === НОВЫЕ СТЕЙТЫ ДЛЯ ЦИКЛИЧНОСТИ ===
+  // ЦИКЛИЧНОСТЬ
   const [isRecurring, setIsRecurring] = useState(false);
-  const [recurringPattern, setRecurringPattern] = useState("weekly"); // 'daily' | 'weekly'
+  const [recurringPattern, setRecurringPattern] = useState("weekly");
   const [recurringDays, setRecurringDays] = useState<number[]>([]);
+
+  // === НОВЫЙ СТЕЙТ ДЛЯ ЗАКРЫТИЯ ЗАПИСИ ===
+  const [isRegistrationClosed, setIsRegistrationClosed] = useState(false);
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -78,7 +81,9 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
       setAudience(ev.audience || "all");
       setImagePreview(ev.imageUrl || null);
 
-      // Загрузка данных цикличности
+      // Загружаем статус закрытия записи
+      setIsRegistrationClosed(ev.isRegistrationClosed || false);
+
       setIsRecurring(ev.isRecurring || false);
       setRecurringPattern(ev.recurringPattern || "weekly");
       try {
@@ -102,7 +107,8 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
       setImagePreview(null);
       setImageFile(null);
 
-      // Сброс данных цикличности
+      setIsRegistrationClosed(false);
+
       setIsRecurring(false);
       setRecurringPattern("weekly");
       setRecurringDays([]);
@@ -181,7 +187,7 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
       price: isFree ? "" : price,
       audience,
       imageUrl: finalImageUrl,
-      // Добавляем данные цикличности в отправляемый объект
+      isRegistrationClosed, // <-- Передаем на сервер
       isRecurring,
       recurringPattern: isRecurring ? recurringPattern : null,
       recurringDays:
@@ -352,7 +358,7 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
               </div>
             </div>
 
-            {/* === НОВЫЙ БЛОК ЦИКЛИЧНОСТИ === */}
+            {/* БЛОК ЦИКЛИЧНОСТИ */}
             <div className="col-span-1 md:col-span-2 bg-neutral-50 p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-neutral-100 transition-all duration-300">
               <label className="flex items-center gap-3 cursor-pointer group w-max">
                 <input
@@ -415,7 +421,6 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
                 </div>
               )}
             </div>
-            {/* ================================== */}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6 bg-neutral-50 p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-neutral-100 items-start">
@@ -464,6 +469,28 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
                 <option value="kids">Для детей</option>
               </select>
             </div>
+          </div>
+
+          {/* === БЛОК ЗАКРЫТИЯ ЗАПИСИ === */}
+          <div className="bg-red-50/50 p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-red-100 transition-all duration-300">
+            <label className="flex items-center gap-3 cursor-pointer group w-max">
+              <input
+                type="checkbox"
+                checked={isRegistrationClosed}
+                onChange={(e) => setIsRegistrationClosed(e.target.checked)}
+                className="w-5 h-5 rounded border-red-300 text-red-500 focus:ring-red-500 cursor-pointer"
+              />
+              <span className="text-sm font-bold text-red-700 group-hover:text-red-900 flex items-center gap-1.5 transition-colors">
+                <Lock size={16} className="text-red-500" /> Закрыть регистрацию
+                на событие
+              </span>
+            </label>
+            {isRegistrationClosed && (
+              <p className="text-xs text-red-600/80 mt-2 ml-8 animate-in fade-in">
+                Пользователи увидят плашку «Запись закрыта» на сайте и не смогут
+                зарегистрироваться.
+              </p>
+            )}
           </div>
 
           <div>

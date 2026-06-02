@@ -2,7 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Calendar, Check, Loader2, ArrowRight, X, Share2 } from "lucide-react";
+import {
+  Calendar,
+  Check,
+  Loader2,
+  ArrowRight,
+  X,
+  Share2,
+  Lock,
+} from "lucide-react"; // Добавили Lock
 import { registerForEvent, checkRegistration } from "@/actions/event";
 import { useRouter } from "next/navigation";
 import { useRegistrationStore } from "@/store/useRegistrationStore";
@@ -30,6 +38,9 @@ export default function PublicEventCard({
 
   const { setPendingEvent } = useRegistrationStore();
   const eventImageUrl = event.imageUrl || "/default-event-poster.png";
+
+  // Проверяем статус закрытия
+  const isClosed = event.isRegistrationClosed === true;
 
   useEffect(() => {
     setMounted(true);
@@ -74,6 +85,7 @@ export default function PublicEventCard({
   };
 
   const handleRegisterClick = () => {
+    if (isClosed) return; // Если закрыто, кнопка не работает
     if (!userId) {
       setPendingEvent(event.id);
       router.push("/sign-in?redirect_url=/dashboard/my-events");
@@ -170,16 +182,14 @@ export default function PublicEventCard({
           <X size={20} />
         </button>
 
-        {/* ЛЕВАЯ ЧАСТЬ: КАРТИНКА (Обновлено) */}
-        <div className="w-full md:w-[45%] lg:w-[40%] bg-neutral-50 p-4 sm:p-6 md:p-10 flex items-center justify-center shrink-0 border-b md:border-b-0 md:border-r border-neutral-100">
+        <div className="w-full md:w-[45%] lg:w-[40%] bg-neutral-50 p-4 sm:p-6 md:p-10 flex items-center justify-center shrink-0 border-b md:border-b-0 md:border-r border-neutral-100 relative">
           <img
             src={eventImageUrl}
             alt={event.title}
-            className="w-full h-auto max-h-[50vh] md:max-h-[70vh] object-contain rounded-2xl shadow-lg md:shadow-xl"
+            className={`w-full h-auto max-h-[50vh] md:max-h-[70vh] object-contain rounded-2xl shadow-lg md:shadow-xl ${isClosed ? "grayscale-[30%] opacity-90" : ""}`}
           />
         </div>
 
-        {/* ПРАВАЯ ЧАСТЬ: ТЕКСТ И КНОПКИ */}
         <div className="flex flex-col flex-1 min-h-0 overflow-hidden w-full md:w-auto">
           <div className="p-6 md:p-10 overflow-y-auto flex-1 min-h-0">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-50 text-orange-600 text-[10px] font-black uppercase tracking-widest mb-4 border border-orange-100">
@@ -215,16 +225,22 @@ export default function PublicEventCard({
             {!isLoading && (
               <button
                 onClick={handleRegisterClick}
-                disabled={isRegistered || isRegistering}
+                disabled={isRegistered || isRegistering || isClosed}
                 className={`h-[52px] flex-1 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm ${
-                  isRegistered
-                    ? "bg-green-100 text-green-700 cursor-default border-2 border-green-200"
-                    : !userId
-                      ? "bg-white text-neutral-900 border-2 border-neutral-200 hover:border-neutral-900 hover:bg-neutral-50"
-                      : "bg-neutral-900 text-white hover:bg-black shadow-xl shadow-black/10"
+                  isClosed
+                    ? "bg-red-50 text-red-500 cursor-not-allowed border-2 border-red-100"
+                    : isRegistered
+                      ? "bg-green-100 text-green-700 cursor-default border-2 border-green-200"
+                      : !userId
+                        ? "bg-white text-neutral-900 border-2 border-neutral-200 hover:border-neutral-900 hover:bg-neutral-50"
+                        : "bg-neutral-900 text-white hover:bg-black shadow-xl shadow-black/10"
                 }`}
               >
-                {isRegistered ? (
+                {isClosed ? (
+                  <>
+                    <Lock size={16} /> Запись закрыта
+                  </>
+                ) : isRegistered ? (
                   <>
                     <Check size={16} /> Вы записаны
                   </>
@@ -252,8 +268,19 @@ export default function PublicEventCard({
         <img
           src={eventImageUrl}
           alt={event.title}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 -z-10"
+          className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 -z-10 ${isClosed ? "grayscale-[30%] opacity-80" : ""}`}
         />
+
+        {/* БЕЙДЖ "ЗАПИСЬ ЗАКРЫТА" НА ПУБЛИЧНОЙ КАРТОЧКЕ */}
+        {isClosed && (
+          <div className="absolute top-4 left-4 z-20 px-3 py-1.5 bg-red-500/90 backdrop-blur-md rounded-full flex items-center gap-1.5 shadow-lg border border-red-400/20">
+            <Lock size={12} strokeWidth={3} className="text-white" />
+            <span className="text-[9px] font-black uppercase tracking-widest text-white">
+              Запись закрыта
+            </span>
+          </div>
+        )}
+
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent -z-10" />
         <div className="absolute inset-0 flex flex-col justify-end p-6 z-10">
           <div className="translate-y-4 group-hover:translate-y-0 transition-transform duration-500">

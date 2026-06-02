@@ -1,4 +1,4 @@
-import { Edit2, Trash2 } from "lucide-react";
+import { Edit2, Trash2, Lock } from "lucide-react"; // <-- Добавили Lock
 import { EventItem } from "@/store/useEventStore";
 import { deleteEvent } from "@/actions/event";
 import { useEventStore } from "@/store/useEventStore";
@@ -34,8 +34,20 @@ export default function EventCard({ item, onEdit, isAdmin }: EventCardProps) {
       <img
         src={eventImageUrl}
         alt={event.title}
-        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+        className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 ${
+          event.isRegistrationClosed ? "grayscale-[30%] opacity-80" : ""
+        }`}
       />
+
+      {/* НОВЫЙ БЕЙДЖ: ЗАКРЫТА ЗАПИСЬ */}
+      {event.isRegistrationClosed && (
+        <div className="absolute top-4 left-4 z-20 px-3 py-1.5 bg-red-500/90 backdrop-blur-md rounded-full flex items-center gap-1.5 shadow-lg border border-red-400/20">
+          <Lock size={12} strokeWidth={3} className="text-white" />
+          <span className="text-[9px] font-black uppercase tracking-widest text-white">
+            Запись закрыта
+          </span>
+        </div>
+      )}
 
       {isAdmin && (
         <div className="absolute top-4 right-4 flex gap-2 z-30 opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-out">
