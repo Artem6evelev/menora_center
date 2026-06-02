@@ -2,9 +2,18 @@
 
 import { useState, useEffect } from "react";
 import { getEventParticipantsList } from "@/actions/event";
-import { Loader2, Users, Phone, Mail, Calendar, Ticket } from "lucide-react";
+import {
+  Loader2,
+  Users,
+  Phone,
+  Mail,
+  Calendar,
+  Ticket,
+  MessageCircle,
+} from "lucide-react"; // Добавили MessageCircle
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import MassWhatsAppModal from "../events/mass-whatsapp-modal"; // <-- Импортируем нашу модалку
 
 export default function ApplicationsClient({ events }: { events: any[] }) {
   const [selectedEventId, setSelectedEventId] = useState<string>(
@@ -12,6 +21,9 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
   );
   const [participants, setParticipants] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  // === СТЕЙТ ДЛЯ ОТКРЫТИЯ МОДАЛКИ РАССЫЛКИ ===
+  const [isReminderOpen, setIsReminderOpen] = useState(false);
 
   const springTransition = { duration: 0.5 };
 
@@ -25,6 +37,18 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
     };
     fetchParticipants();
   }, [selectedEventId]);
+
+  // Находим имя текущего выбранного события для передачи в модалку
+  const currentEventName =
+    events.find((e) => e.id === selectedEventId)?.title || "Событие";
+
+  // Формируем чистый массив участников (имя + телефон) для отправки в WhatsApp
+  const whatsappRecipients = participants
+    .filter((row) => row.participant?.phone)
+    .map((row) => ({
+      phone: row.participant.phone,
+      name: row.user?.name || row.user?.firstName || "Участник",
+    }));
 
   return (
     <div className="max-w-7xl mx-auto w-full pb-12">
@@ -66,48 +90,57 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
         transition={{ delay: 0.2, ...springTransition }}
         className="bg-white/80 dark:bg-neutral-900/80 backdrop-blur-2xl rounded-[32px] border border-neutral-200/50 dark:border-neutral-800/50 shadow-sm overflow-hidden relative"
       >
-        {/* Декоративное свечение */}
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#FFB800]/5 rounded-full blur-[100px] pointer-events-none" />
 
-        {/* ФИЛЬТР */}
-        <div className="p-6 md:p-8 border-b border-neutral-200/50 dark:border-neutral-800/50 bg-neutral-50/50 dark:bg-neutral-950/50 relative z-10">
-          <label className="block text-[10px] uppercase tracking-widest font-black text-neutral-500 dark:text-neutral-400 mb-3 pl-1">
-            Выберите событие для просмотра
-          </label>
+        {/* ФИЛЬТР И КНОПКА РАССЫЛКИ */}
+        <div className="p-6 md:p-8 border-b border-neutral-200/50 dark:border-neutral-800/50 bg-neutral-50/50 dark:bg-neutral-950/50 relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="relative w-full md:max-w-md">
-            <select
-              value={selectedEventId}
-              onChange={(e) => setSelectedEventId(e.target.value)}
-              className="w-full appearance-none border border-neutral-200/50 dark:border-neutral-800/50 rounded-2xl p-4 pr-10 bg-white/50 dark:bg-neutral-900/50 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-[#FFB800]/50 outline-none transition-all cursor-pointer font-bold text-neutral-900 dark:text-white"
-            >
-              {events.length === 0 && (
-                <option value="" disabled className="text-neutral-400">
-                  Нет доступных событий
-                </option>
-              )}
-              {events.map((ev) => (
-                <option
-                  key={ev.id}
-                  value={ev.id}
-                  className="text-black bg-white"
-                >
-                  {ev.title}
-                </option>
-              ))}
-            </select>
-            {/* Иконка селекта */}
-            <Ticket
-              size={16}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
-            />
+            <label className="block text-[10px] uppercase tracking-widest font-black text-neutral-500 dark:text-neutral-400 mb-3 pl-1">
+              Выберите событие для просмотра
+            </label>
+            <div className="relative">
+              <select
+                value={selectedEventId}
+                onChange={(e) => setSelectedEventId(e.target.value)}
+                className="w-full appearance-none border border-neutral-200/50 dark:border-neutral-800/50 rounded-2xl p-4 pr-10 bg-white/50 dark:bg-neutral-900/50 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-[#FFB800]/50 outline-none transition-all cursor-pointer font-bold text-neutral-900 dark:text-white"
+              >
+                {events.length === 0 && (
+                  <option value="" disabled className="text-neutral-400">
+                    Нет доступных событий
+                  </option>
+                )}
+                {events.map((ev) => (
+                  <option
+                    key={ev.id}
+                    value={ev.id}
+                    className="text-black bg-white"
+                  >
+                    {ev.title}
+                  </option>
+                ))}
+              </select>
+              <Ticket
+                size={16}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+              />
+            </div>
           </div>
+
+          {/* === КНОПКА ЗАПУСКА РАССЫЛКИ === */}
+          <button
+            onClick={() => setIsReminderOpen(true)}
+            disabled={whatsappRecipients.length === 0 || isLoading}
+            className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 disabled:bg-neutral-200 dark:disabled:bg-neutral-800 text-white disabled:text-neutral-400 dark:disabled:text-neutral-600 px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-green-500/10 disabled:shadow-none transition-all active:scale-95 shrink-0 h-[54px]"
+          >
+            <MessageCircle size={16} />
+            Напомнить в WhatsApp
+          </button>
         </div>
 
         {/* ТАБЛИЦА */}
         <div className="overflow-x-auto relative z-10">
           <AnimatePresence mode="wait">
             {isLoading ? (
-              // Состояние загрузки
               <motion.div
                 key="loading"
                 initial={{ opacity: 0 }}
@@ -125,7 +158,6 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
                 </p>
               </motion.div>
             ) : participants.length === 0 ? (
-              // Состояние: Нет данных
               <motion.div
                 key="empty"
                 initial={{ opacity: 0 }}
@@ -148,7 +180,6 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
                 </p>
               </motion.div>
             ) : (
-              // Данные есть - рендерим таблицу
               <motion.table
                 key="table"
                 initial={{ opacity: 0 }}
@@ -174,7 +205,6 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
                         transition={{ delay: idx * 0.05, ...springTransition }}
                         className="hover:bg-neutral-50 dark:hover:bg-neutral-800/30 transition-colors group"
                       >
-                        {/* ИМЯ */}
                         <td className="py-5 px-8">
                           <div className="font-bold text-neutral-900 dark:text-white text-base group-hover:text-[#FFB800] transition-colors duration-300">
                             {row.user?.name ||
@@ -186,7 +216,6 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
                           </div>
                         </td>
 
-                        {/* КОНТАКТЫ */}
                         <td className="py-5 px-6">
                           <div className="flex flex-col gap-2">
                             <div className="flex items-center gap-2 text-sm font-bold text-neutral-700 dark:text-neutral-300">
@@ -200,7 +229,6 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
                           </div>
                         </td>
 
-                        {/* ДАТА */}
                         <td className="py-5 px-6">
                           <div className="flex items-center gap-2 text-sm font-bold text-neutral-600 dark:text-neutral-400">
                             <Calendar size={14} className="text-neutral-400" />
@@ -215,7 +243,6 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
                           </div>
                         </td>
 
-                        {/* СТАТУС */}
                         <td className="py-5 px-8 text-right">
                           <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#FFB800]/10 text-[#FFB800] dark:text-[#FFB800] text-[10px] font-black uppercase tracking-widest border border-[#FFB800]/20 shadow-sm">
                             Билет активен
@@ -230,6 +257,14 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
           </AnimatePresence>
         </div>
       </motion.div>
+
+      {/* === ДИНАМИЧЕСКИЙ РЕНДЕР МОДАЛКИ РАССЫЛКИ === */}
+      <MassWhatsAppModal
+        isOpen={isReminderOpen}
+        onClose={() => setIsReminderOpen(false)}
+        eventName={currentEventName}
+        participants={whatsappRecipients}
+      />
     </div>
   );
 }
