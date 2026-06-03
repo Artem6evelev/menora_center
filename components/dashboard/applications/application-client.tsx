@@ -10,10 +10,10 @@ import {
   Calendar,
   Ticket,
   MessageCircle,
-} from "lucide-react"; // Добавили MessageCircle
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import MassWhatsAppModal from "../events/mass-whatsapp-modal"; // <-- Импортируем нашу модалку
+import MassWhatsAppModal from "../events/mass-whatsapp-modal";
 
 export default function ApplicationsClient({ events }: { events: any[] }) {
   const [selectedEventId, setSelectedEventId] = useState<string>(
@@ -38,11 +38,11 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
     fetchParticipants();
   }, [selectedEventId]);
 
-  // Находим имя текущего выбранного события для передачи в модалку
+  // Находим имя текущего выбранного события для передачи в модалку и шаблон одиночного сообщения
   const currentEventName =
     events.find((e) => e.id === selectedEventId)?.title || "Событие";
 
-  // Формируем чистый массив участников (имя + телефон) для отправки в WhatsApp
+  // Формируем чистый массив участников (имя + телефон) для отправки в WhatsApp (для модалки)
   const whatsappRecipients = participants
     .filter((row) => row.participant?.phone)
     .map((row) => ({
@@ -218,10 +218,27 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
 
                         <td className="py-5 px-6">
                           <div className="flex flex-col gap-2">
+                            {/* === ЗДЕСЬ ДОБАВЛЕНА ИКОНКА WHATSAPP === */}
                             <div className="flex items-center gap-2 text-sm font-bold text-neutral-700 dark:text-neutral-300">
                               <Phone size={14} className="text-[#FFB800]" />
                               {row.participant.phone}
+
+                              {row.participant.phone && (
+                                <a
+                                  href={`https://wa.me/${row.participant.phone.replace(/\D/g, "")}?text=${encodeURIComponent(
+                                    `Шалом, ${row.user?.name || row.user?.firstName || "участник"}! 👋\nНапоминаем про ваше участие в событии «${currentEventName}».`,
+                                  )}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="ml-2 text-green-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10 p-1.5 rounded-full transition-all"
+                                  title="Написать в WhatsApp"
+                                >
+                                  <MessageCircle size={16} strokeWidth={2.5} />
+                                </a>
+                              )}
                             </div>
+                            {/* ======================================= */}
+
                             <div className="flex items-center gap-2 text-xs font-medium text-neutral-400">
                               <Mail size={14} />
                               {row.user?.email || "—"}
