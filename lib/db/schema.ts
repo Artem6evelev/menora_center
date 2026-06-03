@@ -279,3 +279,13 @@ export const newsCategories = pgTable("news_categories", {
   slug: text("slug").notNull().unique(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+// ==========================================
+// ВИДЕОУРОКИ (YOUTUBE)
+// ==========================================
+export const videos = pgTable("videos", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  title: text("title").notNull(),
+  link: text("link").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
