@@ -8,6 +8,8 @@ export async function NavBar() {
   const navItems = [
     { title: "Услуги", link: "/services" },
     { title: "Мероприятия", link: "/events" },
+    { title: "Видеоуроки", link: "/lessons" },
+
     {
       title: "Новости",
       link: "/news",
