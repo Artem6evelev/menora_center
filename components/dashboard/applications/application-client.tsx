@@ -15,6 +15,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import MassWhatsAppModal from "../events/mass-whatsapp-modal";
 
+// === ФУНКЦИЯ ДЛЯ ПРАВИЛЬНОГО ФОРМАТИРОВАНИЯ ИЗРАИЛЬСКИХ НОМЕРОВ ===
+const formatPhoneForWhatsApp = (phone: string) => {
+  if (!phone) return "";
+  let cleaned = phone.replace(/\D/g, "");
+  if (cleaned.startsWith("0") && cleaned.length === 10) {
+    return "972" + cleaned.slice(1);
+  }
+  return cleaned;
+};
+
 export default function ApplicationsClient({ events }: { events: any[] }) {
   const [selectedEventId, setSelectedEventId] = useState<string>(
     events[0]?.id || "",
@@ -218,14 +228,14 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
 
                         <td className="py-5 px-6">
                           <div className="flex flex-col gap-2">
-                            {/* === ЗДЕСЬ ДОБАВЛЕНА ИКОНКА WHATSAPP === */}
+                            {/* === ЗДЕСЬ ДОБАВЛЕНА ИКОНКА WHATSAPP И ФОРМАТИРОВАНИЕ НОМЕРА === */}
                             <div className="flex items-center gap-2 text-sm font-bold text-neutral-700 dark:text-neutral-300">
                               <Phone size={14} className="text-[#FFB800]" />
                               {row.participant.phone}
 
                               {row.participant.phone && (
                                 <a
-                                  href={`https://wa.me/${row.participant.phone.replace(/\D/g, "")}?text=${encodeURIComponent(
+                                  href={`https://wa.me/${formatPhoneForWhatsApp(row.participant.phone)}?text=${encodeURIComponent(
                                     `Шалом, ${row.user?.name || row.user?.firstName || "участник"}! 👋\nНапоминаем про ваше участие в событии «${currentEventName}».`,
                                   )}`}
                                   target="_blank"
@@ -237,7 +247,7 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
                                 </a>
                               )}
                             </div>
-                            {/* ======================================= */}
+                            {/* ============================================================= */}
 
                             <div className="flex items-center gap-2 text-xs font-medium text-neutral-400">
                               <Mail size={14} />

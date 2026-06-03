@@ -11,21 +11,34 @@ interface MassWhatsAppModalProps {
   participants: { phone: string; name: string }[];
 }
 
+// === УМНОЕ ФОРМАТИРОВАНИЕ НОМЕРА ===
+const formatPhoneForWhatsApp = (phone: string) => {
+  if (!phone) return "";
+  // 1. Убираем все символы, пробелы и плюсы (оставляем только цифры)
+  let cleaned = phone.replace(/\D/g, "");
+
+  // 2. Если это местный израильский номер (начинается с 0 и состоит из 10 цифр)
+  // превращаем 052... в 97252...
+  if (cleaned.startsWith("0") && cleaned.length === 10) {
+    return "972" + cleaned.slice(1);
+  }
+
+  // Если номер уже начинается с 972 или это другой международный номер, возвращаем как есть
+  return cleaned;
+};
+
 export default function MassWhatsAppModal({
   isOpen,
   onClose,
   eventName,
   participants,
 }: MassWhatsAppModalProps) {
-  // Шаблон сообщения. {name} и {event} будут автоматически заменены.
   const [messageTemplate, setMessageTemplate] = useState(
     `Шалом, {name}! 👋\nНапоминаем про ваше участие в событии «{event}», которое состоится уже скоро. Ждем вас!`,
   );
 
-  // Сохраняем индексы тех, кому уже нажали "Отправить"
   const [sentIndexes, setSentIndexes] = useState<Set<number>>(new Set());
 
-  // Сброс чеклиста при закрытии/открытии новой модалки
   useEffect(() => {
     if (isOpen) setSentIndexes(new Set());
   }, [isOpen]);
@@ -33,21 +46,17 @@ export default function MassWhatsAppModal({
   if (!isOpen) return null;
 
   const handleSend = (phone: string, name: string, index: number) => {
-    // Очищаем номер телефона от всего, кроме цифр (WhatsApp требует формат 972501234567 без +)
-    const cleanPhone = phone.replace(/\D/g, "");
+    // Прогоняем номер через нашу новую функцию
+    const waNumber = formatPhoneForWhatsApp(phone);
 
-    // Подставляем данные в шаблон
     const finalMessage = messageTemplate
       .replace(/{name}/g, name)
       .replace(/{event}/g, eventName);
 
-    // Кодируем текст для URL и формируем ссылку
-    const waLink = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(finalMessage)}`;
+    // Подставляем правильный номер
+    const waLink = `https://wa.me/${waNumber}?text=${encodeURIComponent(finalMessage)}`;
 
-    // Открываем WhatsApp в новой вкладке
     window.open(waLink, "_blank");
-
-    // Отмечаем как отправленное
     setSentIndexes((prev) => new Set(prev).add(index));
   };
 
@@ -80,7 +89,6 @@ export default function MassWhatsAppModal({
 
           {/* BODY */}
           <div className="p-6 flex-1 overflow-y-auto space-y-6">
-            {/* Текстовое поле для шаблона */}
             <div>
               <label className="block text-xs uppercase tracking-widest font-black text-neutral-500 mb-2">
                 Шаблон сообщения
@@ -100,7 +108,6 @@ export default function MassWhatsAppModal({
               </p>
             </div>
 
-            {/* Список участников */}
             <div>
               <div className="flex items-center justify-between mb-3">
                 <label className="block text-xs uppercase tracking-widest font-black text-neutral-500">
