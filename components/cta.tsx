@@ -52,7 +52,10 @@ export const CTA = () => {
                 </Link>
 
                 {/* 2. Кнопка Цдаки (второстепенная, темная со светящейся иконкой) */}
-                <Link href="/donate" className="w-full sm:w-auto">
+                <Link
+                  href="https://shutaf.im/cba301"
+                  className="w-full sm:w-auto"
+                >
                   <button className="w-full group flex items-center justify-center gap-2 px-10 py-4 bg-white/10 hover:bg-white/20 text-white font-bold text-sm rounded-full transition-all backdrop-blur-sm border border-white/10">
                     <Heart
                       size={18}

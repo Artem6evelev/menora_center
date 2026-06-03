@@ -163,8 +163,8 @@ export default async function Home() {
         <Features />
         <UpcomingEvents events={upcomingEvents} userId={userId} />
         <ServicesSection />
-        <GridFeatures />
-        <Testimonials />
+        {/* <GridFeatures /> */}
+        {/* <Testimonials /> */}
       </Container>
 
       {/* Подвал с призывом к действию */}
