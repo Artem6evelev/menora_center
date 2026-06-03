@@ -22,6 +22,7 @@ import {
   Smartphone,
   Newspaper,
   ShieldCheck,
+  Youtube, // <-- Добавили иконку Youtube
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -49,7 +50,7 @@ export default function Sidebar({ userRole }: { userRole: string }) {
     { label: "Сообщения", icon: MessageSquare, href: "/dashboard/chat" },
   ];
 
-  // ГРУППА 2: Только для администрации
+  // ГРУППА 2: Только для администрации (Добавлены Видеоуроки)
   const adminRoutes = [
     {
       label: "Telegram Бот",
@@ -61,6 +62,12 @@ export default function Sidebar({ userRole }: { userRole: string }) {
       label: "Блог и Новости",
       icon: Newspaper,
       href: "/dashboard/news",
+      roles: ["superadmin", "admin"],
+    },
+    {
+      label: "Видеоуроки", // <-- ВСТАВИЛИ КНОПКУ СЮДА
+      icon: Youtube,
+      href: "/dashboard/videos",
       roles: ["superadmin", "admin"],
     },
     {

@@ -16,6 +16,7 @@ import {
   ClipboardList,
   ArrowUpRight,
   UsersRound,
+  Youtube, // <-- Добавили иконку Youtube
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -117,6 +118,19 @@ export default async function DashboardPage() {
       bg: "bg-teal-500/10",
       isAdmin: true,
     },
+    // === НОВЫЙ РАЗДЕЛ ДЛЯ УПРАВЛЕНИЯ ВИДЕО ===
+    {
+      title: "Видеоуроки",
+      description: "Добавление и удаление бесплатных видеоуроков с YouTube.",
+      icon: Youtube,
+      href: "/dashboard/videos",
+      roles: ["admin", "superadmin"],
+      span: "col-span-1",
+      color: "text-red-500",
+      bg: "bg-red-500/10",
+      isAdmin: true,
+    },
+    // ==========================================
     {
       title: "Пользователи",
       description: "База данных клиентов.",
