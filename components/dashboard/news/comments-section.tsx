@@ -50,8 +50,8 @@ export default function CommentsSection({
       optimisticComment.content,
     );
     if (!res.success) {
-      removeComment(tempId); // Если ошибка - убираем коммент
-      toast.error(res.error);
+      removeComment(tempId);
+      toast.error((res as { error?: string }).error || "Произошла ошибка");
     }
     setIsSubmitting(false);
   };
@@ -60,7 +60,8 @@ export default function CommentsSection({
     if (!confirm("Удалить комментарий?")) return;
     removeComment(id); // Сразу прячем
     const res = await deleteNewsComment(id);
-    if (!res.success) toast.error(res.error);
+    if (!res.success)
+      toast.error((res as { error?: string }).error || "Не удалось удалить");
   };
 
   const canManage =
