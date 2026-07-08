@@ -7,81 +7,111 @@ import {
   boolean,
   uuid,
   integer,
+  varchar,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 // ==========================================
-// 1. ПОЛЬЗОВАТЕЛИ
+// 1. ПОЛЬЗОВАТЕЛИ И ПРОФИЛИ
 // ==========================================
-export const users = pgTable("users", {
-  id: text("id").primaryKey(),
-  email: text("email").notNull(),
-  firstName: text("first_name"),
-  lastName: text("last_name"),
-  imageUrl: text("image_url"),
-  role: text("role").default("client").notNull(),
+export const users = pgTable(
+  "users",
+  {
+    id: text("id").primaryKey(),
+    email: text("email").notNull(),
+    firstName: text("first_name"),
+    lastName: text("last_name"),
+    imageUrl: text("image_url"),
+    role: text("role").default("client").notNull(),
 
-  isProfileComplete: boolean("is_profile_complete").default(false).notNull(),
-  phone: text("phone"),
-  dateOfBirth: timestamp("date_of_birth", { withTimezone: true }),
-  city: text("city"),
-  maritalStatus: text("marital_status"),
-  hasChildren: boolean("has_children").default(false),
-  source: text("source"),
-  tags: text("tags").default("[]"),
-  telegramChatId: text("telegram_chat_id"),
+    isProfileComplete: boolean("is_profile_complete").default(false).notNull(),
+    phone: text("phone"),
+    dateOfBirth: timestamp("date_of_birth", { withTimezone: true }),
+    city: text("city"),
+    maritalStatus: text("marital_status"),
+    hasChildren: boolean("has_children").default(false),
+    source: text("source"),
+    tags: text("tags").default("[]"),
+    telegramChatId: text("telegram_chat_id"),
 
-  // 🔥 ДВЕ НОВЫЕ КОЛОНКИ:
-  jewishStatus: text("jewish_status"),
-  agreedToPrivacy: boolean("agreed_to_privacy").default(false),
+    // 🔥 ДОБАВИЛИ ТОЛЬКО ЭТУ СТРОКУ (Никнейм в Телеграме):
+    username: text("username"),
 
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
+    jewishStatus: text("jewish_status"),
+    agreedToPrivacy: boolean("agreed_to_privacy").default(false),
+
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => {
+    return {
+      // 🔥 И ДОБАВИЛИ ЭТОТ БЛОК (Защита от дублей):
+      telegramChatIdIdx: uniqueIndex("telegram_chat_id_idx").on(
+        table.telegramChatId,
+      ),
+    };
+  },
+);
+
+// 🔥 НОВАЯ ТАБЛИЦА: Профили авторов (спикеров/раввинов)
+export const authorProfiles = pgTable("author_profiles", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: text("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull()
+    .unique(), // Один юзер = один профиль автора
+
+  slug: text("slug").notNull().unique(), // Например: pinhasi-vishedski
+
+  shortBio: text("short_bio"), // Короткое описание для сайдбара
+  donationLink: text("donation_link"), // Ссылка для кнопки "Помочь уроку"
+
+  // Соцсети
+  websiteUrl: text("website_url"),
+  facebookUrl: text("facebook_url"),
+  instagramUrl: text("instagram_url"),
+  youtubeUrl: text("youtube_url"),
+  telegramUrl: text("telegram_url"),
+
+  isActive: boolean("is_active").default(true).notNull(),
+
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-// === НОВАЯ ТАБЛИЦА: Категории событий ===
+// ==========================================
+// 2. СОБЫТИЯ И КАТЕГОРИИ
+// ==========================================
 export const eventCategories = pgTable("event_categories", {
   id: text("id").primaryKey(),
-  name: text("name").notNull(), // Например: "Праздник", "Урок Торы"
-  color: text("color").default("#3b82f6").notNull(), // Цвет для календаря
+  name: text("name").notNull(),
+  color: text("color").default("#3b82f6").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
 });
 
-// === ОБНОВЛЕННАЯ ТАБЛИЦА СОБЫТИЙ ===
-// === ОБНОВЛЕННАЯ ТАБЛИЦА СОБЫТИЙ ===
 export const events = pgTable("events", {
   id: text("id").primaryKey(),
   title: text("title").notNull(),
   description: text("description"),
-
-  // Обложка
   imageUrl: text("image_url"),
-  // --- НОВЫЕ ПОЛЯ ДЛЯ ЦИКЛИЧНОСТИ ---
-  isRecurring: boolean("is_recurring").default(false).notNull(),
-  recurringPattern: text("recurring_pattern"), // 'daily' или 'weekly'
-  recurringDays: text("recurring_days"), // JSON строка с днями недели, напр. '[1, 3]' (Пн и Ср)
 
-  // --- НОВЫЕ И ОБНОВЛЕННЫЕ ПОЛЯ ДЛЯ ФИЛЬТРОВ ---
-  // Сохраняем дату и время текстом (YYYY-MM-DD и HH:MM),
-  // так намного проще работать с инпутами в React и делать фильтры
+  isRecurring: boolean("is_recurring").default(false).notNull(),
+  recurringPattern: text("recurring_pattern"),
+  recurringDays: text("recurring_days"),
+
   date: text("date"),
   time: text("time"),
   location: text("location"),
 
-  // Финансы
-  isFree: boolean("is_free").default(false).notNull(), // Заменили isPaid на isFree
+  isFree: boolean("is_free").default(false).notNull(),
   price: text("price"),
-
-  // Аудитория (для кого событие)
-  audience: text("audience").default("all").notNull(), // 'all', 'men', 'women', 'kids'
-  // ----------------------------------------------
+  audience: text("audience").default("all").notNull(),
 
   isRegistrationClosed: boolean("is_registration_closed").default(false),
-
-  // Статус и Связь с категорией
-  status: text("status").default("planned").notNull(), // 'planned', 'completed', 'cancelled'
+  status: text("status").default("planned").notNull(),
   categoryId: text("category_id").references(() => eventCategories.id),
 
   createdAt: timestamp("created_at", { withTimezone: true })
@@ -89,74 +119,16 @@ export const events = pgTable("events", {
     .notNull(),
 });
 
-// 3. ТАБЛИЦА ЗАДАЧ (Те самые карточки для Trello-доски)
-export const tasks = pgTable("tasks", {
-  id: text("id").primaryKey(),
-  title: text("title").notNull(),
-  description: text("description"),
-
-  // Колонки Канбана: 'backlog', 'todo', 'in_progress', 'done'
-  status: text("status").default("backlog").notNull(),
-
-  // КТО назначил (Раввин)
-  creatorId: text("creator_id").references(() => users.id),
-  // КТО выполняет (Админ)
-  assigneeId: text("assignee_id").references(() => users.id),
-  // К какому событию привязано (если нужно)
-  eventId: text("event_id").references(() => events.id),
-
-  deadline: timestamp("deadline", { withTimezone: true }),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-});
-
-// 4. ТАБЛИЦА УВЕДОМЛЕНИЙ (Тот самый "Колокольчик")
-export const notifications = pgTable("notifications", {
-  id: text("id").primaryKey(), // Оставляем текстовый ID (например, ntf_abc123)
-  userId: text("user_id")
-    .references(() => users.id, { onDelete: "cascade" })
-    .notNull(),
-
-  // КТО отправил (для CRM). Для системных уведомлений Канбана будет null
-  senderId: text("sender_id").references(() => users.id, {
-    onDelete: "set null",
-  }),
-
-  title: text("title").notNull(),
-  message: text("message").notNull(),
-
-  // Куда вести юзера при клике
-  link: text("link"),
-
-  // ТИП уведомления: 'kanban', 'crm_personal', 'crm_bulk'
-  type: text("type").default("system").notNull(),
-
-  isRead: boolean("is_read").default(false).notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-});
-
-// === ТАБЛИЦА: Участники событий (Заявки) ===
 export const eventParticipants = pgTable("event_participants", {
   id: text("id").primaryKey(),
-
-  // Связь с событием (если удалить событие - удалятся и заявки)
   eventId: text("event_id")
     .references(() => events.id, { onDelete: "cascade" })
     .notNull(),
-
-  // Связь с пользователем (кто записался)
   userId: text("user_id")
     .references(() => users.id, { onDelete: "cascade" })
     .notNull(),
-
   phone: text("phone").default("Не указан").notNull(),
-
-  // Статус заявки (например, 'pending' - ожидает, 'approved' - подтверждена админом)
   status: text("status").default("pending").notNull(),
-
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
@@ -165,7 +137,6 @@ export const eventParticipants = pgTable("event_participants", {
 // ==========================================
 // 3. УСЛУГИ (SERVICES)
 // ==========================================
-
 export const serviceCategories = pgTable("service_categories", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
@@ -206,86 +177,181 @@ export const serviceParticipants = pgTable("service_participants", {
     .notNull(),
 });
 
-// --- НАСТРОЙКИ TELEGRAM БОТА ---
+// ==========================================
+// 4. CRM: ЗАДАЧИ И УВЕДОМЛЕНИЯ
+// ==========================================
+export const tasks = pgTable("tasks", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description"),
+  status: text("status").default("backlog").notNull(),
+  creatorId: text("creator_id").references(() => users.id),
+  assigneeId: text("assignee_id").references(() => users.id),
+  eventId: text("event_id").references(() => events.id),
+  deadline: timestamp("deadline", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+export const notifications = pgTable("notifications", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  senderId: text("sender_id").references(() => users.id, {
+    onDelete: "set null",
+  }),
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  link: text("link"),
+  type: text("type").default("system").notNull(),
+  isRead: boolean("is_read").default(false).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+// ==========================================
+// 5. КОНТЕНТ: НОВОСТИ / СТАТЬИ
+// ==========================================
+export const newsCategories = pgTable("news_categories", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  icon: text("icon"),
+  slug: text("slug").notNull().unique(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const news = pgTable("news", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  title: text("title").notNull(),
+  slug: text("slug").notNull().unique(),
+  content: text("content").notNull(),
+  imageUrl: text("image_url"),
+  isPublished: boolean("is_published").default(true),
+  isPinned: boolean("is_pinned").default(false),
+  views: integer("views").default(0),
+
+  // 🔥 Связь с автором
+  authorId: text("author_id")
+    .references(() => users.id)
+    .notNull(),
+  categoryId: uuid("category_id").references(() => newsCategories.id, {
+    onDelete: "set null",
+  }),
+
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const newsComments = pgTable("news_comments", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  newsId: uuid("news_id")
+    .references(() => news.id, { onDelete: "cascade" })
+    .notNull(),
+  userId: text("user_id")
+    .references(() => users.id)
+    .notNull(),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// ==========================================
+// 6. КОНТЕНТ: ВИДЕОУРОКИ
+// ==========================================
+export const videos = pgTable("videos", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  title: text("title").notNull(),
+  description: text("description"),
+  link: text("link").notNull(),
+  imageUrl: text("image_url"),
+
+  // 🔥 Связь с автором
+  authorId: text("author_id").references(() => users.id, {
+    onDelete: "set null",
+  }),
+
+  views: integer("views").default(0),
+  isPublished: boolean("is_published").default(true),
+
+  category: varchar("category", { length: 255 }),
+
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// ==========================================
+// 7. НАСТРОЙКИ БОТА
+// ==========================================
 export const botSettings = pgTable("bot_settings", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  isActive: boolean("is_active").default(true).notNull(), // Включены ли утренние напоминания
-  channelLink: text("channel_link"), // Ссылка на закрытый канал
-  tzedakahLink: text("tzedakah_link"), // Ссылка на цдаку
+  isActive: boolean("is_active").default(true).notNull(),
+  channelLink: text("channel_link"),
+  tzedakahLink: text("tzedakah_link"),
   reminderMessage: text("reminder_message").default(
     "Доброе утро! ☕️ Утренний Хасидут начнется через 10 минут. Ждем вас!",
   ),
   tzedakahMessage: text("tzedakah_message").default(
     "Спасибо, что были с нами на эфире! Поддержать общину можно по ссылке ниже:",
   ),
-  superadminTelegramId: text("superadmin_telegram_id"), // Сюда бот будет писать с вопросом "Отправить цдаку?"
+  superadminTelegramId: text("superadmin_telegram_id"),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// 1. Таблица Новостей
-export const news = pgTable("news", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  title: text("title").notNull(),
-  slug: text("slug").notNull().unique(), // Красивая ссылка (например: /news/pesah-2026)
-  content: text("content").notNull(), // Здесь будет храниться HTML-код статьи
-  imageUrl: text("image_url"), // Главная картинка новости
-  isPublished: boolean("is_published").default(true), // Черновик или опубликовано
-  isPinned: boolean("is_pinned").default(false), // Закреплена ли наверху
-  views: integer("views").default(0), // Счетчик просмотров
-  authorId: text("author_id").notNull(), // Кто создал (ID суперадмина)
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  categoryId: uuid("category_id").references(() => newsCategories.id, {
-    onDelete: "set null",
+// ==========================================
+// 🔥 ОТНОШЕНИЯ (RELATIONS) ДЛЯ DRIZZLE
+// ==========================================
+
+// Пользователи
+export const usersRelations = relations(users, ({ one, many }) => ({
+  authorProfile: one(authorProfiles, {
+    fields: [users.id],
+    references: [authorProfiles.userId],
   }),
-});
-
-// 2. Таблица Комментариев
-export const newsComments = pgTable("news_comments", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  newsId: uuid("news_id")
-    .references(() => news.id, { onDelete: "cascade" })
-    .notNull(),
-  userId: text("user_id").notNull(), // ID резидента, который оставил коммент
-  content: text("content").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
-
-// Отношения (Relations) для Drizzle, чтобы легко доставать комменты вместе с новостью
-export const newsRelations = relations(news, ({ many }) => ({
-  comments: many(newsComments),
+  news: many(news),
+  videos: many(videos),
 }));
 
+// Профиль автора
+export const authorProfilesRelations = relations(authorProfiles, ({ one }) => ({
+  user: one(users, {
+    fields: [authorProfiles.userId],
+    references: [users.id],
+  }),
+}));
+
+// Статьи (Новости)
+export const newsRelations = relations(news, ({ many, one }) => ({
+  comments: many(newsComments),
+  author: one(users, {
+    fields: [news.authorId],
+    references: [users.id],
+  }),
+  category: one(newsCategories, {
+    fields: [news.categoryId],
+    references: [newsCategories.id],
+  }),
+}));
+
+// Комментарии к статьям
 export const newsCommentsRelations = relations(newsComments, ({ one }) => ({
   news: one(news, {
     fields: [newsComments.newsId],
     references: [news.id],
   }),
-  // Если у тебя таблица юзеров называется users, связываем коммент с автором:
   user: one(users, {
     fields: [newsComments.userId],
     references: [users.id],
   }),
 }));
 
-// Таблица категорий (тем) новостей
-export const newsCategories = pgTable("news_categories", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  name: text("name").notNull(), // Например: "Жизнь общины"
-  description: text("description"), // "Интервью, фотоотчеты и истории"
-  icon: text("icon"), // Название иконки (например 'users', 'book')
-  slug: text("slug").notNull().unique(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
-
-// ==========================================
-// ВИДЕОУРОКИ (YOUTUBE)
-// ==========================================
-export const videos = pgTable("videos", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  title: text("title").notNull(),
-  link: text("link").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+// Видео
+export const videosRelations = relations(videos, ({ one }) => ({
+  author: one(users, {
+    fields: [videos.authorId],
+    references: [users.id],
+  }),
+}));

@@ -1,3 +1,4 @@
+// app/dashboard/page.tsx
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
@@ -16,7 +17,9 @@ import {
   ClipboardList,
   ArrowUpRight,
   UsersRound,
-  Youtube, // <-- Добавили иконку Youtube
+  Youtube,
+  PenTool, // <-- Иконка для кабинета автора
+  Newspaper, // <-- Иконка для статей
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -33,25 +36,23 @@ export default async function DashboardPage() {
   const [dbUser] = await db.select().from(users).where(eq(users.id, userId));
   const role = dbUser?.role || "client";
 
-  // Проверяем, является ли пользователь администратором
   const isAdmin = role === "superadmin" || role === "admin";
+  const isAuthor = role === "author"; // Проверка на автора
 
-  // Загружаем статистику ТОЛЬКО если это админ (чтобы не грузить базу для обычных клиентов)
   let stats = null;
   if (isAdmin) {
     stats = await getDashboardStats();
   }
 
-  // Массив всех разделов системы
+  // Массив всех разделов системы (добавили секции для автора)
   const sections = [
     {
       title: "События Общины",
-      description:
-        "Афиша мероприятий, праздников и встреч. Будьте в центре событий.",
+      description: "Афиша мероприятий, праздников и встреч.",
       icon: Calendar,
       href: "/dashboard/events",
-      roles: ["client", "admin", "superadmin"],
-      span: "col-span-1 md:col-span-2", // Широкая карточка
+      roles: ["client", "admin", "superadmin", "author"], // Добавили автора
+      span: "col-span-1 md:col-span-2",
       color: "text-orange-500",
       bg: "bg-orange-500/10",
     },
@@ -60,7 +61,7 @@ export default async function DashboardPage() {
       description: "Ваши бронирования и билеты на мероприятия.",
       icon: Ticket,
       href: "/dashboard/my-events",
-      roles: ["client", "admin", "superadmin"],
+      roles: ["client", "admin", "superadmin", "author"],
       span: "col-span-1",
       color: "text-[#FFB800]",
       bg: "bg-[#FFB800]/10",
@@ -70,8 +71,8 @@ export default async function DashboardPage() {
       description: "Запись на консультации, помощь и сервисы общины.",
       icon: HeartHandshake,
       href: "/dashboard/services",
-      roles: ["client", "admin", "superadmin"],
-      span: "col-span-1 md:col-span-2", // Широкая карточка
+      roles: ["client", "admin", "superadmin", "author"],
+      span: "col-span-1 md:col-span-2",
       color: "text-rose-500",
       bg: "bg-rose-500/10",
     },
@@ -80,21 +81,48 @@ export default async function DashboardPage() {
       description: "Статус ваших активных заявок.",
       icon: Briefcase,
       href: "/dashboard/my-services",
-      roles: ["client", "admin", "superadmin"],
+      roles: ["client", "admin", "superadmin", "author"],
       span: "col-span-1",
       color: "text-pink-500",
       bg: "bg-pink-500/10",
     },
+
+    // === НОВЫЙ БЛОК ДЛЯ АВТОРА ===
+    {
+      title: "Мои Статьи",
+      description: "Написание и публикация материалов в блоге общины.",
+      icon: Newspaper,
+      href: "/dashboard/news",
+      roles: ["author", "admin", "superadmin"], // Автор может писать статьи
+      span: "col-span-1 md:col-span-2",
+      color: "text-blue-500",
+      bg: "bg-blue-500/10",
+      isAdmin: false,
+    },
+    {
+      title: "Профиль Спикера",
+      description: "Настройка публичной страницы, соцсетей и биографии.",
+      icon: PenTool,
+      href: "/dashboard/author-profile",
+      roles: ["author", "superadmin"], // Кабинет профиля автора
+      span: "col-span-1",
+      color: "text-amber-500",
+      bg: "bg-amber-500/10",
+      isAdmin: false,
+    },
+    // ===============================
+
     {
       title: "Сообщения",
       description: "Связь с администрацией и поддержка.",
       icon: MessageSquare,
       href: "/dashboard/chat",
-      roles: ["client", "admin", "superadmin"],
-      span: "col-span-1 md:col-span-3", // Очень широкая карточка на всю строку
-      color: "text-blue-500",
-      bg: "bg-blue-500/10",
+      roles: ["client", "admin", "superadmin", "author"],
+      span: "col-span-1 md:col-span-3",
+      color: "text-indigo-500",
+      bg: "bg-indigo-500/10",
     },
+
     // --- АДМИН ПАНЕЛЬ ---
     {
       title: "Канбан-доска",
@@ -118,10 +146,9 @@ export default async function DashboardPage() {
       bg: "bg-teal-500/10",
       isAdmin: true,
     },
-    // === НОВЫЙ РАЗДЕЛ ДЛЯ УПРАВЛЕНИЯ ВИДЕО ===
     {
       title: "Видеоуроки",
-      description: "Добавление и удаление бесплатных видеоуроков с YouTube.",
+      description: "Управление библиотекой уроков.",
       icon: Youtube,
       href: "/dashboard/videos",
       roles: ["admin", "superadmin"],
@@ -130,16 +157,15 @@ export default async function DashboardPage() {
       bg: "bg-red-500/10",
       isAdmin: true,
     },
-    // ==========================================
     {
       title: "Пользователи",
-      description: "База данных клиентов.",
+      description: "База данных (выдача ролей авторам).",
       icon: UsersRound,
       href: "/dashboard/users",
       roles: ["admin", "superadmin"],
       span: "col-span-1",
-      color: "text-indigo-500",
-      bg: "bg-indigo-500/10",
+      color: "text-purple-500",
+      bg: "bg-purple-500/10",
       isAdmin: true,
     },
     {
@@ -149,20 +175,17 @@ export default async function DashboardPage() {
       href: "/dashboard/team",
       roles: ["superadmin"],
       span: "col-span-1 md:col-span-2",
-      color: "text-purple-500",
-      bg: "bg-purple-500/10",
+      color: "text-cyan-500",
+      bg: "bg-cyan-500/10",
       isAdmin: true,
     },
   ];
 
-  // Фильтруем то, что можно видеть пользователю
   const visibleSections = sections.filter((s) => s.roles.includes(role));
 
   return (
     <div className="max-w-7xl mx-auto w-full pb-12">
-      {/* ПРИВЕТСТВЕННЫЙ БЛОК (HERO) */}
       <div className="relative overflow-hidden bg-neutral-900 dark:bg-neutral-950 rounded-[32px] p-8 md:p-12 text-white shadow-2xl mb-10 border border-neutral-800 flex flex-col md:flex-row items-center justify-between gap-8">
-        {/* Ацетернити-сетка на фоне героя */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
         <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/3 w-[600px] h-[600px] bg-[radial-gradient(circle,rgba(255,184,0,0.15)_0%,transparent_70%)] pointer-events-none" />
 
@@ -184,7 +207,6 @@ export default async function DashboardPage() {
           </p>
         </div>
 
-        {/* Блок роли внутри Hero (Компактный) */}
         <div className="relative z-10 shrink-0 bg-white/10 backdrop-blur-xl border border-white/10 p-6 rounded-[24px] flex items-center gap-5 w-full md:w-auto">
           <div className="w-12 h-12 bg-[#FFB800]/20 rounded-full flex items-center justify-center text-[#FFB800]">
             <ShieldCheck size={24} strokeWidth={2} />
@@ -200,14 +222,12 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* АНАЛИТИКА И ГРАФИКИ (Отображаются только для администраторов) */}
       {isAdmin && stats && (
         <div className="mb-12">
           <DashboardClient stats={stats} />
         </div>
       )}
 
-      {/* ЗАГОЛОВОК ДЛЯ РАЗДЕЛОВ (Разделяем визуально) */}
       <div className="mb-6 flex items-center gap-3">
         <div className="w-2 h-8 bg-[#FFB800] rounded-r-full" />
         <h2 className="text-3xl font-black tracking-tighter text-neutral-900 dark:text-white">
@@ -215,7 +235,6 @@ export default async function DashboardPage() {
         </h2>
       </div>
 
-      {/* BENTO GRID (СЕТКА РАЗДЕЛОВ) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {visibleSections.map((section, idx) => {
           const Icon = section.icon;
@@ -226,10 +245,9 @@ export default async function DashboardPage() {
               className={cn(
                 "group relative bg-white dark:bg-neutral-900 p-8 rounded-[32px] border border-neutral-200/60 dark:border-neutral-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 overflow-hidden flex flex-col",
                 section.span,
-                section.isAdmin ? "bg-neutral-50 dark:bg-neutral-950/50" : "", // Админские панели чуть темнее
+                section.isAdmin ? "bg-neutral-50 dark:bg-neutral-950/50" : "",
               )}
             >
-              {/* Фоновый градиент при наведении */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
                 <div
                   className={cn(
@@ -239,7 +257,6 @@ export default async function DashboardPage() {
                 />
               </div>
 
-              {/* Иконка и стрелочка */}
               <div className="flex justify-between items-start mb-6 relative z-10">
                 <div
                   className={cn(
@@ -257,7 +274,6 @@ export default async function DashboardPage() {
                 </div>
               </div>
 
-              {/* Текст */}
               <div className="relative z-10 flex-1 flex flex-col">
                 {section.isAdmin && (
                   <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400 mb-2">

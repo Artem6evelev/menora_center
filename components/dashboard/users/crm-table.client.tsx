@@ -13,13 +13,15 @@ import {
   Users,
   Filter,
   FilterX,
+  ShieldCheck, // <-- Добавили иконку для роли
 } from "lucide-react";
 import { getUsersPaginated } from "@/actions/user";
 import UserSlider from "./user-slider";
 import BulkMessageModal from "./bulk-message-modal";
+import MakeAuthorButton from "@/components/admin/MakeAuthorButton"; // <-- Импортируем нашу кнопку
 import { motion, AnimatePresence, easeInOut } from "framer-motion";
 import { cn } from "@/lib/utils";
-import dayjs from "dayjs"; // Используем для удобного вывода даты/возраста (установи: npm i dayjs)
+import dayjs from "dayjs";
 
 export default function CrmTableClient({ initialData }: { initialData: any }) {
   const [data, setData] = useState(initialData.users);
@@ -147,7 +149,7 @@ export default function CrmTableClient({ initialData }: { initialData: any }) {
         </motion.div>
       </div>
 
-      {/* ПАНЕЛЬ ФИЛЬТРОВ (Выезжает) */}
+      {/* ПАНЕЛЬ ФИЛЬТРОВ */}
       <AnimatePresence>
         {isFiltersOpen && (
           <motion.div
@@ -260,6 +262,8 @@ export default function CrmTableClient({ initialData }: { initialData: any }) {
                 <th className="py-6 px-4">Контакты & Город</th>
                 <th className="py-6 px-4">Семья & Возраст</th>
                 <th className="py-6 px-4">Статус</th>
+                {/* 🔥 НОВАЯ КОЛОНКА ДЛЯ РОЛЕЙ 🔥 */}
+                <th className="py-6 px-4">Роль</th>
                 <th className="py-6 px-8 text-right">Карточка</th>
               </tr>
             </thead>
@@ -267,6 +271,7 @@ export default function CrmTableClient({ initialData }: { initialData: any }) {
               {data.map((user: any) => {
                 const userTags = JSON.parse(user.tags || "[]");
                 const isSelected = selectedUserIds.includes(user.id);
+                const role = user.role || "client"; // Защита от пустых значений
 
                 return (
                   <tr
@@ -355,7 +360,30 @@ export default function CrmTableClient({ initialData }: { initialData: any }) {
                       </span>
                     </td>
 
-                    {/* КНОПКА */}
+                    {/* 🔥 РОЛЬ И УПРАВЛЕНИЕ АВТОРАМИ 🔥 */}
+                    <td className="py-4 px-4">
+                      <div className="flex flex-col items-start gap-2">
+                        <div
+                          className={cn(
+                            "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider border",
+                            role === "superadmin"
+                              ? "bg-purple-50 text-purple-600 border-purple-200 dark:bg-purple-500/10 dark:border-purple-500/30"
+                              : role === "admin"
+                                ? "bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-500/10 dark:border-blue-500/30"
+                                : role === "author"
+                                  ? "bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-500/10 dark:border-amber-500/30"
+                                  : "bg-neutral-100 text-neutral-500 border-neutral-200 dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-400",
+                          )}
+                        >
+                          <ShieldCheck size={12} />
+                          {role}
+                        </div>
+                        {/* Кнопка управления (логика скрытия для админов встроена внутрь нее) */}
+                        <MakeAuthorButton userId={user.id} currentRole={role} />
+                      </div>
+                    </td>
+
+                    {/* КНОПКА КАРТОЧКИ */}
                     <td className="py-4 px-8 text-right">
                       <button
                         onClick={() => openSlider(user.id)}
@@ -396,7 +424,6 @@ export default function CrmTableClient({ initialData }: { initialData: any }) {
         </div>
       </motion.div>
 
-      {/* ОСТАЛЬНОЕ БЕЗ ИЗМЕНЕНИЙ (Модалка и Слайдер) ... */}
       <AnimatePresence>
         {selectedUserIds.length > 0 && (
           <motion.div

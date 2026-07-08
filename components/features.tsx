@@ -26,7 +26,7 @@ export const Features = () => {
         "Ежедневные утренние эфиры в нашем Telegram. Заряжайтесь мудростью Торы на весь день.",
       skeleton: <SkeletonTwo />,
       className: "border-b col-span-1 lg:col-span-2 dark:border-neutral-800",
-      link: "https://t.me/твой_канал",
+      link: "https://t.me/menorah_rishon",
     },
     {
       title: "Услуги центра",

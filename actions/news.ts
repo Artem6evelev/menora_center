@@ -2,13 +2,13 @@
 
 import { db } from "@/lib/db";
 import { news, newsCategories, newsComments } from "@/lib/db/schema";
-import { desc, eq, sql, isNotNull, and } from "drizzle-orm";
+import { desc, eq, sql, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@supabase/supabase-js";
+import { auth } from "@clerk/nextjs/server";
 
-// --- НОВАЯ ФУНКЦИЯ ДЛЯ ТРАНСЛИТЕРАЦИИ (Без сторонних библиотек) ---
+// --- УТИЛИТА ТРАНСЛИТЕРАЦИИ ---
 function transliterate(word: string) {
-  const answer = [];
   const converter: Record<string, string> = {
     а: "a",
     б: "b",
@@ -44,79 +44,42 @@ function transliterate(word: string) {
     ю: "yu",
     я: "ya",
   };
-
-  for (let i = 0; i < word.length; ++i) {
-    const char = word[i].toLowerCase();
-    answer.push(converter[char] !== undefined ? converter[char] : char);
-  }
-
-  return answer.join("");
+  return word
+    .toLowerCase()
+    .split("")
+    .map((char) => converter[char] || char)
+    .join("");
 }
-// -----------------------------------------------------------------
 
-// 1. Получение всех новостей для Админки
+// 1. Получение новостей для Админки
 export async function getAdminNews() {
-  try {
-    return await db.query.news.findMany({
-      orderBy: [desc(news.createdAt)],
-    });
-  } catch (error) {
-    console.error("Ошибка при получении новостей:", error);
-    return [];
-  }
+  return await db.query.news.findMany({ orderBy: [desc(news.createdAt)] });
 }
 
-// 2. Получение только опубликованных новостей для сайта (с фильтрацией)
-export async function getPublicNews(categorySlug?: string) {
-  try {
-    let condition = eq(news.isPublished, true);
-
-    if (categorySlug) {
-      const category = await db.query.newsCategories.findFirst({
-        where: eq(newsCategories.slug, categorySlug),
-      });
-
-      if (category) {
-        condition = and(
-          eq(news.isPublished, true),
-          eq(news.categoryId, category.id),
-        ) as any;
-      }
-    }
-
-    return await db.query.news.findMany({
-      where: condition,
-      orderBy: [desc(news.isPinned), desc(news.createdAt)],
-    });
-  } catch (error) {
-    console.error("Ошибка при получении публичных новостей:", error);
-    return [];
-  }
-}
-
-// 3. Создание новой новости
+// 2. Создание новости (С ПОДДЕРЖКОЙ АВТОРА)
 export async function createNews(data: {
   title: string;
   content: string;
   imageUrl?: string;
   isPublished: boolean;
   isPinned: boolean;
-  authorId: string;
+  targetAuthorId?: string | null; // <-- Новое поле
   categoryId?: string | null;
 }) {
+  const { userId } = await auth();
+  if (!userId) return { success: false, error: "Не авторизован" };
+
   try {
-    // ИСПОЛЬЗУЕМ ТРАНСЛИТЕРАЦИЮ ЗДЕСЬ
-    const transliteratedTitle = transliterate(data.title);
-
-    const baseSlug = transliteratedTitle
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-") // Оставляем только латиницу и цифры
-      .replace(/(^-|-$)+/g, "");
-
-    const slug = `${baseSlug}-${Math.floor(Math.random() * 1000)}`;
+    const slug = `${transliterate(data.title).replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`;
 
     await db.insert(news).values({
-      ...data,
+      title: data.title,
+      content: data.content,
+      imageUrl: data.imageUrl,
+      isPublished: data.isPublished,
+      isPinned: data.isPinned,
+      categoryId: data.categoryId,
+      authorId: data.targetAuthorId || userId, // <--- ВАЖНО: используем выбранного или текущего
       slug,
     });
 
@@ -124,14 +87,91 @@ export async function createNews(data: {
     revalidatePath("/news");
     return { success: true };
   } catch (error) {
-    console.error("Ошибка создания новости:", error);
+    console.error(error);
     return { success: false, error: "Не удалось сохранить новость" };
   }
 }
 
-// 4. Удаление новости
+// Вспомогательная функция для проверки прав (Добавь ее перед updateNews)
+async function hasEditPermissions(articleId: string) {
+  const { userId } = await auth();
+  if (!userId) return false;
+
+  // 1. Ищем пользователя, чтобы узнать его роль
+  const { users } = await import("@/lib/db/schema");
+  const currentUser = await db.query.users.findFirst({
+    where: eq(users.id, userId),
+  });
+
+  // 2. Если это админ или суперадмин — разрешаем всё!
+  if (currentUser?.role === "admin" || currentUser?.role === "superadmin") {
+    return true;
+  }
+
+  // 3. Иначе проверяем, является ли пользователь автором конкретно этой статьи
+  const article = await db.query.news.findFirst({
+    where: eq(news.id, articleId),
+  });
+
+  return article?.authorId === userId;
+}
+
+// 🔥 ОБНОВЛЕННАЯ ФУНКЦИЯ UPDATE
+export async function updateNews(
+  id: string,
+  data: {
+    title: string;
+    content: string;
+    imageUrl?: string;
+    isPublished: boolean;
+    isPinned: boolean;
+    targetAuthorId?: string | null;
+    categoryId?: string | null;
+  },
+) {
+  try {
+    // ПРОВЕРКА ПРАВ: Если нет прав - отклоняем запрос
+    const canEdit = await hasEditPermissions(id);
+    if (!canEdit) {
+      return {
+        success: false,
+        error: "У вас нет прав на редактирование этой статьи",
+      };
+    }
+
+    const updatePayload: any = {
+      ...data,
+      updatedAt: new Date(),
+    };
+
+    // Если суперадмин решил сменить автора статьи - сохраняем
+    if (data.targetAuthorId) {
+      updatePayload.authorId = data.targetAuthorId;
+    }
+
+    await db.update(news).set(updatePayload).where(eq(news.id, id));
+
+    revalidatePath("/dashboard/news");
+    revalidatePath("/news");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Ошибка обновления новости:", error);
+    return { success: false, error: "Не удалось обновить новость" };
+  }
+}
+
+// 🔥 ОБНОВЛЕННАЯ ФУНКЦИЯ DELETE
 export async function deleteNews(id: string) {
   try {
+    // ПРОВЕРКА ПРАВ: Если нет прав - отклоняем запрос
+    const canEdit = await hasEditPermissions(id);
+    if (!canEdit) {
+      return {
+        success: false,
+        error: "У вас нет прав на удаление этой статьи",
+      };
+    }
+
     await db.delete(news).where(eq(news.id, id));
     revalidatePath("/dashboard/news");
     revalidatePath("/news");
@@ -141,64 +181,34 @@ export async function deleteNews(id: string) {
   }
 }
 
-export async function uploadImageAction(formData: FormData) {
-  try {
-    const file = formData.get("file") as File;
-    if (!file) return { success: false, error: "Файл не найден" };
-
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    );
-
-    const fileExt = file.name.split(".").pop();
-    const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
-    const filePath = `news/${fileName}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from("images")
-      .upload(filePath, file);
-
-    if (uploadError) throw uploadError;
-
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from("images").getPublicUrl(filePath);
-
-    return { success: true, url: publicUrl };
-  } catch (error: any) {
-    return { success: false, error: error.message };
+export async function getPublicNews(categorySlug?: string) {
+  let condition = eq(news.isPublished, true);
+  if (categorySlug) {
+    const cat = await db.query.newsCategories.findFirst({
+      where: eq(newsCategories.slug, categorySlug),
+    });
+    if (cat) condition = and(condition, eq(news.categoryId, cat.id)) as any;
   }
+  return await db.query.news.findMany({
+    where: condition,
+    orderBy: [desc(news.isPinned), desc(news.createdAt)],
+  });
 }
 
-// Обновление существующей новости
-export async function updateNews(
-  id: string,
-  data: {
-    title: string;
-    content: string;
-    imageUrl?: string;
-    isPublished: boolean;
-    isPinned: boolean;
-    categoryId?: string | null;
-  },
-) {
-  try {
-    await db
-      .update(news)
-      .set({
-        ...data,
-        updatedAt: new Date(),
-      })
-      .where(eq(news.id, id));
-
-    revalidatePath("/dashboard/news");
-    revalidatePath("/news");
-    return { success: true };
-  } catch (error: any) {
-    console.error("Ошибка обновления новости:", error);
-    return { success: false, error: "Не удалось обновить новость" };
-  }
+export async function uploadImageAction(formData: FormData) {
+  const file = formData.get("file") as File;
+  if (!file) return { success: false, error: "Файл не найден" };
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+  const filePath = `news/${Date.now()}_${file.name}`;
+  const { error } = await supabase.storage
+    .from("images")
+    .upload(filePath, file);
+  if (error) return { success: false, error: error.message };
+  const { data } = supabase.storage.from("images").getPublicUrl(filePath);
+  return { success: true, url: data.publicUrl };
 }
 
 // 1. Получить статью по Slug
@@ -216,6 +226,10 @@ export async function getNewsBySlug(slug: string) {
           with: { user: true },
           orderBy: [desc(newsComments.createdAt)],
         },
+        // 🔥 ДОБАВЛЯЕМ ЭТУ СТРОКУ, ЧТОБЫ ПОДТЯНУТЬ АВТОРА
+        author: {
+          with: { authorProfile: true },
+        },
       },
     });
 
@@ -226,96 +240,53 @@ export async function getNewsBySlug(slug: string) {
   }
 }
 
-// 2. Добавить комментарий
 export async function addNewsComment(
   newsId: string,
   userId: string,
   content: string,
 ) {
-  try {
-    const [newComment] = await db
-      .insert(newsComments)
-      .values({
-        newsId,
-        userId,
-        content,
-      })
-      .returning();
-
-    revalidatePath(`/news`);
-    return { success: true, commentId: newComment.id };
-  } catch (error) {
-    return { success: false, error: "Ошибка при отправке" };
-  }
+  await db.insert(newsComments).values({ newsId, userId, content });
+  revalidatePath(`/news/${newsId}`);
+  return { success: true };
 }
 
-// 3. Удалить комментарий
-export async function deleteNewsComment(commentId: string) {
-  try {
-    await db.delete(newsComments).where(eq(newsComments.id, commentId));
-    revalidatePath(`/news`);
-    return { success: true };
-  } catch (error) {
-    return { success: false, error: "Ошибка при удалении" };
-  }
+export async function deleteNewsComment(id: string) {
+  await db.delete(newsComments).where(eq(newsComments.id, id));
+  revalidatePath(`/news`);
+  return { success: true };
 }
 
-// Получаем данные для выпадающего меню
 export async function getNavbarNewsData() {
-  try {
-    const latestArticle = await db.query.news.findFirst({
-      where: eq(news.isPublished, true),
-      orderBy: [desc(news.createdAt)],
-    });
-
-    const categories = await db.query.newsCategories.findMany({
-      limit: 4,
-      orderBy: [desc(newsCategories.updatedAt)],
-    });
-
-    return { latestArticle, categories };
-  } catch (error) {
-    console.error("Ошибка загрузки данных для навбара:", error);
-    return { latestArticle: null, categories: [] };
-  }
+  const latestArticle = await db.query.news.findFirst({
+    where: eq(news.isPublished, true),
+    orderBy: [desc(news.createdAt)],
+  });
+  const categories = await db.query.newsCategories.findMany({
+    limit: 4,
+    orderBy: [desc(newsCategories.updatedAt)],
+  });
+  return { latestArticle, categories };
 }
 
-// 1. Получить все категории
 export async function getNewsCategories() {
   return await db.query.newsCategories.findMany({
     orderBy: [desc(newsCategories.updatedAt)],
   });
 }
 
-// 2. Создать категорию
 export async function createNewsCategory(data: {
   name: string;
   description?: string;
   icon?: string;
 }) {
-  try {
-    // ИСПОЛЬЗУЕМ ТРАНСЛИТЕРАЦИЮ ЗДЕСЬ
-    const transliteratedName = transliterate(data.name);
-
-    const slug = transliteratedName
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)+/g, "");
-
-    await db.insert(newsCategories).values({
-      name: data.name,
-      description: data.description || "",
-      icon: data.icon || "newspaper",
-      slug,
-    });
-    revalidatePath("/dashboard/news");
-    return { success: true };
-  } catch (e) {
-    return { success: false };
-  }
+  await db.insert(newsCategories).values({
+    ...data,
+    slug: transliterate(data.name).replace(/[^a-z0-9]+/g, "-"),
+  });
+  revalidatePath("/dashboard/news");
+  return { success: true };
 }
 
-// 3. Удалить категорию
 export async function deleteNewsCategory(id: string) {
   await db.delete(newsCategories).where(eq(newsCategories.id, id));
   revalidatePath("/dashboard/news");

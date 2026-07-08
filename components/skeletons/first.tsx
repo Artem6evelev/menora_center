@@ -13,21 +13,25 @@ export const SkeletonOne = () => {
       <div className="w-full md:w-[90%] p-3 md:p-5 mx-auto bg-white dark:bg-neutral-900 shadow-2xl group h-full rounded-2xl border border-neutral-100 dark:border-neutral-800 relative z-10 mt-12 md:mt-0">
         <div className="flex flex-1 w-full h-full flex-col space-y-2 md:space-y-4 opacity-80">
           <EventRow
-            title="Большой Шаббат"
-            time="Пт, 19:00"
-            location="Главный зал"
+            title="Утренний Хасидут"
+            time="Каждый день, 09:00"
+            location="Menorah Center"
           />
           <EventRow
             title="Урок: Недельная глава"
-            time="Пн, 20:00"
-            location="Библиотека"
+            time="Пн, 19:30"
+            location="Menorah Center"
           />
           <EventRow
             title="Женский клуб"
-            time="Ср, 18:30"
-            location="Зал мероприятий"
+            time="Ср, 19:30"
+            location="Menorah Center"
           />
-          <EventRow title="Фарбренген" time="Чт, 21:00" location="Кафетерий" />
+          <EventRow
+            title="Урок: Тания"
+            time="Вт, 19:30"
+            location="Menorah Center"
+          />
         </div>
       </div>
 
@@ -37,7 +41,7 @@ export const SkeletonOne = () => {
         <div className="p-1.5 md:p-2 border border-neutral-200 bg-neutral-100/80 dark:bg-neutral-800/80 backdrop-blur-sm dark:border-neutral-700 rounded-[16px] md:rounded-[32px] h-[120px] w-[120px] sm:h-[160px] sm:w-[160px] md:h-[300px] md:w-[300px] flex-shrink-0 group-hover:scale-[1.05] transition duration-500 shadow-2xl pointer-events-auto">
           <div className="p-1.5 md:p-2 bg-white dark:bg-black dark:border-neutral-700 border border-neutral-200 rounded-[12px] md:rounded-[24px] flex-shrink-0 w-full h-full">
             <BlurImage
-              src="/landing/landing-event.webp" // Исправленный путь (без /public)
+              src="/landing/morgen.webp" // Исправленный путь (без /public)
               alt="Событие"
               width={800}
               height={800}

@@ -22,6 +22,13 @@
       "when": 1780425802302,
       "tag": "0002_massive_wilson_fisk",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1783278410413,
+      "tag": "0003_chemical_falcon",
+      "breakpoints": true
     }
   ]
 }

@@ -11,6 +11,7 @@ import {
   Loader2,
   X,
   Tags,
+  UserRound, // <-- Добавили новую иконку для автора
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
@@ -22,15 +23,20 @@ import {
   createNewsCategory,
   deleteNewsCategory,
 } from "@/actions/news";
-import { uploadImageAction } from "@/actions/news"; // Используем твой экшен для загрузки картинок
+import { uploadImageAction } from "@/actions/news";
+// @ts-ignore: side-effect CSS import without type declarations
 import "react-quill-new/dist/quill.snow.css";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
 export default function AdminNewsClient({
   initialNews,
+  authors, // <-- Получаем список авторов
+  currentUserRole, // <-- Роль текущего пользователя
 }: {
   initialNews: any[];
+  authors: { id: string; name: string }[];
+  currentUserRole: string;
 }) {
   const [newsList, setNewsList] = useState(initialNews);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -51,6 +57,7 @@ export default function AdminNewsClient({
   const [imageUrl, setImageUrl] = useState("");
   const [isPinned, setIsPinned] = useState(false);
   const [isPublished, setIsPublished] = useState(true);
+  const [targetAuthorId, setTargetAuthorId] = useState(""); // <-- Состояние для выбранного автора
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Загружаем категории при старте
@@ -67,6 +74,7 @@ export default function AdminNewsClient({
     setIsPinned(false);
     setIsPublished(true);
     setSelectedCategoryId("");
+    setTargetAuthorId(""); // Сбрасываем выбранного автора
   };
 
   const handleEdit = (item: any) => {
@@ -77,6 +85,7 @@ export default function AdminNewsClient({
     setIsPinned(item.isPinned);
     setIsPublished(item.isPublished);
     setSelectedCategoryId(item.categoryId || "");
+    setTargetAuthorId(item.authorId || ""); // Подгружаем автора при редактировании
     setIsModalOpen(true);
   };
 
@@ -121,7 +130,7 @@ export default function AdminNewsClient({
       isPinned,
       isPublished,
       categoryId: selectedCategoryId || null,
-      authorId: "admin",
+      targetAuthorId: targetAuthorId || null, // Отправляем ID выбранного автора (а не жестко "admin")
     };
 
     let res;
@@ -172,20 +181,24 @@ export default function AdminNewsClient({
       <div className="flex justify-between items-center mb-8">
         <div>
           <h2 className="text-2xl font-black text-neutral-900 dark:text-white tracking-tighter">
-            Все новости
+            {currentUserRole === "author" ? "Мои статьи" : "Все статьи блога"}
           </h2>
           <p className="text-neutral-500 font-medium mt-1">
-            Управление блогом общины
+            Управление материалами
           </p>
         </div>
         <div className="flex gap-4">
-          <button
-            onClick={() => setIsCatModalOpen(true)}
-            className="flex items-center gap-2 px-5 py-3 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white rounded-full font-bold text-sm transition-all"
-          >
-            <Tags size={18} />
-            Темы
-          </button>
+          {/* Кнопка "Темы" видна только админам */}
+          {(currentUserRole === "superadmin" ||
+            currentUserRole === "admin") && (
+            <button
+              onClick={() => setIsCatModalOpen(true)}
+              className="flex items-center gap-2 px-5 py-3 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white rounded-full font-bold text-sm transition-all"
+            >
+              <Tags size={18} />
+              Темы
+            </button>
+          )}
           <button
             onClick={() => {
               resetForm();
@@ -273,23 +286,47 @@ export default function AdminNewsClient({
             </div>
 
             <div className="space-y-6">
-              {/* Выбор темы (Категории) */}
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 pl-1">
-                  Тема статьи (Категория)
-                </label>
-                <select
-                  value={selectedCategoryId}
-                  onChange={(e) => setSelectedCategoryId(e.target.value)}
-                  className="w-full bg-neutral-50 dark:bg-neutral-900 border-none rounded-2xl p-4 font-bold text-neutral-900 dark:text-white outline-none focus:ring-2 focus:ring-[#FFB800]"
-                >
-                  <option value="">-- Без темы --</option>
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Выбор темы (Категории) */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 pl-1">
+                    Тема статьи
+                  </label>
+                  <select
+                    value={selectedCategoryId}
+                    onChange={(e) => setSelectedCategoryId(e.target.value)}
+                    className="w-full bg-neutral-50 dark:bg-neutral-900 border-none rounded-2xl p-4 font-bold text-neutral-900 dark:text-white outline-none focus:ring-2 focus:ring-[#FFB800]"
+                  >
+                    <option value="">-- Без темы --</option>
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* ВЫБОР АВТОРА (ТОЛЬКО ДЛЯ АДМИНОВ) */}
+                {(currentUserRole === "superadmin" ||
+                  currentUserRole === "admin") && (
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 pl-1 flex items-center gap-1">
+                      <UserRound size={12} /> Публикация от лица:
+                    </label>
+                    <select
+                      value={targetAuthorId}
+                      onChange={(e) => setTargetAuthorId(e.target.value)}
+                      className="w-full bg-neutral-50 dark:bg-neutral-900 border-none rounded-2xl p-4 font-bold text-neutral-900 dark:text-white outline-none focus:ring-2 focus:ring-[#FFB800]"
+                    >
+                      <option value="">От имени Администрации</option>
+                      {authors.map((author) => (
+                        <option key={author.id} value={author.id}>
+                          {author.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
 
               <input

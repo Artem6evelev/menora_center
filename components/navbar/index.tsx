@@ -9,6 +9,7 @@ export async function NavBar() {
     { title: "Услуги", link: "/services" },
     { title: "Мероприятия", link: "/events" },
     { title: "Видеоуроки", link: "/lessons" },
+    { title: "Авторы", link: "/authors" },
 
     {
       title: "Новости",

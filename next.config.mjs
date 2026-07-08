@@ -10,6 +10,11 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "img.youtube.com", // <-- ВОТ ЭТА СТРОКА РЕШАЕТ ПРОБЛЕМУ
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
         hostname: "gwuzekpkfrkmgluzblty.supabase.co",
       },
       {

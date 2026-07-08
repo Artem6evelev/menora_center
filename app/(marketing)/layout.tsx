@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+// @ts-ignore
 import "../globals.css";
 import { GeistSans } from "geist/font/sans";
 import { NavBar } from "@/components/navbar";

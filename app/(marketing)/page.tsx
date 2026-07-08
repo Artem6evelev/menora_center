@@ -2,21 +2,20 @@ import type { Metadata } from "next";
 import { auth } from "@clerk/nextjs/server";
 import { getPublicNews } from "@/actions/news";
 import { getPublicEventsPaginated } from "@/actions/event";
-import { getPublicServicesPaginated } from "@/actions/service";
+import { getVideos } from "@/actions/video"; // <-- ИМПОРТ ВИДЕО
 
 import { Container } from "@/components/container";
 import { Hero, CarouselItem } from "@/components/landing/hero";
 import { Background } from "@/components/background";
 import { Features } from "@/components/features";
 import { GridFeatures } from "@/components/grid-features";
-import { Testimonials } from "@/components/testimonials";
+// import { Testimonials } from "@/components/testimonials";
 import { CTA } from "@/components/cta";
 
 // Секции
 import { UpcomingEvents } from "@/components/landing/upcomming-events";
 import { ServicesSection } from "@/components/sections/service-section";
 
-// ЯВНО УКАЗЫВАЕМ МЕТАДАТУ ДЛЯ ГЛАВНОЙ СТРАНИЦЫ (ДЛЯ КАРТОЧЕК В TELEGRAM И WHATSAPP)
 export const metadata: Metadata = {
   title: "Menorah Center | Еврейский общинный центр в Ришон ле-Ционе",
   description:
@@ -45,79 +44,101 @@ export const metadata: Metadata = {
 
 export const revalidate = 60;
 
+// Утилита для извлечения обложки из YouTube
+const getYoutubeThumbnail = (url: string) => {
+  if (!url)
+    return "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80";
+  try {
+    const match = url.match(
+      /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/))([^?&/]+)/,
+    );
+    const id = match?.[1]?.length === 11 ? match[1] : null;
+    return id
+      ? `https://img.youtube.com/vi/${id}/hqdefault.jpg`
+      : "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80";
+  } catch {
+    return "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80";
+  }
+};
+
 export default async function Home() {
   const { userId } = await auth();
 
-  // 1. ПАРАЛЛЕЛЬНО ЗАПРАШИВАЕМ ВСЕ ДАННЫЕ ИЗ БД (События, Новости, Услуги)
-  const [allNews, eventsData, servicesData] = await Promise.all([
+  // 1. ПАРАЛЛЕЛЬНО ЗАПРАШИВАЕМ 3 ТИПА ДАННЫХ
+  const [allNews, eventsData, videosData] = await Promise.all([
     getPublicNews(),
     getPublicEventsPaginated(1, 3, null),
-    getPublicServicesPaginated(1, 1, null), // Запрашиваем 1 последнюю услугу
+    getVideos(),
   ]);
 
   const upcomingEvents = eventsData?.events || [];
-  const latestServices = servicesData?.services || [];
+  const latestVideos = videosData || [];
 
-  // 2. ФОРМИРУЕМ КАРТОЧКИ ДЛЯ КАРУСЕЛИ (Hero)
+  // 2. ФОРМИРУЕМ КАРТОЧКИ ДЛЯ КАРУСЕЛИ
 
-  // А) Последнее событие (если есть)
+  // А) Последнее событие (Синий цвет)
   const eventItem: CarouselItem | null =
     upcomingEvents.length > 0
       ? {
           type: "Событие",
           title: upcomingEvents[0].event.title,
-          date: upcomingEvents[0].event.date || "Дата уточняется",
+          date: upcomingEvents[0].event.date
+            ? new Date(upcomingEvents[0].event.date).toLocaleDateString(
+                "ru-RU",
+                { day: "numeric", month: "long" },
+              )
+            : "Дата уточняется",
           iconName: "calendar",
-          color: "bg-blue-500",
+          color: "bg-indigo-500",
           image:
             upcomingEvents[0].event.imageUrl ||
             "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=800&q=80",
-          link: "/events", // Жесткая ссылка на раздел событий
+          link: "/events",
         }
       : null;
 
-  // Б) Последняя услуга (если есть)
-  const serviceItem: CarouselItem | null =
-    latestServices.length > 0
+  // Б) Последняя новость (Желтый цвет)
+  const newsItem: CarouselItem | null =
+    allNews.length > 0
       ? {
-          type: "Услуга",
-          title: latestServices[0].service.title,
-          date: latestServices[0].category?.name || "Доступно для записи",
-          iconName: "hearthandshake",
-          color: "bg-green-500",
+          type: "Новость",
+          title: allNews[0].title,
+          date: allNews[0].createdAt
+            ? new Date(allNews[0].createdAt).toLocaleDateString("ru-RU", {
+                day: "numeric",
+                month: "long",
+              })
+            : "Недавно",
+          iconName: "newspaper",
+          color: "bg-[#FFB800]",
           image:
-            latestServices[0].service.imageUrl ||
-            "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80",
-          link: "/services", // Жесткая ссылка на раздел услуг
+            allNews[0].imageUrl ||
+            "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80",
+          link: `/news/${allNews[0].slug}`,
         }
       : null;
 
-  // В) Последние 2 новости (если есть)
-  const newsItems: CarouselItem[] = allNews.slice(0, 2).map((newsItem) => ({
-    type: "Новость",
-    title: newsItem.title,
-    date: newsItem.createdAt
-      ? new Date(newsItem.createdAt).toLocaleDateString("ru-RU", {
-          day: "numeric",
-          month: "long",
-        })
-      : "Недавно",
-    iconName: "newspaper",
-    color: "bg-[#FFB800]",
-    image:
-      newsItem.imageUrl ||
-      "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80",
-    link: "/news", // Жесткая ссылка на раздел новостей
-  }));
+  // В) Последний видеоурок (Красный цвет)
+  const videoItem: CarouselItem | null =
+    latestVideos.length > 0
+      ? {
+          type: "Видеоурок",
+          title: latestVideos[0].title,
+          date: latestVideos[0].speaker || "Урок Торы",
+          iconName: "youtube",
+          color: "bg-red-500",
+          image: getYoutubeThumbnail(latestVideos[0].link),
+          link: "/lessons",
+        }
+      : null;
 
-  // 3. СОБИРАЕМ ВСЕ КАРТОЧКИ И ФИЛЬТРУЕМ NULL
-  const heroItems = [eventItem, serviceItem, ...newsItems].filter(
+  // 3. СОБИРАЕМ 3 КАРТОЧКИ И ФИЛЬТРУЕМ ПУСТЫЕ (если в базе чего-то нет)
+  const heroItems = [eventItem, newsItem, videoItem].filter(
     Boolean,
   ) as CarouselItem[];
 
   return (
     <div className="relative">
-      {/* JSON-LD Schema для Google */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -142,9 +163,9 @@ export default async function Home() {
                 "@id": "https://menorah-rishon.com/#organization",
                 name: "Menorah Center Ришон ле-Цион",
                 url: "https://menorah-rishon.com",
-                logo: "https://menorah-rishon.com/logo.png", // Не забудь заменить на реальный URL логотипа
+                logo: "https://menorah-rishon.com/logo.png",
                 sameAs: [
-                  "https://t.me/menorah_rishon", // Укажи реальные ссылки на соцсети общины
+                  "https://t.me/menorah_rishon",
                   "https://www.instagram.com/menorah.center.rishon/?hl=en",
                 ],
               },
@@ -163,8 +184,7 @@ export default async function Home() {
         <Features />
         <UpcomingEvents events={upcomingEvents} userId={userId} />
         <ServicesSection />
-        {/* <GridFeatures /> */}
-        {/* <Testimonials /> */}
+        <GridFeatures />
       </Container>
 
       {/* Подвал с призывом к действию */}

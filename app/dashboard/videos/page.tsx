@@ -1,3 +1,4 @@
+// app/dashboard/videos/page.tsx
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
@@ -13,13 +14,28 @@ export default async function AdminVideosPage() {
   // === ПРОВЕРКА ПРАВ ДОСТУПА ===
   const [dbUser] = await db.select().from(users).where(eq(users.id, userId));
 
-  // Если пользователя нет в базе или он не админ/суперадмин — выкидываем на главную панель
   if (!dbUser || (dbUser.role !== "admin" && dbUser.role !== "superadmin")) {
     redirect("/dashboard");
   }
 
-  // Если проверки пройдены, получаем список видео из БД
+  // 1. Получаем список всех видео
   const videosList = await getVideos();
 
-  return <AdminVideosClient initialVideos={videosList} />;
+  // 2. 🔥 Получаем список всех авторов (спикеров/раввинов)
+  const authorsData = await db
+    .select({
+      id: users.id,
+      firstName: users.firstName,
+      lastName: users.lastName,
+    })
+    .from(users)
+    .where(eq(users.role, "author"));
+
+  // Форматируем список авторов для селектора
+  const authorsList = authorsData.map((a) => ({
+    id: a.id,
+    name: `${a.firstName || ""} ${a.lastName || ""}`.trim() || "Без имени",
+  }));
+
+  return <AdminVideosClient initialVideos={videosList} authors={authorsList} />;
 }

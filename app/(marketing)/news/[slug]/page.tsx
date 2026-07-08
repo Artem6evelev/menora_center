@@ -1,4 +1,3 @@
-// app/[locale]/news/[slug]/page.tsx
 import { Metadata } from "next";
 import { getNewsBySlug } from "@/actions/news";
 import { notFound } from "next/navigation";
@@ -7,7 +6,7 @@ import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { ArrowLeft, Calendar, Eye } from "lucide-react";
+import { ArrowLeft, Calendar, Eye, UserRound } from "lucide-react";
 
 import CommentsSection from "@/components/dashboard/news/comments-section";
 import ArticleContent from "@/components/news/article-content";
@@ -83,7 +82,8 @@ export default async function NewsArticlePage(props: {
           <h1 className="text-3xl md:text-5xl lg:text-7xl font-black text-neutral-900 dark:text-white tracking-tighter leading-[1.05] mb-8">
             {article.title}
           </h1>
-          <div className="flex flex-wrap items-center gap-6 text-[10px] md:text-xs font-bold text-neutral-400 uppercase tracking-widest">
+
+          <div className="flex flex-wrap items-center gap-6 text-[10px] md:text-xs font-bold text-neutral-400 uppercase tracking-widest mb-8">
             <span className="flex items-center gap-2 bg-neutral-50 dark:bg-neutral-900 px-4 py-2 rounded-full">
               <Calendar size={14} className="text-[#FFB800]" /> {formattedDate}
             </span>
@@ -92,6 +92,60 @@ export default async function NewsArticlePage(props: {
               Просмотров
             </span>
           </div>
+
+          {/* 🔥 БЛОК АВТОРА */}
+          {article.author && (
+            <div className="mt-8">
+              {article.author.authorProfile ? (
+                <Link
+                  href={`/authors/${article.author.authorProfile.slug}`}
+                  className="inline-flex items-center gap-4 p-2 pr-6 bg-neutral-50 dark:bg-neutral-900/50 rounded-full border border-neutral-200 dark:border-neutral-800 hover:border-[#FFB800]/50 transition-colors group"
+                >
+                  <div className="w-12 h-12 rounded-full overflow-hidden bg-neutral-200 dark:bg-neutral-800 shrink-0">
+                    {article.author.imageUrl ? (
+                      <img
+                        src={article.author.imageUrl}
+                        alt="Автор"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <UserRound className="w-full h-full p-3 text-neutral-400" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400 mb-0.5">
+                      Лектор общины
+                    </p>
+                    <p className="text-sm font-bold text-neutral-900 dark:text-white group-hover:text-[#FFB800] transition-colors">
+                      {article.author.firstName} {article.author.lastName}
+                    </p>
+                  </div>
+                </Link>
+              ) : (
+                <div className="inline-flex items-center gap-4 p-2 pr-6 bg-neutral-50 dark:bg-neutral-900/50 rounded-full border border-neutral-200 dark:border-neutral-800">
+                  <div className="w-12 h-12 rounded-full overflow-hidden bg-neutral-200 dark:bg-neutral-800 shrink-0">
+                    {article.author.imageUrl ? (
+                      <img
+                        src={article.author.imageUrl}
+                        alt="Автор"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <UserRound className="w-full h-full p-3 text-neutral-400" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400 mb-0.5">
+                      Публикация от
+                    </p>
+                    <p className="text-sm font-bold text-neutral-900 dark:text-white">
+                      {article.author.firstName} {article.author.lastName}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </header>
 
         {article.imageUrl && (
@@ -104,7 +158,6 @@ export default async function NewsArticlePage(props: {
           </div>
         )}
 
-        {/* Контент новости — теперь занимает всю ширину картинки */}
         <ArticleContent content={article.content} />
 
         <footer className="mt-24 pt-16 border-t border-neutral-100 dark:border-neutral-800">

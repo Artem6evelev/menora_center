@@ -1,21 +1,27 @@
-import { getBotSettings } from "@/actions/bot-settings";
-import TelegramSettingsClient from "@/components/dashboard/telegram/telegram-settings-client";
+// app/dashboard/telegram/page.tsx
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+import { db } from "@/lib/db";
+import { users } from "@/lib/db/schema";
+import { eq, isNotNull } from "drizzle-orm";
+import TelegramClient from "@/components/dashboard/telegram/telegram-client";
 
-export default async function TelegramPage() {
-  const settings = await getBotSettings();
+export default async function TelegramDashboardPage() {
+  const { userId } = await auth();
+  if (!userId) redirect("/sign-in");
 
-  return (
-    <div className="p-8 max-w-4xl mx-auto w-full">
-      <div className="mb-8">
-        <h1 className="text-4xl font-black text-neutral-900 tracking-tighter">
-          Управление <span className="text-[#FFB800]">Telegram Ботом</span>
-        </h1>
-        <p className="text-neutral-500 font-medium mt-2">
-          Настройка автоматизации утреннего Хасидута и рассылок.
-        </p>
-      </div>
+  // === ПРОВЕРКА ПРАВ ДОСТУПА ===
+  const [dbUser] = await db.select().from(users).where(eq(users.id, userId));
 
-      <TelegramSettingsClient initialSettings={settings} />
-    </div>
-  );
+  if (!dbUser || (dbUser.role !== "admin" && dbUser.role !== "superadmin")) {
+    redirect("/dashboard");
+  }
+
+  // Считаем количество «схваченных» пользователей в боте
+  const subscribers = await db
+    .select()
+    .from(users)
+    .where(isNotNull(users.telegramChatId));
+
+  return <TelegramClient totalSubscribers={subscribers.length} />;
 }

@@ -1,3 +1,4 @@
+// actions/video.ts
 "use server";
 
 import { db } from "@/lib/db";
@@ -5,24 +6,52 @@ import { videos } from "@/lib/db/schema";
 import { desc, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-// Получить все видео (сортировка от новых к старым)
 export async function getVideos() {
   try {
-    return await db.select().from(videos).orderBy(desc(videos.createdAt));
+    const allVideos = await db.query.videos.findMany({
+      orderBy: [desc(videos.createdAt)],
+      with: {
+        author: {
+          with: { authorProfile: true },
+        },
+      },
+    });
+
+    return allVideos.map((video) => ({
+      id: video.id,
+      title: video.title,
+      link: video.link,
+      description: video.description,
+      category: video.category || null, // Теперь без "as any"
+      authorId: video.authorId || "",
+      speaker: video.author
+        ? `${video.author.firstName || ""} ${video.author.lastName || ""}`.trim()
+        : null,
+      authorSlug: video.author?.authorProfile?.slug || null,
+    }));
   } catch (error) {
     console.error("Ошибка при получении видео:", error);
     return [];
   }
 }
 
-// Добавить новое видео
-export async function addVideo(title: string, link: string) {
+export async function addVideo(
+  title: string,
+  link: string,
+  authorId?: string | null,
+  category?: string | null,
+) {
   try {
-    await db.insert(videos).values({ title, link });
+    await db.insert(videos).values({
+      title,
+      link,
+      authorId: authorId || null,
+      category: category || null,
+    });
 
-    // Мгновенно обновляем кэш в админке и на публичной странице
     revalidatePath("/dashboard/videos");
     revalidatePath("/lessons");
+    revalidatePath("/authors");
     return { success: true };
   } catch (error) {
     console.error("Ошибка при добавлении видео:", error);
@@ -30,14 +59,40 @@ export async function addVideo(title: string, link: string) {
   }
 }
 
-// Удалить видео
+export async function updateVideo(
+  id: string,
+  title: string,
+  link: string,
+  authorId?: string | null,
+  category?: string | null,
+) {
+  try {
+    await db
+      .update(videos)
+      .set({
+        title,
+        link,
+        authorId: authorId || null,
+        category: category || null,
+      })
+      .where(eq(videos.id, id));
+
+    revalidatePath("/dashboard/videos");
+    revalidatePath("/lessons");
+    revalidatePath("/authors");
+    return { success: true };
+  } catch (error) {
+    console.error("Ошибка при обновлении видео:", error);
+    return { success: false, error: "Не удалось обновить видео" };
+  }
+}
+
 export async function deleteVideo(id: string) {
   try {
     await db.delete(videos).where(eq(videos.id, id));
-
-    // Мгновенно обновляем кэш
     revalidatePath("/dashboard/videos");
     revalidatePath("/lessons");
+    revalidatePath("/authors");
     return { success: true };
   } catch (error) {
     console.error("Ошибка при удалении видео:", error);

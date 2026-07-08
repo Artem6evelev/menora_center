@@ -61,6 +61,7 @@
     "sonner": "^2.0.7",
     "svix": "^1.88.0",
     "tailwind-merge": "^2.3.0",
+    "telegraf": "^4.16.3",
     "zod": "^3.23.8",
     "zustand": "^5.0.11"
   },

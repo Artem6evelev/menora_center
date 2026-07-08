@@ -1,3 +1,4 @@
+// components/landing/hero.tsx
 "use client";
 
 import { motion } from "framer-motion";
@@ -10,6 +11,7 @@ import {
   HeartHandshake,
   Newspaper,
   Zap,
+  Youtube,
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
@@ -18,6 +20,7 @@ const IconMap: Record<string, any> = {
   calendar: Calendar,
   hearthandshake: HeartHandshake,
   newspaper: Newspaper,
+  youtube: Youtube,
 };
 
 export type CarouselItem = {
@@ -48,11 +51,10 @@ export const Hero = ({ items }: { items: CarouselItem[] }) => {
 
   return (
     <div className="relative min-h-[90vh] pt-32 pb-20 overflow-hidden bg-white dark:bg-neutral-950 flex items-center">
-      {/* Background Pattern */}
       <div className="absolute inset-0 h-full w-full bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
 
       <div className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 md:px-10 relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8">
-        {/* ЛЕВАЯ ЧАСТЬ (Текст) */}
+        {/* ЛЕВАЯ ЧАСТЬ */}
         <div className="w-full lg:w-[50%] flex flex-col items-start text-left z-20">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -63,7 +65,6 @@ export const Hero = ({ items }: { items: CarouselItem[] }) => {
             Каждую неделю к нам присоединяются новые люди
           </motion.div>
 
-          {/* Заголовок */}
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -76,7 +77,6 @@ export const Hero = ({ items }: { items: CarouselItem[] }) => {
             </span>
           </motion.h1>
 
-          {/* Подзаголовок */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -86,7 +86,6 @@ export const Hero = ({ items }: { items: CarouselItem[] }) => {
             Для тех, кто ищет больше: общение, поддержку и настоящие связи 🤍
           </motion.p>
 
-          {/* Компактный список (6 пунктов) */}
           <motion.ul
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -112,7 +111,6 @@ export const Hero = ({ items }: { items: CarouselItem[] }) => {
             ))}
           </motion.ul>
 
-          {/* Адаптивные кнопки */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -156,6 +154,9 @@ export const Hero = ({ items }: { items: CarouselItem[] }) => {
               let offset = index - activeIndex;
               if (offset < 0) offset += items.length;
 
+              // 🔥 ПРОВЕРЯЕМ, ЯВЛЯЕТСЯ ЛИ ЭТО ОБЛОЖКОЙ YOUTUBE
+              const isYoutube = item.image.includes("youtube.com");
+
               return (
                 <Link
                   key={index}
@@ -176,7 +177,11 @@ export const Hero = ({ items }: { items: CarouselItem[] }) => {
                     alt={item.title}
                     fill
                     priority={index === 0}
-                    className="object-cover"
+                    // 🔥 ДОБАВИЛИ scale-[1.35] ЕСЛИ ЭТО YOUTUBE (Обрезает черные полосы)
+                    className={cn(
+                      "object-cover transition-transform duration-700",
+                      isYoutube && "scale-[1.35]",
+                    )}
                     sizes="(max-width: 768px) 100vw, 400px"
                   />
 
@@ -202,7 +207,6 @@ export const Hero = ({ items }: { items: CarouselItem[] }) => {
               );
             })}
 
-            {/* Индикаторы */}
             <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-2">
               {items.map((_, idx) => (
                 <button
