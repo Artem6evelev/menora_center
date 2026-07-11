@@ -27,6 +27,18 @@ function getErrorDetails(error: unknown) {
   return { error };
 }
 
+export async function GET() {
+  console.log("[TELEGRAM] Webhook health check requested", {
+    hasToken: Boolean(TELEGRAM_BOT_TOKEN),
+  });
+
+  return Response.json({
+    ok: true,
+    route: "/api/telegram/webhook",
+    hasToken: Boolean(TELEGRAM_BOT_TOKEN),
+  });
+}
+
 bot.start(async (ctx) => {
   const updateId = ctx.update.update_id;
   const tgUser = ctx.from;
