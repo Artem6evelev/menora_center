@@ -30,12 +30,9 @@ export async function GET() {
   });
 }
 
-// 🔥 КЛАВИАТУРА
+// 🔥 ПРЕМИАЛЬНАЯ КЛАВИАТУРА
 const mainMenuKeyboard = Markup.inlineKeyboard([
-  // Первый ряд
   [Markup.button.url("🌐 Главная страница", "https://www.menorah-rishon.com")],
-
-  // Второй ряд
   [
     Markup.button.url(
       "📅 Мероприятия",
@@ -43,22 +40,16 @@ const mainMenuKeyboard = Markup.inlineKeyboard([
     ),
     Markup.button.url("🕍 Услуги", "https://www.menorah-rishon.com/services"),
   ],
-
-  // Третий ряд
   [
     Markup.button.url("📺 Видеоуроки", "https://www.menorah-rishon.com/videos"),
     Markup.button.url("👶 Menorah Kids", "https://www.menorah-rishon.com/kids"),
   ],
-
-  // Четвертый ряд - Обновленная кнопка Хасидута
   [
     Markup.button.url(
-      "☕️ Утренний Хасидут: онлайн трансляции каждый день",
+      "☕️ Утренний Хасидут: онлайн каждый день",
       "https://t.me/menorah_rishon",
     ),
   ],
-
-  // Пятый ряд
   [
     Markup.button.url(
       "🤍 Поддержать общину (Цдака)",
@@ -67,6 +58,7 @@ const mainMenuKeyboard = Markup.inlineKeyboard([
   ],
 ]);
 
+// 🔥 ОБРАБОТКА КОМАНДЫ /start
 bot.start(async (ctx) => {
   const updateId = ctx.update.update_id;
   const tgUser = ctx.from;
@@ -78,9 +70,22 @@ bot.start(async (ctx) => {
       where: eq(users.telegramChatId, chatId),
     });
 
-    const welcomeNewText = `Шалом, <b>${tgUser.first_name}</b>! ✨\n\nДобро пожаловать в официальный бот общины <b>Menorah Center</b>.\n\nВы успешно подписались на уведомления. Здесь мы будем публиковать важные анонсы, расписание уроков и новости.\n\nВыберите интересующий вас раздел:`;
+    // Красиво оформленный текст для новых пользователей
+    const welcomeNewText =
+      `✨ <b>Шалом, ${tgUser.first_name}!</b>\n\n` +
+      `Добро пожаловать в официальное пространство <b>Menorah Center</b>.\n\n` +
+      `Мы создали этот бот, чтобы вы всегда были на связи с общиной и первыми узнавали о:\n` +
+      `▫️ Важных мероприятиях и фарбренгенах\n` +
+      `▫️ Расписании ежедневных уроков Торы\n` +
+      `▫️ Детских программах Menorah Kids\n\n` +
+      `🕊 <i>Ваш профиль успешно добавлен в систему. Теперь вы не пропустите ничего важного.</i>\n\n` +
+      `👇 <b>Выберите интересующий вас раздел:</b>`;
 
-    const welcomeExistingText = `Рады видеть вас снова, <b>${tgUser.first_name}</b>! 🕎\n\nВы уже подписаны на нашу рассылку. Воспользуйтесь меню ниже для быстрого доступа к разделам общины:`;
+    // Текст для тех, кто уже подписан
+    const welcomeExistingText =
+      `🕎 <b>Рады снова видеть вас, ${tgUser.first_name}!</b>\n\n` +
+      `Вы уже являетесь резидентом нашего цифрового пространства.\n\n` +
+      `👇 <b>Воспользуйтесь навигацией ниже:</b>`;
 
     if (!existingUser) {
       await db.insert(users).values({
@@ -108,12 +113,25 @@ bot.start(async (ctx) => {
     console.error(`${trace} start handler failed`, getErrorDetails(error));
     try {
       await ctx.reply(
-        "Произошла ошибка при регистрации. Пожалуйста, попробуйте позже.",
+        "Произошла ошибка при соединении с сервером. Пожалуйста, попробуйте позже.",
       );
     } catch (replyError) {
       console.error("Failed to send error reply", replyError);
     }
   }
+});
+
+// 🔥 ОБРАБОТКА ЛЮБОГО ДРУГОГО ТЕКСТА
+// Если человек случайно напишет боту "Привет" или что-то еще, бот вежливо ответит и покажет меню
+bot.on("text", async (ctx) => {
+  const text =
+    `Шалом! Этот бот работает в автоматическом режиме для рассылки важных новостей общины.\n\n` +
+    `👇 <b>Пожалуйста, воспользуйтесь меню:</b>`;
+
+  await ctx.reply(text, {
+    parse_mode: "HTML",
+    ...mainMenuKeyboard,
+  });
 });
 
 export async function POST(req: Request) {
