@@ -51,7 +51,10 @@ const mainMenuKeyboard = Markup.inlineKeyboard([
 
   // Дополнительные разделы
   [
-    Markup.button.url("📺 Видеоуроки", "https://www.menorah-rishon.com/videos"),
+    Markup.button.url(
+      "📺 Видеоуроки",
+      "https://www.menorah-rishon.com/lessons",
+    ),
     Markup.button.url("👶 Menorah Kids", "https://www.menorah-rishon.com/kids"),
   ],
 
