@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { eq, isNotNull } from "drizzle-orm";
-import TelegramClient from "@/components/dashboard/telegram/telegram-client"; // Проверь путь к файлу!
+import TelegramClient from "@/components/dashboard/telegram/telegram-client";
 
 export default async function TelegramDashboardPage() {
   const { userId } = await auth();
@@ -25,7 +25,8 @@ export default async function TelegramDashboardPage() {
   return (
     <TelegramClient
       totalSubscribers={subscribers.length}
-      initialAdminChatId={settings?.adminNotificationChatId || ""}
+      initialGroupId={settings?.notificationGroupId || ""}
+      initialEventsTopicId={settings?.eventsTopicId || ""}
     />
   );
 }

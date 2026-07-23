@@ -35,7 +35,10 @@ export async function sendBroadcastMessage(message: string) {
       .where(isNotNull(users.telegramChatId));
 
     if (subscribers.length === 0) {
-      return { success: false, error: "Нет подписчиков с Telegram" };
+      return {
+        success: false,
+        error: "В базе данных нет активных подписчиков с Telegram",
+      };
     }
 
     let successCount = 0;
@@ -63,7 +66,7 @@ export async function sendBroadcastMessage(message: string) {
   }
 }
 
-// 2. ОТПРАВКА ФАЙЛА С РЕГИСТРАЦИЕЙ АДМИНУ
+// 2. ОТПРАВКА ЗАЯВКИ В ТЕМУ ГРУППЫ
 export async function sendEventRegistrationNotification(
   eventTitle: string,
   user: {
@@ -75,11 +78,13 @@ export async function sendEventRegistrationNotification(
 ) {
   try {
     const settings = await db.query.botSettings.findFirst();
-    const adminChatId = settings?.adminNotificationChatId;
 
-    if (!adminChatId) {
-      console.log("ID администратора для уведомлений не настроен.");
-      return { success: false, error: "ID администратора не настроен" };
+    const groupId = settings?.notificationGroupId;
+    const topicId = settings?.eventsTopicId;
+
+    if (!groupId) {
+      console.log("ID группы для уведомлений не настроен.");
+      return { success: false, error: "ID группы не настроен" };
     }
 
     const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN!);
@@ -95,18 +100,19 @@ export async function sendEventRegistrationNotification(
 Email: ${user.email}
 Телефон: ${user.phone || "Не указан"}
 -----------------------------------
-Данные сгенерированы автоматически ботом Menorah Center.
+Данные сгенерированы автоматически.
     `.trim();
 
     const buffer = Buffer.from(fileContent, "utf-8");
     const safeName = user.firstName.replace(/[^a-zа-яё0-9]/gi, "_");
-    const filename = `Участник_${safeName}.txt`;
+    const filename = `Заявка_${safeName}.txt`;
 
     await bot.telegram.sendDocument(
-      adminChatId,
+      groupId,
       { source: buffer, filename },
       {
-        caption: `🎉 <b>Новая запись!</b>\n\nМероприятие: <b>${eventTitle}</b>\nПользователь: ${user.firstName} ${user.lastName || ""}\n\n<i>Контактные данные в прикрепленном файле ☝️</i>`,
+        message_thread_id: topicId ? parseInt(topicId) : undefined, // Отправка в нужный топик
+        caption: `🔥 <b>Новая заявка на мероприятие!</b>\n\nМероприятие: <b>${eventTitle}</b>\nОт: ${user.firstName} ${user.lastName || ""}\n\n<i>Контакты в файле ☝️</i>`,
         parse_mode: "HTML",
       },
     );

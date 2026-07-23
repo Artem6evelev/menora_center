@@ -308,8 +308,9 @@ export const botSettings = pgTable("bot_settings", {
   ),
   superadminTelegramId: text("superadmin_telegram_id"),
 
-  // 👇 НОВОЕ ПОЛЕ ДЛЯ ПОЛУЧЕНИЯ ФАЙЛОВ С ЗАПИСЯМИ
-  adminNotificationChatId: text("admin_notification_chat_id"),
+  // 👇 НОВЫЕ ПОЛЯ ДЛЯ ФОРУМА-ГРУППЫ
+  notificationGroupId: text("notification_group_id"),
+  eventsTopicId: text("events_topic_id"),
 
   updatedAt: timestamp("updated_at").defaultNow(),
 });

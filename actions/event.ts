@@ -1,15 +1,15 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { events, eventCategories, eventParticipants } from "@/lib/db/schema";
-// Убедись, что таблица users импортируется корректно из твоей схемы
-// Если она называется иначе, поправь импорт и название ниже
-import { users } from "@/lib/db/schema";
-import { eq, desc, and, inArray, gte, lte } from "drizzle-orm";
+import {
+  events,
+  eventCategories,
+  eventParticipants,
+  users,
+} from "@/lib/db/schema";
+import { eq, desc, and, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-
-// 🔥 ИМПОРТ ФУНКЦИИ ДЛЯ ОТПРАВКИ ФАЙЛОВ В TELEGRAM
-import { sendEventRegistrationNotification } from "@/actions/telegram";
+import { sendEventRegistrationNotification } from "@/actions/telegram"; // 🔥 ИМПОРТ НОВОЙ ФУНКЦИИ
 
 // === 1. КАТЕГОРИИ ===
 export async function getEventCategories() {
@@ -64,7 +64,6 @@ export async function getEvents() {
 export async function createEvent(data: any) {
   try {
     const newId = `evt_${crypto.randomUUID()}`;
-
     const preparedData = {
       ...data,
       categoryId: data.categoryId || null,
@@ -75,15 +74,12 @@ export async function createEvent(data: any) {
       recurringPattern: data.recurringPattern || null,
       recurringDays: data.recurringDays || null,
     };
-
     await db.insert(events).values({ id: newId, ...preparedData });
     revalidatePath("/dashboard/events");
     revalidatePath("/events");
     revalidatePath("/");
-
     return { success: true, id: newId };
   } catch (error) {
-    console.error("🔥 ОШИБКА БД ПРИ СОЗДАНИИ:", error);
     return { success: false };
   }
 }
@@ -110,15 +106,12 @@ export async function updateEvent(id: string, data: any) {
       recurringPattern: data.recurringPattern || null,
       recurringDays: data.recurringDays || null,
     };
-
     await db.update(events).set(preparedData).where(eq(events.id, id));
     revalidatePath("/dashboard/events");
     revalidatePath("/events");
     revalidatePath("/");
-
     return { success: true };
   } catch (error) {
-    console.error("🔥 ОШИБКА БД ПРИ ОБНОВЛЕНИИ:", error);
     return { success: false };
   }
 }
@@ -155,7 +148,6 @@ export async function checkRegistration(eventId: string, userId: string) {
   }
 }
 
-// ОБНОВЛЕНО: Добавлен параметр phone + отправка в Telegram
 export async function registerForEvent(
   eventId: string,
   userId: string,
@@ -167,17 +159,12 @@ export async function registerForEvent(
       return { success: true, message: "already_registered" };
 
     const newId = `part_${Math.random().toString(36).substring(2, 11)}`;
-    await db.insert(eventParticipants).values({
-      id: newId,
-      eventId,
-      userId,
-      phone, // Сохраняем телефон
-      status: "pending",
-    });
+    await db
+      .insert(eventParticipants)
+      .values({ id: newId, eventId, userId, phone, status: "pending" });
 
-    // 🔥 НОВЫЙ БЛОК: ОТПРАВКА УВЕДОМЛЕНИЯ В TELEGRAM АДМИНУ 🔥
+    // 🔥 ОТПРАВКА В TELEGRAM ГРУППУ
     try {
-      // Достаем информацию о мероприятии и пользователе из БД
       const [eventData] = await db
         .select()
         .from(events)
@@ -192,13 +179,11 @@ export async function registerForEvent(
           firstName: userData.firstName ?? "",
           lastName: userData.lastName ?? "",
           email: userData.email ?? "",
-          phone: phone, // Передаем актуальный телефон из формы
+          phone: phone,
         });
       }
     } catch (tgError) {
-      console.error("Ошибка при отправке Telegram уведомления:", tgError);
-      // Блок try-catch гарантирует, что если с Телеграмом что-то пойдет не так,
-      // пользователь все равно успешно запишется на сайте.
+      console.error("Ошибка Telegram:", tgError);
     }
 
     revalidatePath("/");
@@ -244,88 +229,62 @@ export async function getUserRegisteredEvents(userId: string) {
   }
 }
 
-// НОВОЕ: Для страницы админа - получить заявки по конкретному событию
 export async function getEventParticipantsList(eventId: string) {
   try {
     return await db
-      .select({
-        participant: eventParticipants,
-        user: users,
-      })
+      .select({ participant: eventParticipants, user: users })
       .from(eventParticipants)
       .leftJoin(users, eq(eventParticipants.userId, users.id))
       .where(eq(eventParticipants.eventId, eventId))
       .orderBy(desc(eventParticipants.createdAt));
   } catch (error) {
-    console.error("Ошибка при получении участников:", error);
     return [];
   }
 }
 
-// Получаем только те категории, в которых сейчас есть активные события
 export async function getActivePublicCategories() {
   try {
     const activeEvents = await db
       .select({ categoryId: events.categoryId })
       .from(events)
       .where(eq(events.status, "planned"));
-
     const activeCategoryIds = Array.from(
       new Set(activeEvents.map((e) => e.categoryId).filter(Boolean)),
     );
-
     if (activeCategoryIds.length === 0) return [];
-
     return await db
       .select()
       .from(eventCategories)
-      // Получаем категории, чьи ID есть в списке активных
       .where(inArray(eventCategories.id, activeCategoryIds as string[]));
   } catch (error) {
-    console.error("Ошибка при получении активных категорий:", error);
     return [];
   }
 }
 
-// Умная функция с ПАГИНАЦИЕЙ, ФИЛЬТРОМ КАТЕГОРИЙ и ФИЛЬТРОМ ДАТЫ
 export async function getPublicEventsPaginated(
   page = 1,
   limit = 12,
   categoryId?: string | null,
-  dateString?: string | null, // <--- Новый параметр
+  dateString?: string | null,
 ) {
   try {
     const offset = (page - 1) * limit;
-
     let conditions = eq(events.status, "planned");
-
-    // Фильтр по категории
-    if (categoryId) {
+    if (categoryId)
       conditions = and(conditions, eq(events.categoryId, categoryId)) as any;
-    }
-
-    // Фильтр по дате (теперь это простое сравнение строк "YYYY-MM-DD")
-    if (dateString) {
+    if (dateString)
       conditions = and(conditions, eq(events.date, dateString)) as any;
-    }
 
     const data = await db
-      .select({
-        event: events,
-        category: eventCategories,
-      })
+      .select({ event: events, category: eventCategories })
       .from(events)
       .leftJoin(eventCategories, eq(events.categoryId, eventCategories.id))
       .where(conditions)
-      .orderBy(desc(events.date)) // Сортируем по строковой дате (работает корректно для формата YYYY-MM-DD)
+      .orderBy(desc(events.date))
       .limit(limit)
       .offset(offset);
-
-    const hasMore = data.length === limit;
-
-    return { events: data, hasMore };
+    return { events: data, hasMore: data.length === limit };
   } catch (error) {
-    console.error("Ошибка при получении событий с пагинацией:", error);
     return { events: [], hasMore: false };
   }
 }
@@ -337,10 +296,8 @@ export async function getEventById(id: string) {
       .from(events)
       .where(eq(events.id, id))
       .limit(1);
-
     return data[0] || null;
   } catch (error) {
-    console.error("Ошибка при получении мероприятия:", error);
     return null;
   }
 }
