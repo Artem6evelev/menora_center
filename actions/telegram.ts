@@ -1,15 +1,14 @@
-// actions/telegram.ts
 "use server";
 
 import { Telegraf } from "telegraf";
 import { db } from "@/lib/db";
-import { users } from "@/lib/db/schema";
+import { users, botSettings } from "@/lib/db/schema";
 import { isNotNull, eq } from "drizzle-orm";
 import { auth } from "@clerk/nextjs/server";
 
+// 1. МАССОВАЯ РАССЫЛКА
 export async function sendBroadcastMessage(message: string) {
   try {
-    // 1. Проверяем, что рассылку делает именно администратор
     const { userId } = await auth();
     if (!userId) return { success: false, error: "Не авторизован" };
 
@@ -17,6 +16,7 @@ export async function sendBroadcastMessage(message: string) {
       .select()
       .from(users)
       .where(eq(users.id, userId));
+
     if (
       !currentUser ||
       (currentUser.role !== "admin" && currentUser.role !== "superadmin")
@@ -28,48 +28,92 @@ export async function sendBroadcastMessage(message: string) {
       return { success: false, error: "Текст сообщения не может быть пустым" };
     }
 
-    // 2. Инициализируем бота
     const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN!);
-
-    // 3. Достаем всех подписчиков из БД
     const subscribers = await db
       .select()
       .from(users)
       .where(isNotNull(users.telegramChatId));
 
     if (subscribers.length === 0) {
-      return {
-        success: false,
-        error: "В базе данных нет активных подписчиков с Telegram",
-      };
+      return { success: false, error: "Нет подписчиков с Telegram" };
     }
 
     let successCount = 0;
     let failCount = 0;
 
-    // 4. Делаем рассылку
     for (const sub of subscribers) {
       if (!sub.telegramChatId) continue;
       try {
         await bot.telegram.sendMessage(sub.telegramChatId, message, {
-          parse_mode: "HTML", // Разрешаем жирный шрифт и ссылки
+          parse_mode: "HTML",
         });
         successCount++;
       } catch (err) {
-        // Если юзер заблокировал бота, ошибка перехватывается здесь
         failCount++;
       }
     }
 
     return {
       success: true,
-      message: `Рассылка завершена! Успешно доставлено: ${successCount}. Не доставлено (заблокировали бота): ${failCount}`,
+      message: `Рассылка завершена! Успешно доставлено: ${successCount}. Не доставлено: ${failCount}`,
     };
   } catch (error) {
     console.error("Ошибка при выполнении массовой рассылки:", error);
-    return {
-      success: false,
-      error: "Не удалось выполнить рассылку из-за внутренней ошибки сервера",
-    };
+    return { success: false, error: "Внутренняя ошибка сервера" };
+  }
+}
+
+// 2. ОТПРАВКА ФАЙЛА С РЕГИСТРАЦИЕЙ АДМИНУ
+export async function sendEventRegistrationNotification(
+  eventTitle: string,
+  user: {
+    firstName: string;
+    lastName?: string | null;
+    email: string;
+    phone?: string | null;
+  },
+) {
+  try {
+    const settings = await db.query.botSettings.findFirst();
+    const adminChatId = settings?.adminNotificationChatId;
+
+    if (!adminChatId) {
+      console.log("ID администратора для уведомлений не настроен.");
+      return { success: false, error: "ID администратора не настроен" };
+    }
+
+    const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN!);
+
+    const fileContent = `
+НОВАЯ ЗАПИСЬ НА МЕРОПРИЯТИЕ
+-----------------------------------
+Мероприятие: ${eventTitle}
+Дата регистрации: ${new Date().toLocaleString("ru-RU")}
+
+ДАННЫЕ УЧАСТНИКА:
+Имя: ${user.firstName} ${user.lastName || ""}
+Email: ${user.email}
+Телефон: ${user.phone || "Не указан"}
+-----------------------------------
+Данные сгенерированы автоматически ботом Menorah Center.
+    `.trim();
+
+    const buffer = Buffer.from(fileContent, "utf-8");
+    const safeName = user.firstName.replace(/[^a-zа-яё0-9]/gi, "_");
+    const filename = `Участник_${safeName}.txt`;
+
+    await bot.telegram.sendDocument(
+      adminChatId,
+      { source: buffer, filename },
+      {
+        caption: `🎉 <b>Новая запись!</b>\n\nМероприятие: <b>${eventTitle}</b>\nПользователь: ${user.firstName} ${user.lastName || ""}\n\n<i>Контактные данные в прикрепленном файле ☝️</i>`,
+        parse_mode: "HTML",
+      },
+    );
+
+    return { success: true };
+  } catch (error) {
+    console.error("Ошибка при отправке файла в Telegram:", error);
+    return { success: false, error: "Не удалось отправить уведомление" };
   }
 }

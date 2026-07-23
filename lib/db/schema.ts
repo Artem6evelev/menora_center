@@ -307,6 +307,10 @@ export const botSettings = pgTable("bot_settings", {
     "Спасибо, что были с нами на эфире! Поддержать общину можно по ссылке ниже:",
   ),
   superadminTelegramId: text("superadmin_telegram_id"),
+
+  // 👇 НОВОЕ ПОЛЕ ДЛЯ ПОЛУЧЕНИЯ ФАЙЛОВ С ЗАПИСЯМИ
+  adminNotificationChatId: text("admin_notification_chat_id"),
+
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 

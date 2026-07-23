@@ -10,7 +10,7 @@ export async function getBotSettings() {
 }
 
 export async function updateBotSettings(data: any) {
-  const existing = await getBotSettings();
+  const existing = await db.query.botSettings.findFirst();
 
   if (existing) {
     await db.update(botSettings).set({

@@ -8,6 +8,9 @@ import { users } from "@/lib/db/schema";
 import { eq, desc, and, inArray, gte, lte } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
+// 🔥 ИМПОРТ ФУНКЦИИ ДЛЯ ОТПРАВКИ ФАЙЛОВ В TELEGRAM
+import { sendEventRegistrationNotification } from "@/actions/telegram";
+
 // === 1. КАТЕГОРИИ ===
 export async function getEventCategories() {
   try {
@@ -152,7 +155,7 @@ export async function checkRegistration(eventId: string, userId: string) {
   }
 }
 
-// ОБНОВЛЕНО: Добавлен параметр phone
+// ОБНОВЛЕНО: Добавлен параметр phone + отправка в Telegram
 export async function registerForEvent(
   eventId: string,
   userId: string,
@@ -171,6 +174,33 @@ export async function registerForEvent(
       phone, // Сохраняем телефон
       status: "pending",
     });
+
+    // 🔥 НОВЫЙ БЛОК: ОТПРАВКА УВЕДОМЛЕНИЯ В TELEGRAM АДМИНУ 🔥
+    try {
+      // Достаем информацию о мероприятии и пользователе из БД
+      const [eventData] = await db
+        .select()
+        .from(events)
+        .where(eq(events.id, eventId));
+      const [userData] = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, userId));
+
+      if (eventData && userData) {
+        await sendEventRegistrationNotification(eventData.title || "Событие", {
+          firstName: userData.firstName ?? "",
+          lastName: userData.lastName ?? "",
+          email: userData.email ?? "",
+          phone: phone, // Передаем актуальный телефон из формы
+        });
+      }
+    } catch (tgError) {
+      console.error("Ошибка при отправке Telegram уведомления:", tgError);
+      // Блок try-catch гарантирует, что если с Телеграмом что-то пойдет не так,
+      // пользователь все равно успешно запишется на сайте.
+    }
+
     revalidatePath("/");
     revalidatePath("/dashboard/my-events");
     return { success: true };
