@@ -1,4 +1,3 @@
-// components/dashboard/sidebar.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -18,7 +17,7 @@ import {
   MessageSquare,
   Briefcase,
   UsersRound,
-  UserRound, // <-- Добавили иконку для лекторов
+  UserRound,
   Menu,
   X,
   Smartphone,
@@ -26,14 +25,18 @@ import {
   ShieldCheck,
   Youtube,
   PenTool,
+  CheckSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+// 🔥 Импортируем функцию для получения числа
+import { getPendingCount } from "@/actions/moderation.actions";
 
 export default function Sidebar({ userRole }: { userRole: string }) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0); // <-- Стейт для бейджика
+
   const isAdmin = userRole === "admin" || userRole === "superadmin";
-  const isAuthor = userRole === "author";
 
   useEffect(() => setIsOpen(false), [pathname]);
 
@@ -44,7 +47,21 @@ export default function Sidebar({ userRole }: { userRole: string }) {
     };
   }, [isOpen]);
 
-  // ГРУППА 1: Для всех
+  // 🔥 Запрашиваем количество материалов на модерацию (только для админов)
+  useEffect(() => {
+    if (isAdmin) {
+      const fetchCount = async () => {
+        const count = await getPendingCount();
+        setPendingCount(count);
+      };
+      fetchCount();
+
+      // Можно настроить интервал, чтобы цифра обновлялась сама, например раз в 30 секунд
+      const interval = setInterval(fetchCount, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [isAdmin]);
+
   const clientRoutes = [
     { label: "Мой кабинет", icon: LayoutDashboard, href: "/dashboard" },
     { label: "События", icon: Calendar, href: "/dashboard/events" },
@@ -54,23 +71,15 @@ export default function Sidebar({ userRole }: { userRole: string }) {
     { label: "Сообщения", icon: MessageSquare, href: "/dashboard/chat" },
   ];
 
-  // ГРУППА 2: Для Авторов (и суперадминов)
   const authorRoutes = [
     {
-      label: "Мои Статьи",
-      icon: Newspaper,
-      href: "/dashboard/news",
-      roles: ["author", "superadmin", "admin"],
-    },
-    {
-      label: "Профиль Спикера",
+      label: "Кабинет Спикера",
       icon: PenTool,
       href: "/dashboard/author-profile",
       roles: ["author", "superadmin"],
     },
   ].filter((route) => route.roles.includes(userRole));
 
-  // ГРУППА 3: Только для администрации
   const adminRoutes = [
     {
       label: "Telegram Бот",
@@ -84,7 +93,20 @@ export default function Sidebar({ userRole }: { userRole: string }) {
       href: "/dashboard/videos",
       roles: ["superadmin", "admin"],
     },
-    // 🔥 НОВЫЙ РАЗДЕЛ ДЛЯ УПРАВЛЕНИЯ ЛЕКТОРАМИ
+    {
+      label: "Модерация",
+      icon: CheckSquare,
+      href: "/dashboard/moderation",
+      roles: ["superadmin", "admin"],
+      // 🔥 Передаем badge (бейдж) для этого роута
+      badge: pendingCount > 0 ? pendingCount : null,
+    },
+    {
+      label: "Все статьи",
+      icon: Newspaper,
+      href: "/dashboard/news",
+      roles: ["superadmin", "admin"],
+    },
     {
       label: "Все лекторы",
       icon: UserRound,
@@ -126,30 +148,39 @@ export default function Sidebar({ userRole }: { userRole: string }) {
       <Link
         href={route.href}
         className={cn(
-          "group flex items-center gap-x-3 text-sm font-bold px-4 py-3 rounded-2xl transition-all duration-300 relative",
+          "group flex items-center justify-between gap-x-3 text-sm font-bold px-4 py-3 rounded-2xl transition-all duration-300 relative",
           isActive
             ? "bg-[#FFB800]/10 text-neutral-900 dark:text-white"
             : "text-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 hover:text-neutral-900 dark:hover:text-white",
         )}
       >
-        {isActive && (
-          <motion.div
-            layoutId="sidebar-active"
-            className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-[#FFB800] rounded-r-full"
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          />
-        )}
-        <div
-          className={cn(
-            "transition-colors",
-            isActive
-              ? "text-[#FFB800]"
-              : "text-neutral-400 group-hover:text-[#FFB800]",
+        <div className="flex items-center gap-x-3">
+          {isActive && (
+            <motion.div
+              layoutId="sidebar-active"
+              className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-[#FFB800] rounded-r-full"
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            />
           )}
-        >
-          <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
+          <div
+            className={cn(
+              "transition-colors",
+              isActive
+                ? "text-[#FFB800]"
+                : "text-neutral-400 group-hover:text-[#FFB800]",
+            )}
+          >
+            <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
+          </div>
+          <span>{route.label}</span>
         </div>
-        <span>{route.label}</span>
+
+        {/* 🔥 ВЫВОД БЕЙДЖИКА */}
+        {route.badge && (
+          <span className="bg-red-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-sm animate-pulse">
+            {route.badge}
+          </span>
+        )}
       </Link>
     );
   };
@@ -235,7 +266,6 @@ export default function Sidebar({ userRole }: { userRole: string }) {
             </div>
           </div>
 
-          {/* === БЛОК АВТОРА === */}
           {authorRoutes.length > 0 && (
             <div>
               <div className="text-[10px] font-black uppercase tracking-widest text-amber-500 dark:text-amber-400 mb-2 px-3 flex items-center gap-2">
@@ -249,7 +279,6 @@ export default function Sidebar({ userRole }: { userRole: string }) {
             </div>
           )}
 
-          {/* === БЛОК АДМИНА === */}
           {isAdmin && adminRoutes.length > 0 && (
             <div>
               <div className="text-[10px] font-black uppercase tracking-widest text-blue-500 dark:text-blue-400 mb-2 px-3 flex items-center gap-2">

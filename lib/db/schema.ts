@@ -34,7 +34,6 @@ export const users = pgTable(
     tags: text("tags").default("[]"),
     telegramChatId: text("telegram_chat_id"),
 
-    // 🔥 ДОБАВИЛИ ТОЛЬКО ЭТУ СТРОКУ (Никнейм в Телеграме):
     username: text("username"),
 
     jewishStatus: text("jewish_status"),
@@ -46,7 +45,6 @@ export const users = pgTable(
   },
   (table) => {
     return {
-      // 🔥 И ДОБАВИЛИ ЭТОТ БЛОК (Защита от дублей):
       telegramChatIdIdx: uniqueIndex("telegram_chat_id_idx").on(
         table.telegramChatId,
       ),
@@ -54,20 +52,18 @@ export const users = pgTable(
   },
 );
 
-// 🔥 НОВАЯ ТАБЛИЦА: Профили авторов (спикеров/раввинов)
 export const authorProfiles = pgTable("author_profiles", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: text("user_id")
     .references(() => users.id, { onDelete: "cascade" })
     .notNull()
-    .unique(), // Один юзер = один профиль автора
+    .unique(),
 
-  slug: text("slug").notNull().unique(), // Например: pinhasi-vishedski
+  slug: text("slug").notNull().unique(),
 
-  shortBio: text("short_bio"), // Короткое описание для сайдбара
-  donationLink: text("donation_link"), // Ссылка для кнопки "Помочь уроку"
+  shortBio: text("short_bio"),
+  donationLink: text("donation_link"),
 
-  // Соцсети
   websiteUrl: text("website_url"),
   facebookUrl: text("facebook_url"),
   instagramUrl: text("instagram_url"),
@@ -195,7 +191,10 @@ export const tasks = pgTable("tasks", {
 });
 
 export const notifications = pgTable("notifications", {
-  id: text("id").primaryKey(),
+  // 🔥 ИСПРАВЛЕНА ЭТА СТРОКА:
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
   userId: text("user_id")
     .references(() => users.id, { onDelete: "cascade" })
     .notNull(),
@@ -233,8 +232,13 @@ export const news = pgTable("news", {
   isPublished: boolean("is_published").default(true),
   isPinned: boolean("is_pinned").default(false),
   views: integer("views").default(0),
+  status: varchar("status", {
+    enum: ["draft", "pending", "published", "rejected"],
+  })
+    .default("draft")
+    .notNull(),
+  rejectionReason: text("rejection_reason"),
 
-  // 🔥 Связь с автором
   authorId: text("author_id")
     .references(() => users.id)
     .notNull(),
@@ -267,8 +271,13 @@ export const videos = pgTable("videos", {
   description: text("description"),
   link: text("link").notNull(),
   imageUrl: text("image_url"),
+  status: varchar("status", {
+    enum: ["draft", "pending", "published", "rejected"],
+  })
+    .default("draft")
+    .notNull(),
+  rejectionReason: text("rejection_reason"),
 
-  // 🔥 Связь с автором
   authorId: text("author_id").references(() => users.id, {
     onDelete: "set null",
   }),
@@ -305,7 +314,6 @@ export const botSettings = pgTable("bot_settings", {
 // 🔥 ОТНОШЕНИЯ (RELATIONS) ДЛЯ DRIZZLE
 // ==========================================
 
-// Пользователи
 export const usersRelations = relations(users, ({ one, many }) => ({
   authorProfile: one(authorProfiles, {
     fields: [users.id],
@@ -315,7 +323,6 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   videos: many(videos),
 }));
 
-// Профиль автора
 export const authorProfilesRelations = relations(authorProfiles, ({ one }) => ({
   user: one(users, {
     fields: [authorProfiles.userId],
@@ -323,7 +330,6 @@ export const authorProfilesRelations = relations(authorProfiles, ({ one }) => ({
   }),
 }));
 
-// Статьи (Новости)
 export const newsRelations = relations(news, ({ many, one }) => ({
   comments: many(newsComments),
   author: one(users, {
@@ -336,7 +342,6 @@ export const newsRelations = relations(news, ({ many, one }) => ({
   }),
 }));
 
-// Комментарии к статьям
 export const newsCommentsRelations = relations(newsComments, ({ one }) => ({
   news: one(news, {
     fields: [newsComments.newsId],
@@ -348,7 +353,6 @@ export const newsCommentsRelations = relations(newsComments, ({ one }) => ({
   }),
 }));
 
-// Видео
 export const videosRelations = relations(videos, ({ one }) => ({
   author: one(users, {
     fields: [videos.authorId],

@@ -1,7 +1,6 @@
-// app/(marketing)/authors/[slug]/page.tsx
 import { db } from "@/lib/db";
-import { authorProfiles } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { authorProfiles, news, videos } from "@/lib/db/schema";
+import { eq, and } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import AuthorSidebar from "@/components/authors/AuthorSidebar";
 import ContentTabs from "@/components/authors/ContentTabs";
@@ -13,21 +12,32 @@ export default async function AuthorPage({
 }) {
   const { slug } = await params;
 
+  // 🔥 1. Обязательно декодируем ссылку, чтобы русские символы читались базой данных
+  const decodedSlug = decodeURIComponent(slug);
+
   const authorProfile = await db.query.authorProfiles.findFirst({
-    where: eq(authorProfiles.slug, slug),
+    where: eq(authorProfiles.slug, decodedSlug),
     with: { user: true },
   });
 
+  // Если профиля нет или он отключен - показываем 404
   if (!authorProfile || !authorProfile.isActive) {
     notFound();
   }
 
-  const { news, videos } = await import("@/lib/db/schema");
+  // 🔥 2. Выводим ТОЛЬКО опубликованные материалы (status === "published")
   const authorArticles = await db.query.news.findMany({
-    where: eq(news.authorId, authorProfile.userId),
+    where: and(
+      eq(news.authorId, authorProfile.userId),
+      eq(news.status, "published"),
+    ),
   });
+
   const authorVideos = await db.query.videos.findMany({
-    where: eq(videos.authorId, authorProfile.userId),
+    where: and(
+      eq(videos.authorId, authorProfile.userId),
+      eq(videos.status, "published"),
+    ),
   });
 
   return (
@@ -50,7 +60,8 @@ export default async function AuthorPage({
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-neutral-900 dark:text-white tracking-tighter leading-tight">
               Материалы от{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFB800] to-orange-500">
-                {authorProfile.user.firstName} {authorProfile.user.lastName}
+                {authorProfile.user?.firstName || "Спикера"}{" "}
+                {authorProfile.user?.lastName || ""}
               </span>
             </h1>
           </div>

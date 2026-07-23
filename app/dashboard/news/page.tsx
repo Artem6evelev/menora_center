@@ -1,4 +1,3 @@
-// app/dashboard/news/page.tsx
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import { news, users } from "@/lib/db/schema";
@@ -15,46 +14,35 @@ export default async function DashboardNewsPage() {
     .from(users)
     .where(eq(users.id, userId));
 
+  // 🔥 Если это автор, принудительно отправляем его в Кабинет
+  if (currentUser?.role === "author") {
+    redirect("/dashboard/author-profile");
+  }
+
+  // Оставляем доступ только админам и суперадминам
   if (
     !currentUser ||
-    (currentUser.role !== "admin" &&
-      currentUser.role !== "superadmin" &&
-      currentUser.role !== "author")
+    (currentUser.role !== "admin" && currentUser.role !== "superadmin")
   ) {
     redirect("/dashboard");
   }
 
-  // Получаем список новостей
-  // Если это автор, показываем только ЕГО статьи. Если админ - все.
-  let initialNews;
-  if (currentUser.role === "author") {
-    initialNews = await db.query.news.findMany({
-      where: eq(news.authorId, userId),
-      orderBy: [desc(news.createdAt)],
-    });
-  } else {
-    initialNews = await db.query.news.findMany({
-      orderBy: [desc(news.createdAt)],
-    });
-  }
+  // Админы видят все новости
+  const initialNews = await db.query.news.findMany({
+    orderBy: [desc(news.createdAt)],
+  });
 
-  // Получаем список всех авторов (ТОЛЬКО ДЛЯ АДМИНА)
-  let authorsList: { id: string; name: string }[] = [];
-  if (currentUser.role === "admin" || currentUser.role === "superadmin") {
-    const fetchedAuthors = await db
-      .select({
-        id: users.id,
-        firstName: users.firstName,
-        lastName: users.lastName,
-      })
-      .from(users)
-      .where(eq(users.role, "author"));
+  // Получаем список всех авторов для админов (по наличию профиля)
+  const fetchedProfiles = await db.query.authorProfiles.findMany({
+    with: { user: true },
+  });
 
-    authorsList = fetchedAuthors.map((a) => ({
-      id: a.id,
-      name: `${a.firstName || ""} ${a.lastName || ""}`.trim() || "Без имени",
-    }));
-  }
+  const authorsList = fetchedProfiles.map((profile) => ({
+    id: profile.userId,
+    name:
+      `${profile.user?.firstName || ""} ${profile.user?.lastName || ""}`.trim() ||
+      "Без имени",
+  }));
 
   return (
     <AdminNewsClient

@@ -23,7 +23,6 @@ function getErrorDetails(error: unknown) {
       stack: error.stack,
     };
   }
-
   return { error };
 }
 
@@ -39,10 +38,15 @@ export async function GET() {
   });
 }
 
+// 🔥 ИСПРАВЛЕННЫЙ ОБРАБОТЧИК /start
 bot.start(async (ctx) => {
   const updateId = ctx.update.update_id;
   const tgUser = ctx.from;
   const chatId = ctx.chat.id.toString();
+
+  // Telegraf автоматически парсит ссылку t.me/bot?start=123
+  // и кладет "123" в ctx.payload. В нашем случае тут будет Clerk ID.
+  const clerkUserId = ctx.payload;
   const trace = `[TELEGRAM][update:${updateId}][chat:${chatId}]`;
 
   console.log(`${trace} /start received`, {
@@ -50,47 +54,59 @@ bot.start(async (ctx) => {
     username: tgUser.username,
     firstName: tgUser.first_name,
     chatType: ctx.chat.type,
+    clerkUserId, // Логируем, пришел ли ID с сайта
   });
 
   try {
-    console.log(`${trace} DB lookup started`);
+    // 1. СЦЕНАРИЙ: Человек перешел по ссылке с сайта (есть payload)
+    if (clerkUserId) {
+      console.log(`${trace} DB lookup for Clerk User ID: ${clerkUserId}`);
 
-    const existingUser = await db.query.users.findFirst({
-      where: eq(users.telegramChatId, chatId),
-    });
-
-    console.log(`${trace} DB lookup finished`, {
-      found: Boolean(existingUser),
-      userId: existingUser?.id,
-    });
-
-    if (!existingUser) {
-      console.log(`${trace} DB insert started`);
-
-      await db.insert(users).values({
-        id: `tg_${chatId}`,
-        email: `tg_${chatId}@telegram.bot`,
-        firstName: tgUser.first_name,
-        lastName: tgUser.last_name || "",
-        username: tgUser.username || "",
-        telegramChatId: chatId,
-        source: "telegram_bot",
-        role: "client",
+      const existingUser = await db.query.users.findFirst({
+        where: eq(users.id, clerkUserId),
       });
 
-      console.log(`${trace} DB insert finished`);
+      if (existingUser) {
+        console.log(`${trace} User found, updating telegramChatId`);
 
-      await ctx.reply(
-        `Шалом, ${tgUser.first_name}!\n\nВы успешно подписались на уведомления общины Menorah Center Rishon LeZion.`,
-      );
+        // 🔥 Обновляем пользователя: привязываем его Telegram
+        await db
+          .update(users)
+          .set({
+            telegramChatId: chatId,
+            username: tgUser.username || "", // Сохраняем username для истории
+          })
+          .where(eq(users.id, clerkUserId));
 
-      console.log(`${trace} Telegram reply sent for new subscriber`);
-    } else {
-      await ctx.reply(
-        `Рады видеть вас снова, ${tgUser.first_name}! Вы уже подписаны на рассылку.`,
-      );
+        await ctx.reply(
+          `Шалом, ${tgUser.first_name}! 🎉\n\nВаш аккаунт успешно привязан. Теперь вы будете получать важные уведомления и рассылки от общины Menorah Center.`,
+        );
+        console.log(`${trace} Link successful`);
+      } else {
+        // ID передали, но юзера в базе нет
+        await ctx.reply(
+          "К сожалению, пользователь с таким ID не найден. Пожалуйста, авторизуйтесь на сайте и попробуйте снова.",
+        );
+        console.log(`${trace} Link failed - User not found in DB`);
+      }
+    }
+    // 2. СЦЕНАРИЙ: Человек просто нашел бота в поиске и нажал /start
+    else {
+      console.log(`${trace} No payload provided. Checking if already linked.`);
 
-      console.log(`${trace} Telegram reply sent for existing subscriber`);
+      const alreadyLinked = await db.query.users.findFirst({
+        where: eq(users.telegramChatId, chatId),
+      });
+
+      if (alreadyLinked) {
+        await ctx.reply(
+          `Рады видеть вас снова, ${tgUser.first_name}! Вы уже подписаны на рассылку.`,
+        );
+      } else {
+        await ctx.reply(
+          `Шалом, ${tgUser.first_name}!\n\nЧтобы привязать Telegram к вашему профилю и получать рассылки, пожалуйста, перейдите в личный кабинет на сайте Menorah Center и нажмите кнопку "Привязать Telegram".`,
+        );
+      }
     }
   } catch (error) {
     console.error(`${trace} start handler failed`, getErrorDetails(error));

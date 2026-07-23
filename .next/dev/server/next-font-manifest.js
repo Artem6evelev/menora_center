@@ -1,0 +1,1 @@
+self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{\"/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/app/layout\":[\"static/media/27834908180db20f-s.p.woff2\"]},\"appUsingSizeAdjust\":true,\"pagesUsingSizeAdjust\":false}"

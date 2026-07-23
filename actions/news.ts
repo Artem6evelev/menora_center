@@ -56,15 +56,16 @@ export async function getAdminNews() {
   return await db.query.news.findMany({ orderBy: [desc(news.createdAt)] });
 }
 
-// 2. Создание новости (С ПОДДЕРЖКОЙ АВТОРА)
+// 2. Создание новости (С ПОДДЕРЖКОЙ АВТОРА И СТАТУСОВ)
 export async function createNews(data: {
   title: string;
   content: string;
   imageUrl?: string;
-  isPublished: boolean;
+  isPublished?: boolean; // Сделали опциональным
   isPinned: boolean;
-  targetAuthorId?: string | null; // <-- Новое поле
+  targetAuthorId?: string | null;
   categoryId?: string | null;
+  status?: "draft" | "pending" | "published" | "rejected"; // <-- НОВОЕ ПОЛЕ
 }) {
   const { userId } = await auth();
   if (!userId) return { success: false, error: "Не авторизован" };
@@ -72,19 +73,25 @@ export async function createNews(data: {
   try {
     const slug = `${transliterate(data.title).replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`;
 
+    // Определяем статус: если передан явно - берем его, иначе смотрим на isPublished
+    const finalStatus =
+      data.status || (data.isPublished ? "published" : "draft");
+
     await db.insert(news).values({
       title: data.title,
       content: data.content,
       imageUrl: data.imageUrl,
-      isPublished: data.isPublished,
+      isPublished: finalStatus === "published", // Синхронизируем старое поле с новым статусом
       isPinned: data.isPinned,
       categoryId: data.categoryId,
-      authorId: data.targetAuthorId || userId, // <--- ВАЖНО: используем выбранного или текущего
+      authorId: data.targetAuthorId || userId,
+      status: finalStatus, // <-- СОХРАНЯЕМ СТАТУС
       slug,
     });
 
     revalidatePath("/dashboard/news");
     revalidatePath("/news");
+    revalidatePath("/dashboard/author-profile");
     return { success: true };
   } catch (error) {
     console.error(error);
@@ -195,18 +202,35 @@ export async function getPublicNews(categorySlug?: string) {
   });
 }
 
+// actions/news.ts
+
 export async function uploadImageAction(formData: FormData) {
   const file = formData.get("file") as File;
   if (!file) return { success: false, error: "Файл не найден" };
+
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
   );
-  const filePath = `news/${Date.now()}_${file.name}`;
+
+  // 1. Берем только расширение файла (например, "png" или "jpg")
+  const fileExt = file.name.split(".").pop();
+
+  // 2. Генерируем полностью безопасное имя файла из цифр и случайных букв
+  const safeFilename = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
+
+  // 3. Путь, куда сохраняем
+  const filePath = `news/${safeFilename}`;
+
   const { error } = await supabase.storage
-    .from("images")
+    .from("images") // Имя корзины в Supabase
     .upload(filePath, file);
-  if (error) return { success: false, error: error.message };
+
+  if (error) {
+    console.error("Supabase Upload Error:", error);
+    return { success: false, error: error.message };
+  }
+
   const { data } = supabase.storage.from("images").getPublicUrl(filePath);
   return { success: true, url: data.publicUrl };
 }
