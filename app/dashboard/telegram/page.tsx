@@ -27,6 +27,7 @@ export default async function TelegramDashboardPage() {
       totalSubscribers={subscribers.length}
       initialGroupId={settings?.notificationGroupId || ""}
       initialEventsTopicId={settings?.eventsTopicId || ""}
+      initialServicesTopicId={settings?.servicesTopicId || ""}
     />
   );
 }

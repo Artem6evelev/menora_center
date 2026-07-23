@@ -20,12 +20,14 @@ interface TelegramClientProps {
   totalSubscribers: number;
   initialGroupId: string;
   initialEventsTopicId: string;
+  initialServicesTopicId: string;
 }
 
 export default function TelegramClient({
   totalSubscribers,
   initialGroupId,
   initialEventsTopicId,
+  initialServicesTopicId,
 }: TelegramClientProps) {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -36,6 +38,9 @@ export default function TelegramClient({
 
   const [groupId, setGroupId] = useState(initialGroupId);
   const [eventsTopicId, setEventsTopicId] = useState(initialEventsTopicId);
+  const [servicesTopicId, setServicesTopicId] = useState(
+    initialServicesTopicId,
+  );
   const [isSavingSettings, setIsSavingSettings] = useState(false);
 
   const handleSend = async (e: React.FormEvent) => {
@@ -64,6 +69,7 @@ export default function TelegramClient({
       await updateBotSettings({
         notificationGroupId: groupId,
         eventsTopicId: eventsTopicId,
+        servicesTopicId: servicesTopicId,
       });
       alert("Настройки успешно сохранены!");
     } catch (error) {
@@ -81,9 +87,11 @@ export default function TelegramClient({
     try {
       setGroupId("");
       setEventsTopicId("");
+      setServicesTopicId("");
       await updateBotSettings({
         notificationGroupId: "",
         eventsTopicId: "",
+        servicesTopicId: "",
       });
       alert("Уведомления отключены!");
     } catch (error) {
@@ -122,7 +130,6 @@ export default function TelegramClient({
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         <motion.div className="lg:col-span-2 flex flex-col gap-8">
-          {/* ФОРМА РАССЫЛКИ */}
           <form
             onSubmit={handleSend}
             className="bg-white dark:bg-neutral-900 border border-neutral-200/50 rounded-[32px] p-8 shadow-sm flex flex-col gap-6"
@@ -163,20 +170,15 @@ export default function TelegramClient({
             </button>
           </form>
 
-          {/* НАСТРОЙКИ УВЕДОМЛЕНИЙ В ГРУППУ */}
           <div className="bg-white dark:bg-neutral-900 border border-neutral-200/50 rounded-[32px] p-8 shadow-sm flex flex-col gap-4">
             <div>
               <h3 className="text-lg font-black tracking-tight flex items-center gap-2">
                 <BellRing size={20} className="text-[#FFB800]" /> Прием заявок с
                 сайта
               </h3>
-              <p className="text-xs font-medium text-neutral-400 mt-1">
-                Бот будет отправлять новые заявки в специальную группу с темами
-                (Форум).
-              </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
               <div>
                 <label className="text-[10px] font-bold uppercase text-neutral-500 mb-2 block">
                   ID Группы
@@ -191,13 +193,25 @@ export default function TelegramClient({
               </div>
               <div>
                 <label className="text-[10px] font-bold uppercase text-neutral-500 mb-2 block">
-                  ID Темы "Мероприятия"
+                  Мероприятия
                 </label>
                 <input
                   type="text"
                   value={eventsTopicId}
                   onChange={(e) => setEventsTopicId(e.target.value)}
                   placeholder="2"
+                  className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 rounded-2xl p-4 text-sm font-medium outline-none focus:ring-2 focus:ring-[#FFB800]/50"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold uppercase text-neutral-500 mb-2 block">
+                  Услуги
+                </label>
+                <input
+                  type="text"
+                  value={servicesTopicId}
+                  onChange={(e) => setServicesTopicId(e.target.value)}
+                  placeholder="ID"
                   className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 rounded-2xl p-4 text-sm font-medium outline-none focus:ring-2 focus:ring-[#FFB800]/50"
                 />
               </div>
@@ -219,7 +233,7 @@ export default function TelegramClient({
                 )}
               </button>
 
-              {(groupId || eventsTopicId) && (
+              {(groupId || eventsTopicId || servicesTopicId) && (
                 <button
                   type="button"
                   onClick={handleClearSettings}
@@ -237,14 +251,13 @@ export default function TelegramClient({
           </div>
         </motion.div>
 
-        {/* ШАБЛОНЫ */}
         <div className="bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 rounded-[32px] p-6 hidden lg:block">
           <h3 className="font-black text-sm uppercase tracking-widest text-neutral-400 mb-4 flex items-center gap-2">
             <Megaphone size={14} className="text-[#FFB800]" /> Инфо
           </h3>
           <p className="text-xs text-neutral-500">
-            Уведомления будут приходить в группу только если бот добавлен туда
-            как Администратор.
+            Для добавления темы скопируйте ссылку в Telegram и вставьте цифру
+            после слеша.
           </p>
         </div>
       </div>

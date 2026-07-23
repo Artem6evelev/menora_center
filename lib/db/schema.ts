@@ -290,9 +290,6 @@ export const videos = pgTable("videos", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-// ==========================================
-// 7. НАСТРОЙКИ БОТА
-// ==========================================
 export const botSettings = pgTable("bot_settings", {
   id: text("id")
     .primaryKey()
@@ -311,6 +308,7 @@ export const botSettings = pgTable("bot_settings", {
   // Форум-группа для заявок
   notificationGroupId: text("notification_group_id"),
   eventsTopicId: text("events_topic_id"),
+  servicesTopicId: text("services_topic_id"), // 👇 ДОБАВЛЕНО
 
   updatedAt: timestamp("updated_at").defaultNow(),
 });

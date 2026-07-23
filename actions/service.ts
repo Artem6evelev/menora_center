@@ -10,6 +10,9 @@ import {
 import { eq, desc, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
+// 🔥 ИМПОРТ ФУНКЦИИ TELEGRAM
+import { sendServiceRegistrationNotification } from "@/actions/telegram";
+
 // --- Категории услуг ---
 export async function getServiceCategories() {
   return await db
@@ -25,6 +28,21 @@ export async function createServiceCategory(name: string, color: string) {
   return { success: true, id };
 }
 
+export async function deleteServiceCategory(id: string) {
+  try {
+    await db
+      .update(services)
+      .set({ categoryId: null })
+      .where(eq(services.categoryId, id));
+    await db.delete(serviceCategories).where(eq(serviceCategories.id, id));
+    revalidatePath("/dashboard/services");
+    return { success: true };
+  } catch (error) {
+    console.error("Ошибка при удалении категории услуг:", error);
+    return { success: false };
+  }
+}
+
 // --- Управление услугами ---
 export async function getServices() {
   return await db
@@ -37,7 +55,6 @@ export async function getServices() {
 export async function createService(data: any) {
   try {
     const id = `ser_${Math.random().toString(36).substring(2, 11)}`;
-    // Защита от пустых строк, которые ломают базу данных
     const cleanData = {
       ...data,
       categoryId: data.categoryId === "" ? null : data.categoryId,
@@ -94,36 +111,12 @@ export async function getServiceApplications(serviceId?: string) {
     if (serviceId) {
       query = query.where(eq(serviceParticipants.serviceId, serviceId)) as any;
     }
-
     return await query.orderBy(desc(serviceParticipants.createdAt));
   } catch (error) {
-    console.error("Ошибка получения заявок:", error);
     return [];
   }
 }
 
-// Добавь это в actions/service.ts (сразу после createServiceCategory)
-
-export async function deleteServiceCategory(id: string) {
-  try {
-    // Сначала отвязываем категорию от всех услуг, где она была выбрана
-    await db
-      .update(services)
-      .set({ categoryId: null })
-      .where(eq(services.categoryId, id));
-    // Затем удаляем саму категорию
-    await db.delete(serviceCategories).where(eq(serviceCategories.id, id));
-
-    revalidatePath("/dashboard/services");
-    return { success: true };
-  } catch (error) {
-    console.error("Ошибка при удалении категории услуг:", error);
-    return { success: false };
-  }
-}
-// ДОБАВЬ ЭТИ ФУНКЦИИ В actions/service.ts, ЕСЛИ ИХ ТАМ НЕТ:
-
-// 1. Публичный вывод услуг для главной страницы
 export async function getPublicServicesPaginated(
   page = 1,
   limit = 4,
@@ -155,7 +148,6 @@ export async function getPublicServicesPaginated(
   }
 }
 
-// 2. Проверка, записан ли уже юзер на услугу
 export async function checkServiceRegistration(
   serviceId: string,
   userId: string,
@@ -176,7 +168,6 @@ export async function checkServiceRegistration(
   }
 }
 
-// 3. Сама запись на услугу (с телефоном)
 export async function registerForService(
   serviceId: string,
   userId: string,
@@ -191,13 +182,35 @@ export async function registerForService(
       return { success: true, message: "already_registered" };
 
     const newId = `spart_${Math.random().toString(36).substring(2, 11)}`;
-    await db.insert(serviceParticipants).values({
-      id: newId,
-      serviceId,
-      userId,
-      phone,
-      status: "pending",
-    });
+    await db
+      .insert(serviceParticipants)
+      .values({ id: newId, serviceId, userId, phone, status: "pending" });
+
+    // 🔥 БЛОК ОТПРАВКИ УВЕДОМЛЕНИЯ В ТЕЛЕГРАМ 🔥
+    try {
+      const [serviceData] = await db
+        .select()
+        .from(services)
+        .where(eq(services.id, serviceId));
+      const [userData] = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, userId));
+
+      if (serviceData && userData) {
+        await sendServiceRegistrationNotification(
+          serviceData.title || "Услуга",
+          {
+            firstName: userData.firstName ?? "",
+            lastName: userData.lastName ?? "",
+            email: userData.email ?? "",
+            phone: phone,
+          },
+        );
+      }
+    } catch (tgError) {
+      console.error("Ошибка Telegram:", tgError);
+    }
 
     revalidatePath("/dashboard/my-services");
     return { success: true };
@@ -206,10 +219,9 @@ export async function registerForService(
   }
 }
 
-// Получить список услуг, на которые записан конкретный пользователь
 export async function getUserRegisteredServices(userId: string) {
   try {
-    const data = await db
+    return await db
       .select({
         participant: serviceParticipants,
         service: services,
@@ -223,24 +235,17 @@ export async function getUserRegisteredServices(userId: string) {
       )
       .where(eq(serviceParticipants.userId, userId))
       .orderBy(desc(serviceParticipants.createdAt));
-
-    return data;
   } catch (error) {
-    console.error("Ошибка при получении услуг пользователя:", error);
     return [];
   }
 }
 
 export async function getActivePublicServiceCategories() {
   try {
-    // Достаем все категории услуг из базы и сортируем по алфавиту
-    const categories = await db.query.serviceCategories.findMany({
+    return await db.query.serviceCategories.findMany({
       orderBy: (serviceCategories, { asc }) => [asc(serviceCategories.name)],
     });
-
-    return categories;
   } catch (error) {
-    console.error("Ошибка при получении категорий услуг:", error);
-    return []; // Если произошла ошибка, возвращаем пустой массив, чтобы страница не упала
+    return [];
   }
 }
