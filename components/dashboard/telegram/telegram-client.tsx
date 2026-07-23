@@ -9,10 +9,9 @@ import {
   CheckCircle2,
   AlertCircle,
   Megaphone,
-  HeartHandshake,
-  Coffee,
   Save,
   BellRing,
+  Trash2,
 } from "lucide-react";
 import { sendBroadcastMessage } from "@/actions/telegram";
 import { updateBotSettings } from "@/actions/bot-settings";
@@ -66,9 +65,29 @@ export default function TelegramClient({
         notificationGroupId: groupId,
         eventsTopicId: eventsTopicId,
       });
-      alert("Настройки группы успешно сохранены!");
+      alert("Настройки успешно сохранены!");
     } catch (error) {
       alert("Ошибка при сохранении.");
+    } finally {
+      setIsSavingSettings(false);
+    }
+  };
+
+  const handleClearSettings = async () => {
+    if (!confirm("Вы уверены, что хотите отключить уведомления и удалить ID?"))
+      return;
+
+    setIsSavingSettings(true);
+    try {
+      setGroupId("");
+      setEventsTopicId("");
+      await updateBotSettings({
+        notificationGroupId: "",
+        eventsTopicId: "",
+      });
+      alert("Уведомления отключены!");
+    } catch (error) {
+      alert("Ошибка при отключении.");
     } finally {
       setIsSavingSettings(false);
     }
@@ -184,29 +203,49 @@ export default function TelegramClient({
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={handleSaveSettings}
-              disabled={isSavingSettings}
-              className="mt-2 h-[54px] w-full bg-[#FFB800] text-black hover:bg-yellow-500 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#FFB800]/20"
-            >
-              {isSavingSettings ? (
-                <Loader2 size={16} className="animate-spin" />
-              ) : (
-                <>
-                  <Save size={16} /> Сохранить настройки
-                </>
+            <div className="flex flex-col sm:flex-row items-center gap-3 mt-2">
+              <button
+                type="button"
+                onClick={handleSaveSettings}
+                disabled={isSavingSettings}
+                className="h-[54px] w-full bg-[#FFB800] text-black hover:bg-yellow-500 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#FFB800]/20"
+              >
+                {isSavingSettings ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <>
+                    <Save size={16} /> Сохранить
+                  </>
+                )}
+              </button>
+
+              {(groupId || eventsTopicId) && (
+                <button
+                  type="button"
+                  onClick={handleClearSettings}
+                  disabled={isSavingSettings}
+                  title="Отключить уведомления"
+                  className="h-[54px] px-6 w-full sm:w-auto bg-red-50 text-red-500 hover:bg-red-100 rounded-2xl font-black flex items-center justify-center transition-all shrink-0 gap-2"
+                >
+                  <Trash2 size={20} />{" "}
+                  <span className="sm:hidden text-xs uppercase tracking-widest">
+                    Отключить
+                  </span>
+                </button>
               )}
-            </button>
+            </div>
           </div>
         </motion.div>
 
         {/* ШАБЛОНЫ */}
         <div className="bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 rounded-[32px] p-6 hidden lg:block">
           <h3 className="font-black text-sm uppercase tracking-widest text-neutral-400 mb-4 flex items-center gap-2">
-            <Megaphone size={14} className="text-[#FFB800]" /> Шаблоны
+            <Megaphone size={14} className="text-[#FFB800]" /> Инфо
           </h3>
-          <p className="text-xs text-neutral-500">Быстрые шаблоны рассылок.</p>
+          <p className="text-xs text-neutral-500">
+            Уведомления будут приходить в группу только если бот добавлен туда
+            как Администратор.
+          </p>
         </div>
       </div>
     </div>

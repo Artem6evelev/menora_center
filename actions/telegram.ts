@@ -82,9 +82,10 @@ export async function sendEventRegistrationNotification(
     const groupId = settings?.notificationGroupId;
     const topicId = settings?.eventsTopicId;
 
-    if (!groupId) {
-      console.log("ID группы для уведомлений не настроен.");
-      return { success: false, error: "ID группы не настроен" };
+    // Если ID группы нет или он пустой — тихо отключаем отправку
+    if (!groupId || groupId.trim() === "") {
+      console.log("Уведомления отключены: ID группы не задан.");
+      return { success: true, message: "Уведомления отключены" };
     }
 
     const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN!);
@@ -111,7 +112,8 @@ Email: ${user.email}
       groupId,
       { source: buffer, filename },
       {
-        message_thread_id: topicId ? parseInt(topicId) : undefined, // Отправка в нужный топик
+        message_thread_id:
+          topicId && topicId.trim() !== "" ? parseInt(topicId) : undefined,
         caption: `🔥 <b>Новая заявка на мероприятие!</b>\n\nМероприятие: <b>${eventTitle}</b>\nОт: ${user.firstName} ${user.lastName || ""}\n\n<i>Контакты в файле ☝️</i>`,
         parse_mode: "HTML",
       },

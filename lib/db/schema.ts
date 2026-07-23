@@ -308,7 +308,7 @@ export const botSettings = pgTable("bot_settings", {
   ),
   superadminTelegramId: text("superadmin_telegram_id"),
 
-  // 👇 НОВЫЕ ПОЛЯ ДЛЯ ФОРУМА-ГРУППЫ
+  // Форум-группа для заявок
   notificationGroupId: text("notification_group_id"),
   eventsTopicId: text("events_topic_id"),
 

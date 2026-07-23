@@ -9,7 +9,7 @@ import {
 } from "@/lib/db/schema";
 import { eq, desc, and, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { sendEventRegistrationNotification } from "@/actions/telegram"; // 🔥 ИМПОРТ НОВОЙ ФУНКЦИИ
+import { sendEventRegistrationNotification } from "@/actions/telegram"; // 🔥 ИМПОРТ ФУНКЦИИ
 
 // === 1. КАТЕГОРИИ ===
 export async function getEventCategories() {
