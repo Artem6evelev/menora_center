@@ -59,12 +59,7 @@ const mainMenuKeyboard = Markup.inlineKeyboard([
   ],
 
   // Ежедневный контент
-  [
-    Markup.button.url(
-      "☕️ Утренний Хасидут: онлайн каждый день",
-      "https://t.me/menorah_rishon",
-    ),
-  ],
+  [Markup.button.url("Наш Телеграм канал", "https://t.me/menorah_rishon")],
 
   // Поддержка
   [
