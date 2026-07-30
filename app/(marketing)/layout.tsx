@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-// @ts-expect-error
-import "@/app/globals.css";
 import { GeistSans } from "geist/font/sans";
 import { NavBar } from "@/components/navbar";
 import { cn } from "@/lib/utils";
