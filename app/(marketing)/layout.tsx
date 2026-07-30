@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-// @ts-ignore
-import "../globals.css";
+// @ts-expect-error
+import "@/app/globals.css";
 import { GeistSans } from "geist/font/sans";
 import { NavBar } from "@/components/navbar";
 import { cn } from "@/lib/utils";
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   ),
   title: {
     default: "Menorah Center | Ришон ле-Цион",
-    template: "%s | Menorah Center", // Шаблон для внутренних страниц (например: "Услуги | Menorah Center")
+    template: "%s | Menorah Center",
   },
   description:
     "Еврейский общинный центр в Ришон ле-Ционе. Мероприятия, духовная поддержка, изучение Торы и услуги для всей семьи.",
@@ -21,10 +21,9 @@ export const metadata: Metadata = {
     locale: "ru_RU",
     url: "/",
     siteName: "Menorah Center",
-    // ДОБАВЛЯЕМ КАРТИНКУ ДЛЯ ШЕРИНГА (TELEGRAM / WHATSAPP)
     images: [
       {
-        url: "/public/seo/main.webp", // Ссылка на картинку в папке public
+        url: "/seo/main.webp", // Убрали /public из пути
         width: 1200,
         height: 630,
         alt: "Menorah Center - Еврейский общинный центр",
@@ -33,8 +32,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    // ДОБАВЛЯЕМ КАРТИНКУ ДЛЯ X (TWITTER) И ДРУГИХ ПЛАТФОРМ
-    images: ["/public/seo/main.webp"],
+    images: ["/seo/main.webp"], // Убрали /public из пути
   },
 };
 
