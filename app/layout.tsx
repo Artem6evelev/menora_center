@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-// @ts-expect-error - CSS modules are handled by the Next.js build pipeline
-import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ruRU } from "@clerk/localizations";
 import { GeistSans } from "geist/font/sans";
