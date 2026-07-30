@@ -23,17 +23,17 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ru_RU",
     siteName: "Menorah Kids",
-    // images: [
-    //   {
-    //     url: "https://yourdomain.com/og-image.jpg", // Ссылка на красивый баннер
-    //     width: 1200,
-    //     height: 630,
-    //     alt: "Menorah Kids - Детский центр",
-    //   },
-    // ],
+    images: [
+      {
+        url: "/kids/kids1.webp", // Берем готовую фотографию из public/kids
+        width: 1200,
+        height: 630,
+        alt: "Счастливые дети на занятиях в Menorah Kids",
+      },
+    ],
   },
   alternates: {
-    canonical: "https://yourdomain.com/programs", // Укажите реальный URL страницы
+    canonical: "/kids", // Относительный путь, если настроен metadataBase
   },
 };
 
@@ -49,8 +49,7 @@ export default function KidsProgramsPage() {
             "@type": "EducationalOrganization",
             name: "Menorah Kids",
             description: "Еврейский детский центр и программы развития",
-            // url: "https://yourdomain.com",
-            // logo: "https://yourdomain.com/logo.png",
+            image: "/kids/kids1.webp", // Добавлено изображение для сниппета
             offers: [
               {
                 "@type": "Offer",
