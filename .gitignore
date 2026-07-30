@@ -4,3 +4,5 @@ node_modules
 /.clerk/
 /env.local
 .next.next
+.next
+.next/

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "@/app/globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ruRU } from "@clerk/localizations";
 import { GeistSans } from "geist/font/sans";
