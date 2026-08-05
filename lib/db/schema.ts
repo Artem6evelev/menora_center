@@ -9,6 +9,7 @@ import {
   integer,
   varchar,
   uniqueIndex,
+  jsonb,
 } from "drizzle-orm/pg-core";
 
 // ==========================================
@@ -362,3 +363,25 @@ export const videosRelations = relations(videos, ({ one }) => ({
     references: [users.id],
   }),
 }));
+
+// ==========================================
+// 7. ЗАЯВКИ MENORAH KIDS
+// ==========================================
+// Замените вашу таблицу kidsApplications на эту:
+export const kidsApplications = pgTable("kids_applications", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  programTitle: text("program_title").notNull(),
+  parentFirstName: text("parent_first_name").notNull(),
+  parentLastName: text("parent_last_name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone").notNull(),
+
+  // 🔥 Новое поле для хранения массива детей
+  children: jsonb("children").default([]).notNull(),
+
+  status: text("status").default("pending").notNull(),
+  userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});

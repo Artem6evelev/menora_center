@@ -34,7 +34,7 @@ export const Features = () => {
     {
       title: "Menorah Kids",
       description:
-        "Развивающие программы и инклюзивная среда. От мини-сада до сенсорной интеграции и тьюторинга.",
+        "Развивающие кружки, изучение традиций, творческие мастерские и бережная инклюзивная среда для гармоничного развития вашего ребенка.",
       skeleton: <SkeletonKids />,
       className:
         "col-span-1 lg:col-span-2 border-b dark:border-neutral-800 bg-gradient-to-br from-transparent to-amber-50/30 dark:to-amber-900/10",

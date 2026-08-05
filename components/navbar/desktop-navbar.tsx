@@ -20,6 +20,8 @@ import {
   CalendarDays,
   BookHeart,
   ScrollText,
+  Baby,
+  Star, // 🔥 Импортируем иконку для Kids
 } from "lucide-react";
 
 // Словарь иконок (Клиентская часть знает, как их рисовать)
@@ -29,10 +31,28 @@ const IconMap: Record<string, any> = {
   calendardays: CalendarDays,
   bookheart: BookHeart,
   scrolltext: ScrollText,
+  baby: Baby, // Добавили в маппинг
 };
 
 const NavItemWithDropdown = ({ item }: { item: any }) => {
   const [isOpen, setIsOpen] = useState(false);
+
+  // 🔥 ЛОГИКА ДЛЯ ВЫДЕЛЕННОЙ КНОПКИ (Например, Menorah Kids) 🔥
+  if (item.highlight) {
+    const Icon = IconMap[item.icon] || Star;
+    return (
+      <Link href={item.link}>
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-amber-400 to-orange-500 text-white font-bold text-sm rounded-full shadow-md shadow-orange-500/20"
+        >
+          <Icon size={16} strokeWidth={2.5} />
+          <span>{item.title}</span>
+        </motion.div>
+      </Link>
+    );
+  }
 
   if (!item.children)
     return <NavBarItem href={item.link}>{item.title}</NavBarItem>;
@@ -148,12 +168,12 @@ export const DesktopNavbar = ({ navItems }: { navItems: any[] }) => {
         {!isSignedIn ? (
           <>
             <SignInButton mode="modal">
-              <button className="font-bold text-[15px] px-4 py-2 text-gray-700 dark:text-gray-300">
+              <button className="font-bold text-[15px] px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
                 Войти
               </button>
             </SignInButton>
             <SignUpButton mode="modal">
-              <button className="bg-[#FFB800] text-gray-900 font-bold rounded-full px-7 py-2.5 text-[15px]">
+              <button className="bg-[#FFB800] text-gray-900 font-bold rounded-full px-7 py-2.5 text-[15px] hover:scale-105 active:scale-95 transition-all">
                 Регистрация
               </button>
             </SignUpButton>
@@ -162,7 +182,7 @@ export const DesktopNavbar = ({ navItems }: { navItems: any[] }) => {
           <div className="flex items-center gap-4">
             <Link
               href="/dashboard"
-              className="font-bold text-[15px] px-5 py-2.5 bg-[#FFB800] text-gray-900 rounded-full"
+              className="font-bold text-[15px] px-5 py-2.5 bg-[#FFB800] text-gray-900 rounded-full hover:scale-105 active:scale-95 transition-all"
             >
               Кабинет
             </Link>

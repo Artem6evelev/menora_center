@@ -11,6 +11,7 @@ import {
   Trello,
   Calendar,
   LogOut,
+  Baby,
   Ticket,
   ClipboardList,
   HeartHandshake,
@@ -129,6 +130,13 @@ export default function Sidebar({ userRole }: { userRole: string }) {
       label: "Заявки",
       icon: ClipboardList,
       href: "/dashboard/applications",
+      roles: ["superadmin", "admin"],
+    },
+    {
+      // 🔥 ДОБАВЛЕННЫЙ ПУНКТ 🔥
+      label: "Menorah Kids",
+      icon: Baby,
+      href: "/dashboard/kids",
       roles: ["superadmin", "admin"],
     },
     {

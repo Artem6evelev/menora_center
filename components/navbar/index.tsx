@@ -6,10 +6,16 @@ export async function NavBar() {
   const { latestArticle, categories } = await getNavbarNewsData();
 
   const navItems = [
-    { title: "Услуги", link: "/services" },
+    // { title: "Услуги", link: "/services" },
     { title: "Мероприятия", link: "/events" },
-    { title: "Видеоуроки", link: "/lessons" },
-    { title: "Авторы", link: "/authors" },
+    {
+      title: "Menorah Kids",
+      link: "/kids",
+      highlight: true, // Специальный флаг для подсветки
+      icon: "baby",
+    },
+    // { title: "Видеоуроки", link: "/lessons" },
+    // { title: "Авторы", link: "/authors" },
 
     {
       title: "Новости",

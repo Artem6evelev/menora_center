@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, AnimatePresence, Variants } from "framer-motion";
+import { submitKidsApplication } from "@/actions/kids.actions";
 import {
   ArrowRight,
   Users,
@@ -24,15 +27,34 @@ import {
   MessageSquare,
   Compass,
   Gift,
+  Loader2,
+  CheckCircle,
+  Plus,
+  Trash2,
 } from "lucide-react";
 
 export default function KidsProgramsClient() {
+  const { user, isSignedIn } = useUser();
+
   const [selectedProgram, setSelectedProgram] = useState<any | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // --- ДАННЫЕ ДЛЯ КАРУСЕЛИ В HERO (ОБНОВЛЕНО С ПУТЯМИ К КАРТИНКАМ) ---
+  // --- СОСТОЯНИЯ ФОРМЫ ---
+  const [applyStep, setApplyStep] = useState<"details" | "form" | "success">(
+    "details",
+  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    parentFirstName: "",
+    parentLastName: "",
+    email: "",
+    phone: "",
+    children: [{ name: "", age: "", birthDate: "" }],
+  });
+
+  // --- ДАННЫЕ ДЛЯ КАРУСЕЛИ В HERO ---
   const heroSlides = [
     {
       title: "Счастливые дети",
@@ -59,14 +81,109 @@ export default function KidsProgramsClient() {
     return () => clearInterval(timer);
   }, [heroSlides.length]);
 
-  // Блокировка скролла при открытом модальном окне
+  // Блокировка скролла и управление формой при открытии/закрытии модалки
   useEffect(() => {
-    if (selectedProgram) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "unset";
+    if (selectedProgram) {
+      document.body.style.overflow = "hidden";
+      setApplyStep("details");
+
+      if (isSignedIn && user) {
+        setFormData({
+          parentFirstName: user.firstName || "",
+          parentLastName: user.lastName || "",
+          email: user.primaryEmailAddress?.emailAddress || "",
+          phone: "",
+          children: [{ name: "", age: "", birthDate: "" }],
+        });
+      }
+    } else {
+      document.body.style.overflow = "unset";
+      setTimeout(
+        () =>
+          setFormData({
+            parentFirstName: "",
+            parentLastName: "",
+            email: "",
+            phone: "",
+            children: [{ name: "", age: "", birthDate: "" }],
+          }),
+        300,
+      );
+    }
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [selectedProgram]);
+  }, [selectedProgram, isSignedIn, user]);
+
+  // Валидация телефона
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const sanitizedValue = value.replace(/[^\d+\s-]/g, "");
+    setFormData({ ...formData, phone: sanitizedValue });
+  };
+
+  // 🔥 ФУНКЦИЯ РАСЧЕТА ВОЗРАСТА 🔥
+  const calculateAge = (birthDateString: string) => {
+    if (!birthDateString) return "";
+    const today = new Date();
+    const birthDate = new Date(birthDateString);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age.toString();
+  };
+
+  // ЛОГИКА ДИНАМИЧЕСКИХ ПОЛЕЙ ДЛЯ ДЕТЕЙ
+  const updateChild = (
+    index: number,
+    field: "name" | "age" | "birthDate",
+    value: string,
+  ) => {
+    const newChildren = [...formData.children];
+    newChildren[index][field] = value;
+
+    // Автовычисление возраста при изменении даты
+    if (field === "birthDate") {
+      newChildren[index].age = calculateAge(value);
+    }
+
+    setFormData({ ...formData, children: newChildren });
+  };
+
+  const addChild = () => {
+    setFormData({
+      ...formData,
+      children: [...formData.children, { name: "", age: "", birthDate: "" }],
+    });
+  };
+
+  const removeChild = (index: number) => {
+    const newChildren = formData.children.filter((_, i) => i !== index);
+    setFormData({ ...formData, children: newChildren });
+  };
+
+  // Отправка формы на сервер
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    const res = await submitKidsApplication({
+      programTitle: selectedProgram.title,
+      parentFirstName: formData.parentFirstName,
+      parentLastName: formData.parentLastName,
+      email: formData.email,
+      phone: formData.phone,
+      children: formData.children,
+    });
+
+    if (res.success) {
+      setApplyStep("success");
+    }
+    setIsSubmitting(false);
+  };
 
   // --- ПРОГРАММЫ ---
   const programs = [
@@ -314,9 +431,8 @@ export default function KidsProgramsClient() {
                     alt={heroSlides[currentSlide].alt}
                     fill
                     className="object-cover"
-                    priority={currentSlide === 0} // Приоритетная загрузка для первой картинки (важно для SEO/LCP)
+                    priority={currentSlide === 0}
                   />
-                  {/* Затемняющий слой для читаемости текста поверх фото */}
                   <div className="absolute inset-0 bg-black/40" />
 
                   <motion.span
@@ -695,6 +811,10 @@ export default function KidsProgramsClient() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  setSelectedProgram(programs[0]);
+                  setApplyStep("form");
+                }}
                 className="px-10 py-5 bg-black text-white font-black uppercase tracking-widest text-sm rounded-2xl shadow-2xl"
               >
                 Записаться на встречу
@@ -776,7 +896,7 @@ export default function KidsProgramsClient() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.8, y: 40 }}
               transition={{ type: "spring", damping: 25, stiffness: 350 }}
-              className="bg-white dark:bg-neutral-900 w-full max-w-2xl rounded-[40px] shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800 flex flex-col max-h-[90vh]"
+              className="bg-white dark:bg-neutral-900 w-full max-w-3xl rounded-[40px] shadow-2xl relative z-10 overflow-hidden border border-neutral-200 dark:border-neutral-800 flex flex-col max-h-[90vh]"
               role="dialog"
               aria-modal="true"
               aria-labelledby="modal-title"
@@ -821,65 +941,283 @@ export default function KidsProgramsClient() {
                 </button>
               </div>
 
-              <div className="p-8 overflow-y-auto custom-scrollbar">
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  <h4 className="text-xs font-black uppercase tracking-widest text-neutral-400 mb-4">
-                    Описание программы
-                  </h4>
-                  <p className="text-neutral-600 dark:text-neutral-300 leading-relaxed text-lg">
-                    {selectedProgram.fullDesc}
-                  </p>
-                </motion.div>
+              <div className="p-8 overflow-y-auto custom-scrollbar flex-1">
+                <AnimatePresence mode="wait">
+                  {/* ШАГ 1: ДЕТАЛИ */}
+                  {applyStep === "details" && (
+                    <motion.div
+                      key="details"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                    >
+                      <h4 className="text-xs font-black uppercase tracking-widest text-neutral-400 mb-4">
+                        Описание программы
+                      </h4>
+                      <p className="text-neutral-600 dark:text-neutral-300 leading-relaxed text-lg">
+                        {selectedProgram.fullDesc}
+                      </p>
 
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                  className="mt-8 grid grid-cols-2 gap-4"
-                >
-                  <div className="bg-neutral-50 dark:bg-neutral-950 p-4 rounded-2xl border border-neutral-100 dark:border-neutral-800">
-                    <div className="text-xs font-black uppercase text-neutral-400 mb-1">
-                      Расписание
-                    </div>
-                    <div className="font-bold text-sm">
-                      Уточняется при записи
-                    </div>
-                  </div>
-                  <div className="bg-neutral-50 dark:bg-neutral-950 p-4 rounded-2xl border border-neutral-100 dark:border-neutral-800">
-                    <div className="text-xs font-black uppercase text-neutral-400 mb-1">
-                      Формат
-                    </div>
-                    <div className="font-bold text-sm">
-                      Групповой / Индивидуальный
-                    </div>
-                  </div>
-                </motion.div>
+                      <div className="mt-8 grid grid-cols-2 gap-4">
+                        <div className="bg-neutral-50 dark:bg-neutral-950 p-4 rounded-2xl border border-neutral-100 dark:border-neutral-800">
+                          <div className="text-xs font-black uppercase text-neutral-400 mb-1">
+                            Расписание
+                          </div>
+                          <div className="font-bold text-sm">
+                            Уточняется при записи
+                          </div>
+                        </div>
+                        <div className="bg-neutral-50 dark:bg-neutral-950 p-4 rounded-2xl border border-neutral-100 dark:border-neutral-800">
+                          <div className="text-xs font-black uppercase text-neutral-400 mb-1">
+                            Формат
+                          </div>
+                          <div className="font-bold text-sm">
+                            Групповой / Индивидуальный
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* ШАГ 2: ФОРМА */}
+                  {applyStep === "form" && (
+                    <motion.div
+                      key="form"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                    >
+                      <form
+                        id="kids-form"
+                        onSubmit={handleSubmit}
+                        className="space-y-4"
+                      >
+                        <div className="grid grid-cols-2 gap-4">
+                          <input
+                            required
+                            type="text"
+                            placeholder="Имя родителя *"
+                            value={formData.parentFirstName}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                parentFirstName: e.target.value,
+                              })
+                            }
+                            className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 p-4 rounded-2xl outline-none focus:border-[#FFB800] transition-colors"
+                          />
+                          <input
+                            required
+                            type="text"
+                            placeholder="Фамилия родителя *"
+                            value={formData.parentLastName}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                parentLastName: e.target.value,
+                              })
+                            }
+                            className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 p-4 rounded-2xl outline-none focus:border-[#FFB800] transition-colors"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <input
+                            required
+                            type="email"
+                            placeholder="Email *"
+                            value={formData.email}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                email: e.target.value,
+                              })
+                            }
+                            className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 p-4 rounded-2xl outline-none focus:border-[#FFB800] transition-colors"
+                          />
+                          <input
+                            required
+                            type="tel"
+                            placeholder="Номер телефона (+972...) *"
+                            value={formData.phone}
+                            onChange={handlePhoneChange}
+                            className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 p-4 rounded-2xl outline-none focus:border-[#FFB800] transition-colors"
+                          />
+                        </div>
+
+                        {/* 🔥 ДИНАМИЧЕСКИЕ ПОЛЯ ДЕТЕЙ С АВТОВЫЧИСЛЕНИЕМ ВОЗРАСТА 🔥 */}
+                        <div className="pt-4 border-t border-neutral-100 dark:border-neutral-800">
+                          <label className="text-xs font-black uppercase tracking-widest text-neutral-400 mb-4 block ml-2">
+                            Данные детей *
+                          </label>
+                          <div className="space-y-3">
+                            {formData.children.map((child, index) => (
+                              <div
+                                key={index}
+                                className="grid grid-cols-1 sm:grid-cols-[2fr_2fr_1fr_auto] gap-3 items-center bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 p-2 sm:p-3 rounded-2xl"
+                              >
+                                <input
+                                  required
+                                  type="text"
+                                  placeholder="Имя ребенка *"
+                                  value={child.name}
+                                  onChange={(e) =>
+                                    updateChild(index, "name", e.target.value)
+                                  }
+                                  className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 p-3 rounded-xl outline-none focus:border-[#FFB800] transition-colors text-sm"
+                                />
+
+                                <div className="relative">
+                                  <label className="absolute -top-2 left-3 bg-neutral-50 dark:bg-neutral-950 px-1 text-[9px] font-black uppercase text-neutral-400 tracking-widest">
+                                    Дата рожд. *
+                                  </label>
+                                  <input
+                                    required
+                                    type="date"
+                                    value={child.birthDate}
+                                    onChange={(e) =>
+                                      updateChild(
+                                        index,
+                                        "birthDate",
+                                        e.target.value,
+                                      )
+                                    }
+                                    className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 p-3 rounded-xl outline-none focus:border-[#FFB800] transition-colors text-sm text-neutral-600 dark:text-neutral-300"
+                                  />
+                                </div>
+
+                                <div className="relative">
+                                  <input
+                                    required
+                                    readOnly
+                                    type="text"
+                                    placeholder="Возраст"
+                                    value={child.age ? `${child.age} лет` : ""}
+                                    className="w-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 p-3 rounded-xl outline-none text-sm font-bold text-neutral-500 cursor-not-allowed"
+                                  />
+                                </div>
+
+                                {/* Кнопка удаления показывается, если детей больше 1 */}
+                                {formData.children.length > 1 && (
+                                  <button
+                                    type="button"
+                                    onClick={() => removeChild(index)}
+                                    className="p-3 bg-red-50 dark:bg-red-500/10 text-red-500 rounded-xl hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors w-full sm:w-auto flex justify-center"
+                                    title="Удалить ребенка"
+                                  >
+                                    <Trash2 size={18} />
+                                  </button>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={addChild}
+                            className="text-xs font-bold uppercase tracking-widest text-[#FFB800] flex items-center gap-2 mt-4 ml-2 hover:text-amber-500 transition-colors"
+                          >
+                            <Plus size={16} /> Добавить еще ребенка
+                          </button>
+                        </div>
+                      </form>
+                    </motion.div>
+                  )}
+
+                  {/* ШАГ 3: УСПЕХ */}
+                  {applyStep === "success" && (
+                    <motion.div
+                      key="success"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="flex flex-col items-center text-center py-8"
+                    >
+                      <div className="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center mb-6">
+                        <CheckCircle size={40} />
+                      </div>
+                      <h3 className="text-2xl font-black mb-4">
+                        Спасибо, ваша заявка принята!
+                      </h3>
+
+                      {!isSignedIn ? (
+                        <>
+                          <p className="text-neutral-500 mb-8 max-w-sm">
+                            Наш администратор скоро свяжется с вами.{" "}
+                            <b className="text-neutral-900 dark:text-white">
+                              Зарегистрируйтесь на платформе
+                            </b>{" "}
+                            Menorah Center, чтобы быть в курсе всех наших
+                            событий и программ.
+                          </p>
+                          <div className="flex w-full gap-4">
+                            <Link
+                              href="/sign-up?redirect_url=/dashboard"
+                              className="flex-1 py-4 bg-black dark:bg-white text-white dark:text-black rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl hover:scale-105 transition-all"
+                            >
+                              Зарегистрироваться
+                            </Link>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-neutral-500 mb-8 max-w-sm">
+                            Наш администратор скоро свяжется с вами по
+                            указанному телефону для уточнения деталей.
+                          </p>
+                          <div className="flex w-full gap-4">
+                            <Link
+                              href="/dashboard"
+                              className="flex-1 py-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+                            >
+                              Вернуться в кабинет
+                            </Link>
+                          </div>
+                        </>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                className="p-6 border-t border-neutral-100 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950/50 flex gap-4"
-              >
-                <button
-                  onClick={() => setSelectedProgram(null)}
-                  className="flex-1 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] text-neutral-500 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
-                >
-                  Закрыть
-                </button>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`flex-[2] py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] text-white shadow-xl flex items-center justify-center gap-2 ${selectedProgram.glowBg}`}
-                >
-                  <Calendar size={16} aria-hidden="true" /> Оставить заявку
-                </motion.button>
-              </motion.div>
+              {/* ПОДВАЛ (КНОПКИ) */}
+              {applyStep !== "success" && (
+                <div className="p-6 border-t border-neutral-100 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950/50 flex gap-4">
+                  <button
+                    onClick={() =>
+                      applyStep === "form"
+                        ? setApplyStep("details")
+                        : setSelectedProgram(null)
+                    }
+                    className="flex-1 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] text-neutral-500 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
+                  >
+                    {applyStep === "form" ? "Назад" : "Закрыть"}
+                  </button>
+
+                  {applyStep === "details" && (
+                    <button
+                      onClick={() => setApplyStep("form")}
+                      className={`flex-[2] py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] text-white shadow-xl flex items-center justify-center gap-2 transition-transform active:scale-95 ${selectedProgram.glowBg}`}
+                    >
+                      <Calendar size={16} aria-hidden="true" /> Оставить заявку
+                    </button>
+                  )}
+
+                  {applyStep === "form" && (
+                    <button
+                      type="submit"
+                      form="kids-form"
+                      disabled={isSubmitting}
+                      className={`flex-[2] py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] text-white shadow-xl flex items-center justify-center gap-2 transition-transform active:scale-95 ${selectedProgram.glowBg}`}
+                    >
+                      {isSubmitting ? (
+                        <Loader2 size={16} className="animate-spin" />
+                      ) : (
+                        "Отправить"
+                      )}
+                    </button>
+                  )}
+                </div>
+              )}
             </motion.div>
           </div>
         )}
