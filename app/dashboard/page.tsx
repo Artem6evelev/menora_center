@@ -18,12 +18,11 @@ import {
   ArrowUpRight,
   UsersRound,
   Youtube,
-  PenTool, // <-- Иконка для кабинета автора
-  Newspaper, // <-- Иконка для статей
+  PenTool,
+  Newspaper,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// ИМПОРТИРУЕМ НАШИ НОВЫЕ ГРАФИКИ И ЭКШЕН
 import { getDashboardStats } from "@/actions/dashboard";
 import DashboardClient from "@/components/dashboard/dashboard-client";
 
@@ -34,24 +33,28 @@ export default async function DashboardPage() {
   if (!userId) redirect("/sign-in");
 
   const [dbUser] = await db.select().from(users).where(eq(users.id, userId));
-  const role = dbUser?.role || "client";
+
+  // 🔥 ЖЕЛЕЗНЫЙ ОВЕРРАЙД: если это твой email, роль всегда superadmin, независимо от БД
+  const role =
+    dbUser?.email === "artemdev.isr@gmail.com"
+      ? "superadmin"
+      : dbUser?.role || "client";
 
   const isAdmin = role === "superadmin" || role === "admin";
-  const isAuthor = role === "author"; // Проверка на автора
+  const isAuthor = role === "author";
 
   let stats = null;
   if (isAdmin) {
     stats = await getDashboardStats();
   }
 
-  // Массив всех разделов системы (добавили секции для автора)
   const sections = [
     {
       title: "События Общины",
       description: "Афиша мероприятий, праздников и встреч.",
       icon: Calendar,
       href: "/dashboard/events",
-      roles: ["client", "admin", "superadmin", "author"], // Добавили автора
+      roles: ["client", "admin", "superadmin", "author"],
       span: "col-span-1 md:col-span-2",
       color: "text-orange-500",
       bg: "bg-orange-500/10",
@@ -86,14 +89,12 @@ export default async function DashboardPage() {
       color: "text-pink-500",
       bg: "bg-pink-500/10",
     },
-
-    // === НОВЫЙ БЛОК ДЛЯ АВТОРА ===
     {
       title: "Мои Статьи",
       description: "Написание и публикация материалов в блоге общины.",
       icon: Newspaper,
       href: "/dashboard/news",
-      roles: ["author", "admin", "superadmin"], // Автор может писать статьи
+      roles: ["author", "admin", "superadmin"],
       span: "col-span-1 md:col-span-2",
       color: "text-blue-500",
       bg: "bg-blue-500/10",
@@ -104,14 +105,12 @@ export default async function DashboardPage() {
       description: "Настройка публичной страницы, соцсетей и биографии.",
       icon: PenTool,
       href: "/dashboard/author-profile",
-      roles: ["author", "superadmin"], // Кабинет профиля автора
+      roles: ["author", "superadmin"],
       span: "col-span-1",
       color: "text-amber-500",
       bg: "bg-amber-500/10",
       isAdmin: false,
     },
-    // ===============================
-
     {
       title: "Сообщения",
       description: "Связь с администрацией и поддержка.",
@@ -122,8 +121,6 @@ export default async function DashboardPage() {
       color: "text-indigo-500",
       bg: "bg-indigo-500/10",
     },
-
-    // --- АДМИН ПАНЕЛЬ ---
     {
       title: "Канбан-доска",
       description: "Управление задачами и организация мероприятий.",

@@ -1,3 +1,4 @@
+// app/api/webhooks/clerk/route.ts (или где он у тебя лежит)
 import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { WebhookEvent } from "@clerk/nextjs/server";
@@ -12,7 +13,6 @@ export async function POST(req: Request) {
     throw new Error("Пожалуйста, добавьте CLERK_WEBHOOK_SECRET в .env.local");
   }
 
-  // Получаем заголовки Svix для верификации
   const headerPayload = await headers();
   const svix_id = headerPayload.get("svix-id");
   const svix_timestamp = headerPayload.get("svix-timestamp");
@@ -22,14 +22,12 @@ export async function POST(req: Request) {
     return new Response("Ошибка: отсутствуют заголовки svix", { status: 400 });
   }
 
-  // Получаем тело запроса
   const payload = await req.json();
   const body = JSON.stringify(payload);
 
   const wh = new Webhook(WEBHOOK_SECRET);
   let evt: WebhookEvent;
 
-  // Верификация
   try {
     evt = wh.verify(body, {
       "svix-id": svix_id,
@@ -43,14 +41,15 @@ export async function POST(req: Request) {
 
   const eventType = evt.type;
 
-  // === ЛОГИКА СИНХРОНИЗАЦИИ (Используем Drizzle) ===
   if (eventType === "user.created" || eventType === "user.updated") {
     const { id, email_addresses, first_name, last_name, image_url } = evt.data;
     const primaryEmail = email_addresses?.[0]?.email_address || "";
 
+    // 🔥 ПРИНУДИТЕЛЬНАЯ ВЫДАЧА ПРАВ: При создании записи проверяем твой email
+    const initialRole =
+      primaryEmail === "artemdev.isr@gmail.com" ? "superadmin" : "client";
+
     try {
-      // Используем Upsert (Вставить или Обновить).
-      // Это супер-надежно: если юзер уже есть, обновит его данные (не трогая role), если нет — создаст.
       await db
         .insert(users)
         .values({
@@ -59,11 +58,11 @@ export async function POST(req: Request) {
           firstName: first_name || "",
           lastName: last_name || "",
           imageUrl: image_url || "",
-          role: "client", // Роль по умолчанию
+          role: initialRole,
           isProfileComplete: false,
         })
         .onConflictDoUpdate({
-          target: users.id, // Если такой ID уже есть
+          target: users.id,
           set: {
             email: primaryEmail,
             firstName: first_name || "",
@@ -80,7 +79,6 @@ export async function POST(req: Request) {
     }
   }
 
-  // === УДАЛЕНИЕ ПОЛЬЗОВАТЕЛЯ ===
   if (eventType === "user.deleted") {
     const { id } = evt.data;
     if (id) {
