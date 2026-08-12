@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { getUsersPaginated } from "@/actions/user"; // <-- Изменили название функции
+import { getUsersPaginated } from "@/actions/user";
 import CrmTableClient from "@/components/dashboard/users/crm-table.client";
 
 export default async function CrmPage() {
@@ -18,5 +18,7 @@ export default async function CrmPage() {
   // Грузим только 1-ю страницу при первой загрузке (остальное будет грузить клиент)
   const initialData = await getUsersPaginated(1, 20, "");
 
-  return <CrmTableClient initialData={initialData} />;
+  return (
+    <CrmTableClient initialData={initialData} currentUserRole={dbUser.role} />
+  );
 }

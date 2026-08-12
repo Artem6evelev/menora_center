@@ -13,23 +13,30 @@ import {
   Users,
   Filter,
   FilterX,
-  ShieldCheck, // <-- Добавили иконку для роли
+  ChevronDown,
 } from "lucide-react";
 import { getUsersPaginated } from "@/actions/user";
+import { updateUserRole } from "@/actions/role";
 import UserSlider from "./user-slider";
 import BulkMessageModal from "./bulk-message-modal";
-import MakeAuthorButton from "@/components/admin/MakeAuthorButton"; // <-- Импортируем нашу кнопку
 import { motion, AnimatePresence, easeInOut } from "framer-motion";
 import { cn } from "@/lib/utils";
 import dayjs from "dayjs";
 
-export default function CrmTableClient({ initialData }: { initialData: any }) {
+export default function CrmTableClient({
+  initialData,
+  currentUserRole,
+}: {
+  initialData: any;
+  currentUserRole: string;
+}) {
   const [data, setData] = useState(initialData.users);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(initialData.totalPages);
   const [totalUsers, setTotalUsers] = useState(initialData.totalUsers);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isUpdatingRole, setIsUpdatingRole] = useState<string | null>(null);
 
   const {
     selectedUserIds,
@@ -47,14 +54,12 @@ export default function CrmTableClient({ initialData }: { initialData: any }) {
 
   const springTransition = { duration: 0.5, ease: easeInOut };
 
-  // Функция для расчета возраста из даты
   const calculateAge = (dob: string | null) => {
     if (!dob) return "—";
     const age = dayjs().diff(dayjs(dob), "year");
     return `${age} лет`;
   };
 
-  // Перевод статуса брака для вывода
   const translateMarital = (status: string) => {
     const dict: Record<string, string> = {
       single: "Холост/Не замужем",
@@ -65,7 +70,27 @@ export default function CrmTableClient({ initialData }: { initialData: any }) {
     return dict[status] || status || "—";
   };
 
-  // Эффект перезагрузки данных при изменении поиска, страницы или фильтров
+  // Функция изменения роли с оптимистичным UI
+  const handleRoleChange = async (userId: string, newRole: string) => {
+    setIsUpdatingRole(userId);
+
+    // Оптимистичное обновление UI
+    const previousData = [...data];
+    setData((prev: any) =>
+      prev.map((u: any) => (u.id === userId ? { ...u, role: newRole } : u)),
+    );
+
+    const result = await updateUserRole(userId, newRole);
+
+    if (result?.error) {
+      // Откатываем назад если ошибка
+      setData(previousData);
+      alert(result.error);
+    }
+
+    setIsUpdatingRole(null);
+  };
+
   useEffect(() => {
     const timer = setTimeout(async () => {
       setIsLoading(true);
@@ -108,7 +133,6 @@ export default function CrmTableClient({ initialData }: { initialData: any }) {
           transition={{ delay: 0.1, ...springTransition }}
           className="flex gap-3 w-full md:w-auto"
         >
-          {/* ПОИСК */}
           <div className="relative flex-1 md:w-80 shrink-0">
             <Search
               className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-400"
@@ -132,7 +156,6 @@ export default function CrmTableClient({ initialData }: { initialData: any }) {
             )}
           </div>
 
-          {/* КНОПКА ФИЛЬТРОВ */}
           <button
             onClick={toggleFilters}
             className={cn(
@@ -262,7 +285,6 @@ export default function CrmTableClient({ initialData }: { initialData: any }) {
                 <th className="py-6 px-4">Контакты & Город</th>
                 <th className="py-6 px-4">Семья & Возраст</th>
                 <th className="py-6 px-4">Статус</th>
-                {/* 🔥 НОВАЯ КОЛОНКА ДЛЯ РОЛЕЙ 🔥 */}
                 <th className="py-6 px-4">Роль</th>
                 <th className="py-6 px-8 text-right">Карточка</th>
               </tr>
@@ -271,7 +293,11 @@ export default function CrmTableClient({ initialData }: { initialData: any }) {
               {data.map((user: any) => {
                 const userTags = JSON.parse(user.tags || "[]");
                 const isSelected = selectedUserIds.includes(user.id);
-                const role = user.role || "client"; // Защита от пустых значений
+                const role = user.role || "client";
+
+                const isProtectedUser = user.email === "artemdev.isr@gmail.com";
+                const canEditRole =
+                  currentUserRole === "superadmin" && !isProtectedUser;
 
                 return (
                   <tr
@@ -292,7 +318,6 @@ export default function CrmTableClient({ initialData }: { initialData: any }) {
                       />
                     </td>
 
-                    {/* ИМЯ И ТЕГИ */}
                     <td className="py-4 px-4">
                       <div
                         className="flex items-center gap-4 cursor-pointer"
@@ -320,7 +345,6 @@ export default function CrmTableClient({ initialData }: { initialData: any }) {
                       </div>
                     </td>
 
-                    {/* ТЕЛЕФОН И ГОРОД */}
                     <td className="py-4 px-4">
                       <div className="text-sm font-bold text-neutral-700 dark:text-neutral-300 mb-1">
                         {user.phone || "—"}
@@ -330,7 +354,6 @@ export default function CrmTableClient({ initialData }: { initialData: any }) {
                       </div>
                     </td>
 
-                    {/* СЕМЬЯ И ВОЗРАСТ */}
                     <td className="py-4 px-4">
                       <div className="text-sm font-bold text-neutral-700 dark:text-neutral-300 mb-1 flex items-center gap-2">
                         {translateMarital(user.maritalStatus)}
@@ -346,7 +369,6 @@ export default function CrmTableClient({ initialData }: { initialData: any }) {
                       </div>
                     </td>
 
-                    {/* СТАТУС */}
                     <td className="py-4 px-4">
                       <span
                         className={cn(
@@ -360,12 +382,23 @@ export default function CrmTableClient({ initialData }: { initialData: any }) {
                       </span>
                     </td>
 
-                    {/* 🔥 РОЛЬ И УПРАВЛЕНИЕ АВТОРАМИ 🔥 */}
+                    {/* 🔥 ИНТЕРФЕЙС РОЛЕЙ (ТЕПЕРЬ БЕЗ ДУБЛИРУЮЩЕЙ КНОПКИ) 🔥 */}
                     <td className="py-4 px-4">
-                      <div className="flex flex-col items-start gap-2">
-                        <div
+                      <div className="relative inline-flex items-center">
+                        {isUpdatingRole === user.id && (
+                          <Loader2
+                            size={12}
+                            className="absolute -left-4 text-neutral-400 animate-spin"
+                          />
+                        )}
+                        <select
+                          value={role}
+                          disabled={!canEditRole || isUpdatingRole === user.id}
+                          onChange={(e) =>
+                            handleRoleChange(user.id, e.target.value)
+                          }
                           className={cn(
-                            "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider border",
+                            "appearance-none outline-none pl-2.5 pr-7 py-1 rounded-md text-[10px] font-black uppercase tracking-wider border transition-all duration-200",
                             role === "superadmin"
                               ? "bg-purple-50 text-purple-600 border-purple-200 dark:bg-purple-500/10 dark:border-purple-500/30"
                               : role === "admin"
@@ -373,17 +406,35 @@ export default function CrmTableClient({ initialData }: { initialData: any }) {
                                 : role === "author"
                                   ? "bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-500/10 dark:border-amber-500/30"
                                   : "bg-neutral-100 text-neutral-500 border-neutral-200 dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-400",
+                            canEditRole
+                              ? "cursor-pointer hover:shadow-sm"
+                              : "cursor-not-allowed opacity-80",
                           )}
                         >
-                          <ShieldCheck size={12} />
-                          {role}
-                        </div>
-                        {/* Кнопка управления (логика скрытия для админов встроена внутрь нее) */}
-                        <MakeAuthorButton userId={user.id} currentRole={role} />
+                          <option value="client">Client</option>
+                          <option value="author">Author</option>
+                          <option value="admin">Admin</option>
+                          <option value="superadmin">Superadmin</option>
+                        </select>
+
+                        {canEditRole && (
+                          <ChevronDown
+                            size={12}
+                            className={cn(
+                              "absolute right-2 pointer-events-none opacity-50",
+                              role === "superadmin"
+                                ? "text-purple-600"
+                                : role === "admin"
+                                  ? "text-blue-600"
+                                  : role === "author"
+                                    ? "text-amber-600"
+                                    : "text-neutral-500",
+                            )}
+                          />
+                        )}
                       </div>
                     </td>
 
-                    {/* КНОПКА КАРТОЧКИ */}
                     <td className="py-4 px-8 text-right">
                       <button
                         onClick={() => openSlider(user.id)}
