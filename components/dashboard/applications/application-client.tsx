@@ -1,7 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { getEventParticipantsList } from "@/actions/event";
+import { useState, useEffect, useRef } from "react";
+import {
+  getEventParticipantsList,
+  updateEventParticipantStatus,
+} from "@/actions/event";
 import {
   Loader2,
   Users,
@@ -10,32 +13,281 @@ import {
   Calendar,
   Ticket,
   MessageCircle,
+  ChevronDown,
+  CheckCircle2,
+  Clock,
+  XCircle,
+  Search,
+  Check,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import MassWhatsAppModal from "../events/mass-whatsapp-modal";
+import dayjs from "dayjs";
+import "dayjs/locale/ru";
 
-// === ФУНКЦИЯ ДЛЯ ПРАВИЛЬНОГО ФОРМАТИРОВАНИЯ ИЗРАИЛЬСКИХ НОМЕРОВ ===
+dayjs.locale("ru");
+
 const formatPhoneForWhatsApp = (phone: string) => {
   if (!phone) return "";
   let cleaned = phone.replace(/\D/g, "");
-  if (cleaned.startsWith("0") && cleaned.length === 10) {
+  if (cleaned.startsWith("0") && cleaned.length === 10)
     return "972" + cleaned.slice(1);
-  }
   return cleaned;
 };
 
+// === 1. КАСТОМНЫЙ КОМПОНЕНТ ВЫБОРА СОБЫТИЯ ===
+const CustomEventSelect = ({
+  events,
+  selectedId,
+  onChange,
+}: {
+  events: any[];
+  selectedId: string;
+  onChange: (id: string) => void;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node))
+        setIsOpen(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selectedEvent = events.find((e) => e.id === selectedId) || events[0];
+
+  return (
+    <div className="relative w-full md:w-[450px]" ref={ref}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={cn(
+          "w-full flex items-center justify-between p-4 bg-white dark:bg-neutral-900 border rounded-2xl outline-none transition-all duration-200 text-left shadow-sm",
+          isOpen
+            ? "border-[#FFB800] shadow-[0_0_0_4px_rgba(255,184,0,0.1)]"
+            : "border-neutral-200 dark:border-neutral-800 hover:border-[#FFB800]/50",
+        )}
+      >
+        <div className="flex flex-col flex-1 min-w-0 pr-4">
+          <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400 mb-1">
+            Выбранное событие
+          </span>
+          <div className="flex items-center gap-3">
+            <span
+              className={cn(
+                "font-bold text-sm truncate",
+                selectedEvent
+                  ? "text-neutral-900 dark:text-white"
+                  : "text-neutral-500",
+              )}
+            >
+              {selectedEvent ? selectedEvent.title : "Выберите событие"}
+            </span>
+            {selectedEvent?.pendingParticipants > 0 && (
+              <span className="bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-md animate-pulse shrink-0 uppercase tracking-widest">
+                {selectedEvent.pendingParticipants} новых
+              </span>
+            )}
+          </div>
+        </div>
+        <ChevronDown
+          size={18}
+          className={cn(
+            "text-neutral-400 transition-transform duration-200 shrink-0",
+            isOpen && "rotate-180",
+          )}
+        />
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            transition={{ duration: 0.15 }}
+            className="absolute left-0 w-full md:w-[500px] top-[calc(100%+8px)] bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-2xl z-[100] overflow-hidden flex flex-col p-1.5 max-h-[400px] overflow-y-auto custom-scrollbar"
+          >
+            {events.length === 0 && (
+              <div className="p-4 text-center text-sm font-medium text-neutral-500">
+                Нет доступных событий
+              </div>
+            )}
+            {events.map((ev) => (
+              <button
+                key={ev.id}
+                onClick={() => {
+                  onChange(ev.id);
+                  setIsOpen(false);
+                }}
+                className={cn(
+                  "flex items-center justify-between p-3 rounded-xl transition-all text-left group",
+                  selectedId === ev.id
+                    ? "bg-[#FFB800]/10"
+                    : "hover:bg-neutral-50 dark:hover:bg-neutral-800/50",
+                )}
+              >
+                <div className="flex flex-col min-w-0 pr-4">
+                  <span
+                    className={cn(
+                      "font-bold text-sm truncate transition-colors",
+                      selectedId === ev.id
+                        ? "text-[#FFB800]"
+                        : "text-neutral-900 dark:text-white group-hover:text-[#FFB800]",
+                    )}
+                  >
+                    {ev.title}
+                  </span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400 mt-1 flex items-center gap-1.5">
+                    <Calendar size={12} />{" "}
+                    {ev.date
+                      ? dayjs(ev.date).format("DD MMM YYYY")
+                      : "Дата не указана"}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-3 shrink-0">
+                  {ev.pendingParticipants > 0 && (
+                    <span className="bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 text-[10px] font-black px-2 py-1 rounded-md uppercase tracking-widest shadow-sm">
+                      {ev.pendingParticipants} ожидает
+                    </span>
+                  )}
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-neutral-500 bg-neutral-100 dark:bg-neutral-800 px-2 py-1 rounded-md">
+                    <Users size={12} /> {ev.totalParticipants}
+                  </div>
+                </div>
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+// === 2. КАСТОМНЫЙ КОМПОНЕНТ СТАТУСА ДЛЯ ТАБЛИЦЫ ===
+const StatusSelect = ({
+  currentStatus,
+  onChange,
+}: {
+  currentStatus: string;
+  onChange: (s: string) => void;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node))
+        setIsOpen(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const statuses = [
+    {
+      value: "pending",
+      label: "Ожидает",
+      color: "text-amber-600",
+      bg: "bg-amber-50 dark:bg-amber-500/10",
+      border: "border-amber-100 dark:border-amber-500/20",
+    },
+    {
+      value: "approved",
+      label: "Одобрено",
+      color: "text-green-600",
+      bg: "bg-green-50 dark:bg-green-500/10",
+      border: "border-green-100 dark:border-green-500/20",
+    },
+    {
+      value: "rejected",
+      label: "Отклонено",
+      color: "text-red-500",
+      bg: "bg-red-50 dark:bg-red-500/10",
+      border: "border-red-100 dark:border-red-500/20",
+    },
+  ];
+
+  const current =
+    statuses.find((s) => s.value === currentStatus) || statuses[0];
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={cn(
+          "flex items-center justify-between w-[130px] px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border",
+          current.bg,
+          current.color,
+          current.border,
+          "hover:brightness-95 active:scale-95",
+        )}
+      >
+        <span>{current.label}</span>
+        <ChevronDown
+          size={14}
+          className={cn("transition-transform", isOpen && "rotate-180")}
+        />
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            transition={{ duration: 0.15 }}
+            className="absolute right-0 top-[calc(100%+8px)] w-40 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-xl z-[100] flex flex-col p-1.5"
+          >
+            {statuses.map((s) => (
+              <button
+                key={s.value}
+                onClick={() => {
+                  onChange(s.value);
+                  setIsOpen(false);
+                }}
+                className={cn(
+                  "flex items-center gap-2 px-3 py-2.5 text-[10px] font-black uppercase tracking-widest text-left rounded-xl transition-colors",
+                  currentStatus === s.value
+                    ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                    : "text-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 hover:text-neutral-900 dark:hover:text-white",
+                )}
+              >
+                <div
+                  className={cn(
+                    "w-1.5 h-1.5 rounded-full",
+                    s.value === "pending"
+                      ? "bg-amber-500"
+                      : s.value === "approved"
+                        ? "bg-green-500"
+                        : "bg-red-500",
+                  )}
+                />
+                {s.label}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+// === 3. ГЛАВНЫЙ КОМПОНЕНТ СТРАНИЦЫ ===
 export default function ApplicationsClient({ events }: { events: any[] }) {
+  // Локальный стейт событий, чтобы мгновенно обновлять счетчики при смене статуса
+  const [eventsList, setEventsList] = useState(events);
   const [selectedEventId, setSelectedEventId] = useState<string>(
-    events[0]?.id || "",
+    eventsList[0]?.id || "",
   );
   const [participants, setParticipants] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  // === СТЕЙТ ДЛЯ ОТКРЫТИЯ МОДАЛКИ РАССЫЛКИ ===
+  const [search, setSearch] = useState("");
   const [isReminderOpen, setIsReminderOpen] = useState(false);
-
-  const springTransition = { duration: 0.5 };
 
   useEffect(() => {
     const fetchParticipants = async () => {
@@ -48,26 +300,80 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
     fetchParticipants();
   }, [selectedEventId]);
 
-  // Находим имя текущего выбранного события для передачи в модалку и шаблон одиночного сообщения
-  const currentEventName =
-    events.find((e) => e.id === selectedEventId)?.title || "Событие";
+  const handleStatusChange = async (
+    participantId: string,
+    newStatus: string,
+  ) => {
+    const participantToUpdate = participants.find(
+      (p) => p.participant.id === participantId,
+    );
+    if (!participantToUpdate) return;
+    const oldStatus = participantToUpdate.participant.status;
 
-  // Формируем чистый массив участников (имя + телефон) для отправки в WhatsApp (для модалки)
+    // Оптимистично обновляем статус в таблице
+    setParticipants((prev) =>
+      prev.map((p) =>
+        p.participant.id === participantId
+          ? { ...p, participant: { ...p.participant, status: newStatus } }
+          : p,
+      ),
+    );
+
+    // Оптимистично обновляем счетчики в выпадающем меню событий
+    if (oldStatus === "pending" && newStatus !== "pending") {
+      setEventsList((prev) =>
+        prev.map((e) =>
+          e.id === selectedEventId
+            ? {
+                ...e,
+                pendingParticipants: Math.max(0, e.pendingParticipants - 1),
+              }
+            : e,
+        ),
+      );
+    } else if (oldStatus !== "pending" && newStatus === "pending") {
+      setEventsList((prev) =>
+        prev.map((e) =>
+          e.id === selectedEventId
+            ? { ...e, pendingParticipants: e.pendingParticipants + 1 }
+            : e,
+        ),
+      );
+    }
+
+    await updateEventParticipantStatus(participantId, newStatus);
+  };
+
+  const currentEventName =
+    eventsList.find((e) => e.id === selectedEventId)?.title || "Событие";
+
+  const filteredParticipants = participants.filter((p) => {
+    const q = search.toLowerCase();
+    const name =
+      `${p.user?.firstName || ""} ${p.user?.lastName || ""}`.toLowerCase();
+    return (
+      name.includes(q) ||
+      p.participant.phone.includes(q) ||
+      (p.user?.email && p.user.email.toLowerCase().includes(q))
+    );
+  });
+
   const whatsappRecipients = participants
-    .filter((row) => row.participant?.phone)
+    .filter(
+      (row) => row.participant?.phone && row.participant.status !== "rejected",
+    )
     .map((row) => ({
       phone: row.participant.phone,
       name: row.user?.name || row.user?.firstName || "Участник",
     }));
 
   return (
-    <div className="max-w-7xl mx-auto w-full pb-12">
+    <div className="max-w-7xl mx-auto w-full pb-32">
       {/* HEADER */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={springTransition}
         >
           <h1 className="text-4xl md:text-5xl font-black text-neutral-900 dark:text-white tracking-tighter">
             Заявки на{" "}
@@ -76,79 +382,52 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
             </span>
           </h1>
           <p className="text-neutral-500 dark:text-neutral-400 font-medium mt-2 text-lg">
-            Список участников, забронировавших места на мероприятия.
+            Управление бронированиями и рассылка уведомлений.
           </p>
-        </motion.div>
-
-        {/* Премиальный счетчик */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.1, ...springTransition }}
-          className="inline-flex items-center gap-3 bg-[#FFB800]/10 dark:bg-[#FFB800]/5 px-5 py-3.5 rounded-2xl border border-[#FFB800]/20 shadow-sm shrink-0"
-        >
-          <Users size={20} strokeWidth={2.5} className="text-[#FFB800]" />
-          <span className="text-neutral-900 dark:text-white font-black uppercase tracking-widest text-xs">
-            Заявок: {participants.length}
-          </span>
         </motion.div>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, ...springTransition }}
-        className="bg-white/80 dark:bg-neutral-900/80 backdrop-blur-2xl rounded-[32px] border border-neutral-200/50 dark:border-neutral-800/50 shadow-sm overflow-hidden relative"
-      >
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#FFB800]/5 rounded-full blur-[100px] pointer-events-none" />
+      {/* ПАНЕЛЬ ФИЛЬТРОВ И УПРАВЛЕНИЯ (Вынесена из overflow-hidden) */}
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-6 mb-6 relative z-50">
+        <CustomEventSelect
+          events={eventsList}
+          selectedId={selectedEventId}
+          onChange={setSelectedEventId}
+        />
 
-        {/* ФИЛЬТР И КНОПКА РАССЫЛКИ */}
-        <div className="p-6 md:p-8 border-b border-neutral-200/50 dark:border-neutral-800/50 bg-neutral-50/50 dark:bg-neutral-950/50 relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div className="relative w-full md:max-w-md">
-            <label className="block text-[10px] uppercase tracking-widest font-black text-neutral-500 dark:text-neutral-400 mb-3 pl-1">
-              Выберите событие для просмотра
-            </label>
-            <div className="relative">
-              <select
-                value={selectedEventId}
-                onChange={(e) => setSelectedEventId(e.target.value)}
-                className="w-full appearance-none border border-neutral-200/50 dark:border-neutral-800/50 rounded-2xl p-4 pr-10 bg-white/50 dark:bg-neutral-900/50 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-[#FFB800]/50 outline-none transition-all cursor-pointer font-bold text-neutral-900 dark:text-white"
-              >
-                {events.length === 0 && (
-                  <option value="" disabled className="text-neutral-400">
-                    Нет доступных событий
-                  </option>
-                )}
-                {events.map((ev) => (
-                  <option
-                    key={ev.id}
-                    value={ev.id}
-                    className="text-black bg-white"
-                  >
-                    {ev.title}
-                  </option>
-                ))}
-              </select>
-              <Ticket
-                size={16}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
-              />
-            </div>
+        <div className="flex items-center gap-4 w-full lg:w-auto">
+          <div className="relative flex-1 lg:w-64 shrink-0">
+            <Search
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400"
+              size={16}
+            />
+            <input
+              type="text"
+              placeholder="Поиск участника..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-10 pr-4 py-4 border border-neutral-200 dark:border-neutral-800 rounded-2xl bg-white dark:bg-neutral-900 shadow-sm outline-none focus:border-[#FFB800] transition-colors font-medium text-sm"
+            />
           </div>
 
-          {/* === КНОПКА ЗАПУСКА РАССЫЛКИ === */}
           <button
             onClick={() => setIsReminderOpen(true)}
             disabled={whatsappRecipients.length === 0 || isLoading}
-            className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 disabled:bg-neutral-200 dark:disabled:bg-neutral-800 text-white disabled:text-neutral-400 dark:disabled:text-neutral-600 px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-green-500/10 disabled:shadow-none transition-all active:scale-95 shrink-0 h-[54px]"
+            className="flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1EBE5D] disabled:bg-neutral-200 dark:disabled:bg-neutral-800 text-white disabled:text-neutral-400 px-6 py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-lg shadow-[#25D366]/20 disabled:shadow-none transition-all active:scale-95 shrink-0 h-[54px]"
           >
-            <MessageCircle size={16} />
-            Напомнить в WhatsApp
+            <MessageCircle size={18} />
+            <span className="hidden sm:inline">Напомнить всем</span>
           </button>
         </div>
+      </div>
 
-        {/* ТАБЛИЦА */}
-        <div className="overflow-x-auto relative z-10">
+      {/* ТАБЛИЦА */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white dark:bg-neutral-900 rounded-[32px] border border-neutral-200 dark:border-neutral-800 shadow-sm overflow-hidden relative z-10"
+      >
+        <div className="overflow-x-auto min-h-[400px]">
           <AnimatePresence mode="wait">
             {isLoading ? (
               <motion.div
@@ -158,16 +437,9 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
                 exit={{ opacity: 0 }}
                 className="flex flex-col items-center justify-center py-32 gap-5"
               >
-                <Loader2
-                  className="animate-spin text-[#FFB800]"
-                  size={40}
-                  strokeWidth={2}
-                />
-                <p className="text-neutral-400 font-bold uppercase tracking-widest text-xs">
-                  Загрузка данных...
-                </p>
+                <Loader2 className="animate-spin text-[#FFB800]" size={40} />
               </motion.div>
-            ) : participants.length === 0 ? (
+            ) : filteredParticipants.length === 0 ? (
               <motion.div
                 key="empty"
                 initial={{ opacity: 0 }}
@@ -175,18 +447,20 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
                 exit={{ opacity: 0 }}
                 className="text-center py-32 flex flex-col items-center justify-center"
               >
-                <div className="bg-neutral-100 dark:bg-neutral-800 w-20 h-20 rounded-full flex items-center justify-center mb-5 shadow-inner">
-                  <Users
-                    className="text-neutral-300 dark:text-neutral-600"
-                    size={32}
-                    strokeWidth={1.5}
-                  />
+                <div className="bg-neutral-100 dark:bg-neutral-800 w-20 h-20 rounded-[24px] flex items-center justify-center mb-5 shadow-inner">
+                  {search ? (
+                    <Search className="text-neutral-400" size={32} />
+                  ) : (
+                    <Users className="text-neutral-400" size={32} />
+                  )}
                 </div>
                 <h3 className="text-xl font-black text-neutral-900 dark:text-white mb-2">
-                  Участников пока нет
+                  {search ? "Ничего не найдено" : "Участников пока нет"}
                 </h3>
-                <p className="text-neutral-500 dark:text-neutral-400 font-medium max-w-sm">
-                  На это событие еще никто не забронировал билет.
+                <p className="text-neutral-500 font-medium max-w-sm">
+                  {search
+                    ? "Попробуйте изменить поисковой запрос."
+                    : "На это событие еще никто не забронировал билет."}
                 </p>
               </motion.div>
             ) : (
@@ -197,58 +471,79 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
                 exit={{ opacity: 0 }}
                 className="w-full text-left whitespace-nowrap"
               >
-                <thead>
-                  <tr className="text-[10px] uppercase tracking-widest text-neutral-400 font-black border-b border-neutral-200/50 dark:border-neutral-800/50 bg-neutral-50/30 dark:bg-neutral-950/30">
+                <thead className="bg-neutral-50 dark:bg-neutral-950/50 border-b border-neutral-200 dark:border-neutral-800 sticky top-0 z-20">
+                  <tr className="text-[10px] uppercase tracking-widest text-neutral-400 font-black">
                     <th className="py-6 px-8">Участник</th>
                     <th className="py-6 px-6">Контакты</th>
                     <th className="py-6 px-6">Дата записи</th>
-                    <th className="py-6 px-8 text-right">Статус</th>
+                    <th className="py-6 px-8 text-right">
+                      Управление статусом
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/50">
                   <AnimatePresence>
-                    {participants.map((row, idx) => (
+                    {filteredParticipants.map((row) => (
                       <motion.tr
-                        key={idx}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: idx * 0.05, ...springTransition }}
-                        className="hover:bg-neutral-50 dark:hover:bg-neutral-800/30 transition-colors group"
+                        key={row.participant.id}
+                        layout
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className={cn(
+                          "hover:bg-neutral-50 dark:hover:bg-neutral-800/30 transition-colors group",
+                          row.participant.status === "rejected" &&
+                            "opacity-50 grayscale",
+                        )}
                       >
                         <td className="py-5 px-8">
-                          <div className="font-bold text-neutral-900 dark:text-white text-base group-hover:text-[#FFB800] transition-colors duration-300">
-                            {row.user?.name ||
-                              row.user?.firstName ||
-                              "Без имени"}
-                          </div>
-                          <div className="text-[10px] font-bold text-neutral-400 mt-1 uppercase tracking-widest">
-                            ID: {row.participant.userId.slice(-6)}
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center shrink-0 border border-neutral-200 dark:border-neutral-700 overflow-hidden">
+                              {row.user?.imageUrl ? (
+                                <img
+                                  src={row.user.imageUrl}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <Users size={16} className="text-neutral-400" />
+                              )}
+                            </div>
+                            <div>
+                              <div className="font-bold text-neutral-900 dark:text-white text-base">
+                                {row.user?.firstName} {row.user?.lastName}
+                              </div>
+                              <div className="text-[9px] font-black text-neutral-400 mt-1 uppercase tracking-widest flex items-center gap-1.5">
+                                {row.user?.email === "Гость" ? (
+                                  <span className="text-neutral-500 bg-neutral-200 dark:bg-neutral-700 px-1.5 py-0.5 rounded shadow-sm">
+                                    Гость
+                                  </span>
+                                ) : (
+                                  <span className="text-blue-500 bg-blue-500/10 px-1.5 py-0.5 rounded border border-blue-500/20 shadow-sm">
+                                    Резидент
+                                  </span>
+                                )}
+                              </div>
+                            </div>
                           </div>
                         </td>
 
                         <td className="py-5 px-6">
                           <div className="flex flex-col gap-2">
-                            {/* === ЗДЕСЬ ДОБАВЛЕНА ИКОНКА WHATSAPP И ФОРМАТИРОВАНИЕ НОМЕРА === */}
                             <div className="flex items-center gap-2 text-sm font-bold text-neutral-700 dark:text-neutral-300">
-                              <Phone size={14} className="text-[#FFB800]" />
+                              <Phone size={14} className="text-neutral-400" />
                               {row.participant.phone}
-
                               {row.participant.phone && (
                                 <a
-                                  href={`https://wa.me/${formatPhoneForWhatsApp(row.participant.phone)}?text=${encodeURIComponent(
-                                    `Шалом, ${row.user?.name || row.user?.firstName || "участник"}! 👋\nНапоминаем про ваше участие в событии «${currentEventName}».`,
-                                  )}`}
+                                  href={`https://wa.me/${formatPhoneForWhatsApp(row.participant.phone)}?text=${encodeURIComponent(`Шалом, ${row.user?.firstName || "участник"}! 👋\nСвязываемся по поводу мероприятия «${currentEventName}».`)}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="ml-2 text-green-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10 p-1.5 rounded-full transition-all"
+                                  className="ml-1 text-green-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10 p-1.5 rounded-full transition-all"
                                   title="Написать в WhatsApp"
                                 >
                                   <MessageCircle size={16} strokeWidth={2.5} />
                                 </a>
                               )}
                             </div>
-                            {/* ============================================================= */}
-
                             <div className="flex items-center gap-2 text-xs font-medium text-neutral-400">
                               <Mail size={14} />
                               {row.user?.email || "—"}
@@ -257,23 +552,30 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
                         </td>
 
                         <td className="py-5 px-6">
-                          <div className="flex items-center gap-2 text-sm font-bold text-neutral-600 dark:text-neutral-400">
-                            <Calendar size={14} className="text-neutral-400" />
-                            {new Date(
-                              row.participant.createdAt,
-                            ).toLocaleDateString("ru-RU", {
-                              day: "numeric",
-                              month: "long",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
+                          <div className="flex flex-col gap-1">
+                            <span className="text-sm font-bold text-neutral-900 dark:text-white">
+                              {dayjs(row.participant.createdAt).format(
+                                "DD MMM YYYY",
+                              )}
+                            </span>
+                            <span className="text-[10px] font-black text-neutral-400 tracking-widest uppercase">
+                              {dayjs(row.participant.createdAt).format("HH:mm")}
+                            </span>
                           </div>
                         </td>
 
                         <td className="py-5 px-8 text-right">
-                          <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#FFB800]/10 text-[#FFB800] dark:text-[#FFB800] text-[10px] font-black uppercase tracking-widest border border-[#FFB800]/20 shadow-sm">
-                            Билет активен
-                          </span>
+                          <div className="flex items-center justify-end">
+                            <StatusSelect
+                              currentStatus={row.participant.status}
+                              onChange={(newStatus) =>
+                                handleStatusChange(
+                                  row.participant.id,
+                                  newStatus,
+                                )
+                              }
+                            />
+                          </div>
                         </td>
                       </motion.tr>
                     ))}
@@ -285,7 +587,6 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
         </div>
       </motion.div>
 
-      {/* === ДИНАМИЧЕСКИЙ РЕНДЕР МОДАЛКИ РАССЫЛКИ === */}
       <MassWhatsAppModal
         isOpen={isReminderOpen}
         onClose={() => setIsReminderOpen(false)}

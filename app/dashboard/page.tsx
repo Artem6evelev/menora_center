@@ -11,8 +11,6 @@ import {
   Calendar,
   ShieldCheck,
   Ticket,
-  HeartHandshake,
-  Briefcase,
   MessageSquare,
   ClipboardList,
   ArrowUpRight,
@@ -20,6 +18,7 @@ import {
   Youtube,
   PenTool,
   Newspaper,
+  Baby, // <-- Добавляем иконку малыша
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -34,20 +33,18 @@ export default async function DashboardPage() {
 
   const [dbUser] = await db.select().from(users).where(eq(users.id, userId));
 
-  // 🔥 ЖЕЛЕЗНЫЙ ОВЕРРАЙД: если это твой email, роль всегда superadmin, независимо от БД
   const role =
     dbUser?.email === "artemdev.isr@gmail.com"
       ? "superadmin"
       : dbUser?.role || "client";
-
   const isAdmin = role === "superadmin" || role === "admin";
-  const isAuthor = role === "author";
 
   let stats = null;
   if (isAdmin) {
     stats = await getDashboardStats();
   }
 
+  // Обновленный список разделов
   const sections = [
     {
       title: "События Общины",
@@ -69,25 +66,26 @@ export default async function DashboardPage() {
       color: "text-[#FFB800]",
       bg: "bg-[#FFB800]/10",
     },
+    // 🔥 НОВЫЙ БЛОК: MENORAH KIDS ВМЕСТО УСЛУГ
     {
-      title: "Услуги",
-      description: "Запись на консультации, помощь и сервисы общины.",
-      icon: HeartHandshake,
-      href: "/dashboard/services",
+      title: "Menorah Kids",
+      description: "Программы, кружки и управление профилями ваших детей.",
+      icon: Baby,
+      href: "/dashboard/kids",
       roles: ["client", "admin", "superadmin", "author"],
       span: "col-span-1 md:col-span-2",
-      color: "text-rose-500",
-      bg: "bg-rose-500/10",
-    },
-    {
-      title: "Мои Услуги",
-      description: "Статус ваших активных заявок.",
-      icon: Briefcase,
-      href: "/dashboard/my-services",
-      roles: ["client", "admin", "superadmin", "author"],
-      span: "col-span-1",
       color: "text-pink-500",
       bg: "bg-pink-500/10",
+    },
+    {
+      title: "Сообщения",
+      description: "Связь с администрацией и поддержка.",
+      icon: MessageSquare,
+      href: "/dashboard/chat",
+      roles: ["client", "admin", "superadmin", "author"],
+      span: "col-span-1",
+      color: "text-indigo-500",
+      bg: "bg-indigo-500/10",
     },
     {
       title: "Мои Статьи",
@@ -110,16 +108,6 @@ export default async function DashboardPage() {
       color: "text-amber-500",
       bg: "bg-amber-500/10",
       isAdmin: false,
-    },
-    {
-      title: "Сообщения",
-      description: "Связь с администрацией и поддержка.",
-      icon: MessageSquare,
-      href: "/dashboard/chat",
-      roles: ["client", "admin", "superadmin", "author"],
-      span: "col-span-1 md:col-span-3",
-      color: "text-indigo-500",
-      bg: "bg-indigo-500/10",
     },
     {
       title: "Канбан-доска",
@@ -181,6 +169,7 @@ export default async function DashboardPage() {
   const visibleSections = sections.filter((s) => s.roles.includes(role));
 
   return (
+    // ... весь твой остальной JSX код возврата остается без изменений ...
     <div className="max-w-7xl mx-auto w-full pb-12">
       <div className="relative overflow-hidden bg-neutral-900 dark:bg-neutral-950 rounded-[32px] p-8 md:p-12 text-white shadow-2xl mb-10 border border-neutral-800 flex flex-col md:flex-row items-center justify-between gap-8">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />

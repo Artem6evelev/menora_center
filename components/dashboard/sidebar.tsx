@@ -1,3 +1,4 @@
+// Полный components/dashboard/sidebar.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -14,9 +15,7 @@ import {
   Baby,
   Ticket,
   ClipboardList,
-  HeartHandshake,
   MessageSquare,
-  Briefcase,
   UsersRound,
   UserRound,
   Menu,
@@ -29,13 +28,12 @@ import {
   CheckSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-// 🔥 Импортируем функцию для получения числа
 import { getPendingCount } from "@/actions/moderation.actions";
 
 export default function Sidebar({ userRole }: { userRole: string }) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const [pendingCount, setPendingCount] = useState(0); // <-- Стейт для бейджика
+  const [pendingCount, setPendingCount] = useState(0);
 
   const isAdmin = userRole === "admin" || userRole === "superadmin";
 
@@ -48,7 +46,6 @@ export default function Sidebar({ userRole }: { userRole: string }) {
     };
   }, [isOpen]);
 
-  // 🔥 Запрашиваем количество материалов на модерацию (только для админов)
   useEffect(() => {
     if (isAdmin) {
       const fetchCount = async () => {
@@ -56,19 +53,17 @@ export default function Sidebar({ userRole }: { userRole: string }) {
         setPendingCount(count);
       };
       fetchCount();
-
-      // Можно настроить интервал, чтобы цифра обновлялась сама, например раз в 30 секунд
       const interval = setInterval(fetchCount, 30000);
       return () => clearInterval(interval);
     }
   }, [isAdmin]);
 
+  // 🔥 МЕНЮ РЕЗИДЕНТА
   const clientRoutes = [
     { label: "Мой кабинет", icon: LayoutDashboard, href: "/dashboard" },
     { label: "События", icon: Calendar, href: "/dashboard/events" },
     { label: "Мои билеты", icon: Ticket, href: "/dashboard/my-events" },
-    { label: "Услуги", icon: HeartHandshake, href: "/dashboard/services" },
-    { label: "Мои заявки", icon: Briefcase, href: "/dashboard/my-services" },
+    { label: "Menorah Kids", icon: Baby, href: "/dashboard/kids" }, // КЛИЕНТ
     { label: "Сообщения", icon: MessageSquare, href: "/dashboard/chat" },
   ];
 
@@ -81,6 +76,7 @@ export default function Sidebar({ userRole }: { userRole: string }) {
     },
   ].filter((route) => route.roles.includes(userRole));
 
+  // 🔥 МЕНЮ АДМИНА
   const adminRoutes = [
     {
       label: "Telegram Бот",
@@ -99,7 +95,6 @@ export default function Sidebar({ userRole }: { userRole: string }) {
       icon: CheckSquare,
       href: "/dashboard/moderation",
       roles: ["superadmin", "admin"],
-      // 🔥 Передаем badge (бейдж) для этого роута
       badge: pendingCount > 0 ? pendingCount : null,
     },
     {
@@ -133,12 +128,11 @@ export default function Sidebar({ userRole }: { userRole: string }) {
       roles: ["superadmin", "admin"],
     },
     {
-      // 🔥 ДОБАВЛЕННЫЙ ПУНКТ 🔥
-      label: "Menorah Kids",
+      label: "Kids (Заявки)",
       icon: Baby,
-      href: "/dashboard/kids",
+      href: "/dashboard/kids-applications",
       roles: ["superadmin", "admin"],
-    },
+    }, // АДМИН
     {
       label: "Команда",
       icon: Users,
@@ -151,7 +145,6 @@ export default function Sidebar({ userRole }: { userRole: string }) {
     const isActive =
       pathname === route.href || pathname.startsWith(`${route.href}/`);
     const Icon = route.icon;
-
     return (
       <Link
         href={route.href}
@@ -167,7 +160,6 @@ export default function Sidebar({ userRole }: { userRole: string }) {
             <motion.div
               layoutId="sidebar-active"
               className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-[#FFB800] rounded-r-full"
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
             />
           )}
           <div
@@ -182,8 +174,6 @@ export default function Sidebar({ userRole }: { userRole: string }) {
           </div>
           <span>{route.label}</span>
         </div>
-
-        {/* 🔥 ВЫВОД БЕЙДЖИКА */}
         {route.badge && (
           <span className="bg-red-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-sm animate-pulse">
             {route.badge}
@@ -201,7 +191,6 @@ export default function Sidebar({ userRole }: { userRole: string }) {
       >
         <Menu size={24} />
       </button>
-
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -213,13 +202,13 @@ export default function Sidebar({ userRole }: { userRole: string }) {
           />
         )}
       </AnimatePresence>
-
       <div
         className={cn(
           "fixed lg:sticky top-0 left-0 z-[70] h-[100dvh] w-[280px] bg-white dark:bg-neutral-950 border-r border-neutral-100 dark:border-neutral-800 flex flex-col transition-transform duration-500",
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         )}
       >
+        {/* ... (шапка сайдбара без изменений) ... */}
         <div className="p-6 pb-2 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
             <div className="w-10 h-10 bg-[#FFB800] rounded-xl flex items-center justify-center text-black font-black text-xl shadow-lg shadow-[#FFB800]/20 group-hover:scale-105 transition-transform">
@@ -241,7 +230,6 @@ export default function Sidebar({ userRole }: { userRole: string }) {
             <X size={18} />
           </button>
         </div>
-
         <div className="px-6 pb-6 pt-4">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800">
             <ShieldCheck
@@ -273,7 +261,6 @@ export default function Sidebar({ userRole }: { userRole: string }) {
               ))}
             </div>
           </div>
-
           {authorRoutes.length > 0 && (
             <div>
               <div className="text-[10px] font-black uppercase tracking-widest text-amber-500 dark:text-amber-400 mb-2 px-3 flex items-center gap-2">
@@ -286,7 +273,6 @@ export default function Sidebar({ userRole }: { userRole: string }) {
               </div>
             </div>
           )}
-
           {isAdmin && adminRoutes.length > 0 && (
             <div>
               <div className="text-[10px] font-black uppercase tracking-widest text-blue-500 dark:text-blue-400 mb-2 px-3 flex items-center gap-2">
@@ -301,7 +287,6 @@ export default function Sidebar({ userRole }: { userRole: string }) {
             </div>
           )}
         </div>
-
         <div className="p-4 mt-auto border-t border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-950">
           <SignOutButton redirectUrl="/sign-in">
             <button className="flex w-full items-center justify-center gap-3 px-4 py-3.5 rounded-2xl font-bold text-sm text-neutral-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all duration-300">

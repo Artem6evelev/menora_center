@@ -10,6 +10,7 @@ import {
 import { eq, desc, and, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { sendEventRegistrationNotification } from "@/actions/telegram"; // 🔥 ИМПОРТ ФУНКЦИИ
+import { auth } from "@clerk/nextjs/server";
 
 // === 1. КАТЕГОРИИ ===
 export async function getEventCategories() {
@@ -299,5 +300,31 @@ export async function getEventById(id: string) {
     return data[0] || null;
   } catch (error) {
     return null;
+  }
+}
+
+export async function updateEventParticipantStatus(
+  id: string,
+  newStatus: string,
+) {
+  const { userId } = await auth();
+  if (!userId) return { success: false, error: "Не авторизован" };
+
+  const [caller] = await db.select().from(users).where(eq(users.id, userId));
+  const role =
+    caller?.email === "artemdev.isr@gmail.com" ? "superadmin" : caller?.role;
+  if (role !== "admin" && role !== "superadmin")
+    return { success: false, error: "Нет прав" };
+
+  try {
+    await db
+      .update(eventParticipants)
+      .set({ status: newStatus })
+      .where(eq(eventParticipants.id, id));
+    revalidatePath("/dashboard/applications");
+    return { success: true };
+  } catch (error) {
+    console.error("Ошибка изменения статуса:", error);
+    return { success: false, error: "Ошибка БД" };
   }
 }

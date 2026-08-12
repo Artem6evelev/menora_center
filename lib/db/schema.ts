@@ -31,15 +31,16 @@ export const users = pgTable(
     city: text("city"),
     maritalStatus: text("marital_status"),
     hasChildren: boolean("has_children").default(false),
+
+    // 🔥 ДОБАВЛЯЕМ ЭТО ПОЛЕ:
+    childrenData: jsonb("children_data").default([]).notNull(),
+
     source: text("source"),
     tags: text("tags").default("[]"),
     telegramChatId: text("telegram_chat_id"),
-
     username: text("username"),
-
     jewishStatus: text("jewish_status"),
     agreedToPrivacy: boolean("agreed_to_privacy").default(false),
-
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -375,11 +376,8 @@ export const kidsApplications = pgTable("kids_applications", {
   parentLastName: text("parent_last_name").notNull(),
   email: text("email").notNull(),
   phone: text("phone").notNull(),
-
-  // 🔥 Новое поле для хранения массива детей
-  children: jsonb("children").default([]).notNull(),
-
-  status: text("status").default("pending").notNull(),
+  children: jsonb("children").default([]).notNull(), // Массив объектов: {name, age, birthDate}
+  status: text("status").default("pending").notNull(), // pending, approved, rejected
   userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
