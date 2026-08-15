@@ -4,13 +4,15 @@ import { db } from "@/lib/db";
 import { events, eventParticipants, kidsApplications } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { redirect } from "next/navigation";
-import MyEventsClient from "../events/my-events-client";
+
+// 🔥 ИМПОРТ КЛИЕНТСКОГО КОМПОНЕНТА СОГЛАСНО ТВОЕЙ СТРУКТУРЕ
+import MyEventsClient from "@/components/dashboard/events/my-events-client";
 
 export default async function MyEventsPage() {
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 
-  // 1. Получаем билеты на обычные события
+  // 1. Получаем билеты на обычные события для текущего пользователя
   const myEvents = await db
     .select({
       participant: eventParticipants,
@@ -21,12 +23,13 @@ export default async function MyEventsPage() {
     .where(eq(eventParticipants.userId, userId))
     .orderBy(desc(eventParticipants.createdAt));
 
-  // 2. Получаем заявки Menorah Kids
+  // 2. Получаем заявки Menorah Kids для текущего пользователя
   const myKidsApps = await db
     .select()
     .from(kidsApplications)
     .where(eq(kidsApplications.userId, userId))
     .orderBy(desc(kidsApplications.createdAt));
 
+  // Передаем данные в клиентский компонент
   return <MyEventsClient myEvents={myEvents} myKidsApps={myKidsApps} />;
 }

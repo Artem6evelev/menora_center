@@ -1,4 +1,4 @@
-// components/dashboard/my-events/my-events-client.tsx
+// components/dashboard/events/my-events-client.tsx
 "use client";
 
 import { useState } from "react";
