@@ -6,12 +6,11 @@ import { eq, desc } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import MyEventsClient from "@/components/dashboard/events/my-events-client";
 
+// 🔥 ИСПРАВЛЕННЫЙ ПУТЬ ИМПОРТА
+
 export default async function MyEventsPage() {
   const { userId } = await auth();
-
-  if (!userId) {
-    redirect("/sign-in");
-  }
+  if (!userId) redirect("/sign-in");
 
   // 1. Получаем билеты на обычные события
   const myEvents = await db
