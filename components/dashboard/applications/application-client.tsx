@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import {
   getEventParticipantsList,
   updateEventParticipantStatus,
+  deleteEventParticipant, // 🔥 ИМПОРТИРУЕМ НОВЫЙ ЭКШЕН
 } from "@/actions/event";
 import {
   Loader2,
@@ -19,6 +20,8 @@ import {
   XCircle,
   Search,
   Check,
+  Baby,
+  Trash2, // 🔥 Импортируем иконку корзины
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -195,6 +198,23 @@ const StatusSelect = ({
       color: "text-amber-600",
       bg: "bg-amber-50 dark:bg-amber-500/10",
       border: "border-amber-100 dark:border-amber-500/20",
+      dot: "bg-amber-500",
+    },
+    {
+      value: "contacted",
+      label: "Связались",
+      color: "text-blue-600",
+      bg: "bg-blue-50 dark:bg-blue-500/10",
+      border: "border-blue-100 dark:border-blue-500/20",
+      dot: "bg-blue-500",
+    },
+    {
+      value: "paid",
+      label: "Оплачено",
+      color: "text-purple-600",
+      bg: "bg-purple-50 dark:bg-purple-500/10",
+      border: "border-purple-100 dark:border-purple-500/20",
+      dot: "bg-purple-500",
     },
     {
       value: "approved",
@@ -202,6 +222,7 @@ const StatusSelect = ({
       color: "text-green-600",
       bg: "bg-green-50 dark:bg-green-500/10",
       border: "border-green-100 dark:border-green-500/20",
+      dot: "bg-green-500",
     },
     {
       value: "rejected",
@@ -209,6 +230,7 @@ const StatusSelect = ({
       color: "text-red-500",
       bg: "bg-red-50 dark:bg-red-500/10",
       border: "border-red-100 dark:border-red-500/20",
+      dot: "bg-red-500",
     },
   ];
 
@@ -258,14 +280,7 @@ const StatusSelect = ({
                 )}
               >
                 <div
-                  className={cn(
-                    "w-1.5 h-1.5 rounded-full",
-                    s.value === "pending"
-                      ? "bg-amber-500"
-                      : s.value === "approved"
-                        ? "bg-green-500"
-                        : "bg-red-500",
-                  )}
+                  className={cn("w-1.5 h-1.5 rounded-full shrink-0", s.dot)}
                 />
                 {s.label}
               </button>
@@ -279,7 +294,6 @@ const StatusSelect = ({
 
 // === 3. ГЛАВНЫЙ КОМПОНЕНТ СТРАНИЦЫ ===
 export default function ApplicationsClient({ events }: { events: any[] }) {
-  // Локальный стейт событий, чтобы мгновенно обновлять счетчики при смене статуса
   const [eventsList, setEventsList] = useState(events);
   const [selectedEventId, setSelectedEventId] = useState<string>(
     eventsList[0]?.id || "",
@@ -300,6 +314,7 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
     fetchParticipants();
   }, [selectedEventId]);
 
+  // ОБНОВЛЕНИЕ СТАТУСА
   const handleStatusChange = async (
     participantId: string,
     newStatus: string,
@@ -310,7 +325,6 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
     if (!participantToUpdate) return;
     const oldStatus = participantToUpdate.participant.status;
 
-    // Оптимистично обновляем статус в таблице
     setParticipants((prev) =>
       prev.map((p) =>
         p.participant.id === participantId
@@ -319,7 +333,6 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
       ),
     );
 
-    // Оптимистично обновляем счетчики в выпадающем меню событий
     if (oldStatus === "pending" && newStatus !== "pending") {
       setEventsList((prev) =>
         prev.map((e) =>
@@ -342,6 +355,43 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
     }
 
     await updateEventParticipantStatus(participantId, newStatus);
+  };
+
+  // 🔥 УДАЛЕНИЕ ЗАЯВКИ
+  const handleDeleteParticipant = async (participantId: string) => {
+    if (!confirm("Вы уверены, что хотите безвозвратно удалить эту заявку?"))
+      return;
+
+    const participantToRemove = participants.find(
+      (p) => p.participant.id === participantId,
+    );
+    if (!participantToRemove) return;
+    const oldStatus = participantToRemove.participant.status;
+
+    // Оптимистичное обновление UI: убираем из таблицы
+    setParticipants((prev) =>
+      prev.filter((p) => p.participant.id !== participantId),
+    );
+
+    // Оптимистичное обновление счетчиков в селекторе событий
+    setEventsList((prev) =>
+      prev.map((e) => {
+        if (e.id === selectedEventId) {
+          return {
+            ...e,
+            totalParticipants: Math.max(0, e.totalParticipants - 1),
+            pendingParticipants:
+              oldStatus === "pending"
+                ? Math.max(0, e.pendingParticipants - 1)
+                : e.pendingParticipants,
+          };
+        }
+        return e;
+      }),
+    );
+
+    // Запрос к БД на удаление
+    await deleteEventParticipant(participantId);
   };
 
   const currentEventName =
@@ -387,7 +437,7 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
         </motion.div>
       </div>
 
-      {/* ПАНЕЛЬ ФИЛЬТРОВ И УПРАВЛЕНИЯ (Вынесена из overflow-hidden) */}
+      {/* ПАНЕЛЬ ФИЛЬТРОВ И УПРАВЛЕНИЯ */}
       <div className="flex flex-col lg:flex-row items-center justify-between gap-6 mb-6 relative z-50">
         <CustomEventSelect
           events={eventsList}
@@ -483,102 +533,138 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
                 </thead>
                 <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/50">
                   <AnimatePresence>
-                    {filteredParticipants.map((row) => (
-                      <motion.tr
-                        key={row.participant.id}
-                        layout
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        className={cn(
-                          "hover:bg-neutral-50 dark:hover:bg-neutral-800/30 transition-colors group",
-                          row.participant.status === "rejected" &&
-                            "opacity-50 grayscale",
-                        )}
-                      >
-                        <td className="py-5 px-8">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center shrink-0 border border-neutral-200 dark:border-neutral-700 overflow-hidden">
-                              {row.user?.imageUrl ? (
-                                <img
-                                  src={row.user.imageUrl}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <Users size={16} className="text-neutral-400" />
-                              )}
-                            </div>
-                            <div>
-                              <div className="font-bold text-neutral-900 dark:text-white text-base">
-                                {row.user?.firstName} {row.user?.lastName}
-                              </div>
-                              <div className="text-[9px] font-black text-neutral-400 mt-1 uppercase tracking-widest flex items-center gap-1.5">
-                                {row.user?.email === "Гость" ? (
-                                  <span className="text-neutral-500 bg-neutral-200 dark:bg-neutral-700 px-1.5 py-0.5 rounded shadow-sm">
-                                    Гость
-                                  </span>
+                    {filteredParticipants.map((row) => {
+                      // 🔥 ПАРСИМ ДАННЫЕ ИЗ БД (Количество детей)
+                      let extra = null;
+                      if (row.participant.extraData) {
+                        try {
+                          extra = JSON.parse(row.participant.extraData);
+                        } catch (e) {}
+                      }
+
+                      return (
+                        <motion.tr
+                          key={row.participant.id}
+                          layout
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.95 }}
+                          className={cn(
+                            "hover:bg-neutral-50 dark:hover:bg-neutral-800/30 transition-colors group",
+                            row.participant.status === "rejected" &&
+                              "opacity-50 grayscale",
+                          )}
+                        >
+                          <td className="py-5 px-8">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center shrink-0 border border-neutral-200 dark:border-neutral-700 overflow-hidden">
+                                {row.user?.imageUrl ? (
+                                  <img
+                                    src={row.user.imageUrl}
+                                    className="w-full h-full object-cover"
+                                  />
                                 ) : (
-                                  <span className="text-blue-500 bg-blue-500/10 px-1.5 py-0.5 rounded border border-blue-500/20 shadow-sm">
-                                    Резидент
-                                  </span>
+                                  <Users
+                                    size={16}
+                                    className="text-neutral-400"
+                                  />
                                 )}
                               </div>
-                            </div>
-                          </div>
-                        </td>
+                              <div className="flex flex-col">
+                                <div className="font-bold text-neutral-900 dark:text-white text-base">
+                                  {row.user?.firstName} {row.user?.lastName}
+                                </div>
+                                <div className="flex items-center gap-2 mt-1">
+                                  {row.user?.email === "Гость" ? (
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-neutral-500 bg-neutral-200 dark:bg-neutral-700 px-1.5 py-0.5 rounded shadow-sm">
+                                      Гость
+                                    </span>
+                                  ) : (
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-blue-500 bg-blue-500/10 px-1.5 py-0.5 rounded border border-blue-500/20 shadow-sm">
+                                      Резидент
+                                    </span>
+                                  )}
 
-                        <td className="py-5 px-6">
-                          <div className="flex flex-col gap-2">
-                            <div className="flex items-center gap-2 text-sm font-bold text-neutral-700 dark:text-neutral-300">
-                              <Phone size={14} className="text-neutral-400" />
-                              {row.participant.phone}
-                              {row.participant.phone && (
-                                <a
-                                  href={`https://wa.me/${formatPhoneForWhatsApp(row.participant.phone)}?text=${encodeURIComponent(`Шалом, ${row.user?.firstName || "участник"}! 👋\nСвязываемся по поводу мероприятия «${currentEventName}».`)}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="ml-1 text-green-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10 p-1.5 rounded-full transition-all"
-                                  title="Написать в WhatsApp"
-                                >
-                                  <MessageCircle size={16} strokeWidth={2.5} />
-                                </a>
-                              )}
+                                  {/* 🔥 ВЫВОДИМ БЕЙДЖ ДЛЯ ДЕТЕЙ */}
+                                  {extra?.kidsCount > 0 && (
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-orange-600 bg-orange-100 border border-orange-200 px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
+                                      <Baby size={10} /> +{extra.kidsCount}{" "}
+                                      детей
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
                             </div>
-                            <div className="flex items-center gap-2 text-xs font-medium text-neutral-400">
-                              <Mail size={14} />
-                              {row.user?.email || "—"}
+                          </td>
+
+                          <td className="py-5 px-6">
+                            <div className="flex flex-col gap-2">
+                              <div className="flex items-center gap-2 text-sm font-bold text-neutral-700 dark:text-neutral-300">
+                                <Phone size={14} className="text-neutral-400" />
+                                {row.participant.phone}
+                                {row.participant.phone && (
+                                  <a
+                                    href={`https://wa.me/${formatPhoneForWhatsApp(row.participant.phone)}?text=${encodeURIComponent(`Шалом, ${row.user?.firstName || "участник"}! 👋\nСвязываемся по поводу мероприятия «${currentEventName}».`)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="ml-1 text-green-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10 p-1.5 rounded-full transition-all"
+                                    title="Написать в WhatsApp"
+                                  >
+                                    <MessageCircle
+                                      size={16}
+                                      strokeWidth={2.5}
+                                    />
+                                  </a>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2 text-xs font-medium text-neutral-400">
+                                <Mail size={14} />
+                                {row.user?.email || "—"}
+                              </div>
                             </div>
-                          </div>
-                        </td>
+                          </td>
 
-                        <td className="py-5 px-6">
-                          <div className="flex flex-col gap-1">
-                            <span className="text-sm font-bold text-neutral-900 dark:text-white">
-                              {dayjs(row.participant.createdAt).format(
-                                "DD MMM YYYY",
-                              )}
-                            </span>
-                            <span className="text-[10px] font-black text-neutral-400 tracking-widest uppercase">
-                              {dayjs(row.participant.createdAt).format("HH:mm")}
-                            </span>
-                          </div>
-                        </td>
+                          <td className="py-5 px-6">
+                            <div className="flex flex-col gap-1">
+                              <span className="text-sm font-bold text-neutral-900 dark:text-white">
+                                {dayjs(row.participant.createdAt).format(
+                                  "DD MMM YYYY",
+                                )}
+                              </span>
+                              <span className="text-[10px] font-black text-neutral-400 tracking-widest uppercase">
+                                {dayjs(row.participant.createdAt).format(
+                                  "HH:mm",
+                                )}
+                              </span>
+                            </div>
+                          </td>
 
-                        <td className="py-5 px-8 text-right">
-                          <div className="flex items-center justify-end">
-                            <StatusSelect
-                              currentStatus={row.participant.status}
-                              onChange={(newStatus) =>
-                                handleStatusChange(
-                                  row.participant.id,
-                                  newStatus,
-                                )
-                              }
-                            />
-                          </div>
-                        </td>
-                      </motion.tr>
-                    ))}
+                          <td className="py-5 px-8 text-right">
+                            {/* 🔥 БЛОК УПРАВЛЕНИЯ С КНОПКОЙ УДАЛЕНИЯ */}
+                            <div className="flex items-center justify-end gap-3">
+                              <StatusSelect
+                                currentStatus={row.participant.status}
+                                onChange={(newStatus) =>
+                                  handleStatusChange(
+                                    row.participant.id,
+                                    newStatus,
+                                  )
+                                }
+                              />
+                              <button
+                                onClick={() =>
+                                  handleDeleteParticipant(row.participant.id)
+                                }
+                                className="p-2 text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all"
+                                title="Удалить заявку"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          </td>
+                        </motion.tr>
+                      );
+                    })}
                   </AnimatePresence>
                 </tbody>
               </motion.table>

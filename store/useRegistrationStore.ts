@@ -4,20 +4,37 @@ import { persist } from "zustand/middleware";
 
 interface RegistrationStore {
   pendingEventId: string | null;
-  setPendingEvent: (id: string) => void;
+  pendingPhone: string | null;
+  pendingExtraData: string | null;
+  setPendingEvent: (
+    id: string,
+    phone: string,
+    extraData?: string | null,
+  ) => void;
   clearPendingEvent: () => void;
 }
 
-// persist сохраняет данные в localStorage браузера
 export const useRegistrationStore = create<RegistrationStore>()(
   persist(
     (set) => ({
       pendingEventId: null,
-      setPendingEvent: (id) => set({ pendingEventId: id }),
-      clearPendingEvent: () => set({ pendingEventId: null }),
+      pendingPhone: null,
+      pendingExtraData: null,
+      setPendingEvent: (id, phone, extraData) =>
+        set({
+          pendingEventId: id,
+          pendingPhone: phone,
+          pendingExtraData: extraData || null,
+        }),
+      clearPendingEvent: () =>
+        set({
+          pendingEventId: null,
+          pendingPhone: null,
+          pendingExtraData: null,
+        }),
     }),
     {
-      name: "event-registration-storage", // имя ключа в памяти браузера
+      name: "event-registration-storage",
     },
   ),
 );

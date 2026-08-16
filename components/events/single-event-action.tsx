@@ -1,8 +1,17 @@
+// components/events/single-event-action.tsx
 "use client";
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Check, Loader2, ArrowRight, Share2, X, Lock } from "lucide-react"; // Добавили Lock
+import {
+  Check,
+  Loader2,
+  ArrowRight,
+  Share2,
+  X,
+  Lock,
+  Baby,
+} from "lucide-react";
 import { registerForEvent, checkRegistration } from "@/actions/event";
 import { useRouter } from "next/navigation";
 import { useRegistrationStore } from "@/store/useRegistrationStore";
@@ -24,11 +33,15 @@ export default function SingleEventActions({
   const [isCopied, setIsCopied] = useState(false);
   const [showPhoneModal, setShowPhoneModal] = useState(false);
   const [phone, setPhone] = useState("");
+  const [kidsCount, setKidsCount] = useState(0);
 
   const { setPendingEvent } = useRegistrationStore();
 
-  // Проверяем статус закрытия
   const isClosed = event.isRegistrationClosed === true;
+  const isRoshHashana =
+    event.title?.toLowerCase().includes("рош а-шана") ||
+    event.title?.toLowerCase().includes("рош ашана") ||
+    event.title?.toLowerCase().includes("рош-а-шана");
 
   useEffect(() => {
     setMounted(true);
@@ -59,9 +72,7 @@ export default function SingleEventActions({
           text: event.description,
           url: url,
         });
-      } catch (err) {
-        console.log("Пользователь отменил шеринг", err);
-      }
+      } catch (err) {}
     } else {
       await navigator.clipboard.writeText(url);
       setIsCopied(true);
@@ -70,19 +81,24 @@ export default function SingleEventActions({
   };
 
   const handleRegisterClick = () => {
-    if (isClosed) return; // Если закрыто, блокируем нажатие
-    if (!userId) {
-      setPendingEvent(event.id);
-      router.push("/sign-in?redirect_url=/dashboard/my-events");
-      return;
-    }
-    setShowPhoneModal(true);
+    if (isClosed) return;
+    setShowPhoneModal(true); // 🔥 ВСЕГДА СНАЧАЛА ПОКАЗЫВАЕМ ФОРМУ
   };
 
   const submitRegistration = async () => {
-    if (!phone.trim() || !userId) return;
+    if (!phone.trim()) return;
+
+    const extraData = isRoshHashana ? JSON.stringify({ kidsCount }) : null;
+
+    if (!userId) {
+      // 🔥 ЕСЛИ ГОСТЬ: Сохраняем телефон и детей, потом редиректим
+      setPendingEvent(event.id, phone, extraData);
+      router.push("/sign-in?redirect_url=/dashboard/my-events");
+      return;
+    }
+
     setIsRegistering(true);
-    const res = await registerForEvent(event.id, userId, phone);
+    const res = await registerForEvent(event.id, userId, phone, extraData);
     if (res.success) {
       setIsRegistered(true);
       setShowPhoneModal(false);
@@ -111,6 +127,7 @@ export default function SingleEventActions({
         <p className="text-neutral-500 text-sm mb-6 font-medium">
           Укажите номер телефона для связи с вами по поводу мероприятия.
         </p>
+
         <input
           type="tel"
           placeholder="+972 5X XXX XXXX"
@@ -119,6 +136,39 @@ export default function SingleEventActions({
           className="w-full bg-neutral-50 border-2 border-neutral-200 p-4 rounded-2xl mb-6 focus:border-neutral-900 focus:ring-0 outline-none transition-all font-medium"
           autoFocus
         />
+
+        {isRoshHashana && (
+          <div className="mb-6 bg-orange-50/50 border border-orange-100 p-4 rounded-2xl">
+            <label className="block text-sm font-bold text-neutral-800 mb-3 flex items-center gap-2">
+              <Baby size={16} className="text-orange-500" /> С вами будут дети?
+            </label>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-neutral-500 max-w-[120px]">
+                Укажите количество
+              </span>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setKidsCount(Math.max(0, kidsCount - 1))}
+                  className="w-10 h-10 rounded-full bg-white border border-orange-200 text-orange-600 font-bold text-lg hover:bg-orange-100 transition-colors active:scale-95 flex items-center justify-center"
+                >
+                  -
+                </button>
+                <span className="font-black text-xl w-4 text-center text-neutral-900">
+                  {kidsCount}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setKidsCount(kidsCount + 1)}
+                  className="w-10 h-10 rounded-full bg-white border border-orange-200 text-orange-600 font-bold text-lg hover:bg-orange-100 transition-colors active:scale-95 flex items-center justify-center"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="flex gap-3 flex-col sm:flex-row">
           <button
             onClick={() => setShowPhoneModal(false)}
@@ -133,6 +183,8 @@ export default function SingleEventActions({
           >
             {isRegistering ? (
               <Loader2 size={18} className="animate-spin" />
+            ) : !userId ? (
+              "Войти и отправить"
             ) : (
               "Подтвердить"
             )}
@@ -181,7 +233,7 @@ export default function SingleEventActions({
               </>
             ) : !userId ? (
               <>
-                Войти для записи <ArrowRight size={14} />
+                <ArrowRight size={14} /> Войти для записи
               </>
             ) : (
               "Записаться на событие"
@@ -189,7 +241,6 @@ export default function SingleEventActions({
           </button>
         )}
       </div>
-
       {mounted && createPortal(phoneModalContent, document.body)}
     </>
   );

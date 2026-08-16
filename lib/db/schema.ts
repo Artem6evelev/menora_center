@@ -117,6 +117,7 @@ export const events = pgTable("events", {
     .notNull(),
 });
 
+// lib/db/schema.ts (найди эту таблицу и замени)
 export const eventParticipants = pgTable("event_participants", {
   id: text("id").primaryKey(),
   eventId: text("event_id")
@@ -126,6 +127,10 @@ export const eventParticipants = pgTable("event_participants", {
     .references(() => users.id, { onDelete: "cascade" })
     .notNull(),
   phone: text("phone").default("Не указан").notNull(),
+
+  // 🔥 ДОБАВЛЕНО ПОЛЕ
+  extraData: text("extra_data"),
+
   status: text("status").default("pending").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()

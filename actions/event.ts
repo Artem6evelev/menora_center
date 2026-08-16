@@ -149,10 +149,12 @@ export async function checkRegistration(eventId: string, userId: string) {
   }
 }
 
+// actions/event.ts (найди и замени функцию registerForEvent)
 export async function registerForEvent(
   eventId: string,
   userId: string,
   phone: string,
+  extraData?: string | null, // <-- ДОБАВЛЕН ПАРАМЕТР
 ) {
   try {
     const isAlreadyRegistered = await checkRegistration(eventId, userId);
@@ -160,11 +162,16 @@ export async function registerForEvent(
       return { success: true, message: "already_registered" };
 
     const newId = `part_${Math.random().toString(36).substring(2, 11)}`;
-    await db
-      .insert(eventParticipants)
-      .values({ id: newId, eventId, userId, phone, status: "pending" });
+    await db.insert(eventParticipants).values({
+      id: newId,
+      eventId,
+      userId,
+      phone,
+      status: "pending",
+      extraData: extraData || null, // <-- СОХРАНЯЕМ В БД
+    });
 
-    // 🔥 ОТПРАВКА В TELEGRAM ГРУППУ
+    // Отправка в Telegram
     try {
       const [eventData] = await db
         .select()
@@ -189,23 +196,7 @@ export async function registerForEvent(
 
     revalidatePath("/");
     revalidatePath("/dashboard/my-events");
-    return { success: true };
-  } catch (error) {
-    return { success: false };
-  }
-}
-
-export async function cancelRegistration(eventId: string, userId: string) {
-  try {
-    await db
-      .delete(eventParticipants)
-      .where(
-        and(
-          eq(eventParticipants.eventId, eventId),
-          eq(eventParticipants.userId, userId),
-        ),
-      );
-    revalidatePath("/dashboard/my-events");
+    revalidatePath("/dashboard/applications");
     return { success: true };
   } catch (error) {
     return { success: false };
@@ -325,6 +316,30 @@ export async function updateEventParticipantStatus(
     return { success: true };
   } catch (error) {
     console.error("Ошибка изменения статуса:", error);
+    return { success: false, error: "Ошибка БД" };
+  }
+}
+
+// В самый конец файла actions/event.ts добавь:
+
+export async function deleteEventParticipant(id: string) {
+  const { userId } = await auth();
+  if (!userId) return { success: false, error: "Не авторизован" };
+
+  const [caller] = await db.select().from(users).where(eq(users.id, userId));
+  const role =
+    caller?.email === "artemdev.isr@gmail.com" ? "superadmin" : caller?.role;
+
+  if (role !== "admin" && role !== "superadmin") {
+    return { success: false, error: "Нет прав" };
+  }
+
+  try {
+    await db.delete(eventParticipants).where(eq(eventParticipants.id, id));
+    revalidatePath("/dashboard/applications");
+    return { success: true };
+  } catch (error) {
+    console.error("Ошибка удаления заявки:", error);
     return { success: false, error: "Ошибка БД" };
   }
 }
