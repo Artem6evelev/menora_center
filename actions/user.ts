@@ -278,3 +278,32 @@ export async function updateUserTags(userId: string, tags: string[]) {
     return { success: false };
   }
 }
+
+// actions/user.ts (в самый конец файла)
+
+export async function updateFamilyProfile(
+  userId: string,
+  spouseName: string | null,
+  childrenData: any[],
+) {
+  try {
+    await db
+      .update(users)
+      .set({
+        spouseName: spouseName || null,
+        childrenData: childrenData,
+        // Если указал детей, автоматически ставим флаг
+        hasChildren: childrenData.length > 0,
+        // Если указал супругу, автоматически меняем статус
+        maritalStatus: spouseName ? "married" : undefined,
+      })
+      .where(eq(users.id, userId));
+
+    revalidatePath("/dashboard/kids");
+    revalidatePath("/events");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Ошибка при сохранении семьи:", error);
+    return { success: false, message: error.message };
+  }
+}

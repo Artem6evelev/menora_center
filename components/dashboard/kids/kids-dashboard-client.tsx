@@ -14,9 +14,11 @@ import {
   Users as UsersIcon,
   MessageSquare,
   Loader2,
+  UserPlus,
 } from "lucide-react";
-import { updateUserChildren } from "@/actions/kids-profile";
+import { updateFamilyProfile } from "@/actions/user"; // 🔥 ИСПОЛЬЗУЕМ НОВЫЙ ЭКШЕН
 import { submitKidsApplication } from "@/actions/kids.actions";
+import { useRouter } from "next/navigation";
 
 const programs = [
   {
@@ -77,13 +79,15 @@ export default function KidsDashboardClient({
   user: any;
   applications: any[];
 }) {
-  const [activeTab, setActiveTab] = useState<"children" | "programs">(
-    "children",
-  );
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState<"family" | "programs">("family");
+
+  // 🔥 ДОБАВИЛИ СТЕЙТ СУПРУГА
+  const [spouseName, setSpouseName] = useState(user?.spouseName || "");
 
   const getInitialChildren = () => {
     try {
-      if (!user?.childrenData) return [{ name: "", birthDate: "" }];
+      if (!user?.childrenData) return [{ name: "", dateOfBirth: "" }];
 
       const parsed =
         typeof user.childrenData === "string"
@@ -91,17 +95,21 @@ export default function KidsDashboardClient({
           : user.childrenData;
 
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
+        // Поддерживаем старые ключи (birthDate) и новые (dateOfBirth)
+        return parsed.map((c) => ({
+          name: c.name || "",
+          dateOfBirth: c.dateOfBirth || c.birthDate || "",
+        }));
       }
-      return [{ name: "", birthDate: "" }];
+      return [{ name: "", dateOfBirth: "" }];
     } catch (e) {
       console.error("Ошибка парсинга детей:", e);
-      return [{ name: "", birthDate: "" }];
+      return [{ name: "", dateOfBirth: "" }];
     }
   };
 
   const [children, setChildren] =
-    useState<{ name: string; birthDate: string }[]>(getInitialChildren());
+    useState<{ name: string; dateOfBirth: string }[]>(getInitialChildren());
 
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -109,10 +117,10 @@ export default function KidsDashboardClient({
   const [enrollingProgram, setEnrollingProgram] = useState<string | null>(null);
   const [isEnrolling, setIsEnrolling] = useState(false);
 
-  const calculateAge = (birthDateString: string) => {
-    if (!birthDateString) return "";
+  const calculateAge = (dateString: string) => {
+    if (!dateString) return "";
     const today = new Date();
-    const birthDate = new Date(birthDateString);
+    const birthDate = new Date(dateString);
     let age = today.getFullYear() - birthDate.getFullYear();
     const m = today.getMonth() - birthDate.getMonth();
     if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
@@ -121,7 +129,7 @@ export default function KidsDashboardClient({
 
   const handleUpdateChild = (
     index: number,
-    field: "name" | "birthDate",
+    field: "name" | "dateOfBirth",
     value: string,
   ) => {
     const newChildren = [...children];
@@ -130,20 +138,22 @@ export default function KidsDashboardClient({
     setSaveSuccess(false);
   };
 
-  const handleSaveChildren = async () => {
+  // 🔥 ТЕПЕРЬ СОХРАНЯЕМ ВЕСЬ ПРОФИЛЬ СЕМЬИ (ВМЕСТЕ С СУПРУГОМ)
+  const handleSaveProfile = async () => {
     setIsSaving(true);
     const validChildren = children.filter((c) => c.name.trim() !== "");
 
-    const res = await updateUserChildren(validChildren);
+    const res = await updateFamilyProfile(user.id, spouseName, validChildren);
 
     if (res.success) {
       setSaveSuccess(true);
       if (validChildren.length === 0) {
-        setChildren([{ name: "", birthDate: "" }]);
+        setChildren([{ name: "", dateOfBirth: "" }]);
       } else {
         setChildren(validChildren);
       }
       setTimeout(() => setSaveSuccess(false), 3000);
+      router.refresh();
     } else {
       alert("Не удалось сохранить профили. Попробуйте еще раз.");
     }
@@ -153,16 +163,20 @@ export default function KidsDashboardClient({
   const handleEnroll = async (programTitle: string) => {
     const validChildren = children.filter((c) => c.name.trim() !== "");
 
-    if (validChildren.length === 0 || validChildren.some((c) => !c.birthDate)) {
+    if (
+      validChildren.length === 0 ||
+      validChildren.some((c) => !c.dateOfBirth)
+    ) {
       alert(
-        "Сначала добавьте ребенка (Имя и Дата рождения) во вкладке 'Мои дети' и сохраните профиль.",
+        "Сначала добавьте ребенка (Имя и Дата рождения) во вкладке 'Моя семья' и сохраните профиль.",
       );
-      setActiveTab("children");
+      setActiveTab("family");
       return;
     }
 
     setIsEnrolling(true);
     setEnrollingProgram(programTitle);
+
     const res = await submitKidsApplication({
       programTitle,
       parentFirstName: user.firstName || "Не указано",
@@ -171,8 +185,9 @@ export default function KidsDashboardClient({
       phone: user.phone || "Не указан",
       children: validChildren.map((c) => ({
         name: c.name,
-        birthDate: c.birthDate,
-        age: calculateAge(c.birthDate),
+        birthDate: c.dateOfBirth, // передаем для обратной совместимости базы заявок
+        dateOfBirth: c.dateOfBirth,
+        age: calculateAge(c.dateOfBirth),
       })),
     });
 
@@ -198,7 +213,7 @@ export default function KidsDashboardClient({
             </span>
           </h1>
           <p className="text-neutral-500 dark:text-neutral-400 font-medium mt-2 text-lg">
-            Управление профилями детей и запись на программы.
+            Управление профилями семьи и запись на программы.
           </p>
         </div>
       </div>
@@ -206,21 +221,21 @@ export default function KidsDashboardClient({
       {/* Tabs */}
       <div className="flex gap-2 mb-8 bg-neutral-100 dark:bg-neutral-900 p-1.5 rounded-2xl w-fit relative">
         <button
-          onClick={() => setActiveTab("children")}
+          onClick={() => setActiveTab("family")}
           className={`relative z-10 px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
-            activeTab === "children"
+            activeTab === "family"
               ? "text-neutral-900 dark:text-white"
               : "text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
           }`}
         >
-          {activeTab === "children" && (
+          {activeTab === "family" && (
             <motion.div
               layoutId="active-tab"
               className="absolute inset-0 bg-white dark:bg-neutral-800 rounded-xl shadow-sm -z-10"
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             />
           )}
-          Мои дети
+          Моя семья
         </button>
         <button
           onClick={() => setActiveTab("programs")}
@@ -243,9 +258,9 @@ export default function KidsDashboardClient({
 
       <motion.div layout className="relative">
         <AnimatePresence mode="wait">
-          {activeTab === "children" ? (
+          {activeTab === "family" ? (
             <motion.div
-              key="children"
+              key="family"
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -10 }}
@@ -253,7 +268,30 @@ export default function KidsDashboardClient({
               className="space-y-6"
             >
               <div className="bg-white dark:bg-neutral-900 rounded-[32px] p-6 md:p-8 border border-neutral-200 dark:border-neutral-800 shadow-sm max-w-3xl">
-                <h2 className="text-2xl font-black mb-6">Анкеты детей</h2>
+                {/* 🔥 СЕКЦИЯ СУПРУГА/И */}
+                <div className="mb-8">
+                  <h2 className="text-2xl font-black mb-4 flex items-center gap-2">
+                    <UserPlus className="text-pink-500" size={24} /> Профиль
+                    супруга/и
+                  </h2>
+                  <div className="p-4 bg-neutral-50 dark:bg-neutral-950 rounded-2xl border border-neutral-100 dark:border-neutral-800">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 mb-1.5 block ml-1">
+                      Имя супруга/и
+                    </label>
+                    <input
+                      type="text"
+                      value={spouseName}
+                      onChange={(e) => setSpouseName(e.target.value)}
+                      placeholder="Не указано"
+                      className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-3.5 rounded-xl outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 transition-all font-medium"
+                    />
+                  </div>
+                </div>
+
+                {/* 🔥 СЕКЦИЯ ДЕТЕЙ */}
+                <h2 className="text-2xl font-black mb-6 flex items-center gap-2">
+                  <Baby className="text-pink-500" size={24} /> Анкеты детей
+                </h2>
 
                 <div className="space-y-4 mb-6">
                   <AnimatePresence initial={false}>
@@ -287,11 +325,11 @@ export default function KidsDashboardClient({
                           </label>
                           <input
                             type="date"
-                            value={child.birthDate}
+                            value={child.dateOfBirth}
                             onChange={(e) =>
                               handleUpdateChild(
                                 idx,
-                                "birthDate",
+                                "dateOfBirth",
                                 e.target.value,
                               )
                             }
@@ -304,8 +342,8 @@ export default function KidsDashboardClient({
                             Возраст
                           </label>
                           <div className="h-[50px] bg-neutral-100 dark:bg-neutral-800 rounded-xl flex items-center justify-center font-bold text-neutral-500 border border-transparent">
-                            {child.birthDate
-                              ? `${calculateAge(child.birthDate)} лет`
+                            {child.dateOfBirth
+                              ? `${calculateAge(child.dateOfBirth)} лет`
                               : "—"}
                           </div>
                         </div>
@@ -332,7 +370,7 @@ export default function KidsDashboardClient({
                 <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-neutral-100 dark:border-neutral-800">
                   <button
                     onClick={() =>
-                      setChildren([...children, { name: "", birthDate: "" }])
+                      setChildren([...children, { name: "", dateOfBirth: "" }])
                     }
                     className="text-sm font-bold text-pink-500 hover:text-pink-600 flex items-center gap-2 p-2 active:scale-95 transition-transform"
                   >
@@ -340,7 +378,7 @@ export default function KidsDashboardClient({
                   </button>
 
                   <button
-                    onClick={handleSaveChildren}
+                    onClick={handleSaveProfile}
                     disabled={isSaving}
                     className={`px-8 py-3.5 font-black uppercase tracking-widest text-xs rounded-2xl transition-all active:scale-95 flex items-center justify-center gap-2 min-w-[200px] ${
                       saveSuccess
