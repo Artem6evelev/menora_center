@@ -12,7 +12,8 @@ import {
   Users,
   Coins,
   Repeat,
-  Lock, // <-- Добавили иконку замка
+  Lock,
+  Link as LinkIcon, // <-- Добавили иконку для ссылки
 } from "lucide-react";
 
 import { createEvent, updateEvent, createEventCategory } from "@/actions/event";
@@ -47,14 +48,14 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
   const [location, setLocation] = useState("");
   const [isFree, setIsFree] = useState(false);
   const [price, setPrice] = useState("");
+  // 🔥 НОВЫЙ СТЕЙТ ДЛЯ ССЫЛКИ НА ОПЛАТУ
+  const [paymentUrl, setPaymentUrl] = useState("");
+
   const [audience, setAudience] = useState("all");
 
-  // ЦИКЛИЧНОСТЬ
   const [isRecurring, setIsRecurring] = useState(false);
   const [recurringPattern, setRecurringPattern] = useState("weekly");
   const [recurringDays, setRecurringDays] = useState<number[]>([]);
-
-  // === НОВЫЙ СТЕЙТ ДЛЯ ЗАКРЫТИЯ ЗАПИСИ ===
   const [isRegistrationClosed, setIsRegistrationClosed] = useState(false);
 
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -78,12 +79,10 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
       setLocation(ev.location || "");
       setIsFree(ev.isFree || false);
       setPrice(ev.price || "");
+      setPaymentUrl(ev.paymentUrl || ""); // <-- Подгружаем ссылку
       setAudience(ev.audience || "all");
       setImagePreview(ev.imageUrl || null);
-
-      // Загружаем статус закрытия записи
       setIsRegistrationClosed(ev.isRegistrationClosed || false);
-
       setIsRecurring(ev.isRecurring || false);
       setRecurringPattern(ev.recurringPattern || "weekly");
       try {
@@ -91,7 +90,6 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
       } catch (e) {
         setRecurringDays([]);
       }
-
       setImageFile(null);
       setIsCreatingCategory(false);
     } else {
@@ -103,16 +101,14 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
       setLocation("");
       setIsFree(false);
       setPrice("");
+      setPaymentUrl(""); // <-- Очищаем ссылку
       setAudience("all");
       setImagePreview(null);
       setImageFile(null);
-
       setIsRegistrationClosed(false);
-
       setIsRecurring(false);
       setRecurringPattern("weekly");
       setRecurringDays([]);
-
       setIsCreatingCategory(false);
     }
   }, [editData, isOpen]);
@@ -185,9 +181,10 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
       location,
       isFree,
       price: isFree ? "" : price,
+      paymentUrl: isFree ? "" : paymentUrl, // <-- Отправляем ссылку
       audience,
       imageUrl: finalImageUrl,
-      isRegistrationClosed, // <-- Передаем на сервер
+      isRegistrationClosed,
       isRecurring,
       recurringPattern: isRecurring ? recurringPattern : null,
       recurringDays:
@@ -244,7 +241,7 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
 
         <form
           onSubmit={handleSubmit}
-          className="p-4 sm:p-6 overflow-y-auto space-y-5 sm:space-y-6 flex-1"
+          className="p-4 sm:p-6 overflow-y-auto space-y-5 sm:space-y-6 flex-1 custom-scrollbar"
         >
           {/* ОБЛОЖКА */}
           <div>
@@ -424,12 +421,15 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6 bg-neutral-50 p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-neutral-100 items-start">
+            {/* БЛОК СТОИМОСТИ И ССЫЛКИ НА ОПЛАТУ */}
             <div className="flex flex-col space-y-3">
               <label className="block text-sm font-bold text-neutral-700 flex items-center gap-2">
-                <Coins size={16} className="text-[#FFB800]" /> Стоимость
+                <Coins size={16} className="text-[#FFB800]" /> Стоимость и
+                оплата
               </label>
+
               <div
-                className={`transition-all duration-300 ease-in-out ${isFree ? "max-h-0 opacity-0 overflow-hidden" : "max-h-16 opacity-100"}`}
+                className={`flex flex-col gap-3 transition-all duration-300 ease-in-out ${isFree ? "max-h-0 opacity-0 overflow-hidden" : "max-h-32 opacity-100"}`}
               >
                 <input
                   value={price}
@@ -438,9 +438,25 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
                   className="w-full border-2 border-neutral-200 p-3 rounded-xl outline-none focus:border-[#FFB800] text-sm transition-colors disabled:bg-neutral-100"
                   placeholder="Цена (напр. 200 ₪)"
                 />
+
+                {/* ИНПУТ ДЛЯ ССЫЛКИ ШУТАФИМ */}
+                <div className="relative">
+                  <LinkIcon
+                    size={16}
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400"
+                  />
+                  <input
+                    value={paymentUrl}
+                    onChange={(e) => setPaymentUrl(e.target.value)}
+                    disabled={isFree}
+                    className="w-full border-2 border-neutral-200 p-3 pl-10 rounded-xl outline-none focus:border-[#FFB800] text-sm transition-colors disabled:bg-neutral-100"
+                    placeholder="Ссылка на оплату (Shutafim)"
+                  />
+                </div>
               </div>
+
               <div className="flex items-center gap-3">
-                <label className="flex items-center gap-2.5 cursor-pointer group">
+                <label className="flex items-center gap-2.5 cursor-pointer group mt-2">
                   <input
                     type="checkbox"
                     checked={isFree}
@@ -471,7 +487,6 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
             </div>
           </div>
 
-          {/* === БЛОК ЗАКРЫТИЯ ЗАПИСИ === */}
           <div className="bg-red-50/50 p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-red-100 transition-all duration-300">
             <label className="flex items-center gap-3 cursor-pointer group w-max">
               <input

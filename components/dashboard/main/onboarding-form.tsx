@@ -1,11 +1,10 @@
-// @/components/dashboard/main/onboarding-form.tsx
 "use client";
 
 import { useState } from "react";
-import { Loader2, Check } from "lucide-react";
+import { Loader2, Check, Plus, Trash2 } from "lucide-react";
 import { completeUserProfile } from "@/actions/user";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function OnboardingForm({ userId }: { userId: string }) {
   const router = useRouter();
@@ -13,8 +12,8 @@ export default function OnboardingForm({ userId }: { userId: string }) {
   const [agreed, setAgreed] = useState(false);
 
   const [formData, setFormData] = useState({
-    firstName: "", // НОВОЕ
-    lastName: "", // НОВОЕ
+    firstName: "",
+    lastName: "",
     phoneCode: "+972",
     phone: "",
     dateOfBirth: "",
@@ -24,6 +23,12 @@ export default function OnboardingForm({ userId }: { userId: string }) {
     jewishStatus: "",
     source: "",
   });
+
+  // 🔥 НОВЫЕ СТЕЙТЫ ДЛЯ СЕМЬИ
+  const [spouseName, setSpouseName] = useState("");
+  const [childrenList, setChildrenList] = useState([
+    { name: "", dateOfBirth: "" },
+  ]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -36,12 +41,38 @@ export default function OnboardingForm({ userId }: { userId: string }) {
     setFormData({ ...formData, phone: onlyNums });
   };
 
+  const handleChildChange = (
+    index: number,
+    field: "name" | "dateOfBirth",
+    value: string,
+  ) => {
+    const newList = [...childrenList];
+    newList[index][field] = value;
+    setChildrenList(newList);
+  };
+
+  const addChild = () =>
+    setChildrenList([...childrenList, { name: "", dateOfBirth: "" }]);
+
+  const removeChild = (index: number) => {
+    if (childrenList.length > 1) {
+      setChildrenList(childrenList.filter((_, i) => i !== index));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreed) return;
     setIsSubmitting(true);
 
-    const res = await completeUserProfile(userId, formData);
+    // Подготавливаем данные для БД
+    const submitData = {
+      ...formData,
+      spouseName: formData.maritalStatus === "married" ? spouseName : null,
+      childrenData: formData.hasChildren === "yes" ? childrenList : [],
+    };
+
+    const res = await completeUserProfile(userId, submitData);
     if (res.success) {
       router.refresh();
     } else {
@@ -50,7 +81,15 @@ export default function OnboardingForm({ userId }: { userId: string }) {
     }
   };
 
-  // Валидация: добавили проверку Имени и Фамилии
+  // Валидация
+  const isChildrenValid =
+    formData.hasChildren === "yes"
+      ? childrenList.every((c) => c.name.trim().length > 1 && c.dateOfBirth)
+      : true;
+
+  const isSpouseValid =
+    formData.maritalStatus === "married" ? spouseName.trim().length > 1 : true;
+
   const isFormValid =
     formData.firstName.trim().length >= 2 &&
     formData.lastName.trim().length >= 2 &&
@@ -60,6 +99,8 @@ export default function OnboardingForm({ userId }: { userId: string }) {
     formData.maritalStatus &&
     formData.hasChildren &&
     formData.jewishStatus &&
+    isChildrenValid &&
+    isSpouseValid &&
     agreed;
 
   return (
@@ -80,8 +121,10 @@ export default function OnboardingForm({ userId }: { userId: string }) {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
-        {/* НОВЫЙ БЛОК: ИМЯ И ФАМИЛИЯ */}
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-6 relative z-10 max-h-[60vh] overflow-y-auto custom-scrollbar pr-2"
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-xs font-black uppercase tracking-widest text-neutral-500 mb-2 pl-1">
@@ -93,7 +136,7 @@ export default function OnboardingForm({ userId }: { userId: string }) {
               value={formData.firstName}
               onChange={handleChange}
               placeholder="Иван"
-              className="w-full p-4 bg-neutral-100/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 rounded-2xl outline-none focus:ring-2 focus:ring-[#FFB800]/50 transition-all text-neutral-900 dark:text-white"
+              className="w-full p-4 bg-neutral-100/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 rounded-2xl outline-none focus:ring-2 focus:ring-[#FFB800]/50"
             />
           </div>
           <div>
@@ -106,12 +149,11 @@ export default function OnboardingForm({ userId }: { userId: string }) {
               value={formData.lastName}
               onChange={handleChange}
               placeholder="Иванов"
-              className="w-full p-4 bg-neutral-100/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 rounded-2xl outline-none focus:ring-2 focus:ring-[#FFB800]/50 transition-all text-neutral-900 dark:text-white"
+              className="w-full p-4 bg-neutral-100/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 rounded-2xl outline-none focus:ring-2 focus:ring-[#FFB800]/50"
             />
           </div>
         </div>
 
-        {/* НОМЕР ТЕЛЕФОНА */}
         <div>
           <label className="block text-xs font-black uppercase tracking-widest text-neutral-500 mb-2 pl-1">
             Номер телефона *
@@ -121,7 +163,7 @@ export default function OnboardingForm({ userId }: { userId: string }) {
               name="phoneCode"
               value={formData.phoneCode}
               onChange={handleChange}
-              className="w-[110px] p-4 bg-neutral-100/50 dark:bg-neutral-950/50 border border-neutral-200 rounded-2xl font-medium text-neutral-900 dark:text-white"
+              className="w-[110px] p-4 bg-neutral-100/50 border border-neutral-200 rounded-2xl font-medium"
             >
               <option value="+972">🇮🇱 +972</option>
               <option value="+7">🇷🇺 +7</option>
@@ -134,12 +176,11 @@ export default function OnboardingForm({ userId }: { userId: string }) {
               value={formData.phone}
               onChange={handlePhoneChange}
               placeholder="5X XXX XXXX"
-              className="flex-1 p-4 bg-neutral-100/50 dark:bg-neutral-950/50 border border-neutral-200 rounded-2xl outline-none focus:ring-2 focus:ring-[#FFB800]/50 transition-all"
+              className="flex-1 p-4 bg-neutral-100/50 border border-neutral-200 rounded-2xl outline-none focus:ring-2 focus:ring-[#FFB800]/50"
             />
           </div>
         </div>
 
-        {/* СТАТУС (ОСТАВЛЯЕМ БЕЗ ИЗМЕНЕНИЙ) */}
         <div>
           <label className="block text-xs font-black uppercase tracking-widest text-neutral-500 mb-2 pl-1">
             Ваш статус *
@@ -149,7 +190,7 @@ export default function OnboardingForm({ userId }: { userId: string }) {
             name="jewishStatus"
             value={formData.jewishStatus}
             onChange={handleChange}
-            className="w-full p-4 bg-neutral-100/50 dark:bg-neutral-950/50 border border-neutral-200 rounded-2xl outline-none focus:ring-2 focus:ring-[#FFB800]/50 transition-all font-medium text-neutral-900 dark:text-white appearance-none"
+            className="w-full p-4 bg-neutral-100/50 border border-neutral-200 rounded-2xl outline-none focus:ring-2 focus:ring-[#FFB800]/50 font-medium"
           >
             <option value="" disabled>
               Выберите...
@@ -160,16 +201,13 @@ export default function OnboardingForm({ userId }: { userId: string }) {
               Еврей по отцовской линии
             </option>
             <option value="Готовлюсь к Гиюру">Готовлюсь к Гиюру</option>
-            <option value="Прошел гиюр">
-              Прошел гиюр (ортодоксальный/неортодоксальный)
-            </option>
+            <option value="Прошел гиюр">Прошел гиюр</option>
             <option value="Интересуюсь иудаизмом">
-              Не имею еврейских корней, но интересуюсь иудаизмом :)
+              Не имею еврейских корней, но интересуюсь
             </option>
           </select>
         </div>
 
-        {/* ДАТА РОЖДЕНИЯ И ГОРОД */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-xs font-black uppercase tracking-widest text-neutral-500 mb-2 pl-1">
@@ -181,7 +219,7 @@ export default function OnboardingForm({ userId }: { userId: string }) {
               name="dateOfBirth"
               value={formData.dateOfBirth}
               onChange={handleChange}
-              className="w-full p-4 bg-neutral-100/50 dark:bg-neutral-950/50 border border-neutral-200 rounded-2xl text-neutral-900 dark:text-white"
+              className="w-full p-4 bg-neutral-100/50 border border-neutral-200 rounded-2xl"
             />
           </div>
           <div>
@@ -195,12 +233,11 @@ export default function OnboardingForm({ userId }: { userId: string }) {
               value={formData.city}
               onChange={handleChange}
               placeholder="Напр: Ришон ле-Цион"
-              className="w-full p-4 bg-neutral-100/50 dark:bg-neutral-950/50 border border-neutral-200 rounded-2xl text-neutral-900 dark:text-white"
+              className="w-full p-4 bg-neutral-100/50 border border-neutral-200 rounded-2xl"
             />
           </div>
         </div>
 
-        {/* СЕМЕЙНОЕ ПОЛОЖЕНИЕ И ДЕТИ */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-xs font-black uppercase tracking-widest text-neutral-500 mb-2 pl-1">
@@ -211,7 +248,7 @@ export default function OnboardingForm({ userId }: { userId: string }) {
               name="maritalStatus"
               value={formData.maritalStatus}
               onChange={handleChange}
-              className="w-full p-4 bg-neutral-100/50 dark:bg-neutral-950/50 border border-neutral-200 rounded-2xl text-neutral-900 dark:text-white appearance-none"
+              className="w-full p-4 bg-neutral-100/50 border border-neutral-200 rounded-2xl"
             >
               <option value="" disabled>
                 Выберите...
@@ -231,7 +268,7 @@ export default function OnboardingForm({ userId }: { userId: string }) {
               name="hasChildren"
               value={formData.hasChildren}
               onChange={handleChange}
-              className="w-full p-4 bg-neutral-100/50 dark:bg-neutral-950/50 border border-neutral-200 rounded-2xl text-neutral-900 dark:text-white appearance-none"
+              className="w-full p-4 bg-neutral-100/50 border border-neutral-200 rounded-2xl"
             >
               <option value="" disabled>
                 Выберите...
@@ -242,22 +279,91 @@ export default function OnboardingForm({ userId }: { userId: string }) {
           </div>
         </div>
 
-        {/* ИСТОЧНИК */}
-        <div>
-          <label className="block text-xs font-black uppercase tracking-widest text-neutral-500 mb-2 pl-1">
-            Откуда вы о нас узнали?
-          </label>
-          <input
-            type="text"
-            name="source"
-            value={formData.source}
-            onChange={handleChange}
-            placeholder="Друзья, Instagram, Facebook..."
-            className="w-full p-4 bg-neutral-100/50 dark:bg-neutral-950/50 border border-neutral-200 rounded-2xl text-neutral-900 dark:text-white"
-          />
-        </div>
+        {/* 🔥 ДИНАМИЧЕСКИЕ ПОЛЯ ДЛЯ СУПРУГА И ДЕТЕЙ */}
+        <AnimatePresence>
+          {formData.maritalStatus === "married" && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden"
+            >
+              <label className="block text-xs font-black uppercase tracking-widest text-neutral-500 mb-2 pl-1">
+                Имя супруга/и *
+              </label>
+              <input
+                required
+                type="text"
+                value={spouseName}
+                onChange={(e) => setSpouseName(e.target.value)}
+                placeholder="Имя супруга/и"
+                className="w-full p-4 bg-orange-50/50 border border-orange-200 rounded-2xl outline-none focus:border-orange-400"
+              />
+            </motion.div>
+          )}
 
-        {/* СОГЛАСИЕ */}
+          {formData.hasChildren === "yes" && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="space-y-4 overflow-hidden pt-2"
+            >
+              <div className="flex items-center justify-between pl-1">
+                <label className="text-xs font-black uppercase tracking-widest text-neutral-500">
+                  Данные детей *
+                </label>
+                <button
+                  type="button"
+                  onClick={addChild}
+                  className="text-[#FFB800] text-xs font-bold flex items-center gap-1 hover:underline"
+                >
+                  <Plus size={14} /> Добавить ребенка
+                </button>
+              </div>
+
+              {childrenList.map((child, index) => (
+                <div
+                  key={index}
+                  className="flex gap-3 items-start bg-orange-50/30 p-4 rounded-2xl border border-orange-100"
+                >
+                  <div className="flex-1 space-y-3">
+                    <input
+                      required
+                      type="text"
+                      placeholder="Имя ребенка"
+                      value={child.name}
+                      onChange={(e) =>
+                        handleChildChange(index, "name", e.target.value)
+                      }
+                      className="w-full p-3 bg-white border border-neutral-200 rounded-xl outline-none focus:border-[#FFB800] text-sm"
+                    />
+                    <input
+                      required
+                      type="date"
+                      value={child.dateOfBirth}
+                      onChange={(e) =>
+                        handleChildChange(index, "dateOfBirth", e.target.value)
+                      }
+                      className="w-full p-3 bg-white border border-neutral-200 rounded-xl outline-none focus:border-[#FFB800] text-sm text-neutral-500"
+                    />
+                  </div>
+                  {childrenList.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeChild(index)}
+                      className="p-3 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* СОГЛАСИЕ И КНОПКА ОТПРАВКИ */}
         <div className="pt-2">
           <label className="flex items-start gap-3 cursor-pointer group">
             <div className="relative flex items-center justify-center mt-1 shrink-0">
@@ -272,7 +378,7 @@ export default function OnboardingForm({ userId }: { userId: string }) {
                 className="absolute text-black opacity-0 peer-checked:opacity-100 pointer-events-none stroke-[3]"
               />
             </div>
-            <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400 leading-snug">
+            <span className="text-sm font-medium text-neutral-600 leading-snug">
               Я соглашаюсь с Политикой конфиденциальности.
             </span>
           </label>

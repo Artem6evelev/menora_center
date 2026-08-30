@@ -9,7 +9,7 @@ import {
 } from "@/lib/db/schema";
 import { eq, desc, and, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { sendEventRegistrationNotification } from "@/actions/telegram"; // 🔥 ИМПОРТ ФУНКЦИИ
+import { sendEventRegistrationNotification } from "@/actions/telegram";
 import { auth } from "@clerk/nextjs/server";
 
 // === 1. КАТЕГОРИИ ===
@@ -69,11 +69,13 @@ export async function createEvent(data: any) {
       ...data,
       categoryId: data.categoryId || null,
       price: data.price || null,
+      paymentUrl: data.paymentUrl || null, // 🔥 ДОБАВЛЕНО: Ссылка на оплату (Shutafim)
       description: data.description || null,
       location: data.location || null,
       time: data.time || null,
       recurringPattern: data.recurringPattern || null,
       recurringDays: data.recurringDays || null,
+      isRegistrationClosed: data.isRegistrationClosed || false, // 🔥 ДОБАВЛЕНО: Закрытие регистрации
     };
     await db.insert(events).values({ id: newId, ...preparedData });
     revalidatePath("/dashboard/events");
@@ -101,11 +103,13 @@ export async function updateEvent(id: string, data: any) {
       ...data,
       categoryId: data.categoryId || null,
       price: data.price || null,
+      paymentUrl: data.paymentUrl || null, // 🔥 ДОБАВЛЕНО
       description: data.description || null,
       location: data.location || null,
       time: data.time || null,
       recurringPattern: data.recurringPattern || null,
       recurringDays: data.recurringDays || null,
+      isRegistrationClosed: data.isRegistrationClosed || false, // 🔥 ДОБАВЛЕНО
     };
     await db.update(events).set(preparedData).where(eq(events.id, id));
     revalidatePath("/dashboard/events");
@@ -149,45 +153,87 @@ export async function checkRegistration(eventId: string, userId: string) {
   }
 }
 
-// actions/event.ts (найди и замени функцию registerForEvent)
+// 🔥 ОБНОВЛЕННАЯ ФУНКЦИЯ ПОД ТЗ (С ДОЗАПОЛНЕНИЕМ ПРОФИЛЯ) 🔥
 export async function registerForEvent(
   eventId: string,
   userId: string,
-  phone: string,
-  extraData?: string | null, // <-- ДОБАВЛЕН ПАРАМЕТР
+  phone?: string | null,
+  extraData?: any,
+  profileUpdates?: {
+    newSpouseName?: string;
+    newChild?: { name: string; dateOfBirth: string };
+  }, // <-- НОВЫЙ ПАРАМЕТР
 ) {
   try {
     const isAlreadyRegistered = await checkRegistration(eventId, userId);
     if (isAlreadyRegistered)
       return { success: true, message: "already_registered" };
 
+    // 1. Получаем текущие данные пользователя
+    const [userData] = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, userId));
+
+    const userPhone = phone || userData?.phone || "Не указан";
+
+    // 🌟 ДОБАВЛЕНО: ОБНОВЛЕНИЕ ПРОФИЛЯ (СУПРУГ И ДЕТИ) 🌟
+    if (
+      profileUpdates &&
+      (profileUpdates.newSpouseName || profileUpdates.newChild)
+    ) {
+      let updatePayload: any = {};
+
+      if (profileUpdates.newSpouseName) {
+        updatePayload.spouseName = profileUpdates.newSpouseName;
+        updatePayload.maritalStatus = "married"; // Автоматически меняем статус
+      }
+
+      if (profileUpdates.newChild) {
+        // Добавляем ребенка к существующему массиву
+        const currentChildren = Array.isArray(userData.childrenData)
+          ? userData.childrenData
+          : [];
+        updatePayload.childrenData = [
+          ...currentChildren,
+          profileUpdates.newChild,
+        ];
+        updatePayload.hasChildren = true; // Автоматически ставим флаг
+      }
+
+      // Сохраняем в таблицу users
+      if (Object.keys(updatePayload).length > 0) {
+        await db.update(users).set(updatePayload).where(eq(users.id, userId));
+      }
+    }
+
+    // 2. Получаем ивент для ссылки на оплату
+    const [eventData] = await db
+      .select()
+      .from(events)
+      .where(eq(events.id, eventId));
+
+    if (!eventData) return { success: false, message: "Событие не найдено" };
+
+    // 3. Создаем запись
     const newId = `part_${Math.random().toString(36).substring(2, 11)}`;
     await db.insert(eventParticipants).values({
       id: newId,
       eventId,
       userId,
-      phone,
+      phone: userPhone,
       status: "pending",
-      extraData: extraData || null, // <-- СОХРАНЯЕМ В БД
+      extraData: extraData || null,
     });
 
-    // Отправка в Telegram
+    // 4. Отправка уведомления в Telegram админам
     try {
-      const [eventData] = await db
-        .select()
-        .from(events)
-        .where(eq(events.id, eventId));
-      const [userData] = await db
-        .select()
-        .from(users)
-        .where(eq(users.id, userId));
-
       if (eventData && userData) {
         await sendEventRegistrationNotification(eventData.title || "Событие", {
           firstName: userData.firstName ?? "",
           lastName: userData.lastName ?? "",
           email: userData.email ?? "",
-          phone: phone,
+          phone: userPhone,
         });
       }
     } catch (tgError) {
@@ -197,9 +243,14 @@ export async function registerForEvent(
     revalidatePath("/");
     revalidatePath("/dashboard/my-events");
     revalidatePath("/dashboard/applications");
-    return { success: true };
+
+    return {
+      success: true,
+      paymentUrl: eventData.paymentUrl || null,
+    };
   } catch (error) {
-    return { success: false };
+    console.error("Ошибка при записи:", error);
+    return { success: false, message: "Ошибка базы данных" };
   }
 }
 
@@ -320,8 +371,6 @@ export async function updateEventParticipantStatus(
   }
 }
 
-// В самый конец файла actions/event.ts добавь:
-
 export async function deleteEventParticipant(id: string) {
   const { userId } = await auth();
   if (!userId) return { success: false, error: "Не авторизован" };
@@ -341,5 +390,26 @@ export async function deleteEventParticipant(id: string) {
   } catch (error) {
     console.error("Ошибка удаления заявки:", error);
     return { success: false, error: "Ошибка БД" };
+  }
+}
+
+// === ПОЛУЧЕНИЕ ДАННЫХ СЕМЬИ ДЛЯ МОДАЛКИ ===
+export async function getUserFamilyData(userId: string) {
+  try {
+    const [user] = await db
+      .select({
+        firstName: users.firstName,
+        lastName: users.lastName,
+        phone: users.phone,
+        spouseName: users.spouseName,
+        childrenData: users.childrenData, // Это тот самый JSON с детьми
+      })
+      .from(users)
+      .where(eq(users.id, userId));
+
+    return user || null;
+  } catch (error) {
+    console.error("Ошибка при получении данных семьи:", error);
+    return null;
   }
 }

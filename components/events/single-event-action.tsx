@@ -1,247 +1,288 @@
-// components/events/single-event-action.tsx
 "use client";
 
 import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
-import {
-  Check,
-  Loader2,
-  ArrowRight,
-  Share2,
-  X,
-  Lock,
-  Baby,
-} from "lucide-react";
-import { registerForEvent, checkRegistration } from "@/actions/event";
 import { useRouter } from "next/navigation";
-import { useRegistrationStore } from "@/store/useRegistrationStore";
+import { Loader2, Plus, Minus, X } from "lucide-react";
+import {
+  registerForEvent,
+  getUserFamilyData,
+} from "@/actions/event-registration";
+
+// 🌟 Компонент сочной градиентной кнопки с бликом
+const ShinyButton = ({
+  onClick,
+  text,
+  disabled,
+}: {
+  onClick: () => void;
+  text: string;
+  disabled?: boolean;
+}) => (
+  <button
+    onClick={onClick}
+    disabled={disabled}
+    className="relative overflow-hidden w-full md:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-[#FFB800] to-orange-500 text-white font-black uppercase tracking-widest transition-transform active:scale-95 disabled:opacity-50 group"
+  >
+    {/* Анимация блеска (ездящий белый градиент) */}
+    <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:animate-[shimmer_1.5s_infinite] skew-x-12" />
+    <span className="relative z-10">{text}</span>
+  </button>
+);
 
 export default function SingleEventActions({
   event,
   userId,
 }: {
   event: any;
-  userId?: string | null;
+  userId: string | null;
 }) {
   const router = useRouter();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isRegModalOpen, setIsRegModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [userData, setUserData] = useState<any>(null);
 
-  const [isRegistered, setIsRegistered] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRegistering, setIsRegistering] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  // Состояние для дополнительных гостей
+  const [extraAdults, setExtraAdults] = useState(0);
+  const [extraKids, setExtraKids] = useState(0);
 
-  const [isCopied, setIsCopied] = useState(false);
-  const [showPhoneModal, setShowPhoneModal] = useState(false);
-  const [phone, setPhone] = useState("");
-  const [kidsCount, setKidsCount] = useState(0);
-
-  const { setPendingEvent } = useRegistrationStore();
-
-  const isClosed = event.isRegistrationClosed === true;
-  const isRoshHashana =
-    event.title?.toLowerCase().includes("рош а-шана") ||
-    event.title?.toLowerCase().includes("рош ашана") ||
-    event.title?.toLowerCase().includes("рош-а-шана");
+  // Состояние для выбранных членов семьи (по умолчанию выбран сам пользователь)
+  const [selectedFamily, setSelectedFamily] = useState<{
+    [key: string]: boolean;
+  }>({ self: true });
 
   useEffect(() => {
-    setMounted(true);
-    const checkStatus = async () => {
-      if (userId) {
-        const status = await checkRegistration(event.id, userId);
-        setIsRegistered(status);
-      }
-      setIsLoading(false);
-    };
-    checkStatus();
-  }, [event.id, userId]);
-
-  useEffect(() => {
-    if (showPhoneModal) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "unset";
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [showPhoneModal]);
-
-  const handleShare = async () => {
-    const url = `${window.location.origin}/events/${event.id}`;
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: event.title,
-          text: event.description,
-          url: url,
-        });
-      } catch (err) {}
-    } else {
-      await navigator.clipboard.writeText(url);
-      setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 2000);
+    if (userId && isRegModalOpen && !userData) {
+      getUserFamilyData(userId).then(setUserData);
     }
-  };
+  }, [userId, isRegModalOpen, userData]);
 
-  const handleRegisterClick = () => {
-    if (isClosed) return;
-    setShowPhoneModal(true); // 🔥 ВСЕГДА СНАЧАЛА ПОКАЗЫВАЕМ ФОРМУ
-  };
-
-  const submitRegistration = async () => {
-    if (!phone.trim()) return;
-
-    const extraData = isRoshHashana ? JSON.stringify({ kidsCount }) : null;
-
+  const handleActionClick = () => {
     if (!userId) {
-      // 🔥 ЕСЛИ ГОСТЬ: Сохраняем телефон и детей, потом редиректим
-      setPendingEvent(event.id, phone, extraData);
-      router.push("/sign-in?redirect_url=/dashboard/my-events");
-      return;
+      setIsAuthModalOpen(true); // Показываем просьбу войти через Google
+    } else {
+      setIsRegModalOpen(true); // Показываем модалку выбора гостей
     }
-
-    setIsRegistering(true);
-    const res = await registerForEvent(event.id, userId, phone, extraData);
-    if (res.success) {
-      setIsRegistered(true);
-      setShowPhoneModal(false);
-    }
-    setIsRegistering(false);
   };
 
-  const phoneModalContent = showPhoneModal ? (
-    <div
-      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40 backdrop-blur-md p-4"
-      onClick={() => setShowPhoneModal(false)}
-    >
-      <div
-        className="bg-white p-8 rounded-[32px] max-w-sm w-full shadow-2xl animate-in fade-in zoom-in-95 duration-200 border border-neutral-100 relative"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          onClick={() => setShowPhoneModal(false)}
-          className="absolute top-4 right-4 p-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-600 rounded-full transition-colors"
-        >
-          <X size={16} />
-        </button>
-        <h3 className="text-2xl font-black text-neutral-900 mb-2 tracking-tighter mt-2">
-          Ваш контакт
-        </h3>
-        <p className="text-neutral-500 text-sm mb-6 font-medium">
-          Укажите номер телефона для связи с вами по поводу мероприятия.
-        </p>
+  const handleRegister = async () => {
+    setIsLoading(true);
+    const extraData = {
+      family: selectedFamily,
+      extraAdults,
+      extraKids,
+    };
 
-        <input
-          type="tel"
-          placeholder="+972 5X XXX XXXX"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          className="w-full bg-neutral-50 border-2 border-neutral-200 p-4 rounded-2xl mb-6 focus:border-neutral-900 focus:ring-0 outline-none transition-all font-medium"
-          autoFocus
-        />
+    const res = await registerForEvent(event.id, userId!, extraData);
 
-        {isRoshHashana && (
-          <div className="mb-6 bg-orange-50/50 border border-orange-100 p-4 rounded-2xl">
-            <label className="block text-sm font-bold text-neutral-800 mb-3 flex items-center gap-2">
-              <Baby size={16} className="text-orange-500" /> С вами будут дети?
-            </label>
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-neutral-500 max-w-[120px]">
-                Укажите количество
-              </span>
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => setKidsCount(Math.max(0, kidsCount - 1))}
-                  className="w-10 h-10 rounded-full bg-white border border-orange-200 text-orange-600 font-bold text-lg hover:bg-orange-100 transition-colors active:scale-95 flex items-center justify-center"
-                >
-                  -
-                </button>
-                <span className="font-black text-xl w-4 text-center text-neutral-900">
-                  {kidsCount}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setKidsCount(kidsCount + 1)}
-                  className="w-10 h-10 rounded-full bg-white border border-orange-200 text-orange-600 font-bold text-lg hover:bg-orange-100 transition-colors active:scale-95 flex items-center justify-center"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="flex gap-3 flex-col sm:flex-row">
-          <button
-            onClick={() => setShowPhoneModal(false)}
-            className="flex-1 py-4 bg-neutral-100 hover:bg-neutral-200 rounded-2xl font-bold text-neutral-600 transition-colors text-sm"
-          >
-            Отмена
-          </button>
-          <button
-            onClick={submitRegistration}
-            disabled={!phone.trim() || isRegistering}
-            className="flex-1 py-4 bg-neutral-900 hover:bg-black text-white rounded-2xl font-bold disabled:opacity-50 transition-all active:scale-95 flex justify-center items-center text-sm"
-          >
-            {isRegistering ? (
-              <Loader2 size={18} className="animate-spin" />
-            ) : !userId ? (
-              "Войти и отправить"
-            ) : (
-              "Подтвердить"
-            )}
-          </button>
-        </div>
-      </div>
-    </div>
-  ) : null;
+    if (res.success && res.paymentUrl) {
+      // Перекидываем на оплату Shutafim
+      window.location.href = res.paymentUrl;
+    } else {
+      alert("Ошибка: " + res.message);
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <>
-      <div className="flex gap-3 mt-8 pt-6 border-t border-neutral-100">
-        <button
-          onClick={handleShare}
-          className="h-[52px] w-[52px] rounded-2xl bg-white border-2 border-neutral-200 hover:border-neutral-900 hover:bg-neutral-50 text-neutral-900 transition-all flex items-center justify-center shrink-0 active:scale-95 shadow-sm"
-          title="Поделиться"
-        >
-          {isCopied ? (
-            <Check size={20} className="text-green-600" />
-          ) : (
-            <Share2 size={20} />
-          )}
-        </button>
-
-        {!isLoading && (
-          <button
-            onClick={handleRegisterClick}
-            disabled={isRegistered || isRegistering || isClosed}
-            className={`h-[52px] flex-1 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm ${
-              isClosed
-                ? "bg-red-50 text-red-500 cursor-not-allowed border-2 border-red-100"
-                : isRegistered
-                  ? "bg-green-100 text-green-700 cursor-default border-2 border-green-200"
-                  : !userId
-                    ? "bg-white text-neutral-900 border-2 border-neutral-200 hover:border-neutral-900 hover:bg-neutral-50"
-                    : "bg-neutral-900 text-white hover:bg-black shadow-xl shadow-black/10"
-            }`}
-          >
-            {isClosed ? (
-              <>
-                <Lock size={16} /> Запись закрыта
-              </>
-            ) : isRegistered ? (
-              <>
-                <Check size={16} /> Вы записаны
-              </>
-            ) : !userId ? (
-              <>
-                <ArrowRight size={14} /> Войти для записи
-              </>
-            ) : (
-              "Записаться на событие"
-            )}
-          </button>
-        )}
+    <div className="mt-8 flex flex-col gap-6">
+      {/* ТРИ СОЧНЫЕ КНОПКИ (в начале, середине и конце контента) */}
+      <div className="flex flex-col gap-4">
+        <ShinyButton
+          onClick={handleActionClick}
+          text="Записаться на мероприятие"
+        />
       </div>
-      {mounted && createPortal(phoneModalContent, document.body)}
-    </>
+
+      {/* 🛑 МОДАЛКА ДЛЯ НЕАВТОРИЗОВАННЫХ (Один шаг до регистрации) */}
+      {isAuthModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+          <div className="bg-white dark:bg-neutral-900 rounded-3xl p-8 max-w-md w-full relative shadow-2xl">
+            <button
+              onClick={() => setIsAuthModalOpen(false)}
+              className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-900"
+            >
+              <X size={24} />
+            </button>
+            <div className="text-center">
+              <h2 className="text-2xl font-black mb-2">
+                Один шаг до регистрации
+              </h2>
+              <p className="text-neutral-500 mb-6 text-sm">
+                Войдите в свой аккаунт для завершения регистрации на наше
+                замечательное мероприятие!
+              </p>
+              <button
+                onClick={() => router.push("/sign-in")}
+                className="w-full py-4 bg-neutral-100 hover:bg-neutral-200 text-black rounded-xl font-bold flex items-center justify-center gap-3 transition-colors"
+              >
+                Продолжить с Google
+              </button>
+              <p className="text-xs text-neutral-400 mt-4">
+                Если у вас ещё нет аккаунта, просто войдите через Google, и мы
+                создадим его за 15 секунд :)
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ МОДАЛКА ДЛЯ АВТОРИЗОВАННЫХ (Выбор семьи и гостей) */}
+      {isRegModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+          <div className="bg-white dark:bg-neutral-900 rounded-3xl p-6 max-w-md w-full relative shadow-2xl">
+            <button
+              onClick={() => setIsRegModalOpen(false)}
+              className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-900"
+            >
+              <X size={24} />
+            </button>
+
+            <h2 className="text-xl font-black mb-1">
+              Регистрация на {event.title}
+            </h2>
+            <p className="text-sm text-neutral-500 mb-6">
+              {new Date(event.date).toLocaleDateString("ru-RU")}, {event.time}
+            </p>
+
+            {userData ? (
+              <div className="space-y-6">
+                {/* ВЫБОР СЕМЬИ */}
+                <div>
+                  <h3 className="font-bold text-sm mb-3">
+                    Ваша семья (выберите участников):
+                  </h3>
+                  <div className="space-y-3">
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked
+                        disabled
+                        className="w-5 h-5 rounded text-[#FFB800]"
+                      />
+                      <span>{userData.firstName} (Вы)</span>
+                    </label>
+
+                    {userData.spouseName && (
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="w-5 h-5 rounded text-[#FFB800]"
+                          checked={!!selectedFamily.spouse}
+                          onChange={(e) =>
+                            setSelectedFamily({
+                              ...selectedFamily,
+                              spouse: e.target.checked,
+                            })
+                          }
+                        />
+                        <span>{userData.spouseName} (Супруг/а)</span>
+                      </label>
+                    )}
+
+                    {(userData.childrenData || []).map(
+                      (child: any, idx: number) => (
+                        <label
+                          key={idx}
+                          className="flex items-center gap-3 cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            className="w-5 h-5 rounded text-[#FFB800]"
+                            checked={!!selectedFamily[`child_${idx}`]}
+                            onChange={(e) =>
+                              setSelectedFamily({
+                                ...selectedFamily,
+                                [`child_${idx}`]: e.target.checked,
+                              })
+                            }
+                          />
+                          <span>{child.name} (Ребёнок)</span>
+                        </label>
+                      ),
+                    )}
+                  </div>
+                </div>
+
+                {/* ДОПОЛНИТЕЛЬНЫЕ ГОСТИ */}
+                <div className="pt-4 border-t border-neutral-100 dark:border-neutral-800">
+                  <h3 className="font-bold text-sm mb-4">
+                    Дополнительные гости:
+                  </h3>
+
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-sm">Взрослые (гости)</span>
+                    <div className="flex items-center gap-4 bg-neutral-100 dark:bg-neutral-800 rounded-full px-2 py-1">
+                      <button
+                        onClick={() =>
+                          setExtraAdults(Math.max(0, extraAdults - 1))
+                        }
+                        className="p-1 hover:text-[#FFB800]"
+                      >
+                        <Minus size={16} />
+                      </button>
+                      <span className="font-bold w-4 text-center">
+                        {extraAdults}
+                      </span>
+                      <button
+                        onClick={() => setExtraAdults(extraAdults + 1)}
+                        className="p-1 hover:text-[#FFB800]"
+                      >
+                        <Plus size={16} />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">Дети (до 13 лет, гости)</span>
+                    <div className="flex items-center gap-4 bg-neutral-100 dark:bg-neutral-800 rounded-full px-2 py-1">
+                      <button
+                        onClick={() => setExtraKids(Math.max(0, extraKids - 1))}
+                        className="p-1 hover:text-[#FFB800]"
+                      >
+                        <Minus size={16} />
+                      </button>
+                      <span className="font-bold w-4 text-center">
+                        {extraKids}
+                      </span>
+                      <button
+                        onClick={() => setExtraKids(extraKids + 1)}
+                        className="p-1 hover:text-[#FFB800]"
+                      >
+                        <Plus size={16} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    onClick={() => setIsRegModalOpen(false)}
+                    className="flex-1 py-3 rounded-xl bg-neutral-100 text-neutral-600 font-bold"
+                  >
+                    Отмена
+                  </button>
+                  <button
+                    onClick={handleRegister}
+                    disabled={isLoading}
+                    className="flex-1 py-3 rounded-xl bg-[#FFB800] text-black font-bold flex justify-center items-center"
+                  >
+                    {isLoading ? (
+                      <Loader2 className="animate-spin" size={20} />
+                    ) : (
+                      "Зарегистрироваться"
+                    )}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex justify-center py-8">
+                <Loader2 className="animate-spin text-[#FFB800]" size={32} />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

@@ -48,6 +48,11 @@ export async function completeUserProfile(userId: string, data: any) {
         city: data.city,
         maritalStatus: data.maritalStatus,
         hasChildren: data.hasChildren === "yes",
+
+        // 🔥 ДОБАВЛЕНЫ ПОЛЯ СЕМЬИ ДЛЯ БД
+        spouseName: data.spouseName || null,
+        childrenData: data.childrenData || [],
+
         source: data.source || null,
         jewishStatus: data.jewishStatus,
         agreedToPrivacy: true,
@@ -63,6 +68,11 @@ export async function completeUserProfile(userId: string, data: any) {
           city: data.city,
           maritalStatus: data.maritalStatus,
           hasChildren: data.hasChildren === "yes",
+
+          // 🔥 ДОБАВЛЕНЫ ПОЛЯ СЕМЬИ ДЛЯ БД ПРИ ОБНОВЛЕНИИ
+          spouseName: data.spouseName || null,
+          childrenData: data.childrenData || [],
+
           source: data.source || null,
           jewishStatus: data.jewishStatus,
           agreedToPrivacy: true,

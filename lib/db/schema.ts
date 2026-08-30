@@ -30,6 +30,7 @@ export const users = pgTable(
     dateOfBirth: timestamp("date_of_birth", { withTimezone: true }),
     city: text("city"),
     maritalStatus: text("marital_status"),
+    spouseName: text("spouse_name"), // 🔥 ДОБАВЛЕНО: Имя супруга/и
     hasChildren: boolean("has_children").default(false),
 
     // 🔥 ДОБАВЛЯЕМ ЭТО ПОЛЕ:
@@ -106,6 +107,7 @@ export const events = pgTable("events", {
 
   isFree: boolean("is_free").default(false).notNull(),
   price: text("price"),
+  paymentUrl: text("payment_url"), // 🔥 ДОБАВЛЕНО: Ссылка на страницу оплаты (Shutafim)
   audience: text("audience").default("all").notNull(),
 
   isRegistrationClosed: boolean("is_registration_closed").default(false),
@@ -117,9 +119,10 @@ export const events = pgTable("events", {
     .notNull(),
 });
 
-// lib/db/schema.ts (найди эту таблицу и замени)
 export const eventParticipants = pgTable("event_participants", {
-  id: text("id").primaryKey(),
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
   eventId: text("event_id")
     .references(() => events.id, { onDelete: "cascade" })
     .notNull(),
@@ -128,10 +131,11 @@ export const eventParticipants = pgTable("event_participants", {
     .notNull(),
   phone: text("phone").default("Не указан").notNull(),
 
-  // 🔥 ДОБАВЛЕНО ПОЛЕ
-  extraData: text("extra_data"),
+  // Здесь будем хранить JSON со списком гостей (семья + дополнительные)
+  extraData: jsonb("extra_data"),
 
-  status: text("status").default("pending").notNull(),
+  // 🔥 ОБНОВЛЕНО: Статусы для отслеживания оплат и брошенных корзин
+  status: text("status").default("pending").notNull(), // pending (ждет оплаты), paid (успешно), abandoned (бросил корзину)
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),

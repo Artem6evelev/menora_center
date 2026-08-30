@@ -57,6 +57,9 @@ const config: Config = {
             opacity: "1",
           },
         },
+        shimmer: {
+          "100%": { transform: "translateX(100%)" },
+        },
       },
     },
   },
@@ -66,7 +69,7 @@ const config: Config = {
 function addVariablesForColors({ addBase, theme }: any) {
   let allColors = flattenColorPalette(theme("colors"));
   let newVars = Object.fromEntries(
-    Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
+    Object.entries(allColors).map(([key, val]) => [`--${key}`, val]),
   );
 
   addBase({

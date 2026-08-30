@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import {
   getEventParticipantsList,
   updateEventParticipantStatus,
-  deleteEventParticipant, // 🔥 ИМПОРТИРУЕМ НОВЫЙ ЭКШЕН
+  deleteEventParticipant,
 } from "@/actions/event";
 import {
   Loader2,
@@ -12,16 +12,11 @@ import {
   Phone,
   Mail,
   Calendar,
-  Ticket,
   MessageCircle,
   ChevronDown,
-  CheckCircle2,
-  Clock,
-  XCircle,
   Search,
-  Check,
   Baby,
-  Trash2, // 🔥 Импортируем иконку корзины
+  Trash2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -39,16 +34,16 @@ const formatPhoneForWhatsApp = (phone: string) => {
   return cleaned;
 };
 
+// 🔥 УМНАЯ ФУНКЦИЯ ВОЗРАСТА
+const getAge = (dob: string) => {
+  if (!dob) return "?";
+  const ageDifMs = Date.now() - new Date(dob).getTime();
+  const ageDate = new Date(ageDifMs);
+  return Math.abs(ageDate.getUTCFullYear() - 1970);
+};
+
 // === 1. КАСТОМНЫЙ КОМПОНЕНТ ВЫБОРА СОБЫТИЯ ===
-const CustomEventSelect = ({
-  events,
-  selectedId,
-  onChange,
-}: {
-  events: any[];
-  selectedId: string;
-  onChange: (id: string) => void;
-}) => {
+const CustomEventSelect = ({ events, selectedId, onChange }: any) => {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -61,7 +56,8 @@ const CustomEventSelect = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const selectedEvent = events.find((e) => e.id === selectedId) || events[0];
+  const selectedEvent =
+    events.find((e: any) => e.id === selectedId) || events[0];
 
   return (
     <div className="relative w-full md:w-[450px]" ref={ref}>
@@ -119,7 +115,7 @@ const CustomEventSelect = ({
                 Нет доступных событий
               </div>
             )}
-            {events.map((ev) => (
+            {events.map((ev: any) => (
               <button
                 key={ev.id}
                 onClick={() => {
@@ -151,10 +147,9 @@ const CustomEventSelect = ({
                       : "Дата не указана"}
                   </span>
                 </div>
-
                 <div className="flex items-center gap-3 shrink-0">
                   {ev.pendingParticipants > 0 && (
-                    <span className="bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 text-[10px] font-black px-2 py-1 rounded-md uppercase tracking-widest shadow-sm">
+                    <span className="bg-amber-100 text-amber-600 text-[10px] font-black px-2 py-1 rounded-md uppercase tracking-widest">
                       {ev.pendingParticipants} ожидает
                     </span>
                   )}
@@ -172,13 +167,7 @@ const CustomEventSelect = ({
 };
 
 // === 2. КАСТОМНЫЙ КОМПОНЕНТ СТАТУСА ДЛЯ ТАБЛИЦЫ ===
-const StatusSelect = ({
-  currentStatus,
-  onChange,
-}: {
-  currentStatus: string;
-  onChange: (s: string) => void;
-}) => {
+const StatusSelect = ({ currentStatus, onChange }: any) => {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -255,7 +244,6 @@ const StatusSelect = ({
           className={cn("transition-transform", isOpen && "rotate-180")}
         />
       </button>
-
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -314,7 +302,6 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
     fetchParticipants();
   }, [selectedEventId]);
 
-  // ОБНОВЛЕНИЕ СТАТУСА
   const handleStatusChange = async (
     participantId: string,
     newStatus: string,
@@ -353,11 +340,9 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
         ),
       );
     }
-
     await updateEventParticipantStatus(participantId, newStatus);
   };
 
-  // 🔥 УДАЛЕНИЕ ЗАЯВКИ
   const handleDeleteParticipant = async (participantId: string) => {
     if (!confirm("Вы уверены, что хотите безвозвратно удалить эту заявку?"))
       return;
@@ -368,15 +353,12 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
     if (!participantToRemove) return;
     const oldStatus = participantToRemove.participant.status;
 
-    // Оптимистичное обновление UI: убираем из таблицы
     setParticipants((prev) =>
       prev.filter((p) => p.participant.id !== participantId),
     );
-
-    // Оптимистичное обновление счетчиков в селекторе событий
     setEventsList((prev) =>
       prev.map((e) => {
-        if (e.id === selectedEventId) {
+        if (e.id === selectedEventId)
           return {
             ...e,
             totalParticipants: Math.max(0, e.totalParticipants - 1),
@@ -385,12 +367,10 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
                 ? Math.max(0, e.pendingParticipants - 1)
                 : e.pendingParticipants,
           };
-        }
         return e;
       }),
     );
 
-    // Запрос к БД на удаление
     await deleteEventParticipant(participantId);
   };
 
@@ -419,7 +399,6 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
 
   return (
     <div className="max-w-7xl mx-auto w-full pb-32">
-      {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -437,14 +416,12 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
         </motion.div>
       </div>
 
-      {/* ПАНЕЛЬ ФИЛЬТРОВ И УПРАВЛЕНИЯ */}
       <div className="flex flex-col lg:flex-row items-center justify-between gap-6 mb-6 relative z-50">
         <CustomEventSelect
           events={eventsList}
           selectedId={selectedEventId}
           onChange={setSelectedEventId}
         />
-
         <div className="flex items-center gap-4 w-full lg:w-auto">
           <div className="relative flex-1 lg:w-64 shrink-0">
             <Search
@@ -459,19 +436,17 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
               className="w-full pl-10 pr-4 py-4 border border-neutral-200 dark:border-neutral-800 rounded-2xl bg-white dark:bg-neutral-900 shadow-sm outline-none focus:border-[#FFB800] transition-colors font-medium text-sm"
             />
           </div>
-
           <button
             onClick={() => setIsReminderOpen(true)}
             disabled={whatsappRecipients.length === 0 || isLoading}
             className="flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1EBE5D] disabled:bg-neutral-200 dark:disabled:bg-neutral-800 text-white disabled:text-neutral-400 px-6 py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-lg shadow-[#25D366]/20 disabled:shadow-none transition-all active:scale-95 shrink-0 h-[54px]"
           >
-            <MessageCircle size={18} />
+            <MessageCircle size={18} />{" "}
             <span className="hidden sm:inline">Напомнить всем</span>
           </button>
         </div>
       </div>
 
-      {/* ТАБЛИЦА */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -523,24 +498,53 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
               >
                 <thead className="bg-neutral-50 dark:bg-neutral-950/50 border-b border-neutral-200 dark:border-neutral-800 sticky top-0 z-20">
                   <tr className="text-[10px] uppercase tracking-widest text-neutral-400 font-black">
-                    <th className="py-6 px-8">Участник</th>
+                    <th className="py-6 px-8">Участник и состав гостей</th>
                     <th className="py-6 px-6">Контакты</th>
                     <th className="py-6 px-6">Дата записи</th>
-                    <th className="py-6 px-8 text-right">
-                      Управление статусом
-                    </th>
+                    <th className="py-6 px-8 text-right">Статус</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/50">
                   <AnimatePresence>
                     {filteredParticipants.map((row) => {
-                      // 🔥 ПАРСИМ ДАННЫЕ ИЗ БД (Количество детей)
-                      let extra = null;
+                      // 🔥 ПАРСИНГ СОСТАВА СЕМЬИ ИЗ БД 🔥
+                      let extra: any = null;
                       if (row.participant.extraData) {
                         try {
-                          extra = JSON.parse(row.participant.extraData);
+                          extra =
+                            typeof row.participant.extraData === "string"
+                              ? JSON.parse(row.participant.extraData)
+                              : row.participant.extraData;
                         } catch (e) {}
                       }
+
+                      // Имя супруги, если она отмечена
+                      const spouseBadge =
+                        extra?.family?.spouse && row.user?.spouseName
+                          ? row.user.spouseName
+                          : null;
+
+                      // Список выбранных детей (парсим из профиля пользователя)
+                      let userChildren: any[] = [];
+                      try {
+                        userChildren = Array.isArray(row.user?.childrenData)
+                          ? row.user.childrenData
+                          : typeof row.user?.childrenData === "string"
+                            ? JSON.parse(row.user.childrenData)
+                            : [];
+                      } catch (e) {}
+
+                      const selectedChildren: any[] = [];
+                      if (extra?.family) {
+                        userChildren.forEach((child: any, idx: number) => {
+                          if (extra.family[`child_${idx}`])
+                            selectedChildren.push(child);
+                        });
+                      }
+
+                      const extraAdults = extra?.extraAdults || 0;
+                      const extraKids = extra?.extraKids || 0;
+                      const legacyKids = extra?.kidsCount || 0; // Для старых записей
 
                       return (
                         <motion.tr
@@ -556,8 +560,8 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
                           )}
                         >
                           <td className="py-5 px-8">
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center shrink-0 border border-neutral-200 dark:border-neutral-700 overflow-hidden">
+                            <div className="flex items-start gap-4">
+                              <div className="w-10 h-10 mt-1 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center shrink-0 border border-neutral-200 dark:border-neutral-700 overflow-hidden">
                                 {row.user?.imageUrl ? (
                                   <img
                                     src={row.user.imageUrl}
@@ -570,26 +574,54 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
                                   />
                                 )}
                               </div>
-                              <div className="flex flex-col">
-                                <div className="font-bold text-neutral-900 dark:text-white text-base">
+                              <div className="flex flex-col min-w-0 max-w-sm whitespace-normal">
+                                <div className="font-bold text-neutral-900 dark:text-white text-base leading-tight">
                                   {row.user?.firstName} {row.user?.lastName}
                                 </div>
-                                <div className="flex items-center gap-2 mt-1">
+
+                                {/* 🌟 БЕЙДЖИКИ ГОСТЕЙ (Обертка flex-wrap) 🌟 */}
+                                <div className="flex flex-wrap items-center gap-1.5 mt-2">
                                   {row.user?.email === "Гость" ? (
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-neutral-500 bg-neutral-200 dark:bg-neutral-700 px-1.5 py-0.5 rounded shadow-sm">
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-neutral-500 bg-neutral-200 dark:bg-neutral-700 px-1.5 py-0.5 rounded shadow-sm border border-neutral-300">
                                       Гость
                                     </span>
                                   ) : (
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-blue-500 bg-blue-500/10 px-1.5 py-0.5 rounded border border-blue-500/20 shadow-sm">
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-blue-600 bg-blue-100 dark:bg-blue-500/20 border border-blue-200 dark:border-blue-500/30 px-1.5 py-0.5 rounded shadow-sm">
                                       Резидент
                                     </span>
                                   )}
 
-                                  {/* 🔥 ВЫВОДИМ БЕЙДЖ ДЛЯ ДЕТЕЙ */}
-                                  {extra?.kidsCount > 0 && (
+                                  {/* Супруга */}
+                                  {spouseBadge && (
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-pink-600 bg-pink-100 border border-pink-200 px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
+                                      <Users size={10} /> + {spouseBadge}
+                                    </span>
+                                  )}
+
+                                  {/* Дети профиля */}
+                                  {selectedChildren.map((child, i) => (
+                                    <span
+                                      key={i}
+                                      className="text-[9px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-100 border border-emerald-200 px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1"
+                                    >
+                                      <Baby size={10} /> + {child.name} (
+                                      {getAge(child.dateOfBirth)} лет)
+                                    </span>
+                                  ))}
+
+                                  {/* Доп. Гости Взрослые */}
+                                  {extraAdults > 0 && (
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-purple-600 bg-purple-100 border border-purple-200 px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
+                                      <Users size={10} /> +{extraAdults} взр.
+                                      (гости)
+                                    </span>
+                                  )}
+
+                                  {/* Доп. Гости Дети / Старые записи */}
+                                  {(extraKids > 0 || legacyKids > 0) && (
                                     <span className="text-[9px] font-black uppercase tracking-widest text-orange-600 bg-orange-100 border border-orange-200 px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
-                                      <Baby size={10} /> +{extra.kidsCount}{" "}
-                                      детей
+                                      <Baby size={10} /> +
+                                      {extraKids || legacyKids} дет. (гости)
                                     </span>
                                   )}
                                 </div>
@@ -597,8 +629,8 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
                             </div>
                           </td>
 
-                          <td className="py-5 px-6">
-                            <div className="flex flex-col gap-2">
+                          <td className="py-5 px-6 align-top">
+                            <div className="flex flex-col gap-2 mt-1">
                               <div className="flex items-center gap-2 text-sm font-bold text-neutral-700 dark:text-neutral-300">
                                 <Phone size={14} className="text-neutral-400" />
                                 {row.participant.phone}
@@ -607,8 +639,7 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
                                     href={`https://wa.me/${formatPhoneForWhatsApp(row.participant.phone)}?text=${encodeURIComponent(`Шалом, ${row.user?.firstName || "участник"}! 👋\nСвязываемся по поводу мероприятия «${currentEventName}».`)}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="ml-1 text-green-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10 p-1.5 rounded-full transition-all"
-                                    title="Написать в WhatsApp"
+                                    className="ml-1 text-green-500 hover:bg-green-50 p-1.5 rounded-full transition-all"
                                   >
                                     <MessageCircle
                                       size={16}
@@ -624,8 +655,8 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
                             </div>
                           </td>
 
-                          <td className="py-5 px-6">
-                            <div className="flex flex-col gap-1">
+                          <td className="py-5 px-6 align-top">
+                            <div className="flex flex-col gap-1 mt-1">
                               <span className="text-sm font-bold text-neutral-900 dark:text-white">
                                 {dayjs(row.participant.createdAt).format(
                                   "DD MMM YYYY",
@@ -639,12 +670,11 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
                             </div>
                           </td>
 
-                          <td className="py-5 px-8 text-right">
-                            {/* 🔥 БЛОК УПРАВЛЕНИЯ С КНОПКОЙ УДАЛЕНИЯ */}
-                            <div className="flex items-center justify-end gap-3">
+                          <td className="py-5 px-8 text-right align-top">
+                            <div className="flex items-center justify-end gap-3 mt-1">
                               <StatusSelect
                                 currentStatus={row.participant.status}
-                                onChange={(newStatus) =>
+                                onChange={(newStatus: any) =>
                                   handleStatusChange(
                                     row.participant.id,
                                     newStatus,
@@ -655,8 +685,7 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
                                 onClick={() =>
                                   handleDeleteParticipant(row.participant.id)
                                 }
-                                className="p-2 text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all"
-                                title="Удалить заявку"
+                                className="p-2 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
                               >
                                 <Trash2 size={16} />
                               </button>
