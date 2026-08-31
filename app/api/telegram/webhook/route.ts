@@ -1,7 +1,7 @@
 // app/api/telegram/webhook/route.ts
 import { Telegraf, Markup } from "telegraf";
 import { db } from "@/lib/db";
-import { users } from "@/lib/db/schema";
+import { users, botSettings } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
@@ -30,9 +30,18 @@ export async function GET() {
   });
 }
 
-// 🔥 КЛАВИАТУРА, ПОЛНОСТЬЮ ОТРАЖАЮЩАЯ СТРУКТУРУ САЙТА
-const mainMenuKeyboard = Markup.inlineKeyboard([
-  // Главная кнопка
+// 🔥 ОБЪЕДИНЕННАЯ КЛАВИАТУРА: Рош ха-Шана + Навигация по сайту
+const roshHashanaKeyboard = Markup.inlineKeyboard([
+  // Кнопки для мероприятия
+  [Markup.button.callback("🍯 Я приду!", "attend_rosh_hashana")],
+  [
+    Markup.button.url(
+      "📞 Информация по WhatsApp",
+      "https://wa.me/972506700779",
+    ),
+  ],
+
+  // Главная кнопка сайта
   [
     Markup.button.url(
       "🌐 Главная страница общины",
@@ -70,6 +79,17 @@ const mainMenuKeyboard = Markup.inlineKeyboard([
   ],
 ]);
 
+// 🔥 ВРЕМЕННЫЙ ПОМОЩНИК: Получаем file_id видео (удали после получения ID)
+bot.on("video", async (ctx) => {
+  const fileId = ctx.message.video.file_id;
+  await ctx.reply(
+    `Твой file_id для видео:\n\n<code>${fileId}</code>\n\nВставь его в переменную videoFileId в коде.`,
+    {
+      parse_mode: "HTML",
+    },
+  );
+});
+
 // 🔥 ОБРАБОТКА КОМАНДЫ /start
 bot.start(async (ctx) => {
   const updateId = ctx.update.update_id;
@@ -77,24 +97,28 @@ bot.start(async (ctx) => {
   const chatId = ctx.chat.id.toString();
   const trace = `[TELEGRAM][update:${updateId}][chat:${chatId}]`;
 
+  // ⚠️ СЮДА ВСТАВЬ КОД ВИДЕО, КОТОРЫЙ ВЫДАСТ БОТ
+  const videoFileId = "СЮДА_ВСТАВИТЬ_FILE_ID_ВИДЕО";
+
+  const inviteCaption = `
+🍯 <b>Счастливый и сладкий год вам обеспечен, ${tgUser.first_name}!</b>
+
+Община «Menorah Center» приглашает вас вместе со всей вашей семьёй услышать звучание Шофара и исполнить одну из главных заповедей Рош ха-Шана.
+
+🎺 <b>Главное событие: Звук шофара</b>
+• <b>Когда:</b> 2-го Тишрея (13.09) в <b>12:00</b>
+
+📍 <b>Место:</b> <a href="https://maps.google.com/?cid=16811818334291695337">Ришон ле-Цион, ул. Меирович 40</a> (синагога, 1-й этаж).
+
+<i>Мы будем рады видеть каждого из вас вместе с вашей семьёй!
+«Menorah Center» объединяет людей! 🤍</i>
+  `.trim();
+
   try {
+    // Сохраняем пользователя в БД, если его там нет
     const existingUser = await db.query.users.findFirst({
       where: eq(users.telegramChatId, chatId),
     });
-
-    // 🔥 ИДЕАЛЬНЫЙ ТЕКСТ, СКОПИРОВАННЫЙ СО СМЫСЛОВ САЙТА
-    const welcomeText =
-      `✨ <b>Шалом, ${tgUser.first_name}!</b>\n\n` +
-      `Добро пожаловать в официальный бот <b>Menorah Center</b>.\n\n` +
-      `Мы — место, где создаются знакомства, семьи и сильное сообщество. Для тех, кто ищет больше: общение, поддержку и настоящие связи 🤍\n\n` +
-      `<b>Присоединившись к нам, вы сможете:</b>\n` +
-      `🔸 Участвовать в живых, тёплых мероприятиях и фарбренгенах\n` +
-      `🔸 Узнавать больше о еврейских традициях в лёгкой форме\n` +
-      `🔸 Участвовать во встречах предпринимателей разных уровней\n` +
-      `🔸 Расширять круг общения через еврейский нетворкинг\n` +
-      `🔸 Получать личную и общинную поддержку\n\n` +
-      `🕊 <i>Вы успешно подписаны на уведомления. Мы будем присылать сюда только самые важные новости, расписание уроков Торы и анонсы.</i>\n\n` +
-      `👇 <b>Воспользуйтесь навигацией ниже, чтобы узнать больше:</b>`;
 
     if (!existingUser) {
       await db.insert(users).values({
@@ -107,31 +131,61 @@ bot.start(async (ctx) => {
         source: "telegram_bot",
         role: "client",
       });
-
-      await ctx.reply(welcomeText, {
-        parse_mode: "HTML",
-        ...mainMenuKeyboard,
-      });
-    } else {
-      // Для тех, кто уже в базе, но случайно нажал /start еще раз
-      const existingText =
-        `🕎 <b>Рады снова видеть вас, ${tgUser.first_name}!</b>\n\n` +
-        `Вы уже являетесь резидентом Menorah Center — места, где создаются знакомства, семьи и сильное сообщество 🤍\n\n` +
-        `👇 <b>Воспользуйтесь меню навигации по общине:</b>`;
-
-      await ctx.reply(existingText, {
-        parse_mode: "HTML",
-        ...mainMenuKeyboard,
-      });
     }
+
+    // Отправляем видео с приглашением и кнопками
+    await ctx.replyWithVideo(videoFileId, {
+      caption: inviteCaption,
+      parse_mode: "HTML",
+      ...roshHashanaKeyboard,
+    });
   } catch (error) {
     console.error(`${trace} start handler failed`, getErrorDetails(error));
+    // Фолбэк на случай, если видео еще не загружено или указан неверный ID
     try {
-      await ctx.reply(
-        "Произошла ошибка при соединении с сервером. Пожалуйста, попробуйте позже.",
-      );
+      await ctx.reply(inviteCaption, {
+        parse_mode: "HTML",
+        ...roshHashanaKeyboard,
+      });
     } catch (replyError) {
       console.error("Failed to send error reply", replyError);
+    }
+  }
+});
+
+// 🔥 ОБРАБОТКА НАЖАТИЯ НА КНОПКУ «Я приду!»
+bot.on("callback_query", async (ctx) => {
+  const cbQuery = ctx.callbackQuery;
+
+  if ("data" in cbQuery && cbQuery.data === "attend_rosh_hashana") {
+    const tgUser = cbQuery.from;
+    const username = tgUser.username
+      ? `@${tgUser.username}`
+      : tgUser.first_name;
+
+    try {
+      await ctx.answerCbQuery(
+        "Отлично! Ждем вас на празднике. Сладкого года! 🍯",
+        { show_alert: true },
+      );
+
+      const settings = await db.query.botSettings.findFirst();
+      const groupId = settings?.notificationGroupId;
+      const topicId = settings?.eventsTopicId;
+
+      if (groupId) {
+        await ctx.telegram.sendMessage(
+          groupId,
+          `🔔 <b>Новый гость на Рош ха-Шана!</b>\nПользователь ${username} нажал кнопку «Я приду!».`,
+          {
+            parse_mode: "HTML",
+            message_thread_id:
+              topicId && topicId.trim() !== "" ? parseInt(topicId) : undefined,
+          },
+        );
+      }
+    } catch (error) {
+      console.error("Ошибка обработки callback_query:", error);
     }
   }
 });
@@ -144,7 +198,7 @@ bot.on("text", async (ctx) => {
 
   await ctx.reply(text, {
     parse_mode: "HTML",
-    ...mainMenuKeyboard,
+    ...roshHashanaKeyboard,
   });
 });
 
