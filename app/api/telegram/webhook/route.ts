@@ -40,43 +40,8 @@ const roshHashanaKeyboard = Markup.inlineKeyboard([
       "https://wa.me/972506700779",
     ),
   ],
-
-  // Главная кнопка сайта
-  [
-    Markup.button.url(
-      "🌐 Главная страница общины",
-      "https://www.menorah-rishon.com",
-    ),
-  ],
-
-  // Основные разделы
-  [
-    Markup.button.url(
-      "📅 Мероприятия",
-      "https://www.menorah-rishon.com/events",
-    ),
-    Markup.button.url("🕍 Услуги", "https://www.menorah-rishon.com/services"),
-  ],
-
-  // Дополнительные разделы
-  [
-    Markup.button.url(
-      "📺 Видеоуроки",
-      "https://www.menorah-rishon.com/lessons",
-    ),
-    Markup.button.url("👶 Menorah Kids", "https://www.menorah-rishon.com/kids"),
-  ],
-
   // Ежедневный контент
   [Markup.button.url("Наш Телеграм канал", "https://t.me/menorah_rishon")],
-
-  // Поддержка
-  [
-    Markup.button.url(
-      "🤍 Поддержать общину (Цдака)",
-      "https://shutaf.im/cba30",
-    ),
-  ],
 ]);
 
 // 🔥 ОБРАБОТКА КОМАНДЫ /start
