@@ -79,17 +79,6 @@ const roshHashanaKeyboard = Markup.inlineKeyboard([
   ],
 ]);
 
-// 🔥 ВРЕМЕННЫЙ ПОМОЩНИК: Получаем file_id видео (удали после получения ID)
-bot.on("video", async (ctx) => {
-  const fileId = ctx.message.video.file_id;
-  await ctx.reply(
-    `Твой file_id для видео:\n\n<code>${fileId}</code>\n\nВставь его в переменную videoFileId в коде.`,
-    {
-      parse_mode: "HTML",
-    },
-  );
-});
-
 // 🔥 ОБРАБОТКА КОМАНДЫ /start
 bot.start(async (ctx) => {
   const updateId = ctx.update.update_id;
@@ -97,8 +86,9 @@ bot.start(async (ctx) => {
   const chatId = ctx.chat.id.toString();
   const trace = `[TELEGRAM][update:${updateId}][chat:${chatId}]`;
 
-  // ⚠️ СЮДА ВСТАВЬ КОД ВИДЕО, КОТОРЫЙ ВЫДАСТ БОТ
-  const videoFileId = "СЮДА_ВСТАВИТЬ_FILE_ID_ВИДЕО";
+  // ✅ ТВОЙ FILE_ID ДЛЯ ВИДЕО ВСТАВЛЕН СЮДА
+  const videoFileId =
+    "BAACAgQAAxkBAANCapXRCWZnjSUoNIaQjnE9X9kGPjMAAtshAAL2wLBQ0kp-S8ERiAo9BA";
 
   const inviteCaption = `
 🍯 <b>Счастливый и сладкий год вам обеспечен, ${tgUser.first_name}!</b>
@@ -141,7 +131,7 @@ bot.start(async (ctx) => {
     });
   } catch (error) {
     console.error(`${trace} start handler failed`, getErrorDetails(error));
-    // Фолбэк на случай, если видео еще не загружено или указан неверный ID
+    // Фолбэк на случай ошибки отправки видео (например, если ID изменится)
     try {
       await ctx.reply(inviteCaption, {
         parse_mode: "HTML",
@@ -164,11 +154,13 @@ bot.on("callback_query", async (ctx) => {
       : tgUser.first_name;
 
     try {
+      // Показываем уведомление юзеру
       await ctx.answerCbQuery(
         "Отлично! Ждем вас на празднике. Сладкого года! 🍯",
         { show_alert: true },
       );
 
+      // Ищем настройки в базе для отправки админам
       const settings = await db.query.botSettings.findFirst();
       const groupId = settings?.notificationGroupId;
       const topicId = settings?.eventsTopicId;
