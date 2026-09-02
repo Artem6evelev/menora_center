@@ -49,7 +49,7 @@ export async function EventsSection() {
         {/* Сетка из 4 карточек */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {latestEvents.map((item) => (
-            <PublicEventCard key={item.event.id} item={item} userId={userId} />
+            <PublicEventCard key={item.event.id} item={item} />
           ))}
         </div>
 
