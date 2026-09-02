@@ -303,7 +303,7 @@ export default function EventsPageClient({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <PublicEventCard item={item} userId={userId} />
+              <PublicEventCard item={item} />{" "}
             </motion.div>
           ))}
         </AnimatePresence>

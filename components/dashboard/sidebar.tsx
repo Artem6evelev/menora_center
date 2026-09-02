@@ -60,7 +60,7 @@ export default function Sidebar({ userRole }: { userRole: string }) {
 
   // 🔥 МЕНЮ РЕЗИДЕНТА
   const clientRoutes = [
-    { label: "Мой кабинет", icon: LayoutDashboard, href: "/dashboard" },
+    { label: "Мой Профиль", icon: LayoutDashboard, href: "/dashboard" },
     { label: "События", icon: Calendar, href: "/dashboard/events" },
     { label: "Мои билеты", icon: Ticket, href: "/dashboard/my-events" },
     { label: "Menorah Kids", icon: Baby, href: "/dashboard/kids" }, // КЛИЕНТ

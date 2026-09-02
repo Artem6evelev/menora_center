@@ -1,4 +1,3 @@
-// app/dashboard/page.tsx
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
@@ -18,12 +17,13 @@ import {
   Youtube,
   PenTool,
   Newspaper,
-  Baby, // <-- Добавляем иконку малыша
+  Baby,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import { getDashboardStats } from "@/actions/dashboard";
 import DashboardClient from "@/components/dashboard/dashboard-client";
+import ProfileManager from "@/components/dashboard/profile-manager";
 
 export const revalidate = 0;
 
@@ -44,7 +44,6 @@ export default async function DashboardPage() {
     stats = await getDashboardStats();
   }
 
-  // Обновленный список разделов
   const sections = [
     {
       title: "События Общины",
@@ -66,7 +65,6 @@ export default async function DashboardPage() {
       color: "text-[#FFB800]",
       bg: "bg-[#FFB800]/10",
     },
-    // 🔥 НОВЫЙ БЛОК: MENORAH KIDS ВМЕСТО УСЛУГ
     {
       title: "Menorah Kids",
       description: "Программы, кружки и управление профилями ваших детей.",
@@ -169,7 +167,6 @@ export default async function DashboardPage() {
   const visibleSections = sections.filter((s) => s.roles.includes(role));
 
   return (
-    // ... весь твой остальной JSX код возврата остается без изменений ...
     <div className="max-w-7xl mx-auto w-full pb-12">
       <div className="relative overflow-hidden bg-neutral-900 dark:bg-neutral-950 rounded-[32px] p-8 md:p-12 text-white shadow-2xl mb-10 border border-neutral-800 flex flex-col md:flex-row items-center justify-between gap-8">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
@@ -208,20 +205,25 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {isAdmin && stats && (
+      {/* 🔥 НОВЫЙ БЛОК: УПРАВЛЕНИЕ ПРОФИЛЕМ ПОЛЬЗОВАТЕЛЯ */}
+      <div className="mb-12">
+        <ProfileManager user={dbUser} />
+      </div>
+
+      {/* {isAdmin && stats && (
         <div className="mb-12">
           <DashboardClient stats={stats} />
         </div>
-      )}
+      )} */}
 
-      <div className="mb-6 flex items-center gap-3">
+      {/* <div className="mb-6 flex items-center gap-3">
         <div className="w-2 h-8 bg-[#FFB800] rounded-r-full" />
         <h2 className="text-3xl font-black tracking-tighter text-neutral-900 dark:text-white">
           Разделы системы
         </h2>
-      </div>
+      </div> */}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {visibleSections.map((section, idx) => {
           const Icon = section.icon;
           return (
@@ -276,7 +278,7 @@ export default async function DashboardPage() {
             </Link>
           );
         })}
-      </div>
+      </div> */}
     </div>
   );
 }

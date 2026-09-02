@@ -307,3 +307,31 @@ export async function updateFamilyProfile(
     return { success: false, message: error.message };
   }
 }
+
+// Добавь это в конец файла actions/user.ts
+
+export async function updateUserProfile(userId: string, data: any) {
+  try {
+    await db
+      .update(users)
+      .set({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phone: data.phone,
+        dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
+        city: data.city,
+        maritalStatus: data.maritalStatus,
+        spouseName: data.maritalStatus === "married" ? data.spouseName : null,
+        hasChildren: data.hasChildren === "yes", // Конвертируем string в boolean
+        childrenData: data.hasChildren === "yes" ? data.childrenData : [],
+        jewishStatus: data.jewishStatus,
+      })
+      .where(eq(users.id, userId));
+
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (error) {
+    console.error("Ошибка обновления профиля:", error);
+    return { success: false, message: "Не удалось обновить профиль" };
+  }
+}

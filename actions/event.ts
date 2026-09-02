@@ -12,6 +12,65 @@ import { revalidatePath } from "next/cache";
 import { sendEventRegistrationNotification } from "@/actions/telegram";
 import { auth } from "@clerk/nextjs/server";
 
+// 🔥 НОВАЯ ФУНКЦИЯ: Транслитерация и создание красивой ссылки (Slug)
+function generateSlug(title: string) {
+  if (!title) return `evt_${Math.random().toString(36).substring(2, 8)}`;
+
+  const ru: { [key: string]: string } = {
+    а: "a",
+    б: "b",
+    в: "v",
+    г: "g",
+    д: "d",
+    е: "e",
+    ё: "e",
+    ж: "zh",
+    з: "z",
+    и: "i",
+    й: "y",
+    к: "k",
+    л: "l",
+    м: "m",
+    н: "n",
+    о: "o",
+    п: "p",
+    р: "r",
+    с: "s",
+    т: "t",
+    у: "u",
+    ф: "f",
+    х: "h",
+    ц: "ts",
+    ч: "ch",
+    ш: "sh",
+    щ: "sch",
+    ъ: "",
+    ы: "y",
+    ь: "",
+    э: "e",
+    ю: "yu",
+    я: "ya",
+  };
+
+  // 1. Переводим в нижний регистр и заменяем русские буквы на латиницу
+  let slug = title
+    .toLowerCase()
+    .split("")
+    .map((char) => ru[char] || char)
+    .join("");
+
+  // 2. Заменяем все не-буквы и не-цифры на дефис
+  slug = slug.replace(/[^a-z0-9]+/g, "-");
+
+  // 3. Убираем лишние дефисы в начале и в конце
+  slug = slug.replace(/^-+|-+$/g, "");
+
+  // 4. Генерируем 4 случайные цифры для уникальности (как в ТЗ)
+  const shortId = Math.floor(1000 + Math.random() * 9000);
+
+  return slug ? `${slug}-${shortId}` : `evt_${shortId}`;
+}
+
 // === 1. КАТЕГОРИИ ===
 export async function getEventCategories() {
   try {
@@ -64,25 +123,30 @@ export async function getEvents() {
 
 export async function createEvent(data: any) {
   try {
-    const newId = `evt_${crypto.randomUUID()}`;
+    // 🔥 ТЕПЕРЬ ID СОБЫТИЯ — ЭТО ЧИТАЕМАЯ ССЫЛКА НА ОСНОВЕ НАЗВАНИЯ
+    const newId = generateSlug(data.title);
+
     const preparedData = {
       ...data,
       categoryId: data.categoryId || null,
       price: data.price || null,
-      paymentUrl: data.paymentUrl || null, // 🔥 ДОБАВЛЕНО: Ссылка на оплату (Shutafim)
+      paymentUrl: data.paymentUrl || null,
       description: data.description || null,
       location: data.location || null,
       time: data.time || null,
       recurringPattern: data.recurringPattern || null,
       recurringDays: data.recurringDays || null,
-      isRegistrationClosed: data.isRegistrationClosed || false, // 🔥 ДОБАВЛЕНО: Закрытие регистрации
+      isRegistrationClosed: data.isRegistrationClosed || false,
     };
+
     await db.insert(events).values({ id: newId, ...preparedData });
+
     revalidatePath("/dashboard/events");
     revalidatePath("/events");
     revalidatePath("/");
     return { success: true, id: newId };
   } catch (error) {
+    console.error("Ошибка при создании события:", error);
     return { success: false };
   }
 }
@@ -103,13 +167,13 @@ export async function updateEvent(id: string, data: any) {
       ...data,
       categoryId: data.categoryId || null,
       price: data.price || null,
-      paymentUrl: data.paymentUrl || null, // 🔥 ДОБАВЛЕНО
+      paymentUrl: data.paymentUrl || null,
       description: data.description || null,
       location: data.location || null,
       time: data.time || null,
       recurringPattern: data.recurringPattern || null,
       recurringDays: data.recurringDays || null,
-      isRegistrationClosed: data.isRegistrationClosed || false, // 🔥 ДОБАВЛЕНО
+      isRegistrationClosed: data.isRegistrationClosed || false,
     };
     await db.update(events).set(preparedData).where(eq(events.id, id));
     revalidatePath("/dashboard/events");
@@ -153,7 +217,6 @@ export async function checkRegistration(eventId: string, userId: string) {
   }
 }
 
-// 🔥 ОБНОВЛЕННАЯ ФУНКЦИЯ ПОД ТЗ (С ДОЗАПОЛНЕНИЕМ ПРОФИЛЯ) 🔥
 export async function registerForEvent(
   eventId: string,
   userId: string,
@@ -162,14 +225,13 @@ export async function registerForEvent(
   profileUpdates?: {
     newSpouseName?: string;
     newChild?: { name: string; dateOfBirth: string };
-  }, // <-- НОВЫЙ ПАРАМЕТР
+  },
 ) {
   try {
     const isAlreadyRegistered = await checkRegistration(eventId, userId);
     if (isAlreadyRegistered)
       return { success: true, message: "already_registered" };
 
-    // 1. Получаем текущие данные пользователя
     const [userData] = await db
       .select()
       .from(users)
@@ -177,7 +239,6 @@ export async function registerForEvent(
 
     const userPhone = phone || userData?.phone || "Не указан";
 
-    // 🌟 ДОБАВЛЕНО: ОБНОВЛЕНИЕ ПРОФИЛЯ (СУПРУГ И ДЕТИ) 🌟
     if (
       profileUpdates &&
       (profileUpdates.newSpouseName || profileUpdates.newChild)
@@ -186,11 +247,10 @@ export async function registerForEvent(
 
       if (profileUpdates.newSpouseName) {
         updatePayload.spouseName = profileUpdates.newSpouseName;
-        updatePayload.maritalStatus = "married"; // Автоматически меняем статус
+        updatePayload.maritalStatus = "married";
       }
 
       if (profileUpdates.newChild) {
-        // Добавляем ребенка к существующему массиву
         const currentChildren = Array.isArray(userData.childrenData)
           ? userData.childrenData
           : [];
@@ -198,16 +258,14 @@ export async function registerForEvent(
           ...currentChildren,
           profileUpdates.newChild,
         ];
-        updatePayload.hasChildren = true; // Автоматически ставим флаг
+        updatePayload.hasChildren = true;
       }
 
-      // Сохраняем в таблицу users
       if (Object.keys(updatePayload).length > 0) {
         await db.update(users).set(updatePayload).where(eq(users.id, userId));
       }
     }
 
-    // 2. Получаем ивент для ссылки на оплату
     const [eventData] = await db
       .select()
       .from(events)
@@ -215,7 +273,6 @@ export async function registerForEvent(
 
     if (!eventData) return { success: false, message: "Событие не найдено" };
 
-    // 3. Создаем запись
     const newId = `part_${Math.random().toString(36).substring(2, 11)}`;
     await db.insert(eventParticipants).values({
       id: newId,
@@ -226,7 +283,6 @@ export async function registerForEvent(
       extraData: extraData || null,
     });
 
-    // 4. Отправка уведомления в Telegram админам
     try {
       if (eventData && userData) {
         await sendEventRegistrationNotification(eventData.title || "Событие", {
@@ -393,7 +449,6 @@ export async function deleteEventParticipant(id: string) {
   }
 }
 
-// === ПОЛУЧЕНИЕ ДАННЫХ СЕМЬИ ДЛЯ МОДАЛКИ ===
 export async function getUserFamilyData(userId: string) {
   try {
     const [user] = await db
@@ -402,7 +457,7 @@ export async function getUserFamilyData(userId: string) {
         lastName: users.lastName,
         phone: users.phone,
         spouseName: users.spouseName,
-        childrenData: users.childrenData, // Это тот самый JSON с детьми
+        childrenData: users.childrenData,
       })
       .from(users)
       .where(eq(users.id, userId));
