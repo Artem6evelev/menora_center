@@ -48,7 +48,6 @@ export const UpcomingEvents = ({
             <PublicEventCard
               key={event?.event?.id || event?.id || index}
               item={event}
-              userId={userId}
             />
           ))}
         </div>
