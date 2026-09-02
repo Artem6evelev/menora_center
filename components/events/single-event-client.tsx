@@ -12,16 +12,15 @@ import {
   Coins,
   MapPin,
   Check,
+  UserPlus,
 } from "lucide-react";
 import {
   registerForEvent,
   getUserFamilyData,
   checkRegistration,
 } from "@/actions/event";
-// 🔥 ИМПОРТИРУЕМ useClerk
 import { useClerk } from "@clerk/nextjs";
 
-// 🌟 Компонент сочной градиентной кнопки с бликом
 const ShinyButton = ({
   onClick,
   text,
@@ -53,6 +52,17 @@ const ShinyButton = ({
   </button>
 );
 
+// Функция расчета возраста
+const getAge = (child: any) => {
+  if (!child) return "?";
+  if (child.age) return child.age;
+  const dobString = child.dateOfBirth || child.birthDate;
+  if (!dobString) return "?";
+  const ageDifMs = Date.now() - new Date(dobString).getTime();
+  const ageDate = new Date(ageDifMs);
+  return Math.abs(ageDate.getUTCFullYear() - 1970);
+};
+
 export default function SingleEventClient({
   eventData,
   userId,
@@ -61,23 +71,27 @@ export default function SingleEventClient({
   userId: string | null;
 }) {
   const router = useRouter();
-
-  // 🔥 ПОЛУЧАЕМ ГЛАВНЫЙ ОБЪЕКТ CLERK
   const clerk = useClerk();
-  const [isGoogleRedirecting, setIsGoogleRedirecting] = useState(false);
 
-  // Состояния для авторизованных пользователей
+  const [isGoogleRedirecting, setIsGoogleRedirecting] = useState(false);
   const [isRegModalOpen, setIsRegModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [userData, setUserData] = useState<any>(null);
 
-  // Состояния гостей
   const [extraAdults, setExtraAdults] = useState(0);
   const [extraKids, setExtraKids] = useState(0);
   const [selectedFamily, setSelectedFamily] = useState<{
     [key: string]: boolean;
   }>({ self: true });
+
+  // 🔥 СТЕЙТЫ ДЛЯ ДОБАВЛЕНИЯ В ПРОФИЛЬ
+  const [isAddingSpouse, setIsAddingSpouse] = useState(false);
+  const [newSpouseName, setNewSpouseName] = useState("");
+
+  const [isAddingChild, setIsAddingChild] = useState(false);
+  const [newChildName, setNewChildName] = useState("");
+  const [newChildDob, setNewChildDob] = useState("");
 
   const eventImageUrl = eventData.imageUrl || "/default-event-poster.png";
 
@@ -96,15 +110,14 @@ export default function SingleEventClient({
     };
   }, [isRegModalOpen]);
 
-  // 🔥 ФУНКЦИЯ ПРЯМОГО РЕДИРЕКТА В GOOGLE
   const handleGoogleDirectLogin = async () => {
     setIsGoogleRedirecting(true);
     try {
-      // @ts-ignore - Игнорируем ошибку TS, метод существует в ядре Clerk
+      // @ts-ignore
       await clerk.client.signIn.authenticateWithRedirect({
         strategy: "oauth_google",
-        redirectUrl: "/sign-in", // Стандартная страница входа отловит коллбэк от Google
-        redirectUrlComplete: `/events/${eventData.id}`, // Куда вернуть после успеха
+        redirectUrl: "/sign-in",
+        redirectUrlComplete: `/events/${eventData.id}`,
       });
     } catch (error) {
       console.error("Ошибка редиректа:", error);
@@ -112,9 +125,6 @@ export default function SingleEventClient({
     }
   };
 
-  // ==============================================================
-  // ФЛОУ 1: ПОЛЬЗОВАТЕЛЬ НЕ АВТОРИЗОВАН (ЗАГЛУШКА ИЗ ТЗ)
-  // ==============================================================
   if (!userId) {
     return (
       <main className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden bg-black">
@@ -151,9 +161,6 @@ export default function SingleEventClient({
     );
   }
 
-  // ==============================================================
-  // ФЛОУ 2: ПОЛЬЗОВАТЕЛЬ АВТОРИЗОВАН (ОСНОВНАЯ СТРАНИЦА)
-  // ==============================================================
   const handleRegisterClick = () => {
     if (eventData.isRegistrationClosed || isRegistered) return;
     setIsRegModalOpen(true);
@@ -161,8 +168,44 @@ export default function SingleEventClient({
 
   const handleRegisterSubmit = async () => {
     setIsLoading(true);
-    const extraData = { family: selectedFamily, extraAdults, extraKids };
-    const res = await registerForEvent(eventData.id, userId, null, extraData);
+
+    // Подготовка экстра-данных
+    const extraData: any = {
+      family: { ...selectedFamily },
+      extraAdults,
+      extraKids,
+    };
+
+    // Подготовка обновлений профиля (если юзер ввел новые данные в модалке)
+    let profileUpdates: any = undefined;
+    if (
+      (isAddingSpouse && newSpouseName.trim()) ||
+      (isAddingChild && newChildName.trim() && newChildDob)
+    ) {
+      profileUpdates = {
+        newSpouseName:
+          isAddingSpouse && newSpouseName.trim() ? newSpouseName : undefined,
+        newChild:
+          isAddingChild && newChildName.trim() && newChildDob
+            ? { name: newChildName, dateOfBirth: newChildDob }
+            : undefined,
+      };
+
+      // Автоматически ставим им галочки для этого конкретного ивента
+      if (profileUpdates.newSpouseName) extraData.family.spouse = true;
+      if (profileUpdates.newChild) {
+        const newChildIdx = userData?.childrenData?.length || 0;
+        extraData.family[`child_${newChildIdx}`] = true;
+      }
+    }
+
+    const res = await registerForEvent(
+      eventData.id,
+      userId,
+      userData?.phone,
+      extraData,
+      profileUpdates,
+    );
 
     if (res.success) {
       if (res.paymentUrl) window.location.href = res.paymentUrl;
@@ -305,32 +348,37 @@ export default function SingleEventClient({
         </div>
       </div>
 
+      {/* МОДАЛКА РЕГИСТРАЦИИ (ВЫБОР СЕМЬИ + ДОБАВЛЕНИЕ) */}
       {isRegModalOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
           onClick={() => setIsRegModalOpen(false)}
         >
           <div
-            className="bg-white dark:bg-neutral-900 rounded-3xl p-6 md:p-8 max-w-md w-full relative shadow-2xl animate-in fade-in zoom-in-95"
+            className="bg-white dark:bg-neutral-900 rounded-3xl p-6 md:p-8 max-w-md w-full relative shadow-2xl animate-in fade-in zoom-in-95 max-h-[90vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setIsRegModalOpen(false)}
-              className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
+              className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-900 dark:hover:text-white shrink-0 z-10"
             >
               <X size={24} />
             </button>
 
-            <h2 className="text-xl font-black mb-1">
-              Регистрация на {eventData.title}
-            </h2>
-            <p className="text-sm text-neutral-500 mb-6">{formattedDate}</p>
+            <div className="shrink-0 mb-6">
+              <h2 className="text-xl font-black mb-1 line-clamp-2 pr-6">
+                Регистрация на {eventData.title}
+              </h2>
+              <p className="text-sm text-neutral-500">{formattedDate}</p>
+            </div>
 
             {userData ? (
-              <div className="space-y-6">
+              <div className="overflow-y-auto custom-scrollbar flex-1 pr-2 space-y-6">
+                {/* СЕКЦИЯ: ВАША СЕМЬЯ */}
                 <div>
                   <h3 className="font-bold text-sm mb-3">Ваша семья:</h3>
                   <div className="space-y-3">
+                    {/* Вы сами */}
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input
                         type="checkbox"
@@ -338,10 +386,13 @@ export default function SingleEventClient({
                         disabled
                         className="w-5 h-5 rounded accent-[#FFB800]"
                       />
-                      <span>{userData.firstName} (Вы)</span>
+                      <span className="text-sm font-medium">
+                        {userData.firstName} (Вы)
+                      </span>
                     </label>
 
-                    {userData.spouseName && (
+                    {/* СУПРУГ(А) */}
+                    {userData.spouseName ? (
                       <label className="flex items-center gap-3 cursor-pointer">
                         <input
                           type="checkbox"
@@ -354,10 +405,44 @@ export default function SingleEventClient({
                             })
                           }
                         />
-                        <span>{userData.spouseName} (Супруг/а)</span>
+                        <span className="text-sm font-medium">
+                          {userData.spouseName} (Супруг/а)
+                        </span>
                       </label>
+                    ) : (
+                      <div>
+                        {!isAddingSpouse ? (
+                          <button
+                            onClick={() => setIsAddingSpouse(true)}
+                            className="flex items-center gap-2 text-xs font-bold text-[#FFB800] hover:underline mt-2"
+                          >
+                            <UserPlus size={14} /> Указать супруга/у
+                          </button>
+                        ) : (
+                          <div className="flex items-center gap-2 mt-2 bg-orange-50/50 dark:bg-orange-950/20 p-2 rounded-xl border border-orange-100 dark:border-orange-900/30">
+                            <input
+                              autoFocus
+                              type="text"
+                              placeholder="Имя супруга/и"
+                              value={newSpouseName}
+                              onChange={(e) => setNewSpouseName(e.target.value)}
+                              className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg p-2 text-sm outline-none focus:border-[#FFB800]"
+                            />
+                            <button
+                              onClick={() => {
+                                setIsAddingSpouse(false);
+                                setNewSpouseName("");
+                              }}
+                              className="p-2 text-neutral-400 hover:text-red-500"
+                            >
+                              <X size={16} />
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     )}
 
+                    {/* ДЕТИ */}
                     {(userData.childrenData || []).map(
                       (child: any, idx: number) => (
                         <label
@@ -375,19 +460,72 @@ export default function SingleEventClient({
                               })
                             }
                           />
-                          <span>{child.name} (Ребёнок)</span>
+                          <span className="text-sm font-medium">
+                            {child.name}{" "}
+                            <span className="text-neutral-400 font-normal">
+                              ({getAge(child)} лет)
+                            </span>
+                          </span>
                         </label>
                       ),
                     )}
+
+                    {/* ДОБАВИТЬ НОВОГО РЕБЕНКА */}
+                    <div>
+                      {!isAddingChild ? (
+                        <button
+                          onClick={() => setIsAddingChild(true)}
+                          className="flex items-center gap-2 text-xs font-bold text-[#FFB800] hover:underline mt-2"
+                        >
+                          <UserPlus size={14} /> Добавить ребенка
+                        </button>
+                      ) : (
+                        <div className="flex flex-col gap-2 mt-2 bg-orange-50/50 dark:bg-orange-950/20 p-3 rounded-xl border border-orange-100 dark:border-orange-900/30">
+                          <div className="flex items-center gap-2">
+                            <input
+                              autoFocus
+                              type="text"
+                              placeholder="Имя ребенка"
+                              value={newChildName}
+                              onChange={(e) => setNewChildName(e.target.value)}
+                              className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg p-2 text-sm outline-none focus:border-[#FFB800]"
+                            />
+                            <button
+                              onClick={() => {
+                                setIsAddingChild(false);
+                                setNewChildName("");
+                                setNewChildDob("");
+                              }}
+                              className="p-2 text-neutral-400 hover:text-red-500 shrink-0"
+                            >
+                              <X size={16} />
+                            </button>
+                          </div>
+                          <input
+                            type="date"
+                            value={newChildDob}
+                            onChange={(e) => setNewChildDob(e.target.value)}
+                            className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg p-2 text-sm outline-none focus:border-[#FFB800] text-neutral-500"
+                          />
+                          <p className="text-[10px] text-neutral-400 leading-tight">
+                            Укажите дату рождения, она навсегда сохранится в
+                            профиле для записи в детские группы.
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
+                {/* СЕКЦИЯ: ДОПОЛНИТЕЛЬНЫЕ ГОСТИ */}
                 <div className="pt-4 border-t border-neutral-100 dark:border-neutral-800">
                   <h3 className="font-bold text-sm mb-4">
                     Дополнительные гости:
                   </h3>
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-sm">Взрослые (гости)</span>
+                    <span className="text-sm font-medium">
+                      Взрослые (гости)
+                    </span>
                     <div className="flex items-center gap-4 bg-neutral-100 dark:bg-neutral-800 rounded-full px-2 py-1">
                       <button
                         onClick={() =>
@@ -395,66 +533,69 @@ export default function SingleEventClient({
                         }
                         className="p-1 hover:text-[#FFB800]"
                       >
-                        <Minus size={16} />
+                        <Minus size={16} strokeWidth={3} />
                       </button>
-                      <span className="font-bold w-4 text-center">
+                      <span className="font-black w-4 text-center">
                         {extraAdults}
                       </span>
                       <button
                         onClick={() => setExtraAdults(extraAdults + 1)}
                         className="p-1 hover:text-[#FFB800]"
                       >
-                        <Plus size={16} />
+                        <Plus size={16} strokeWidth={3} />
                       </button>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">Дети (гости)</span>
+                    <span className="text-sm font-medium">
+                      Дети (до 13 лет)
+                    </span>
                     <div className="flex items-center gap-4 bg-neutral-100 dark:bg-neutral-800 rounded-full px-2 py-1">
                       <button
                         onClick={() => setExtraKids(Math.max(0, extraKids - 1))}
                         className="p-1 hover:text-[#FFB800]"
                       >
-                        <Minus size={16} />
+                        <Minus size={16} strokeWidth={3} />
                       </button>
-                      <span className="font-bold w-4 text-center">
+                      <span className="font-black w-4 text-center">
                         {extraKids}
                       </span>
                       <button
                         onClick={() => setExtraKids(extraKids + 1)}
                         className="p-1 hover:text-[#FFB800]"
                       >
-                        <Plus size={16} />
+                        <Plus size={16} strokeWidth={3} />
                       </button>
                     </div>
                   </div>
                 </div>
-
-                <div className="flex gap-3 pt-4">
-                  <button
-                    onClick={() => setIsRegModalOpen(false)}
-                    className="flex-1 py-3.5 rounded-xl bg-neutral-100 dark:bg-neutral-800 font-bold"
-                  >
-                    Отмена
-                  </button>
-                  <button
-                    onClick={handleRegisterSubmit}
-                    disabled={isLoading}
-                    className="flex-1 py-3.5 rounded-xl bg-[#FFB800] text-black font-bold flex justify-center items-center shadow-lg active:scale-95"
-                  >
-                    {isLoading ? (
-                      <Loader2 className="animate-spin" size={20} />
-                    ) : (
-                      "Записаться"
-                    )}
-                  </button>
-                </div>
               </div>
             ) : (
-              <div className="flex justify-center py-8">
+              <div className="flex justify-center py-12 flex-1">
                 <Loader2 className="animate-spin text-[#FFB800]" size={32} />
               </div>
             )}
+
+            {/* КНОПКИ УПРАВЛЕНИЯ */}
+            <div className="flex gap-3 pt-4 mt-4 border-t border-neutral-100 dark:border-neutral-800 shrink-0">
+              <button
+                onClick={() => setIsRegModalOpen(false)}
+                className="flex-1 py-3.5 rounded-xl bg-neutral-100 dark:bg-neutral-800 font-bold text-neutral-600 dark:text-neutral-300"
+              >
+                Отмена
+              </button>
+              <button
+                onClick={handleRegisterSubmit}
+                disabled={isLoading}
+                className="flex-[1.5] py-3.5 rounded-xl bg-gradient-to-r from-[#FFB800] to-orange-500 text-white font-black uppercase tracking-widest flex justify-center items-center shadow-lg active:scale-95 text-sm disabled:opacity-50"
+              >
+                {isLoading ? (
+                  <Loader2 className="animate-spin" size={20} />
+                ) : (
+                  "Записаться"
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}
