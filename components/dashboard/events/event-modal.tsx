@@ -611,7 +611,7 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
               {isSubmitting ? (
                 <Loader2 className="animate-spin" size={20} />
               ) : (
-                "Сохранить собтие"
+                "Сохранить событие"
               )}
             </button>
           </div>
