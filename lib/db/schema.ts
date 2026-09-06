@@ -96,24 +96,20 @@ export const events = pgTable("events", {
   title: text("title").notNull(),
   description: text("description"),
   imageUrl: text("image_url"),
-
   isRecurring: boolean("is_recurring").default(false).notNull(),
   recurringPattern: text("recurring_pattern"),
   recurringDays: text("recurring_days"),
-
   date: text("date"),
   time: text("time"),
   location: text("location"),
-
   isFree: boolean("is_free").default(false).notNull(),
   price: text("price"),
-  paymentUrl: text("payment_url"), // 🔥 ДОБАВЛЕНО: Ссылка на страницу оплаты (Shutafim)
+  childPrice: text("child_price"), // 🔥 ДОБАВИЛИ ЭТУ СТРОКУ
+  paymentUrl: text("payment_url"),
   audience: text("audience").default("all").notNull(),
-
   isRegistrationClosed: boolean("is_registration_closed").default(false),
   status: text("status").default("planned").notNull(),
   categoryId: text("category_id").references(() => eventCategories.id),
-
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),

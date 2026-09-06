@@ -17,6 +17,7 @@ export type EventType = {
   location: string | null;
   isFree: boolean; // <-- Было isPaid, стало isFree
   price: string | null;
+  childPrice: string | null; // 🔥 ДОБАВИЛИ ЭТУ СТРОКУ
   audience: string; // <-- ДОБАВИЛИ
   status: string;
   categoryId: string | null;

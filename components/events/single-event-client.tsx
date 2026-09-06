@@ -21,6 +21,7 @@ import {
 } from "@/actions/event";
 import { useClerk } from "@clerk/nextjs";
 
+// --- Компонент кнопки ---
 const ShinyButton = ({
   onClick,
   text,
@@ -52,7 +53,7 @@ const ShinyButton = ({
   </button>
 );
 
-// Функция расчета возраста
+// --- Вспомогательные функции ---
 const getAge = (child: any) => {
   if (!child) return "?";
   if (child.age) return child.age;
@@ -79,13 +80,15 @@ export default function SingleEventClient({
   const [isRegistered, setIsRegistered] = useState(false);
   const [userData, setUserData] = useState<any>(null);
 
+  // Стейт для Iframe
+  const [iframeUrl, setIframeUrl] = useState<string | null>(null);
+
   const [extraAdults, setExtraAdults] = useState(0);
   const [extraKids, setExtraKids] = useState(0);
   const [selectedFamily, setSelectedFamily] = useState<{
     [key: string]: boolean;
   }>({ self: true });
 
-  // 🔥 СТЕЙТЫ ДЛЯ ДОБАВЛЕНИЯ В ПРОФИЛЬ
   const [isAddingSpouse, setIsAddingSpouse] = useState(false);
   const [newSpouseName, setNewSpouseName] = useState("");
 
@@ -103,13 +106,38 @@ export default function SingleEventClient({
   }, [userId, eventData.id]);
 
   useEffect(() => {
-    if (isRegModalOpen) document.body.style.overflow = "hidden";
+    if (isRegModalOpen || iframeUrl) document.body.style.overflow = "hidden";
     else document.body.style.overflow = "unset";
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [isRegModalOpen]);
+  }, [isRegModalOpen, iframeUrl]);
 
+  // 🔥 КАЛЬКУЛЯТОР СУММЫ
+  const calculateTotal = () => {
+    if (eventData.isFree) return 0;
+
+    const adultPrice = parseFloat(eventData.price) || 0;
+    const childPrice = parseFloat(eventData.childPrice) || 0;
+
+    let adultsCount = 1; // Пользователь
+    if (selectedFamily.spouse) adultsCount++;
+    adultsCount += extraAdults;
+
+    let kidsCount = extraKids;
+    const kidsKeys = Object.keys(selectedFamily).filter((k) =>
+      k.startsWith("child_"),
+    );
+    kidsKeys.forEach((k) => {
+      if (selectedFamily[k]) kidsCount++;
+    });
+
+    return adultsCount * adultPrice + kidsCount * childPrice;
+  };
+
+  const totalAmount = calculateTotal();
+
+  // --- Экшены ---
   const handleGoogleDirectLogin = async () => {
     setIsGoogleRedirecting(true);
     try {
@@ -120,11 +148,69 @@ export default function SingleEventClient({
         redirectUrlComplete: `/events/${eventData.id}`,
       });
     } catch (error) {
-      console.error("Ошибка редиректа:", error);
       setIsGoogleRedirecting(false);
     }
   };
 
+  const handleRegisterClick = () => {
+    if (eventData.isRegistrationClosed || isRegistered) return;
+    setIsRegModalOpen(true);
+  };
+
+  const handleRegisterSubmit = async () => {
+    setIsLoading(true);
+    const extraData: any = {
+      family: { ...selectedFamily },
+      extraAdults,
+      extraKids,
+    };
+
+    let profileUpdates: any = undefined;
+    if (
+      (isAddingSpouse && newSpouseName.trim()) ||
+      (isAddingChild && newChildName.trim() && newChildDob)
+    ) {
+      profileUpdates = {
+        newSpouseName:
+          isAddingSpouse && newSpouseName.trim() ? newSpouseName : undefined,
+        newChild:
+          isAddingChild && newChildName.trim() && newChildDob
+            ? { name: newChildName, dateOfBirth: newChildDob }
+            : undefined,
+      };
+
+      if (profileUpdates.newSpouseName) extraData.family.spouse = true;
+      if (profileUpdates.newChild) {
+        const newChildIdx = userData?.childrenData?.length || 0;
+        extraData.family[`child_${newChildIdx}`] = true;
+      }
+    }
+
+    // Передаем totalAmount на сервер
+    const res = await registerForEvent(
+      eventData.id,
+      userId!,
+      userData?.phone,
+      extraData,
+      profileUpdates,
+      totalAmount,
+    );
+
+    if (res.success) {
+      if (res.paymentUrl) {
+        setIsRegModalOpen(false);
+        setIframeUrl(res.paymentUrl); // Открываем Iframe
+      } else {
+        setIsRegistered(true);
+        setIsRegModalOpen(false);
+      }
+    } else {
+      alert("Ошибка: " + res.message);
+    }
+    setIsLoading(false);
+  };
+
+  // --- Заглушка для неавторизованных ---
   if (!userId) {
     return (
       <main className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden bg-black">
@@ -161,64 +247,7 @@ export default function SingleEventClient({
     );
   }
 
-  const handleRegisterClick = () => {
-    if (eventData.isRegistrationClosed || isRegistered) return;
-    setIsRegModalOpen(true);
-  };
-
-  const handleRegisterSubmit = async () => {
-    setIsLoading(true);
-
-    // Подготовка экстра-данных
-    const extraData: any = {
-      family: { ...selectedFamily },
-      extraAdults,
-      extraKids,
-    };
-
-    // Подготовка обновлений профиля (если юзер ввел новые данные в модалке)
-    let profileUpdates: any = undefined;
-    if (
-      (isAddingSpouse && newSpouseName.trim()) ||
-      (isAddingChild && newChildName.trim() && newChildDob)
-    ) {
-      profileUpdates = {
-        newSpouseName:
-          isAddingSpouse && newSpouseName.trim() ? newSpouseName : undefined,
-        newChild:
-          isAddingChild && newChildName.trim() && newChildDob
-            ? { name: newChildName, dateOfBirth: newChildDob }
-            : undefined,
-      };
-
-      // Автоматически ставим им галочки для этого конкретного ивента
-      if (profileUpdates.newSpouseName) extraData.family.spouse = true;
-      if (profileUpdates.newChild) {
-        const newChildIdx = userData?.childrenData?.length || 0;
-        extraData.family[`child_${newChildIdx}`] = true;
-      }
-    }
-
-    const res = await registerForEvent(
-      eventData.id,
-      userId,
-      userData?.phone,
-      extraData,
-      profileUpdates,
-    );
-
-    if (res.success) {
-      if (res.paymentUrl) window.location.href = res.paymentUrl;
-      else {
-        setIsRegistered(true);
-        setIsRegModalOpen(false);
-      }
-    } else {
-      alert("Ошибка: " + res.message);
-    }
-    setIsLoading(false);
-  };
-
+  // --- Основной рендер ---
   const formattedDate = eventData.date
     ? new Date(eventData.date).toLocaleDateString("ru-RU", {
         day: "numeric",
@@ -248,11 +277,10 @@ export default function SingleEventClient({
       isSuccess: false,
     };
   };
-
   const btnState = getButtonState();
 
   return (
-    <main className="min-h-screen bg-neutral-50 dark:bg-neutral-950 pt-24 md:pt-32 pb-20">
+    <main className="min-h-screen bg-neutral-50 dark:bg-neutral-950 pt-24 md:pt-32 pb-20 relative">
       <div className="max-w-4xl mx-auto px-4 md:px-6">
         <div className="bg-white dark:bg-neutral-900 rounded-[32px] shadow-xl overflow-hidden border border-neutral-200 dark:border-neutral-800 flex flex-col md:flex-row">
           <div className="w-full md:w-[45%] lg:w-[40%] bg-neutral-50 dark:bg-neutral-950 p-6 md:p-10 flex items-center justify-center shrink-0 border-b md:border-b-0 md:border-r border-neutral-100 dark:border-neutral-800 relative overflow-hidden">
@@ -308,9 +336,21 @@ export default function SingleEventClient({
                   <div className="p-2 bg-neutral-200 dark:bg-neutral-800 rounded-lg text-neutral-500">
                     <Coins size={16} />
                   </div>
-                  {eventData.isFree
-                    ? "Участие бесплатное"
-                    : `Стоимость: ${eventData.price || "Уточняется"}`}
+                  {eventData.isFree ? (
+                    "Участие бесплатное"
+                  ) : (
+                    <div className="flex flex-col">
+                      <span>
+                        Взрослые:{" "}
+                        {eventData.price ? `${eventData.price} ₪` : "0 ₪"}
+                      </span>
+                      {eventData.childPrice && (
+                        <span className="text-neutral-500 text-xs">
+                          Дети: {eventData.childPrice} ₪
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -348,7 +388,37 @@ export default function SingleEventClient({
         </div>
       </div>
 
-      {/* МОДАЛКА РЕГИСТРАЦИИ (ВЫБОР СЕМЬИ + ДОБАВЛЕНИЕ) */}
+      {/* 🔥 МОДАЛКА С IFRAME */}
+      {iframeUrl && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-300">
+          <div className="relative w-full max-w-2xl h-[85vh] bg-white dark:bg-neutral-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col">
+            <div className="p-4 bg-neutral-100 dark:bg-neutral-950 flex justify-between items-center border-b dark:border-neutral-800">
+              <div>
+                <h3 className="font-black text-neutral-900 dark:text-white">
+                  Безопасная оплата
+                </h3>
+                <p className="text-xs text-neutral-500">Secured by Shutafim</p>
+              </div>
+              <button
+                onClick={() => setIframeUrl(null)}
+                className="p-2 bg-neutral-200 dark:bg-neutral-800 rounded-full hover:bg-neutral-300 transition"
+              >
+                <X
+                  size={20}
+                  className="text-neutral-600 dark:text-neutral-300"
+                />
+              </button>
+            </div>
+            <iframe
+              src={iframeUrl}
+              className="flex-1 w-full bg-white"
+              allow="payment"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* 🔥 МОДАЛКА РЕГИСТРАЦИИ (ВЫБОР СЕМЬИ) */}
       {isRegModalOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
@@ -365,8 +435,8 @@ export default function SingleEventClient({
               <X size={24} />
             </button>
 
-            <div className="shrink-0 mb-6">
-              <h2 className="text-xl font-black mb-1 line-clamp-2 pr-6">
+            <div className="shrink-0 mb-6 pr-6">
+              <h2 className="text-xl font-black mb-1 line-clamp-2">
                 Регистрация на {eventData.title}
               </h2>
               <p className="text-sm text-neutral-500">{formattedDate}</p>
@@ -378,7 +448,6 @@ export default function SingleEventClient({
                 <div>
                   <h3 className="font-bold text-sm mb-3">Ваша семья:</h3>
                   <div className="space-y-3">
-                    {/* Вы сами */}
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input
                         type="checkbox"
@@ -391,7 +460,6 @@ export default function SingleEventClient({
                       </span>
                     </label>
 
-                    {/* СУПРУГ(А) */}
                     {userData.spouseName ? (
                       <label className="flex items-center gap-3 cursor-pointer">
                         <input
@@ -442,7 +510,6 @@ export default function SingleEventClient({
                       </div>
                     )}
 
-                    {/* ДЕТИ */}
                     {(userData.childrenData || []).map(
                       (child: any, idx: number) => (
                         <label
@@ -470,7 +537,7 @@ export default function SingleEventClient({
                       ),
                     )}
 
-                    {/* ДОБАВИТЬ НОВОГО РЕБЕНКА */}
+                    {/* ДОБАВИТЬ РЕБЕНКА */}
                     <div>
                       {!isAddingChild ? (
                         <button
@@ -507,10 +574,6 @@ export default function SingleEventClient({
                             onChange={(e) => setNewChildDob(e.target.value)}
                             className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg p-2 text-sm outline-none focus:border-[#FFB800] text-neutral-500"
                           />
-                          <p className="text-[10px] text-neutral-400 leading-tight">
-                            Укажите дату рождения, она навсегда сохранится в
-                            профиле для записи в детские группы.
-                          </p>
                         </div>
                       )}
                     </div>
@@ -576,25 +639,40 @@ export default function SingleEventClient({
               </div>
             )}
 
-            {/* КНОПКИ УПРАВЛЕНИЯ */}
-            <div className="flex gap-3 pt-4 mt-4 border-t border-neutral-100 dark:border-neutral-800 shrink-0">
-              <button
-                onClick={() => setIsRegModalOpen(false)}
-                className="flex-1 py-3.5 rounded-xl bg-neutral-100 dark:bg-neutral-800 font-bold text-neutral-600 dark:text-neutral-300"
-              >
-                Отмена
-              </button>
-              <button
-                onClick={handleRegisterSubmit}
-                disabled={isLoading}
-                className="flex-[1.5] py-3.5 rounded-xl bg-gradient-to-r from-[#FFB800] to-orange-500 text-white font-black uppercase tracking-widest flex justify-center items-center shadow-lg active:scale-95 text-sm disabled:opacity-50"
-              >
-                {isLoading ? (
-                  <Loader2 className="animate-spin" size={20} />
-                ) : (
-                  "Записаться"
-                )}
-              </button>
+            {/* 🔥 ИТОГ И КНОПКИ */}
+            <div className="pt-4 mt-4 border-t border-neutral-100 dark:border-neutral-800 shrink-0">
+              {!eventData.isFree && totalAmount > 0 && (
+                <div className="flex justify-between items-center mb-4">
+                  <span className="font-black text-neutral-900 dark:text-white">
+                    Итого к оплате:
+                  </span>
+                  <span className="text-2xl font-black text-[#FFB800]">
+                    {totalAmount} ₪
+                  </span>
+                </div>
+              )}
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setIsRegModalOpen(false)}
+                  className="flex-1 py-3.5 rounded-xl bg-neutral-100 dark:bg-neutral-800 font-bold text-neutral-600 dark:text-neutral-300"
+                >
+                  Отмена
+                </button>
+                <button
+                  onClick={handleRegisterSubmit}
+                  disabled={isLoading}
+                  className="flex-[1.5] py-3.5 rounded-xl bg-gradient-to-r from-[#FFB800] to-orange-500 text-white font-black uppercase tracking-widest flex justify-center items-center shadow-lg active:scale-95 text-sm disabled:opacity-50"
+                >
+                  {isLoading ? (
+                    <Loader2 className="animate-spin" size={20} />
+                  ) : eventData.isFree || totalAmount === 0 ? (
+                    "Записаться"
+                  ) : (
+                    "Оплатить"
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>

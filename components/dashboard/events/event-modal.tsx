@@ -13,7 +13,7 @@ import {
   Coins,
   Repeat,
   Lock,
-  Link as LinkIcon, // <-- Добавили иконку для ссылки
+  Link as LinkIcon,
 } from "lucide-react";
 
 import { createEvent, updateEvent, createEventCategory } from "@/actions/event";
@@ -47,8 +47,9 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
   const [eventTime, setEventTime] = useState("");
   const [location, setLocation] = useState("");
   const [isFree, setIsFree] = useState(false);
+
   const [price, setPrice] = useState("");
-  // 🔥 НОВЫЙ СТЕЙТ ДЛЯ ССЫЛКИ НА ОПЛАТУ
+  const [childPrice, setChildPrice] = useState(""); // 🔥 ДОБАВЛЕНО ПОЛЕ ДЛЯ ДЕТЕЙ
   const [paymentUrl, setPaymentUrl] = useState("");
 
   const [audience, setAudience] = useState("all");
@@ -79,7 +80,8 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
       setLocation(ev.location || "");
       setIsFree(ev.isFree || false);
       setPrice(ev.price || "");
-      setPaymentUrl(ev.paymentUrl || ""); // <-- Подгружаем ссылку
+      setChildPrice(ev.childPrice || ""); // 🔥
+      setPaymentUrl(ev.paymentUrl || "");
       setAudience(ev.audience || "all");
       setImagePreview(ev.imageUrl || null);
       setIsRegistrationClosed(ev.isRegistrationClosed || false);
@@ -101,7 +103,8 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
       setLocation("");
       setIsFree(false);
       setPrice("");
-      setPaymentUrl(""); // <-- Очищаем ссылку
+      setChildPrice(""); // 🔥
+      setPaymentUrl("");
       setAudience("all");
       setImagePreview(null);
       setImageFile(null);
@@ -181,7 +184,8 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
       location,
       isFree,
       price: isFree ? "" : price,
-      paymentUrl: isFree ? "" : paymentUrl, // <-- Отправляем ссылку
+      childPrice: isFree ? "" : childPrice, // 🔥 СОХРАНЯЕМ ЦЕНУ РЕБЕНКА
+      paymentUrl: isFree ? "" : paymentUrl,
       audience,
       imageUrl: finalImageUrl,
       isRegistrationClosed,
@@ -429,15 +433,25 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
               </label>
 
               <div
-                className={`flex flex-col gap-3 transition-all duration-300 ease-in-out ${isFree ? "max-h-0 opacity-0 overflow-hidden" : "max-h-32 opacity-100"}`}
+                className={`flex flex-col gap-3 transition-all duration-300 ease-in-out ${isFree ? "max-h-0 opacity-0 overflow-hidden" : "max-h-48 opacity-100"}`}
               >
-                <input
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  disabled={isFree}
-                  className="w-full border-2 border-neutral-200 p-3 rounded-xl outline-none focus:border-[#FFB800] text-sm transition-colors disabled:bg-neutral-100"
-                  placeholder="Цена (напр. 200 ₪)"
-                />
+                <div className="flex gap-2">
+                  <input
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    disabled={isFree}
+                    className="w-full border-2 border-neutral-200 p-3 rounded-xl outline-none focus:border-[#FFB800] text-sm transition-colors disabled:bg-neutral-100"
+                    placeholder="Взрослые (₪)"
+                  />
+                  {/* 🔥 ИНПУТ ДЛЯ ЦЕНЫ ДЕТЕЙ */}
+                  <input
+                    value={childPrice}
+                    onChange={(e) => setChildPrice(e.target.value)}
+                    disabled={isFree}
+                    className="w-full border-2 border-neutral-200 p-3 rounded-xl outline-none focus:border-[#FFB800] text-sm transition-colors disabled:bg-neutral-100"
+                    placeholder="Дети (₪)"
+                  />
+                </div>
 
                 {/* ИНПУТ ДЛЯ ССЫЛКИ ШУТАФИМ */}
                 <div className="relative">
