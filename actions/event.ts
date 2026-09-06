@@ -462,7 +462,7 @@ export async function registerForEvent(
     if (eventData.paymentUrl && totalAmount && totalAmount > 0) {
       const separator = eventData.paymentUrl.includes("?") ? "&" : "?";
       // Добавляем параметры: amount (сумма) и custom1 (ID заявки)
-      finalPaymentUrl = `${eventData.paymentUrl}${separator}amount=${totalAmount}&custom1=${newId}`;
+      finalPaymentUrl = `${eventData.paymentUrl}${separator}sum=${totalAmount}&custom1=${newId}`;
     }
 
     return {
