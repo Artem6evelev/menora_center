@@ -21,7 +21,6 @@ import {
 } from "@/actions/event";
 import { useClerk } from "@clerk/nextjs";
 
-// --- Компонент кнопки ---
 const ShinyButton = ({
   onClick,
   text,
@@ -53,7 +52,6 @@ const ShinyButton = ({
   </button>
 );
 
-// --- Вспомогательные функции ---
 const getAge = (child: any) => {
   if (!child) return "?";
   if (child.age) return child.age;
@@ -80,9 +78,6 @@ export default function SingleEventClient({
   const [isRegistered, setIsRegistered] = useState(false);
   const [userData, setUserData] = useState<any>(null);
 
-  // Стейт для Iframe
-  const [iframeUrl, setIframeUrl] = useState<string | null>(null);
-
   const [extraAdults, setExtraAdults] = useState(0);
   const [extraKids, setExtraKids] = useState(0);
   const [selectedFamily, setSelectedFamily] = useState<{
@@ -106,21 +101,20 @@ export default function SingleEventClient({
   }, [userId, eventData.id]);
 
   useEffect(() => {
-    if (isRegModalOpen || iframeUrl) document.body.style.overflow = "hidden";
+    if (isRegModalOpen) document.body.style.overflow = "hidden";
     else document.body.style.overflow = "unset";
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [isRegModalOpen, iframeUrl]);
+  }, [isRegModalOpen]);
 
-  // 🔥 КАЛЬКУЛЯТОР СУММЫ
   const calculateTotal = () => {
     if (eventData.isFree) return 0;
 
     const adultPrice = parseFloat(eventData.price) || 0;
     const childPrice = parseFloat(eventData.childPrice) || 0;
 
-    let adultsCount = 1; // Пользователь
+    let adultsCount = 1;
     if (selectedFamily.spouse) adultsCount++;
     adultsCount += extraAdults;
 
@@ -137,7 +131,6 @@ export default function SingleEventClient({
 
   const totalAmount = calculateTotal();
 
-  // --- Экшены ---
   const handleGoogleDirectLogin = async () => {
     setIsGoogleRedirecting(true);
     try {
@@ -186,7 +179,6 @@ export default function SingleEventClient({
       }
     }
 
-    // Передаем totalAmount на сервер
     const res = await registerForEvent(
       eventData.id,
       userId!,
@@ -198,8 +190,8 @@ export default function SingleEventClient({
 
     if (res.success) {
       if (res.paymentUrl) {
-        setIsRegModalOpen(false);
-        setIframeUrl(res.paymentUrl); // Открываем Iframe
+        // 🔥 ПРЯМОЙ РЕДИРЕКТ НА SHUTAFIM
+        window.location.href = res.paymentUrl;
       } else {
         setIsRegistered(true);
         setIsRegModalOpen(false);
@@ -210,7 +202,6 @@ export default function SingleEventClient({
     setIsLoading(false);
   };
 
-  // --- Заглушка для неавторизованных ---
   if (!userId) {
     return (
       <main className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden bg-black">
@@ -247,7 +238,6 @@ export default function SingleEventClient({
     );
   }
 
-  // --- Основной рендер ---
   const formattedDate = eventData.date
     ? new Date(eventData.date).toLocaleDateString("ru-RU", {
         day: "numeric",
@@ -388,37 +378,7 @@ export default function SingleEventClient({
         </div>
       </div>
 
-      {/* 🔥 МОДАЛКА С IFRAME */}
-      {iframeUrl && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-300">
-          <div className="relative w-full max-w-2xl h-[85vh] bg-white dark:bg-neutral-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col">
-            <div className="p-4 bg-neutral-100 dark:bg-neutral-950 flex justify-between items-center border-b dark:border-neutral-800">
-              <div>
-                <h3 className="font-black text-neutral-900 dark:text-white">
-                  Безопасная оплата
-                </h3>
-                <p className="text-xs text-neutral-500">Secured by Shutafim</p>
-              </div>
-              <button
-                onClick={() => setIframeUrl(null)}
-                className="p-2 bg-neutral-200 dark:bg-neutral-800 rounded-full hover:bg-neutral-300 transition"
-              >
-                <X
-                  size={20}
-                  className="text-neutral-600 dark:text-neutral-300"
-                />
-              </button>
-            </div>
-            <iframe
-              src={iframeUrl}
-              className="flex-1 w-full bg-white"
-              allow="payment"
-            />
-          </div>
-        </div>
-      )}
-
-      {/* 🔥 МОДАЛКА РЕГИСТРАЦИИ (ВЫБОР СЕМЬИ) */}
+      {/* МОДАЛКА РЕГИСТРАЦИИ (ВЫБОР СЕМЬИ) */}
       {isRegModalOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
@@ -639,7 +599,7 @@ export default function SingleEventClient({
               </div>
             )}
 
-            {/* 🔥 ИТОГ И КНОПКИ */}
+            {/* ИТОГ И КНОПКИ */}
             <div className="pt-4 mt-4 border-t border-neutral-100 dark:border-neutral-800 shrink-0">
               {!eventData.isFree && totalAmount > 0 && (
                 <div className="flex justify-between items-center mb-4">
