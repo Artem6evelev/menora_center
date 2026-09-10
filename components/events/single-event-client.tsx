@@ -78,7 +78,6 @@ export default function SingleEventClient({
   const [isRegistered, setIsRegistered] = useState(false);
   const [userData, setUserData] = useState<any>(null);
 
-  // 🔥 СТЕЙТ ДЛЯ IFRAME ВЕРНУЛСЯ
   const [iframeUrl, setIframeUrl] = useState<string | null>(null);
 
   const [extraAdults, setExtraAdults] = useState(0);
@@ -193,7 +192,6 @@ export default function SingleEventClient({
 
     if (res.success) {
       if (res.paymentUrl) {
-        // 🔥 ТЕПЕРЬ СНОВА ОТКРЫВАЕМ IFRAME
         setIsRegModalOpen(false);
         setIframeUrl(res.paymentUrl);
       } else {
@@ -216,7 +214,6 @@ export default function SingleEventClient({
             className="w-full h-full object-cover opacity-50 blur-xl scale-110"
           />
         </div>
-
         <div className="relative z-10 bg-white dark:bg-neutral-900 p-8 md:p-12 rounded-[32px] max-w-md w-full shadow-2xl text-center animate-in fade-in zoom-in-95 duration-500">
           <h2 className="text-3xl font-black mb-3 text-neutral-900 dark:text-white">
             Один шаг до регистрации
@@ -225,7 +222,6 @@ export default function SingleEventClient({
             Войдите в свой Google-аккаунт для завершения регистрации на наше
             замечательное мероприятие!
           </p>
-
           <button
             onClick={handleGoogleDirectLogin}
             disabled={isGoogleRedirecting}
@@ -393,11 +389,9 @@ export default function SingleEventClient({
                 </h3>
                 <p className="text-xs text-neutral-500">Secured by Shutafim</p>
               </div>
+              {/* 🔥 ИСПРАВЛЕНО: УБРАЛИ setIsRegistered(true) С КНОПКИ ЗАКРЫТИЯ */}
               <button
-                onClick={() => {
-                  setIframeUrl(null);
-                  setIsRegistered(true); // Если закрыли iframe, считаем заявку отправленной
-                }}
+                onClick={() => setIframeUrl(null)}
                 className="p-2 bg-neutral-200 dark:bg-neutral-800 rounded-full hover:bg-neutral-300 transition"
               >
                 <X
