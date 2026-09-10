@@ -78,6 +78,9 @@ export default function SingleEventClient({
   const [isRegistered, setIsRegistered] = useState(false);
   const [userData, setUserData] = useState<any>(null);
 
+  // 🔥 СТЕЙТ ДЛЯ IFRAME ВЕРНУЛСЯ
+  const [iframeUrl, setIframeUrl] = useState<string | null>(null);
+
   const [extraAdults, setExtraAdults] = useState(0);
   const [extraKids, setExtraKids] = useState(0);
   const [selectedFamily, setSelectedFamily] = useState<{
@@ -101,12 +104,12 @@ export default function SingleEventClient({
   }, [userId, eventData.id]);
 
   useEffect(() => {
-    if (isRegModalOpen) document.body.style.overflow = "hidden";
+    if (isRegModalOpen || iframeUrl) document.body.style.overflow = "hidden";
     else document.body.style.overflow = "unset";
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [isRegModalOpen]);
+  }, [isRegModalOpen, iframeUrl]);
 
   const calculateTotal = () => {
     if (eventData.isFree) return 0;
@@ -190,8 +193,9 @@ export default function SingleEventClient({
 
     if (res.success) {
       if (res.paymentUrl) {
-        // 🔥 ПРЯМОЙ РЕДИРЕКТ НА SHUTAFIM
-        window.location.href = res.paymentUrl;
+        // 🔥 ТЕПЕРЬ СНОВА ОТКРЫВАЕМ IFRAME
+        setIsRegModalOpen(false);
+        setIframeUrl(res.paymentUrl);
       } else {
         setIsRegistered(true);
         setIsRegModalOpen(false);
@@ -377,6 +381,39 @@ export default function SingleEventClient({
           </div>
         </div>
       </div>
+
+      {/* 🔥 МОДАЛКА С IFRAME */}
+      {iframeUrl && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-300">
+          <div className="relative w-full max-w-2xl h-[85vh] bg-white dark:bg-neutral-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col">
+            <div className="p-4 bg-neutral-100 dark:bg-neutral-950 flex justify-between items-center border-b dark:border-neutral-800">
+              <div>
+                <h3 className="font-black text-neutral-900 dark:text-white">
+                  Безопасная оплата
+                </h3>
+                <p className="text-xs text-neutral-500">Secured by Shutafim</p>
+              </div>
+              <button
+                onClick={() => {
+                  setIframeUrl(null);
+                  setIsRegistered(true); // Если закрыли iframe, считаем заявку отправленной
+                }}
+                className="p-2 bg-neutral-200 dark:bg-neutral-800 rounded-full hover:bg-neutral-300 transition"
+              >
+                <X
+                  size={20}
+                  className="text-neutral-600 dark:text-neutral-300"
+                />
+              </button>
+            </div>
+            <iframe
+              src={iframeUrl}
+              className="flex-1 w-full bg-white"
+              allow="payment"
+            />
+          </div>
+        </div>
+      )}
 
       {/* МОДАЛКА РЕГИСТРАЦИИ (ВЫБОР СЕМЬИ) */}
       {isRegModalOpen && (
