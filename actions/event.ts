@@ -493,28 +493,20 @@ export async function registerForEvent(
     revalidatePath("/dashboard/my-events");
     revalidatePath("/dashboard/applications");
 
-    // 3. Формируем ссылку на оплату
     let finalPaymentUrl = null;
     if (eventData.paymentUrl && totalAmount && totalAmount > 0) {
       try {
         const baseUrlObj = new URL(eventData.paymentUrl);
         const baseUrl = `${baseUrlObj.protocol}//${baseUrlObj.host}${baseUrlObj.pathname}`;
 
-        // 🔥 ИСПОЛЬЗУЕМ ПАРАМЕТРЫ ИЗ ИНСПЕКТОРА КОДА 🔥
+        // 🔥 ПЕРЕДАЕМ ТОЛЬКО БЕЗОПАСНЫЕ ДАННЫЕ 🔥
         const params = new URLSearchParams({
           price: totalAmount.toString(),
           quantity: "1",
           cur: "ILS",
           payments: "1",
           lang: "ru",
-          custom1: newId,
-          info: `Оплата за: ${eventData.title || "событие"}`,
-
-          // Параметры для предзаполнения, основанные на id инпутов (dnt_...)
-          dnt_name:
-            `${userData?.firstName || ""} ${userData?.lastName || ""}`.trim(),
-          dnt_email: userEmail,
-          dnt_phone: userPhone === "Не указан" ? "" : userPhone,
+          custom1: newId, // ID заявки для вебхука (абсолютно безопасно)
         });
 
         finalPaymentUrl = `${baseUrl}?${params.toString()}`;
