@@ -12,7 +12,7 @@ import { revalidatePath } from "next/cache";
 import { sendEventRegistrationNotification } from "@/actions/telegram";
 import { auth } from "@clerk/nextjs/server";
 
-// 🔥 НОВАЯ ФУНКЦИЯ: Транслитерация и создание красивой ссылки (Slug)
+// 🔥 Функция: Транслитерация и создание красивой ссылки (Slug)
 function generateSlug(title: string) {
   if (!title) return `evt_${Math.random().toString(36).substring(2, 8)}`;
 
@@ -52,20 +52,14 @@ function generateSlug(title: string) {
     я: "ya",
   };
 
-  // 1. Переводим в нижний регистр и заменяем русские буквы на латиницу
   let slug = title
     .toLowerCase()
     .split("")
     .map((char) => ru[char] || char)
     .join("");
 
-  // 2. Заменяем все не-буквы и не-цифры на дефис
   slug = slug.replace(/[^a-z0-9]+/g, "-");
-
-  // 3. Убираем лишние дефисы в начале и в конце
   slug = slug.replace(/^-+|-+$/g, "");
-
-  // 4. Генерируем 4 случайные цифры для уникальности (как в ТЗ)
   const shortId = Math.floor(1000 + Math.random() * 9000);
 
   return slug ? `${slug}-${shortId}` : `evt_${shortId}`;
@@ -145,52 +139,54 @@ export async function getLatestEvents() {
   }
 }
 
-// === 3. ЗАЯВКИ ===
-export async function checkRegistration(eventId: string, userId: string) {
+export async function createEvent(data: any) {
   try {
-    const existing = await db
-      .select()
-      .from(eventParticipants)
-      .where(
-        and(
-          eq(eventParticipants.eventId, eventId),
-          eq(eventParticipants.userId, userId),
-        ),
-      );
-    return existing.length > 0;
+    const newId = generateSlug(data.title);
+    const preparedData = {
+      ...data,
+      categoryId: data.categoryId || null,
+      price: data.price || null,
+      childPrice: data.childPrice || null,
+      paymentUrl: data.paymentUrl || null,
+      description: data.description || null,
+      location: data.location || null,
+      time: data.time || null,
+      recurringPattern: data.recurringPattern || null,
+      recurringDays: data.recurringDays || null,
+      isRegistrationClosed: data.isRegistrationClosed || false,
+    };
+    await db.insert(events).values({ id: newId, ...preparedData });
+    revalidatePath("/dashboard/events");
+    revalidatePath("/events");
+    revalidatePath("/");
+    return { success: true, id: newId };
   } catch (error) {
-    return false;
+    return { success: false };
   }
 }
 
-export async function getUserRegisteredEvents(userId: string) {
+export async function updateEvent(id: string, data: any) {
   try {
-    return await db
-      .select({
-        event: events,
-        category: eventCategories,
-        participant: eventParticipants,
-      })
-      .from(eventParticipants)
-      .innerJoin(events, eq(eventParticipants.eventId, events.id))
-      .leftJoin(eventCategories, eq(events.categoryId, eventCategories.id))
-      .where(eq(eventParticipants.userId, userId))
-      .orderBy(desc(eventParticipants.createdAt));
+    const preparedData = {
+      ...data,
+      categoryId: data.categoryId || null,
+      price: data.price || null,
+      childPrice: data.childPrice || null,
+      paymentUrl: data.paymentUrl || null,
+      description: data.description || null,
+      location: data.location || null,
+      time: data.time || null,
+      recurringPattern: data.recurringPattern || null,
+      recurringDays: data.recurringDays || null,
+      isRegistrationClosed: data.isRegistrationClosed || false,
+    };
+    await db.update(events).set(preparedData).where(eq(events.id, id));
+    revalidatePath("/dashboard/events");
+    revalidatePath("/events");
+    revalidatePath("/");
+    return { success: true };
   } catch (error) {
-    return [];
-  }
-}
-
-export async function getEventParticipantsList(eventId: string) {
-  try {
-    return await db
-      .select({ participant: eventParticipants, user: users })
-      .from(eventParticipants)
-      .leftJoin(users, eq(eventParticipants.userId, users.id))
-      .where(eq(eventParticipants.eventId, eventId))
-      .orderBy(desc(eventParticipants.createdAt));
-  } catch (error) {
-    return [];
+    return { success: false };
   }
 }
 
@@ -254,6 +250,58 @@ export async function getEventById(id: string) {
   }
 }
 
+// === 3. ЗАЯВКИ ===
+
+// 🔥 ИСПРАВЛЕНА ПРОВЕРКА РЕГИСТРАЦИИ (ТОЛЬКО PAID)
+export async function checkRegistration(eventId: string, userId: string) {
+  try {
+    const existing = await db
+      .select()
+      .from(eventParticipants)
+      .where(
+        and(
+          eq(eventParticipants.eventId, eventId),
+          eq(eventParticipants.userId, userId),
+          eq(eventParticipants.status, "paid"), // Считаем записанным только если ОПЛАЧЕНО
+        ),
+      );
+    return existing.length > 0;
+  } catch (error) {
+    return false;
+  }
+}
+
+export async function getUserRegisteredEvents(userId: string) {
+  try {
+    return await db
+      .select({
+        event: events,
+        category: eventCategories,
+        participant: eventParticipants,
+      })
+      .from(eventParticipants)
+      .innerJoin(events, eq(eventParticipants.eventId, events.id))
+      .leftJoin(eventCategories, eq(events.categoryId, eventCategories.id))
+      .where(eq(eventParticipants.userId, userId))
+      .orderBy(desc(eventParticipants.createdAt));
+  } catch (error) {
+    return [];
+  }
+}
+
+export async function getEventParticipantsList(eventId: string) {
+  try {
+    return await db
+      .select({ participant: eventParticipants, user: users })
+      .from(eventParticipants)
+      .leftJoin(users, eq(eventParticipants.userId, users.id))
+      .where(eq(eventParticipants.eventId, eventId))
+      .orderBy(desc(eventParticipants.createdAt));
+  } catch (error) {
+    return [];
+  }
+}
+
 export async function updateEventParticipantStatus(
   id: string,
   newStatus: string,
@@ -309,6 +357,7 @@ export async function getUserFamilyData(userId: string) {
         firstName: users.firstName,
         lastName: users.lastName,
         phone: users.phone,
+        email: users.email,
         spouseName: users.spouseName,
         childrenData: users.childrenData,
       })
@@ -322,60 +371,7 @@ export async function getUserFamilyData(userId: string) {
   }
 }
 
-// actions/event.ts (только измененные функции)
-
-export async function createEvent(data: any) {
-  try {
-    const newId = generateSlug(data.title);
-    const preparedData = {
-      ...data,
-      categoryId: data.categoryId || null,
-      price: data.price || null,
-      childPrice: data.childPrice || null, // 🔥 ДОБАВЛЕНО
-      paymentUrl: data.paymentUrl || null,
-      description: data.description || null,
-      location: data.location || null,
-      time: data.time || null,
-      recurringPattern: data.recurringPattern || null,
-      recurringDays: data.recurringDays || null,
-      isRegistrationClosed: data.isRegistrationClosed || false,
-    };
-    await db.insert(events).values({ id: newId, ...preparedData });
-    revalidatePath("/dashboard/events");
-    revalidatePath("/events");
-    revalidatePath("/");
-    return { success: true, id: newId };
-  } catch (error) {
-    return { success: false };
-  }
-}
-
-export async function updateEvent(id: string, data: any) {
-  try {
-    const preparedData = {
-      ...data,
-      categoryId: data.categoryId || null,
-      price: data.price || null,
-      childPrice: data.childPrice || null, // 🔥 ДОБАВЛЕНО
-      paymentUrl: data.paymentUrl || null,
-      description: data.description || null,
-      location: data.location || null,
-      time: data.time || null,
-      recurringPattern: data.recurringPattern || null,
-      recurringDays: data.recurringDays || null,
-      isRegistrationClosed: data.isRegistrationClosed || false,
-    };
-    await db.update(events).set(preparedData).where(eq(events.id, id));
-    revalidatePath("/dashboard/events");
-    revalidatePath("/events");
-    revalidatePath("/");
-    return { success: true };
-  } catch (error) {
-    return { success: false };
-  }
-}
-
-// 🔥 ОБНОВЛЕННАЯ ФУНКЦИЯ РЕГИСТРАЦИИ (Добавлен totalAmount)
+// 🔥 ИСПРАВЛЕНА РЕГИСТРАЦИЯ (ЗАЩИТА ОТ ДУБЛЕЙ И ГЕНЕРАЦИЯ ССЫЛКИ С ПРАВИЛЬНЫМИ ПАРАМЕТРАМИ)
 export async function registerForEvent(
   eventId: string,
   userId: string,
@@ -385,18 +381,31 @@ export async function registerForEvent(
     newSpouseName?: string;
     newChild?: { name: string; dateOfBirth: string };
   },
-  totalAmount?: number, // 🔥 НОВЫЙ ПАРАМЕТР
+  totalAmount?: number,
 ) {
   try {
-    const isAlreadyRegistered = await checkRegistration(eventId, userId);
-    if (isAlreadyRegistered)
+    // 1. Проверяем, есть ли уже ОПЛАЧЕННАЯ заявка
+    const isAlreadyPaid = await db
+      .select()
+      .from(eventParticipants)
+      .where(
+        and(
+          eq(eventParticipants.eventId, eventId),
+          eq(eventParticipants.userId, userId),
+          eq(eventParticipants.status, "paid"),
+        ),
+      );
+
+    if (isAlreadyPaid.length > 0) {
       return { success: true, message: "already_registered" };
+    }
 
     const [userData] = await db
       .select()
       .from(users)
       .where(eq(users.id, userId));
     const userPhone = phone || userData?.phone || "Не указан";
+    const userEmail = userData?.email || "";
 
     if (
       profileUpdates &&
@@ -428,46 +437,97 @@ export async function registerForEvent(
       .where(eq(events.id, eventId));
     if (!eventData) return { success: false, message: "Событие не найдено" };
 
-    const newId = `part_${Math.random().toString(36).substring(2, 11)}`;
+    // 2. Ищем PENDING заявку, чтобы не плодить дубли
+    const existingPending = await db
+      .select()
+      .from(eventParticipants)
+      .where(
+        and(
+          eq(eventParticipants.eventId, eventId),
+          eq(eventParticipants.userId, userId),
+          eq(eventParticipants.status, "pending"),
+        ),
+      );
 
-    // Если сумма 0 или бесплатно, сразу ставим статус paid
     const initialStatus = totalAmount && totalAmount > 0 ? "pending" : "paid";
+    let newId = "";
 
-    await db.insert(eventParticipants).values({
-      id: newId,
-      eventId,
-      userId,
-      phone: userPhone,
-      status: initialStatus,
-      extraData: extraData || null,
-    });
-
-    try {
-      if (eventData && userData) {
-        await sendEventRegistrationNotification(eventData.title || "Событие", {
-          firstName: userData.firstName ?? "",
-          lastName: userData.lastName ?? "",
-          email: userData.email ?? "",
+    if (existingPending.length > 0) {
+      // Обновляем существующую неоплаченную заявку
+      newId = existingPending[0].id;
+      await db
+        .update(eventParticipants)
+        .set({
+          extraData: extraData || null,
           phone: userPhone,
-        });
-      }
-    } catch (tgError) {}
+        })
+        .where(eq(eventParticipants.id, newId));
+    } else {
+      // Создаем новую заявку
+      newId = `part_${Math.random().toString(36).substring(2, 11)}`;
+      await db.insert(eventParticipants).values({
+        id: newId,
+        eventId,
+        userId,
+        phone: userPhone,
+        status: initialStatus,
+        extraData: extraData || null,
+      });
+
+      try {
+        if (eventData && userData) {
+          await sendEventRegistrationNotification(
+            eventData.title || "Событие",
+            {
+              firstName: userData.firstName ?? "",
+              lastName: userData.lastName ?? "",
+              email: userEmail,
+              phone: userPhone,
+            },
+          );
+        }
+      } catch (tgError) {}
+    }
 
     revalidatePath("/");
     revalidatePath("/dashboard/my-events");
     revalidatePath("/dashboard/applications");
 
-    // 🔥 ФОРМИРУЕМ ДИНАМИЧЕСКУЮ ССЫЛКУ SHUTAFIM
+    // 3. Формируем ссылку на оплату
     let finalPaymentUrl = null;
     if (eventData.paymentUrl && totalAmount && totalAmount > 0) {
-      const separator = eventData.paymentUrl.includes("?") ? "&" : "?";
-      // Добавляем параметры: amount (сумма) и custom1 (ID заявки)
-      finalPaymentUrl = `${eventData.paymentUrl}${separator}sum=${totalAmount}&custom1=${newId}`;
+      try {
+        const baseUrlObj = new URL(eventData.paymentUrl);
+        const baseUrl = `${baseUrlObj.protocol}//${baseUrlObj.host}${baseUrlObj.pathname}`;
+
+        // 🔥 ИСПОЛЬЗУЕМ ПАРАМЕТРЫ ИЗ ИНСПЕКТОРА КОДА 🔥
+        const params = new URLSearchParams({
+          price: totalAmount.toString(),
+          quantity: "1",
+          cur: "ILS",
+          payments: "1",
+          lang: "ru",
+          custom1: newId,
+          info: `Оплата за: ${eventData.title || "событие"}`,
+
+          // Параметры для предзаполнения, основанные на id инпутов (dnt_...)
+          dnt_name:
+            `${userData?.firstName || ""} ${userData?.lastName || ""}`.trim(),
+          dnt_email: userEmail,
+          dnt_phone: userPhone === "Не указан" ? "" : userPhone,
+        });
+
+        finalPaymentUrl = `${baseUrl}?${params.toString()}`;
+      } catch (e) {
+        // Fallback если url не парсится
+        const separator = eventData.paymentUrl.includes("?") ? "&" : "?";
+        finalPaymentUrl = `${eventData.paymentUrl}${separator}price=${totalAmount}&custom1=${newId}&quantity=1&cur=ILS&payments=1&lang=ru`;
+      }
     }
 
     return {
       success: true,
-      paymentUrl: finalPaymentUrl, // Вернется null, если сумма 0
+      paymentUrl: finalPaymentUrl,
     };
   } catch (error) {
     return { success: false, message: "Ошибка базы данных" };

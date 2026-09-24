@@ -13,6 +13,7 @@ import {
   MapPin,
   Check,
   UserPlus,
+  Lock,
 } from "lucide-react";
 import {
   registerForEvent,
@@ -20,37 +21,56 @@ import {
   checkRegistration,
 } from "@/actions/event";
 import { useClerk } from "@clerk/nextjs";
+import dayjs from "dayjs";
+import "dayjs/locale/ru";
+
+dayjs.locale("ru");
 
 const ShinyButton = ({
   onClick,
   text,
   disabled,
   isSuccess,
+  isClosed,
 }: {
   onClick: () => void;
   text: string;
   disabled?: boolean;
   isSuccess?: boolean;
-}) => (
-  <button
-    onClick={onClick}
-    disabled={disabled}
-    className={`relative overflow-hidden w-full py-4 rounded-2xl text-white font-black uppercase tracking-widest transition-all ${
-      isSuccess
-        ? "bg-green-500 shadow-lg shadow-green-500/30 cursor-default"
-        : disabled
-          ? "bg-neutral-300 text-neutral-500 cursor-not-allowed"
-          : "bg-gradient-to-r from-[#FFB800] to-orange-500 active:scale-95 group shadow-lg shadow-[#FFB800]/20"
-    }`}
-  >
-    {!isSuccess && !disabled && (
-      <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:animate-[shimmer_1.5s_infinite] skew-x-12" />
-    )}
-    <span className="relative z-10 flex items-center justify-center gap-2">
-      {isSuccess && <Check size={18} />} {text}
-    </span>
-  </button>
-);
+  isClosed?: boolean;
+}) => {
+  if (isClosed) {
+    return (
+      <button
+        disabled
+        className="w-full py-4 rounded-2xl text-red-500 font-black uppercase tracking-widest bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 shadow-none cursor-not-allowed flex items-center justify-center gap-2"
+      >
+        <Lock size={18} /> Запись закрыта
+      </button>
+    );
+  }
+
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`relative overflow-hidden w-full py-4 rounded-2xl text-white font-black uppercase tracking-widest transition-all ${
+        isSuccess
+          ? "bg-green-500 shadow-lg shadow-green-500/30 cursor-default"
+          : disabled
+            ? "bg-neutral-300 text-neutral-500 cursor-not-allowed"
+            : "bg-gradient-to-r from-[#FFB800] to-orange-500 active:scale-95 group shadow-lg shadow-[#FFB800]/20"
+      }`}
+    >
+      {!isSuccess && !disabled && (
+        <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:animate-[shimmer_1.5s_infinite] skew-x-12" />
+      )}
+      <span className="relative z-10 flex items-center justify-center gap-2">
+        {isSuccess && <Check size={18} />} {text}
+      </span>
+    </button>
+  );
+};
 
 const getAge = (child: any) => {
   if (!child) return "?";
@@ -62,6 +82,7 @@ const getAge = (child: any) => {
   return Math.abs(ageDate.getUTCFullYear() - 1970);
 };
 
+// 🔥 ЗДЕСЬ ПРАВИЛЬНЫЕ ПРОПСЫ (как у тебя было раньше) 🔥
 export default function SingleEventClient({
   eventData,
   userId,
@@ -78,8 +99,6 @@ export default function SingleEventClient({
   const [isRegistered, setIsRegistered] = useState(false);
   const [userData, setUserData] = useState<any>(null);
 
-  const [iframeUrl, setIframeUrl] = useState<string | null>(null);
-
   const [extraAdults, setExtraAdults] = useState(0);
   const [extraKids, setExtraKids] = useState(0);
   const [selectedFamily, setSelectedFamily] = useState<{
@@ -94,21 +113,29 @@ export default function SingleEventClient({
   const [newChildDob, setNewChildDob] = useState("");
 
   const eventImageUrl = eventData.imageUrl || "/default-event-poster.png";
+  const isClosed = eventData.isRegistrationClosed;
 
+  // Проверка статуса (только PAID дает true)
   useEffect(() => {
     if (userId) {
       checkRegistration(eventData.id, userId).then(setIsRegistered);
-      getUserFamilyData(userId).then(setUserData);
     }
   }, [userId, eventData.id]);
 
+  // Подгрузка данных семьи, когда открываем модалку
   useEffect(() => {
-    if (isRegModalOpen || iframeUrl) document.body.style.overflow = "hidden";
+    if (isRegModalOpen && userId && !userData) {
+      getUserFamilyData(userId).then(setUserData);
+    }
+  }, [isRegModalOpen, userId, userData]);
+
+  useEffect(() => {
+    if (isRegModalOpen) document.body.style.overflow = "hidden";
     else document.body.style.overflow = "unset";
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [isRegModalOpen, iframeUrl]);
+  }, [isRegModalOpen]);
 
   const calculateTotal = () => {
     if (eventData.isFree) return 0;
@@ -148,7 +175,7 @@ export default function SingleEventClient({
   };
 
   const handleRegisterClick = () => {
-    if (eventData.isRegistrationClosed || isRegistered) return;
+    if (isClosed || isRegistered) return;
     setIsRegModalOpen(true);
   };
 
@@ -192,16 +219,17 @@ export default function SingleEventClient({
 
     if (res.success) {
       if (res.paymentUrl) {
-        setIsRegModalOpen(false);
-        setIframeUrl(res.paymentUrl);
+        // 🔥 РЕДИРЕКТ НА ШУТАФИМ 🔥
+        window.location.href = res.paymentUrl;
       } else {
         setIsRegistered(true);
         setIsRegModalOpen(false);
+        setIsLoading(false);
       }
     } else {
       alert("Ошибка: " + res.message);
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   if (!userId) {
@@ -257,16 +285,28 @@ export default function SingleEventClient({
   }
 
   const getButtonState = () => {
-    if (eventData.isRegistrationClosed)
-      return { text: "Запись закрыта", disabled: true, isSuccess: false };
+    if (isClosed)
+      return {
+        text: "Запись закрыта",
+        disabled: true,
+        isSuccess: false,
+        isClosed: true,
+      };
     if (isRegistered)
-      return { text: "Вы успешно записаны", disabled: true, isSuccess: true };
+      return {
+        text: "Вы успешно записаны",
+        disabled: true,
+        isSuccess: true,
+        isClosed: false,
+      };
     return {
       text: "Записаться на мероприятие",
       disabled: false,
       isSuccess: false,
+      isClosed: false,
     };
   };
+
   const btnState = getButtonState();
 
   return (
@@ -306,6 +346,7 @@ export default function SingleEventClient({
                   text={btnState.text}
                   disabled={btnState.disabled}
                   isSuccess={btnState.isSuccess}
+                  isClosed={btnState.isClosed}
                 />
               </div>
 
@@ -355,6 +396,7 @@ export default function SingleEventClient({
                     text={btnState.isSuccess ? btnState.text : "Хочу пойти!"}
                     disabled={btnState.disabled}
                     isSuccess={btnState.isSuccess}
+                    isClosed={btnState.isClosed}
                   />
                 </div>
               )}
@@ -372,42 +414,12 @@ export default function SingleEventClient({
                 }
                 disabled={btnState.disabled}
                 isSuccess={btnState.isSuccess}
+                isClosed={btnState.isClosed}
               />
             </div>
           </div>
         </div>
       </div>
-
-      {/* 🔥 МОДАЛКА С IFRAME */}
-      {iframeUrl && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-300">
-          <div className="relative w-full max-w-2xl h-[85vh] bg-white dark:bg-neutral-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col">
-            <div className="p-4 bg-neutral-100 dark:bg-neutral-950 flex justify-between items-center border-b dark:border-neutral-800">
-              <div>
-                <h3 className="font-black text-neutral-900 dark:text-white">
-                  Безопасная оплата
-                </h3>
-                <p className="text-xs text-neutral-500">Secured by Shutafim</p>
-              </div>
-              {/* 🔥 ИСПРАВЛЕНО: УБРАЛИ setIsRegistered(true) С КНОПКИ ЗАКРЫТИЯ */}
-              <button
-                onClick={() => setIframeUrl(null)}
-                className="p-2 bg-neutral-200 dark:bg-neutral-800 rounded-full hover:bg-neutral-300 transition"
-              >
-                <X
-                  size={20}
-                  className="text-neutral-600 dark:text-neutral-300"
-                />
-              </button>
-            </div>
-            <iframe
-              src={iframeUrl}
-              className="flex-1 w-full bg-white"
-              allow="payment"
-            />
-          </div>
-        </div>
-      )}
 
       {/* МОДАЛКА РЕГИСТРАЦИИ (ВЫБОР СЕМЬИ) */}
       {isRegModalOpen && (
