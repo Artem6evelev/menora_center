@@ -615,10 +615,16 @@ export default function KidsApplicationsClient({
 
                       <div className="flex flex-col gap-1.5 text-[11px] text-neutral-500 font-medium pl-11">
                         <a
-                          href={`tel:${app.phone}`}
-                          className="flex items-center gap-1.5 hover:text-blue-500 transition-colors w-fit"
+                          href={`https://wa.me/${app.phone.replace(/\D/g, "")}?text=${encodeURIComponent(`Шалом, ${app.parentFirstName}!`)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1.5 hover:text-green-600 transition-colors w-fit group"
                         >
                           <Phone size={12} /> {app.phone}
+                          <MessageCircle
+                            size={14}
+                            className="text-green-500 opacity-80 group-hover:opacity-100 ml-0.5"
+                          />
                         </a>
                         <a
                           href={`mailto:${app.email}`}

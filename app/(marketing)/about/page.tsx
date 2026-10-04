@@ -26,23 +26,13 @@ export default function AboutPage() {
                   name: "Рав Алекс и Ента",
                   jobTitle: "Раввин общины и ребецн",
                 },
-                {
-                  "@type": "Person",
-                  name: "Рав Гай и Марина",
-                  jobTitle: "Коэн общины",
-                },
+
                 {
                   "@type": "Person",
                   name: "Рав Элияу",
                   jobTitle: "Преподаватель Тании",
                 },
                 { "@type": "Person", name: "Хана Зельцер", jobTitle: "Лектор" },
-                { "@type": "Person", name: "Бася", jobTitle: "Администратор" },
-                {
-                  "@type": "Person",
-                  name: "Марк",
-                  jobTitle: "Координатор общины",
-                },
               ],
             },
           }),

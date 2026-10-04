@@ -197,6 +197,9 @@ export default function OnboardingForm({ userId }: { userId: string }) {
             </option>
             <option value="Соблюдающий еврей">Соблюдающий еврей</option>
             <option value="Светский еврей">Светский еврей</option>
+            <option value="Еврей по материнской линии">
+              Еврей по материнской линии
+            </option>
             <option value="Еврей по отцовской линии">
               Еврей по отцовской линии
             </option>

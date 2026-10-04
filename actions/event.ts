@@ -499,19 +499,17 @@ export async function registerForEvent(
         const baseUrlObj = new URL(eventData.paymentUrl);
         const baseUrl = `${baseUrlObj.protocol}//${baseUrlObj.host}${baseUrlObj.pathname}`;
 
-        // 🔥 ПЕРЕДАЕМ ТОЛЬКО БЕЗОПАСНЫЕ ДАННЫЕ 🔥
         const params = new URLSearchParams({
           price: totalAmount.toString(),
           quantity: "1",
           cur: "ILS",
           payments: "1",
           lang: "ru",
-          custom1: newId, // ID заявки для вебхука (абсолютно безопасно)
+          custom1: newId,
         });
 
         finalPaymentUrl = `${baseUrl}?${params.toString()}`;
       } catch (e) {
-        // Fallback если url не парсится
         const separator = eventData.paymentUrl.includes("?") ? "&" : "?";
         finalPaymentUrl = `${eventData.paymentUrl}${separator}price=${totalAmount}&custom1=${newId}&quantity=1&cur=ILS&payments=1&lang=ru`;
       }
