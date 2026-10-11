@@ -82,7 +82,6 @@ const getAge = (child: any) => {
   return Math.abs(ageDate.getUTCFullYear() - 1970);
 };
 
-// 🔥 ЗДЕСЬ ПРАВИЛЬНЫЕ ПРОПСЫ (как у тебя было раньше) 🔥
 export default function SingleEventClient({
   eventData,
   userId,
@@ -98,6 +97,9 @@ export default function SingleEventClient({
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [userData, setUserData] = useState<any>(null);
+
+  // 🔥 ВЕРНУЛИ СОСТОЯНИЕ IFRAME 🔥
+  const [iframeUrl, setIframeUrl] = useState<string | null>(null);
 
   const [extraAdults, setExtraAdults] = useState(0);
   const [extraKids, setExtraKids] = useState(0);
@@ -115,27 +117,26 @@ export default function SingleEventClient({
   const eventImageUrl = eventData.imageUrl || "/default-event-poster.png";
   const isClosed = eventData.isRegistrationClosed;
 
-  // Проверка статуса (только PAID дает true)
   useEffect(() => {
     if (userId) {
       checkRegistration(eventData.id, userId).then(setIsRegistered);
     }
   }, [userId, eventData.id]);
 
-  // Подгрузка данных семьи, когда открываем модалку
   useEffect(() => {
     if (isRegModalOpen && userId && !userData) {
       getUserFamilyData(userId).then(setUserData);
     }
   }, [isRegModalOpen, userId, userData]);
 
+  // 🔥 БЛОКИРУЕМ СКРОЛЛ ПРИ ОТКРЫТОМ IFRAME 🔥
   useEffect(() => {
-    if (isRegModalOpen) document.body.style.overflow = "hidden";
+    if (isRegModalOpen || iframeUrl) document.body.style.overflow = "hidden";
     else document.body.style.overflow = "unset";
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [isRegModalOpen]);
+  }, [isRegModalOpen, iframeUrl]);
 
   const calculateTotal = () => {
     if (eventData.isFree) return 0;
@@ -219,8 +220,10 @@ export default function SingleEventClient({
 
     if (res.success) {
       if (res.paymentUrl) {
-        // 🔥 РЕДИРЕКТ НА ШУТАФИМ 🔥
-        window.location.href = res.paymentUrl;
+        // 🔥 ОТКРЫВАЕМ IFRAME ВМЕСТО РЕДИРЕКТА 🔥
+        setIsRegModalOpen(false);
+        setIframeUrl(res.paymentUrl);
+        setIsLoading(false);
       } else {
         setIsRegistered(true);
         setIsRegModalOpen(false);
@@ -676,6 +679,57 @@ export default function SingleEventClient({
                   )}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 🔥 ВЕРНУЛАСЬ МОДАЛКА С IFRAME 🔥 */}
+      {iframeUrl && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-300">
+          <div className="relative w-full max-w-2xl h-[90vh] bg-white dark:bg-neutral-900 rounded-[32px] overflow-hidden shadow-2xl flex flex-col">
+            <div className="p-4 md:p-5 bg-neutral-50 dark:bg-neutral-950 flex justify-between items-center border-b border-neutral-200 dark:border-neutral-800">
+              <div>
+                <h3 className="font-black text-lg text-neutral-900 dark:text-white leading-none mb-1">
+                  Оплата участия
+                </h3>
+                <p className="text-xs font-bold text-[#FFB800] uppercase tracking-widest">
+                  Secured by Shutafim
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setIframeUrl(null);
+                  setExtraAdults(0);
+                  setExtraKids(0);
+                  setSelectedFamily({ self: true });
+                }}
+                className="p-2.5 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-700 transition active:scale-90"
+              >
+                <X
+                  size={20}
+                  className="text-neutral-600 dark:text-neutral-300"
+                />
+              </button>
+            </div>
+
+            <div className="flex-1 w-full bg-white relative">
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-white z-0">
+                <Loader2
+                  className="animate-spin text-[#FFB800] mb-4"
+                  size={40}
+                />
+                <p className="text-neutral-500 font-medium">
+                  Загрузка платежного шлюза...
+                </p>
+              </div>
+
+              <iframe
+                src={iframeUrl}
+                className="w-full h-full relative z-10 border-none bg-white"
+                allow="payment"
+                title="Оплата Shutafim"
+              />
             </div>
           </div>
         </div>
