@@ -22,7 +22,8 @@ function load(file){
 const Form=load('components/dashboard/main/onboarding-form.tsx').default;
 const Access=load('components/community/access-screen.tsx').default;
 const Navbar=load('components/navbar/guest-navbar.tsx').default;
-const copy=load('lib/community/copy.ts');const cases=[];const output=path.join(root,'docs/implementation-2026-10-20/render');fs.mkdirSync(output,{recursive:true});
+const ProfileDetails=load('components/dashboard/users/community-profile-details.tsx').default;
+const copy=load('lib/community/copy.ts');const cases=[];const evidence=process.env.COMMUNITY_TEST_OUTPUT || path.join(root,'docs/implementation-2026-10-20');const output=path.join(evidence,'render');fs.mkdirSync(output,{recursive:true});
 function check(name,fn){fn();cases.push({name,status:'PASS'});console.log('PASS '+name);}
 const html=(Component,props={})=>renderToStaticMarkup(React.createElement(Component,props));
 const initial=html(Form);fs.writeFileSync(path.join(output,'register-initial.html'),initial);
@@ -37,14 +38,25 @@ const none=html(Form,{userId:'synthetic',initialProfile:{filterVersion:2,filterC
 check('third branch contains all gratitude text/resources and no full-profile submit fields',()=>{for(const text of copy.RESOURCE_PARAGRAPHS)assert.ok(none.includes(text));for(const resource of copy.COMMUNITY_RESOURCES)assert.ok(none.includes(resource.href));assert.ok(!none.includes('profile-firstName'));assert.ok(!none.includes('Продолжить с Google'));});
 const father=html(Form,{userId:'father',initialProfile:{filterVersion:2,filterCompletedAt:'2026-10-20T00:00:00Z',affiliation:'maternal',gender:'male',hasChildren:true,childrenData:[]}});
 check('father questionnaire offers no child creation control',()=>{assert.ok(!father.includes('Добавить ребёнка'));assert.ok(father.includes('обратитесь к администратору'));});
-for(const [stage,allowed] of [['advanced',false],['completed',true],[null,false]]){
- const content=html(Form,{userId:'giyur-woman',initialProfile:{filterVersion:2,filterCompletedAt:'2026-10-20T00:00:00Z',affiliation:'giyur',gender:'female',giyurStage:stage,hasChildren:true,childrenData:[]}});
- check('giyur '+stage+' child UI matches explicit stage rights and keeps three main answers',()=>{assert.equal(content.includes('Добавить ребёнка'),allowed);assert.equal((content.match(/name="affiliation"/g)||[]).length,3);assert.ok(content.includes('Уточнение для детских прав'));});
+for(const gender of ['female','male']) for(const stage of ['advanced','completed',null]){
+ const content=html(Form,{userId:'giyur-person',initialProfile:{filterVersion:2,filterCompletedAt:'2026-10-20T00:00:00Z',affiliation:'giyur',gender,giyurStage:stage,hasChildren:true,childrenData:[]}});
+ check('giyur '+gender+'/'+stage+' keeps optional clarification and correct child UI',()=>{
+   assert.equal(content.includes('Добавить ребёнка'),gender==='female' && stage==='completed');
+   assert.equal((content.match(/name="affiliation"/g)||[]).length,3);
+   assert.ok(content.includes('Для личной записи это уточнение не требуется. Самостоятельное добавление и запись детей доступны после завершённого гиюра.'));
+   assert.ok(content.includes('Нахожусь на продвинутом этапе')); assert.ok(content.includes('Гиюр завершён'));
+   const options=content.match(/<input[^>]*name="giyurStage"[^>]*>/g);assert.equal(options.length,2);
+   for(const option of options)assert.ok(!option.includes('required'));
+ });
 }
 const access=html(Access,{returnTo:'/events/synthetic'});fs.writeFileSync(path.join(output,'event-guest.html'),access);
+for(const [stage,label] of [[null,'Этап не уточнён'],['advanced','Продвинутый этап'],['completed','Гиюр завершён']]) check('person card shows persisted giyur '+stage,()=>{
+ const content=html(ProfileDetails,{user:{affiliation:'giyur',giyurStage:stage}});
+ assert.ok(content.includes(label));
+});
 check('guest event has exact two branches and safe return context without event title/image',()=>{for(const phrase of ['Один шаг до записи!','Чтобы записаться на мероприятие, войдите в аккаунт или сначала зарегистрируйтесь в нашей общине.','Я уже регистрировался. Войти в кабинет&gt;&gt;','Я здесь впервые! Пройти быструю регистрацию&gt;&gt;'])assert.ok(access.includes(phrase),phrase);assert.ok(access.includes('/register?returnTo=%2Fevents%2Fsynthetic'));assert.ok(!access.includes('<img'));});
 pathname='/events/synthetic';const eventNavbar=html(Navbar);fs.writeFileSync(path.join(output,'event-header-guest.html'),eventNavbar);
 check('guest event header contains no menu, generic registration or extra sign-in branch',()=>{assert.ok(!eventNavbar.includes('Регистрация'));assert.ok(!eventNavbar.includes('Мероприятия'));assert.ok(!eventNavbar.includes('Войти'));});
 pathname='/';const homeNavbar=html(Navbar);fs.writeFileSync(path.join(output,'home-header-guest.html'),homeNavbar);
 check('guest home header retains Google login and questionnaire link without menu',()=>{assert.ok(homeNavbar.includes('Войти'));assert.ok(homeNavbar.includes('/register?returnTo='));assert.ok(!homeNavbar.includes('Мероприятия'));});
-fs.writeFileSync(path.join(root,'docs/implementation-2026-10-20/render-results.json'),JSON.stringify({method:'React component SSR with injected auth/navigation, not browser E2E',checks:cases},null,2)+'\n');console.log(cases.length+'/'+cases.length+' render checks passed.');
+fs.writeFileSync(path.join(evidence,'render-results.json'),JSON.stringify({method:'React component SSR with injected auth/navigation, not browser E2E',checks:cases},null,2)+'\n');console.log(cases.length+'/'+cases.length+' render checks passed.');

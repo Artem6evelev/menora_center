@@ -378,13 +378,11 @@ export async function registerForEvent(
       const prepared = prepareEventRegistration(profile, event, extraData, profileUpdates);
       const existing = await tx.select().from(eventParticipants).where(and(eq(eventParticipants.eventId, eventId), eq(eventParticipants.userId, userId)));
       if (existing.some(item => item.status === "paid" || item.status === "confirmed")) return { paymentUrl: null, alreadyRegistered: true, notify: null };
-      if (!event.isFree) requirePaymentConfirmationReady();
       const pending = existing.find(item => item.status === "pending");
       const id = pending?.id || `part_${randomUUID()}`;
       let paymentUrl: string | null = null;
       // Keep Shutafim and the existing iframe flow; only validate/price before entering it.
       if (prepared.totalAmount > 0) {
-        requirePaymentConfirmationReady();
         if (!event.paymentUrl) throw new CommunityError("Ссылка на оплату пока недоступна. Обратитесь к администратору.");
         const url = new URL(event.paymentUrl);
         if (url.protocol !== "https:") throw new CommunityError("Ссылка на оплату недоступна");

@@ -290,8 +290,11 @@ async function clerkEvent(type, id) {
       assert.equal((await roles.updateUserRole('other', 'author')).success, true); assert.equal((await row('other')).role, 'author');
       assert.ok((await roles.updateUserRole('super', 'client')).error);
     });
-    await test('Restricted payments reject paid operations, manual paid status and every webhook without changing history', async () => {
-      actor = 'new-google'; assert.equal((await events.registerForEvent('paid', actor)).success, false);
+    await test('Event payment initiation remains pending; manual paid and every webhook remain rejected', async () => {
+      actor = 'new-google'; const payment = await events.registerForEvent('paid', actor); assert.equal(payment.success, true);
+      assert.equal(new URL(payment.paymentUrl).searchParams.get('price'), '100');
+      const [pending] = await db.select().from(schema.eventParticipants).where(and(eq(schema.eventParticipants.userId, actor), eq(schema.eventParticipants.eventId, 'paid')));
+      assert.equal(pending.status, 'pending');
       assert.equal((await events.registerForEvent('free', actor)).success, true);
       const free = (await db.select().from(schema.eventParticipants).where(and(eq(schema.eventParticipants.userId, actor), eq(schema.eventParticipants.eventId, 'free'))))[0]; assert.equal(free.status, 'confirmed');
       actor = 'admin'; assert.equal((await events.updateEventParticipantStatus(free.id, 'paid')).success, false);

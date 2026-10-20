@@ -7,8 +7,8 @@ export const AFFILIATION_LABELS: Record<Affiliation, string> = {
   giyur: "Гиюр завершён или нахожусь на продвинутом этапе",
   none: "Нет галахического еврейства",
 };
-// Owner decisions 20.10.2026: women may register themselves at either giyur stage;
-// child self-service requires an explicit completed answer. Men's giyur access remains denied.
+// Owner decision 21.10.2026: both admitted categories may register themselves,
+// regardless of gender or giyur clarification. Child rights still require an eligible mother.
 export interface CommunityProfile {
   id?: string;
   role?: string | null;
@@ -35,7 +35,7 @@ export function communityAccess(profile: CommunityProfile | null | undefined) {
   const complete = hasFilterProfile(profile) && !!profile?.isProfileComplete;
   const maternal = complete && profile?.affiliation === "maternal";
   const giyur = complete && profile?.affiliation === "giyur";
-  const adult = maternal || (giyur && profile?.gender === "female");
+  const adult = maternal || giyur;
   const children = complete && profile?.gender === "female" &&
     (maternal || (giyur && profile?.giyurStage === "completed"));
   const reason = !hasFilterProfile(profile) ? "profile_required" : profile?.affiliation === "none" ? "resources" : !profile?.isProfileComplete

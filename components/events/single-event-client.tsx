@@ -1,5 +1,4 @@
 "use client";
-import { PAYMENTS_RESTRICTED, PAYMENT_UNAVAILABLE_MESSAGE } from "@/lib/community/payments";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -164,18 +163,17 @@ export default function SingleEventClient({
       if (selectedFamily[k]) kidsCount++;
     });
 
-    return adultsCount * adultPrice + kidsCount * childPrice;
+    return Math.round((adultsCount * adultPrice + kidsCount * childPrice) * 100) / 100;
   };
 
   const totalAmount = calculateTotal();
 
   const handleRegisterClick = () => {
-    if (isClosed || isRegistered || !canRegisterSelf || (PAYMENTS_RESTRICTED && !eventData.isFree)) return;
+    if (isClosed || isRegistered || !canRegisterSelf) return;
     setIsRegModalOpen(true);
   };
 
   const handleRegisterSubmit = async () => {
-    if (PAYMENTS_RESTRICTED && !eventData.isFree) return;
     setIsLoading(true);
     const extraData: any = {
       family: { ...selectedFamily },
@@ -242,7 +240,7 @@ export default function SingleEventClient({
       }) + (eventData.time ? `, ${eventData.time}` : "")
     : "Дата не указана";
 
-  const descText = (PAYMENTS_RESTRICTED && !eventData.isFree ? PAYMENT_UNAVAILABLE_MESSAGE + "\n\n" : "") + (eventData.description || "Описание пока не добавлено.");
+  const descText = eventData.description || "Описание пока не добавлено.";
   let part1 = descText;
   let part2 = "";
   if (descText.length > 200) {
@@ -255,7 +253,6 @@ export default function SingleEventClient({
 
   const getButtonState = () => {
     if (!canRegisterSelf) return { text: "Для записи заполните анкету", disabled: true, isSuccess: false, isClosed: false };
-    if (PAYMENTS_RESTRICTED && !eventData.isFree && !isRegistered) return { text: "Платная запись временно недоступна", disabled: true, isSuccess: false, isClosed: false };
     if (isClosed)
       return {
         text: "Запись закрыта",
@@ -566,6 +563,7 @@ export default function SingleEventClient({
                     </span>
                     <div className="flex items-center gap-4 bg-neutral-100 dark:bg-neutral-800 rounded-full px-2 py-1">
                       <button
+                        aria-label="Уменьшить количество взрослых"
                         onClick={() =>
                           setExtraAdults(Math.max(0, extraAdults - 1))
                         }
@@ -577,6 +575,7 @@ export default function SingleEventClient({
                         {extraAdults}
                       </span>
                       <button
+                        aria-label="Увеличить количество взрослых"
                         onClick={() => setExtraAdults(extraAdults + 1)}
                         className="p-1 hover:text-[#FFB800]"
                       >
@@ -615,7 +614,7 @@ export default function SingleEventClient({
                 </button>
                 <button
                   onClick={handleRegisterSubmit}
-                  disabled={isLoading || !userData || familyError || (PAYMENTS_RESTRICTED && !eventData.isFree)}
+                  disabled={isLoading || !userData || familyError}
                   className="flex-[1.5] py-3.5 rounded-xl bg-gradient-to-r from-[#FFB800] to-orange-500 text-white font-black uppercase tracking-widest flex justify-center items-center shadow-lg active:scale-95 text-sm disabled:opacity-50"
                 >
                   {isLoading ? (
@@ -646,10 +645,16 @@ export default function SingleEventClient({
                 </p>
               </div>
               <button
+                aria-label="Закрыть окно оплаты"
                 onClick={() => {
                   setIframeUrl(null);
                   setExtraAdults(0);
                   setSelectedFamily({ self: true });
+                  setIsAddingSpouse(false);
+                  setNewSpouseName("");
+                  setIsAddingChild(false);
+                  setNewChildName("");
+                  setNewChildDob("");
                 }}
                 className="p-2.5 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-700 transition active:scale-90"
               >

@@ -105,8 +105,9 @@ export default function OnboardingForm({ userId = null, initialProfile = null, i
       {affiliation && <fieldset disabled={pending}><legend className="font-bold mb-3">Пол</legend><div className="flex flex-wrap gap-5">
         {([['male', 'Мужской'], ['female', 'Женский']] as const).map(([value, label]) => <label key={value} className="flex items-center gap-2"><input type="radio" required name="gender" checked={gender === value} onChange={() => { setGender(value); setSaved(false); }} value={value} className="accent-[#FFB800]" />{label}</label>)}
       </div></fieldset>}
-      {affiliation === "giyur" && gender === "female" && <fieldset disabled={pending} className="space-y-3 rounded-2xl border border-neutral-200 dark:border-neutral-700 p-4"><legend className="font-bold px-1">Уточнение для детских прав</legend>
+      {affiliation === "giyur" && <fieldset disabled={pending} className="space-y-3 rounded-2xl border border-neutral-200 dark:border-neutral-700 p-4"><legend className="font-bold px-1">Уточнение для детских прав</legend>
         <p className="text-sm text-neutral-600 dark:text-neutral-300">Для личной записи это уточнение не требуется. Самостоятельное добавление и запись детей доступны после завершённого гиюра.</p>
+        {gender === "male" && <p className="text-sm text-neutral-600 dark:text-neutral-300">Самостоятельное добавление и запись детей доступны только с профиля мамы.</p>}
         {([['advanced', 'Нахожусь на продвинутом этапе'], ['completed', 'Гиюр завершён']] as const).map(([value, label]) => <label key={value} className="flex gap-3 items-center"><input type="radio" name="giyurStage" value={value} checked={giyurStage === value} onChange={() => setGiyurStage(value)} />{label}</label>)}
       </fieldset>}
       {expanded && <fieldset disabled={pending} className="space-y-6 min-w-0">
@@ -138,7 +139,7 @@ export default function OnboardingForm({ userId = null, initialProfile = null, i
       </fieldset>}
       {affiliation === "none" && <><ResourceMessage />{userId && <button type="button" onClick={saveChoice} disabled={pending || !gender || saved} className="w-full py-4 rounded-2xl border border-[#FFB800] font-bold disabled:opacity-50">{pending ? "Сохраняем…" : "Сохранить выбор"}</button>}</>}
       {error && <p role="alert" className="rounded-xl bg-red-50 text-red-700 p-4">{error}</p>}
-      {saved && <div role="status" className="rounded-xl bg-emerald-50 text-emerald-800 p-4">{"Ваши данные сохранены."}{(affiliation === "maternal" || (affiliation === "giyur" && gender === "female")) && <a href="/dashboard/events" className="block font-bold underline mt-3">Продолжить</a>}</div>}
+      {saved && <div role="status" className="rounded-xl bg-emerald-50 text-emerald-800 p-4">{"Ваши данные сохранены."}{(affiliation === "maternal" || affiliation === "giyur") && <a href="/dashboard/events" className="block font-bold underline mt-3">Продолжить</a>}</div>}
     </form>
   </div>;
 }

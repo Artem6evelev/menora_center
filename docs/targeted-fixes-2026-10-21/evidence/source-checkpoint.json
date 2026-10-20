@@ -1,0 +1,55 @@
+{
+  "branch": "main",
+  "head": "44db08c960f26b39390fb64c003ed27ad7e2e209",
+  "workingTreeDiffersFromHead": true,
+  "files": [
+    {
+      "file": "actions/community-admin.ts",
+      "sha256": "5874df8d5242b094378142fe1ca40d36ae994ae2d7f4b7d17739a0fd6ca495e9"
+    },
+    {
+      "file": "actions/event.ts",
+      "sha256": "b0508311eecffea2c0af13e2a35f48bd0b413ffd7652fdb46b08c2e964f6bb7f"
+    },
+    {
+      "file": "components/dashboard/main/onboarding-form.tsx",
+      "sha256": "32c1307cc537357e3b9a71910c1c00d1b6237c1b92bcd8aff83875762a61e606"
+    },
+    {
+      "file": "components/events/single-event-client.tsx",
+      "sha256": "b5c3e6c0273bd9e29cd530d383688be8441447e6592694a7e4db909e17608b02"
+    },
+    {
+      "file": "lib/community/payments.ts",
+      "sha256": "5518f8f78bea73a9efd0a8c098b8c17301e4f44f85e029c24f2f0b131e91a022"
+    },
+    {
+      "file": "lib/community/policy.ts",
+      "sha256": "13c1d96c63920fd9ca9e3b495794a1009bf718dc541c9e66a05aeaff79a75fd9"
+    },
+    {
+      "file": "tests/community/build.cjs",
+      "sha256": "f731b65c9e02e2ac95433e86b37c49f558010812614e8c91f1d6de1c83f05e1c"
+    },
+    {
+      "file": "tests/community/http-fixture.cjs",
+      "sha256": "d046f5ef4fdeec80bf0b6e54b5b50e0c04501d62f7af7c68ee3833326e6e5e94"
+    },
+    {
+      "file": "tests/community/production.cjs",
+      "sha256": "5d6cbdaabb2b7b4fac077d51e0345a7d07d256f1b26eadf6dac9a19caa916355"
+    },
+    {
+      "file": "tests/community/regression.cjs",
+      "sha256": "955a5dd98da65feeb616f9bb22cc3c33d12fa99b6da25ba1521e1b1bba4bf90f"
+    },
+    {
+      "file": "tests/community/render.cjs",
+      "sha256": "6a070514b33305304daea6d57cee92da96d1039aefbc56e3f5c34633dfce8798"
+    },
+    {
+      "file": "tests/community/targeted-browser.cjs",
+      "sha256": "1fcdd30ce88730e1f20ac0ad6691a83d823668b430fe8553216ce419e65a3d31"
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "environment": "http://127.0.0.1:3331",
+  "identity": "mock Clerk",
+  "database": "disposable PGlite",
+  "provider": "intercepted iframe response; no real Shutafim requests or payments",
+  "checks": [
+    {
+      "name": "desktop female maternal/null: save, events redirect, refresh and stage persistence",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop female giyur/null: save, events redirect, refresh and stage persistence",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop female giyur/advanced: save, events redirect, refresh and stage persistence",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop female giyur/completed: save, events redirect, refresh and stage persistence",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop male maternal/null: save, events redirect, refresh and stage persistence",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop male giyur/null: save, events redirect, refresh and stage persistence",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop male giyur/advanced: save, events redirect, refresh and stage persistence",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop male giyur/completed: save, events redirect, refresh and stage persistence",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop Shutafim reprices selections, opens iframe twice and closing/reloading keeps one pending record",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop existing advanced woman can select self, sees no old child or child creation",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop third category stays informational and cannot register",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop unverified payment callback cannot mark a pending registration paid",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile female maternal/null: save, events redirect, refresh and stage persistence",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile female giyur/null: save, events redirect, refresh and stage persistence",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile female giyur/advanced: save, events redirect, refresh and stage persistence",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile female giyur/completed: save, events redirect, refresh and stage persistence",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile male maternal/null: save, events redirect, refresh and stage persistence",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile male giyur/null: save, events redirect, refresh and stage persistence",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile male giyur/advanced: save, events redirect, refresh and stage persistence",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile male giyur/completed: save, events redirect, refresh and stage persistence",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile Shutafim reprices selections, opens iframe twice and closing/reloading keeps one pending record",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile existing advanced woman can select self, sees no old child or child creation",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile third category stays informational and cannot register",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile unverified payment callback cannot mark a pending registration paid",
+      "status": "PASS"
+    }
+  ],
+  "errors": [],
+  "paymentRequests": [
+    "https://shutaf.im/donate/menorah_rishon?campaign=synthetic&price=225.45&quantity=1&cur=ILS&payments=1&lang=ru&custom1=part_0e0febb5-7234-4791-9c29-07cd1e3f8f40",
+    "https://shutaf.im/donate/menorah_rishon?campaign=synthetic&price=100.1&quantity=1&cur=ILS&payments=1&lang=ru&custom1=part_0e0febb5-7234-4791-9c29-07cd1e3f8f40",
+    "https://shutaf.im/donate/menorah_rishon?campaign=synthetic&price=200.2&quantity=1&cur=ILS&payments=1&lang=ru&custom1=part_0e0febb5-7234-4791-9c29-07cd1e3f8f40",
+    "https://shutaf.im/donate/menorah_rishon?campaign=synthetic&price=100.1&quantity=1&cur=ILS&payments=1&lang=ru&custom1=part_f0c2ead9-fd17-42a6-8342-417883ddbddd",
+    "https://shutaf.im/donate/menorah_rishon?campaign=synthetic&price=225.45&quantity=1&cur=ILS&payments=1&lang=ru&custom1=part_0e0febb5-7234-4791-9c29-07cd1e3f8f40",
+    "https://shutaf.im/donate/menorah_rishon?campaign=synthetic&price=100.1&quantity=1&cur=ILS&payments=1&lang=ru&custom1=part_0e0febb5-7234-4791-9c29-07cd1e3f8f40",
+    "https://shutaf.im/donate/menorah_rishon?campaign=synthetic&price=100.1&quantity=1&cur=ILS&payments=1&lang=ru&custom1=part_f0c2ead9-fd17-42a6-8342-417883ddbddd"
+  ]
+}

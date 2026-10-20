@@ -1,6 +1,6 @@
 /* Standard production build of CURRENT working tree in a copy without real env. */
 const fs=require('node:fs'),path=require('node:path'),cp=require('node:child_process');
-const root=path.resolve(__dirname,'../..'),target='/tmp/menora-production-build',out=path.join(root,'docs/production-readiness-2026-10-20/evidence');
+const root=path.resolve(__dirname,'../..'),target='/tmp/menora-production-build',out=process.env.COMMUNITY_TEST_OUTPUT || path.join(root,'docs/production-readiness-2026-10-20/evidence');
 fs.mkdirSync(target,{recursive:true});cp.execFileSync('rsync',['-a','--exclude=.git','--exclude=.next*','--exclude=node_modules','--exclude=.env*','--exclude=docs','--exclude=tests','--exclude=*.tsbuildinfo',root+'/',target+'/']);
 if(!fs.existsSync(path.join(target,'node_modules')))fs.symlinkSync(root+'/node_modules',target+'/node_modules');
 const env={...process.env,DATABASE_URL:'postgresql://synthetic:synthetic@127.0.0.1:1/synthetic',NEXT_PUBLIC_SUPABASE_URL:'https://synthetic.supabase.co',NEXT_PUBLIC_SUPABASE_ANON_KEY:'synthetic',NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:'pk_test_'+Buffer.from('synthetic.clerk.accounts.dev$').toString('base64'),CLERK_SECRET_KEY:'sk_test_synthetic',EMAIL_USER:'',EMAIL_PASS:'',TELEGRAM_BOT_TOKEN:'',NEXT_TELEMETRY_DISABLED:'1'};

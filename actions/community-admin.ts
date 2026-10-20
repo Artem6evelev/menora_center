@@ -1,6 +1,5 @@
 "use server";
 import { CommunityError, communityErrorMessage } from "@/lib/community/errors";
-import { requirePaymentConfirmationReady } from "@/lib/community/payments";
 import { hasFilterProfile, isStaff } from "@/lib/community/policy";
 import { z } from "zod";
 import { db } from "@/lib/db";
@@ -36,8 +35,7 @@ export async function registerChildManually(raw: unknown) {
       const [existingAudit] = await tx.select().from(communityAudit).where(eq(communityAudit.id, input.requestId));
       if (existingAudit) {
         if (existingAudit.actorId !== actor.id || existingAudit.parentId !== input.parentId) throw new CommunityError("Неверный идентификатор операции");
-        if ((existingAudit.details as { paymentUrl?: string })?.paymentUrl) requirePaymentConfirmationReady();
-        return { id: existingAudit.targetId, paymentUrl: null, duplicate: true };
+        return { id: existingAudit.targetId, paymentUrl: (existingAudit.details as { paymentUrl?: string })?.paymentUrl || null, duplicate: true };
       }
       const [parent] = await tx.select().from(users).where(eq(users.id, input.parentId)).for("update");
       if (!parent || parent.gender !== "male") throw new CommunityError("Для этого исключения требуется профиль отца с указанным полом");
@@ -57,14 +55,12 @@ export async function registerChildManually(raw: unknown) {
       if (input.kind === "event") {
         const [event] = await tx.select().from(events).where(eq(events.id, input.eventId || "")).for("update");
         if (!event || event.isRegistrationClosed || event.status !== "planned") throw new CommunityError("Событие недоступно для записи");
-        if (!event.isFree) requirePaymentConfirmationReady();
         const existing = await tx.select().from(eventParticipants).where(and(eq(eventParticipants.eventId, event.id), eq(eventParticipants.userId, parent.id)));
         if (existing.length) throw new CommunityError("У родителя уже есть запись на событие. Проверьте её перед ручным изменением.");
         id = `part_${randomUUID()}`;
         const amount = event.isFree ? 0 : Number.parseFloat(event.childPrice || "0") * selected.length;
         if (!Number.isFinite(amount) || amount < 0) throw new CommunityError("Уточните стоимость детского участия");
         if (amount > 0) {
-          requirePaymentConfirmationReady();
           if (!event.paymentUrl) throw new CommunityError("Не настроена ссылка на оплату");
           const url = new URL(event.paymentUrl); if (url.protocol !== "https:") throw new CommunityError("Некорректная ссылка на оплату");
           Object.entries({ price: String(Math.round(amount * 100) / 100), quantity: "1", cur: "ILS", payments: "1", lang: "ru", custom1: id }).forEach(([key, value]) => url.searchParams.set(key, value));

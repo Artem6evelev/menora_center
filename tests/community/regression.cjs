@@ -108,10 +108,32 @@ const profilePayload = (override = {}) => ({ affiliation: 'maternal', gender: 'f
     assert.equal(policy.communityAccess(mom).canRegisterChildren,true); assert.equal(policy.communityAccess(dad).canRegisterSelf,true); assert.equal(policy.communityAccess(dad).canManageChildren,false);
     assert.equal(policy.communityAccess({isProfileComplete:true}).canViewEvents,false);
     assert.equal(policy.communityAccess({gender:'female',affiliation:'giyur',filterVersion:2,filterCompletedAt:new Date("2026-10-20T00:00:00Z"),isProfileComplete:true}).canRegisterSelf,true);
-    assert.equal(policy.communityAccess({gender:'male',affiliation:'giyur',filterVersion:2,filterCompletedAt:new Date("2026-10-20T00:00:00Z"),isProfileComplete:true}).canRegisterSelf,false);
+    assert.equal(policy.communityAccess({gender:'male',affiliation:'giyur',filterVersion:2,filterCompletedAt:new Date("2026-10-20T00:00:00Z"),isProfileComplete:true}).canRegisterSelf,true);
     assert.equal(policy.communityAccess({gender:'female',affiliation:'giyur',filterVersion:2,filterCompletedAt:new Date("2026-10-20T00:00:00Z"),isProfileComplete:true}).canManageChildren,false);
     assert.equal(policy.communityAccess({role:'admin'}).canViewEvents,false); assert.equal(policy.communityAccess({role:'admin'}).canRegisterSelf,false);
   });
+  for (const gender of ['female','male']) for (const affiliation of ['maternal','giyur']) {
+    for (const stage of affiliation === 'giyur' ? [null,'advanced','completed'] : [null]) {
+      await test(`${gender} ${affiliation}/${stage}: form persists, admits self and enforces child rights`, async () => {
+        actor = `admission-${gender}-${affiliation}-${stage}`;
+        await db.insert(users).values({id:actor,email:actor+'@example.invalid',childrenData:[{id:actor+'-child',name:'Existing child',dateOfBirth:'2020-01-01'}]});
+        const canChildren = gender === 'female' && (affiliation === 'maternal' || stage === 'completed');
+        const data = profilePayload({gender,affiliation,hasChildren:true,childrenData:canChildren ? [{id:actor+'-child',name:'Existing child',dateOfBirth:'2020-01-01'}] : []});
+        if (stage !== null) data.giyurStage = stage;
+        const saved = await filter.saveCommunityProfile(actor,data);
+        assert.equal(saved.success,true); assert.equal(saved.redirectTo,'/dashboard/events');
+        assert.equal(saved.access.canRegisterSelf,true); assert.equal(saved.access.canViewEvents,true);
+        const profile = (await db.select().from(users).where(eq(users.id,actor)))[0];
+        assert.equal(profile.giyurStage,stage); assert.equal(profile.affiliation,affiliation);
+        assert.equal(profile.childrenData.length,1);
+        assert.equal((await event.getEventById('event-free')).id,'event-free');
+        assert.equal((await event.registerForEvent('event-free',actor)).success,true);
+        assert.equal(saved.access.canRegisterChildren,canChildren);
+        assert.equal((await event.registerForEvent('event-paid',actor,undefined,{childIds:[actor+'-child']})).success,canChildren);
+        assert.equal((await childrenAction.saveOwnChildren([{id:actor+'-child',name:'Existing child',dateOfBirth:'2020-01-01'},{name:'New child',dateOfBirth:'2021-01-01'}])).success,canChildren);
+      });
+    }
+  }
   await test('return paths reject external, protocol-relative, encoded slash and OAuth loops', async () => {
     for (const url of ['https://outside.example.invalid','//outside.example.invalid','/\\outside.example.invalid','/events/%2Foutside','/sso-callback','/sign-in','/auth/complete?returnTo=/auth/complete','/events/test\n']) assert.equal(policy.safeReturnTo(url),'/dashboard');
     assert.equal(policy.safeReturnTo('/events/event-free'),'/events/event-free');
@@ -206,15 +228,25 @@ const profilePayload = (override = {}) => ({ affiliation: 'maternal', gender: 'f
     assert.equal((await kids.submitKidsApplication({programTitle:'Synthetic',childIds:['child-other']})).success,false);
     const application=(await db.select().from(kidsApplications).where(eq(kidsApplications.userId,actor)))[0]; assert.equal(application.children[0].parentId,'mom'); assert.notEqual(application.parentFirstName,'Forged name');
   });
-  await test('server prices linked child correctly; restricted payments create no pending registration', async () => {
+  await test('Shutafim uses server prices and ignores client amount; changed selection reprices one pending record', async () => {
     actor='mom';
     const profile=(await db.select().from(users).where(eq(users.id,actor)))[0];
     const paid=(await db.select().from(events).where(eq(events.id,'event-paid')))[0];
     const prepared=source('lib/community/registration.ts').prepareEventRegistration(profile,paid,{family:{self:true},childIds:['child-mom']});
     assert.equal(prepared.totalAmount,125);assert.equal(prepared.extraData.childrenSnapshot[0].id,'child-mom');
     const result=await event.registerForEvent('event-paid',actor,undefined,{family:{self:true},childIds:['child-mom']},undefined,0);
-    assert.equal(result.success,false);assert.equal(result.paymentUrl,null);
-    assert.equal((await db.select().from(eventParticipants).where(and(eq(eventParticipants.eventId,'event-paid'),eq(eventParticipants.userId,actor)))).length,0);
+    assert.equal(result.success,true);
+    const url = new URL(result.paymentUrl);
+    for (const [key,value] of Object.entries({price:'125',quantity:'1',cur:'ILS',payments:'1',lang:'ru',campaign:'keep'})) assert.equal(url.searchParams.get(key),value);
+    const [pending] = await db.select().from(eventParticipants).where(and(eq(eventParticipants.eventId,'event-paid'),eq(eventParticipants.userId,actor)));
+    assert.equal(pending.status,'pending'); assert.equal(url.searchParams.get('custom1'),pending.id);
+    const again = await event.registerForEvent('event-paid',actor,undefined,{extraAdults:2},undefined,0.01);
+    assert.equal(again.success,true); assert.equal(new URL(again.paymentUrl).searchParams.get('price'),'300');
+    const rows = await db.select().from(eventParticipants).where(and(eq(eventParticipants.eventId,'event-paid'),eq(eventParticipants.userId,actor)));
+    assert.equal(rows.length,1); assert.equal(rows[0].id,pending.id); assert.equal(rows[0].status,'pending');
+    actor='admin'; assert.equal((await event.updateEventParticipantStatus(pending.id,'paid')).success,false);
+    assert.equal((await event.updateEventParticipantStatus(pending.id,'confirmed')).success,false);
+    assert.equal((await db.select().from(eventParticipants).where(eq(eventParticipants.id,pending.id)))[0].status,'pending');
   });
   await test('closed event fails before child creation; legacy registration delegates to policy', async () => {
     actor='mom'; const before=(await db.select().from(users).where(eq(users.id,actor)))[0].childrenData.length;
@@ -245,6 +277,19 @@ const profilePayload = (override = {}) => ({ affiliation: 'maternal', gender: 'f
     const father=(await db.select().from(users).where(eq(users.id,'father-unknown')))[0];assert.equal(father.affiliation,null);assert.equal(father.jewishStatus,null);assert.equal(father.filterVersion,null);
     const participant=(await db.select().from(eventParticipants).where(eq(eventParticipants.id,r.id)))[0];assert.equal(participant.status,'confirmed');assert.equal(participant.extraData.family.self,false);
   });
+  await test('admin paid child exception opens priced iframe link, preserves father status and audit on replay', async () => {
+    const before=(await db.select().from(users).where(eq(users.id,'father')))[0];
+    const input={requestId:crypto.randomUUID(),parentId:'father',childIds:['child-father'],kind:'event',eventId:'event-paid',reason:'Synthetic father-only exception'};
+    actor='father'; assert.equal((await admin.registerChildManually(input)).success,false);
+    actor='admin'; const result=await admin.registerChildManually(input); assert.equal(result.success,true);
+    assert.equal(new URL(result.paymentUrl).searchParams.get('price'),'25');
+    assert.equal((await admin.registerChildManually(input)).paymentUrl,result.paymentUrl);
+    const after=(await db.select().from(users).where(eq(users.id,'father')))[0];
+    assert.equal(after.affiliation,before.affiliation); assert.equal(after.jewishStatus,before.jewishStatus);
+    assert.equal((await db.select().from(eventParticipants).where(eq(eventParticipants.id,result.id)))[0].status,'pending');
+    const audits=await db.select().from(communityAudit).where(eq(communityAudit.id,input.requestId));
+    assert.equal(audits.length,1); assert.equal(audits[0].actorId,'admin'); assert.equal(audits[0].reason,input.reason);
+  });
   await test('historical positional child identity is snapshotted before profile edit', async () => {
     actor='legacy'; const old=source('lib/community/children.ts').profileChildren(actor,(await db.select().from(users).where(eq(users.id,actor)))[0].childrenData)[0];
     await db.insert(eventParticipants).values({eventId:'event-history',userId:actor,phone:'synthetic',status:'paid',extraData:{family:{child_0:true}}});
@@ -270,6 +315,6 @@ const profilePayload = (override = {}) => ({ affiliation: 'maternal', gender: 'f
   });
   await pg.close();
   const result={engine:'PGlite 0.5.10 PostgreSQL/WASM, Drizzle real SQL/transactions; auth and external side effects injected',limitations:['Not real Clerk/Google OAuth or browser E2E','PGlite serializes transactions; multi-connection PostgreSQL locking/load not measured','No real DB, external delivery or payments'],checks};
-  const output=path.join(ROOT,'docs/implementation-2026-10-20/regression-results.json');fs.writeFileSync(output,JSON.stringify(result,null,2)+'\n');
+  const output=path.join(process.env.COMMUNITY_TEST_OUTPUT || path.join(ROOT,'docs/implementation-2026-10-20'),'regression-results.json');fs.mkdirSync(path.dirname(output),{recursive:true});fs.writeFileSync(output,JSON.stringify(result,null,2)+'\n');
   console.log(`${checks.length}/${checks.length} regression scenarios passed. External side effects disabled.`);
 })().catch(error=>{ console.error(error.stack);process.exitCode=1; });
