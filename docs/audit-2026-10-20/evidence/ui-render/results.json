@@ -1,0 +1,80 @@
+{
+  "synthetic": true,
+  "checks": [
+    {
+      "name": "Guest Home contains event title before hydration",
+      "result": "PASS (current behavior reproduced)",
+      "observation": "Real Home/Hero/UpcomingEvents with synthetic action result."
+    },
+    {
+      "name": "Guest Home contains upcoming-events heading",
+      "result": "PASS (current behavior reproduced)",
+      "observation": "No guest branch removes the section."
+    },
+    {
+      "name": "Guest Home contains event image",
+      "result": "PASS (current behavior reproduced)",
+      "observation": "Image is present in component HTML."
+    },
+    {
+      "name": "Guest event renders old one-button copy",
+      "result": "PASS (current behavior reproduced)",
+      "observation": "New two-button text is absent."
+    },
+    {
+      "name": "Guest event omits visible description",
+      "result": "PASS (current behavior reproduced)",
+      "observation": "The guest component body does gate visible description."
+    },
+    {
+      "name": "Guest event includes image source",
+      "result": "PASS (current behavior reproduced)",
+      "observation": "CSS blur does not remove the image URL."
+    },
+    {
+      "name": "Guest page passes full event description to client boundary",
+      "result": "PASS (current behavior reproduced)",
+      "observation": "This inspects React element props, not a captured Next RSC response."
+    },
+    {
+      "name": "Guest event metadata includes full description",
+      "result": "PASS (current behavior reproduced)",
+      "observation": "Real generateMetadata with synthetic getEventById result."
+    },
+    {
+      "name": "Guest navbar includes event menu",
+      "result": "PASS (current behavior reproduced)",
+      "observation": "Desktop menu is unconditional; mobile is present as a closed drawer control."
+    },
+    {
+      "name": "Desktop registration opens Clerk SignUp",
+      "result": "PASS (current behavior reproduced)",
+      "observation": "Mock exposes selected authored SDK component, not real Google configuration."
+    },
+    {
+      "name": "Open guest mobile drawer has registration but no sign-in",
+      "result": "PASS (current behavior reproduced)",
+      "observation": "Forced component state, not user interaction."
+    },
+    {
+      "name": "Onboarding initially shows unrelated full fields",
+      "result": "PASS (current behavior reproduced)",
+      "observation": "No filtering question is selected on the initial render."
+    },
+    {
+      "name": "Onboarding lacks gender field and required filter copy",
+      "result": "PASS (current behavior reproduced)",
+      "observation": "Absence in initial HTML plus code inspection."
+    },
+    {
+      "name": "Paid ticket renders waiting badge",
+      "result": "PASS (current behavior reproduced)",
+      "observation": "Real StatusBadge invoked through MyEventsClient with synthetic paid status."
+    }
+  ],
+  "limitations": [
+    "Component render with injected synthetic data. This is not Next SSR, hydration, RSC, OAuth or an E2E test.",
+    "Animation, navigation, Clerk SDK widgets and unrelated homepage sections are mocked.",
+    "Mobile drawer-open render forces initial useState; no click or browser viewport was exercised."
+  ]
+}

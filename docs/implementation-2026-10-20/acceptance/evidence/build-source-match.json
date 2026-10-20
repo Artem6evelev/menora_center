@@ -1,0 +1,12 @@
+{
+  "buildDirectory": "/tmp/menora-acceptance-build",
+  "codeManifestSha256": "d7a68a3e13aa8e194a2531dadda4980ce41de4d6e5153d95a3e63ac1ee7d32c0",
+  "sourceMismatches": [],
+  "generatedDifferences": {
+    "files": [
+      "next-env.d.ts"
+    ],
+    "reason": "Next generates next-env.d.ts for dev .next/dev/types vs build .next/types; product source matches"
+  },
+  "secretEnvCopied": false
+}

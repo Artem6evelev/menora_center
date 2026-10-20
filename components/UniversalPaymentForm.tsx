@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { PAYMENTS_RESTRICTED, PAYMENT_UNAVAILABLE_MESSAGE } from "@/lib/community/payments";
 import { Loader2, X, Coins, Check } from "lucide-react";
 import { useUser } from "@clerk/nextjs"; // Используем Clerk для получения данных, если юзер залогинен
 
@@ -20,6 +21,8 @@ export default function UniversalPaymentForm() {
       document.body.style.overflow = "unset";
     };
   }, [iframeUrl]);
+
+  if (PAYMENTS_RESTRICTED) return <section className="rounded-2xl border p-6" role="status"><h2 className="font-bold text-xl mb-3">Платежи временно недоступны</h2><p>{PAYMENT_UNAVAILABLE_MESSAGE}</p></section>;
 
   const handlePayment = (e: React.FormEvent) => {
     e.preventDefault();

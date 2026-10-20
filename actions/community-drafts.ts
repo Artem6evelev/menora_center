@@ -1,0 +1,74 @@
+"use server";
+import { auth, currentUser } from "@clerk/nextjs/server";
+import { cookies } from "next/headers";
+import { randomBytes } from "node:crypto";
+import { and, eq, lt, isNull } from "drizzle-orm";
+import { db } from "@/lib/db";
+import { communityRegistrationDrafts as drafts, users } from "@/lib/db/schema";
+import { fullProfileInput } from "@/lib/community/validation";
+import { FILTER_VERSION, communityAccess } from "@/lib/community/policy";
+import { draftCookieName, hashDraftToken, registrationAttemptToken, validAttemptId } from "@/lib/community/drafts";
+import { writeCommunityProfile } from "@/lib/community/profile-write";
+import { CommunityError, communityErrorMessage } from "@/lib/community/errors";
+import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { sendCommunityWelcome } from "@/lib/community/welcome";
+
+export async function prepareRegistrationDraft(raw: unknown, attemptId: string) {
+  try {
+    if ((await auth()).userId) throw new CommunityError("Вы уже вошли. Обновите страницу перед сохранением.");
+    if (!validAttemptId(attemptId)) throw new CommunityError("Повторите отправку анкеты");
+    const payload = fullProfileInput.parse(raw);
+    if (JSON.stringify(payload).length > 25000) throw new CommunityError("Анкета слишком велика");
+    const existingHash = await registrationAttemptToken(attemptId);
+    const [existing] = await db.select().from(drafts).where(eq(drafts.id, attemptId));
+    if (existing) {
+      if (existingHash !== existing.tokenHash || existing.consumedAt || existing.expiresAt <= new Date() || existing.filterVersion !== FILTER_VERSION || JSON.stringify(fullProfileInput.parse(existing.payload)) !== JSON.stringify(payload)) throw new CommunityError("Создайте новую попытку отправки анкеты");
+      return { success: true as const, draftId: existing.id };
+    }
+    // Expired temporary payloads are not participant/family history.
+    await db.delete(drafts).where(lt(drafts.expiresAt, new Date()));
+    const token = randomBytes(32).toString("base64url");
+    const inserted = await db.insert(drafts).values({ id: attemptId, tokenHash: hashDraftToken(token), payload,
+      filterVersion: FILTER_VERSION, expiresAt: new Date(Date.now() + 30 * 60_000) }).onConflictDoNothing().returning({ id: drafts.id });
+    if (!inserted.length) throw new CommunityError("Анкета уже отправляется. Дождитесь завершения первой попытки.");
+    (await cookies()).set(draftCookieName(attemptId), token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: 30 * 60 });
+    return { success: true as const, draftId: attemptId };
+  } catch (error) { return { success: false as const, message: communityErrorMessage(error, "Не удалось сохранить анкету перед входом. Попробуйте снова.") }; }
+}
+
+export async function completeRegistrationDraft(id: string, reviewedInput?: unknown) {
+  try {
+    const { userId } = await auth();
+    const identity = await currentUser();
+    if (!userId || !identity || identity.id !== userId) throw new CommunityError("Войдите в свой аккаунт");
+    const tokenHash = await registrationAttemptToken(id);
+    if (!tokenHash) throw new CommunityError("Попытка входа истекла. Проверьте анкету и отправьте её снова.");
+    const result = await db.transaction(async tx => {
+      const [draft] = await tx.select().from(drafts).where(and(eq(drafts.id, id), eq(drafts.tokenHash, tokenHash))).for("update");
+      if (!draft || draft.expiresAt <= new Date() || draft.filterVersion !== FILTER_VERSION || (draft.ownerId && draft.ownerId !== userId)) throw new CommunityError("Анкета не относится к этой попытке входа");
+      if (draft.consumedAt) {
+        const [profile] = await tx.select().from(users).where(eq(users.id, userId));
+        const access = communityAccess(profile);
+        return { revision: profile?.filterRevision || 0, access, welcome: false, email: "",
+          redirectTo: access.canViewEvents ? "/dashboard/events" : "/register?result=resources" };
+      }
+      const resourceOnly = typeof reviewedInput === "object" && reviewedInput !== null && "affiliation" in reviewedInput && reviewedInput.affiliation === "none";
+      const saved = await writeCommunityProfile(tx, identity, reviewedInput === undefined ? draft.payload : reviewedInput, resourceOnly, reviewedInput === undefined ? draft.createdAt : undefined);
+      // Claim, profile/children/history and the server completion stamp commit together.
+      await tx.update(drafts).set({ ownerId: userId, consumedAt: new Date(), payload: {} }).where(eq(drafts.id, id));
+      return saved;
+    });
+    (await cookies()).set(draftCookieName(id), "", { path: "/", maxAge: 0, httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production" });
+    if (result.welcome) after(() => sendCommunityWelcome(result.email, identity.firstName || ""));
+    revalidatePath("/", "layout"); revalidatePath("/dashboard", "layout");
+    return { success: true as const, revision: result.revision, access: result.access, redirectTo: result.redirectTo };
+  } catch (error) { return { success: false as const, message: communityErrorMessage(error, "Не удалось завершить сохранение анкеты. Попробуйте снова.") }; }
+}
+
+export async function discardRegistrationDraft(id: string) {
+  const tokenHash = await registrationAttemptToken(id);
+  if (!tokenHash) return;
+  await db.delete(drafts).where(and(eq(drafts.id, id), eq(drafts.tokenHash, tokenHash), isNull(drafts.ownerId), isNull(drafts.consumedAt)));
+  (await cookies()).set(draftCookieName(id), "", { path: "/", maxAge: 0, httpOnly: true });
+}

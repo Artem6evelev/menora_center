@@ -1,3 +1,4 @@
+import { requireDashboardFilter } from "@/lib/community/server";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import { authorProfiles } from "@/lib/db/schema";
@@ -16,6 +17,7 @@ export default async function AuthorCabinetPage({
   // 🔥 Обновленная типизация для Next.js 15+
   searchParams: Promise<{ tab?: string }>;
 }) {
+  await requireDashboardFilter();
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 

@@ -1,404 +1,144 @@
 "use client";
 
-import { useState } from "react";
-import { Loader2, Check, Plus, Trash2 } from "lucide-react";
-import { completeUserProfile } from "@/actions/user";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { useClerk } from "@clerk/nextjs";
+import { Plus, Trash2 } from "lucide-react";
+import { saveCommunityProfile, saveResourceChoice } from "@/actions/community";
+import { prepareRegistrationDraft, completeRegistrationDraft, discardRegistrationDraft } from "@/actions/community-drafts";
+import { AFFILIATIONS, AFFILIATION_LABELS, Affiliation, communityAccess, Gender, FILTER_VERSION, hasFilterProfile } from "@/lib/community/policy";
+import { WELCOME_PARAGRAPHS, FORM_EXPLANATION } from "@/lib/community/copy";
+import { fullProfileInput } from "@/lib/community/validation";
+import ResourceMessage from "@/components/community/resource-message";
 
-export default function OnboardingForm({ userId }: { userId: string }) {
-  const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [agreed, setAgreed] = useState(false);
-
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    phoneCode: "+972",
-    phone: "",
-    dateOfBirth: "",
-    city: "",
-    maritalStatus: "",
-    hasChildren: "",
-    jewishStatus: "",
-    source: "",
-  });
-
-  // 🔥 НОВЫЕ СТЕЙТЫ ДЛЯ СЕМЬИ
-  const [spouseName, setSpouseName] = useState("");
-  const [childrenList, setChildrenList] = useState([
-    { name: "", dateOfBirth: "" },
-  ]);
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const onlyNums = e.target.value.replace(/[^0-9]/g, "");
-    setFormData({ ...formData, phone: onlyNums });
-  };
-
-  const handleChildChange = (
-    index: number,
-    field: "name" | "dateOfBirth",
-    value: string,
-  ) => {
-    const newList = [...childrenList];
-    newList[index][field] = value;
-    setChildrenList(newList);
-  };
-
-  const addChild = () =>
-    setChildrenList([...childrenList, { name: "", dateOfBirth: "" }]);
-
-  const removeChild = (index: number) => {
-    if (childrenList.length > 1) {
-      setChildrenList(childrenList.filter((_, i) => i !== index));
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!agreed) return;
-    setIsSubmitting(true);
-
-    // Подготавливаем данные для БД
-    const submitData = {
-      ...formData,
-      spouseName: formData.maritalStatus === "married" ? spouseName : null,
-      childrenData: formData.hasChildren === "yes" ? childrenList : [],
+type Child = { id?: string; name: string; dateOfBirth: string };
+type Fields = { firstName: string; lastName: string; phone: string; dateOfBirth: string; city: string;
+  maritalStatus: "" | "single" | "married" | "divorced" | "widowed"; spouseName: string; hasChildren: boolean };
+const inputClass = "w-full rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-950 px-4 py-3 outline-none focus:ring-2 focus:ring-[#FFB800] min-w-0";
+const dateValue = (value: unknown) => { const date = new Date(String(value)); return value && Number.isFinite(date.getTime()) ? date.toISOString().slice(0, 10) : ""; };
+export default function OnboardingForm({ userId = null, initialProfile = null, initialDraft = null, draftId, onSaved }: {
+  userId?: string | null; initialProfile?: any; initialDraft?: any; draftId?: string;
+  returnTo?: string; resume?: boolean; onSaved?: () => void;
+}) {
+  const router = useRouter(); const clerk = useClerk();
+  const current = hasFilterProfile(initialProfile);
+  const answers = initialDraft || (current ? initialProfile : null);
+  const ordinary = initialDraft || initialProfile;
+  const [affiliation, setAffiliation] = useState<Affiliation | "">(answers?.affiliation || "");
+  const [gender, setGender] = useState<Gender | "">(answers?.gender || "");
+  const [giyurStage, setGiyurStage] = useState<"advanced" | "completed" | "">(answers?.giyurStage || "");
+  const [revision, setRevision] = useState(initialProfile?.filterRevision || 0);
+  const [fields, setFields] = useState<Fields>({ firstName: ordinary?.firstName || "", lastName: ordinary?.lastName || "",
+    phone: ordinary?.phone || "+972", dateOfBirth: dateValue(ordinary?.dateOfBirth), city: ordinary?.city || "",
+    maritalStatus: ordinary?.maritalStatus || "", spouseName: ordinary?.spouseName || "", hasChildren: ordinary?.hasChildren ?? false });
+  const [children, setChildren] = useState<Child[]>((ordinary?.childrenData || []).map((child: any) => ({
+    id: child.id, name: child.name || "", dateOfBirth: child.dateOfBirth || child.birthDate || "",
+  })));
+  const [agreed, setAgreed] = useState(initialDraft?.agreedToPrivacy === true);
+  const [pending, setPending] = useState(false); const [error, setError] = useState("");
+  const [saved, setSaved] = useState(current && initialProfile?.affiliation === "none");
+  const resumed = useRef(false);
+  const attempt = useRef<{ id: string; payload: string } | null>(null);
+  const canEditChildren = communityAccess({ affiliation, gender, giyurStage, filterVersion: FILTER_VERSION, filterCompletedAt: new Date(), isProfileComplete: true }).canManageChildren;
+  const expanded = affiliation === "maternal" || affiliation === "giyur";
+  function payload() {
+    return { ...fields, spouseName: fields.maritalStatus === "married" ? fields.spouseName : null,
+      affiliation, gender, ...(affiliation === "giyur" ? { giyurStage: giyurStage || null } : {}), expectedRevision: revision, agreedToPrivacy: agreed,
+      ...(canEditChildren && fields.hasChildren ? { childrenData: children.filter(child => child.name.trim() || child.dateOfBirth) } : {}),
     };
-
-    const res = await completeUserProfile(userId, submitData);
-    if (res.success) {
-      router.refresh();
-    } else {
-      alert(`Ошибка базы данных:\n${res.message}`);
-      setIsSubmitting(false);
-    }
-  };
-
-  // Валидация
-  const isChildrenValid =
-    formData.hasChildren === "yes"
-      ? childrenList.every((c) => c.name.trim().length > 1 && c.dateOfBirth)
-      : true;
-
-  const isSpouseValid =
-    formData.maritalStatus === "married" ? spouseName.trim().length > 1 : true;
-
-  const isFormValid =
-    formData.firstName.trim().length >= 2 &&
-    formData.lastName.trim().length >= 2 &&
-    formData.phone.trim().length >= 7 &&
-    formData.dateOfBirth &&
-    formData.city.trim() &&
-    formData.maritalStatus &&
-    formData.hasChildren &&
-    formData.jewishStatus &&
-    isChildrenValid &&
-    isSpouseValid &&
-    agreed;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      className="bg-white/80 dark:bg-neutral-900/80 backdrop-blur-2xl rounded-[40px] p-8 md:p-12 w-full border border-neutral-200/50 dark:border-neutral-800/50 relative overflow-hidden"
-    >
-      <div className="text-center mb-10 relative z-10">
-        <h1 className="text-4xl md:text-5xl font-black text-neutral-900 dark:text-white tracking-tighter mb-3">
-          Добро{" "}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFB800] to-orange-500">
-            пожаловать
-          </span>
-        </h1>
-        <p className="text-neutral-500 dark:text-neutral-400 font-medium">
-          Почти готово! Укажите ваши данные для общины.
-        </p>
-      </div>
-
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-6 relative z-10 max-h-[60vh] overflow-y-auto custom-scrollbar pr-2"
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-xs font-black uppercase tracking-widest text-neutral-500 mb-2 pl-1">
-              Имя *
-            </label>
-            <input
-              required
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleChange}
-              placeholder="Иван"
-              className="w-full p-4 bg-neutral-100/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 rounded-2xl outline-none focus:ring-2 focus:ring-[#FFB800]/50"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-black uppercase tracking-widest text-neutral-500 mb-2 pl-1">
-              Фамилия *
-            </label>
-            <input
-              required
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleChange}
-              placeholder="Иванов"
-              className="w-full p-4 bg-neutral-100/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 rounded-2xl outline-none focus:ring-2 focus:ring-[#FFB800]/50"
-            />
-          </div>
+  }
+  const finish = useCallback((result: any) => {
+    if (!result.success) { setError(result.message); return; }
+    setRevision(result.revision); setSaved(true);
+    onSaved?.();
+    if (result.access.canViewEvents) router.replace("/dashboard/events");
+    router.refresh();
+  }, [onSaved, router]);
+  useEffect(() => {
+    if (!draftId || !userId || resumed.current) return;
+    resumed.current = true; setPending(true);
+    void completeRegistrationDraft(draftId).then(finish)
+      .catch(() => setError("Не удалось завершить сохранение. Анкета остаётся на сервере; попробуйте сохранить снова."))
+      .finally(() => setPending(false));
+  }, [draftId, userId, finish]);
+  async function submit(event: React.FormEvent) {
+    event.preventDefault(); setError(""); setSaved(false);
+    const checked = fullProfileInput.safeParse(payload());
+    if (!checked.success) { setError(checked.error.issues[0]?.message || "Проверьте обязательные поля"); return; }
+    setPending(true);
+    try {
+      if (userId) { finish(await (draftId && initialDraft ? completeRegistrationDraft(draftId, checked.data) : saveCommunityProfile(userId, checked.data))); return; }
+      const serialized = JSON.stringify(checked.data);
+      if (attempt.current?.payload !== serialized) attempt.current = { id: crypto.randomUUID(), payload: serialized };
+      const prepared = await prepareRegistrationDraft(checked.data, attempt.current!.id);
+      if (!prepared.success) { setError(prepared.message); return; }
+      if (!clerk.client) throw new Error("Вход ещё загружается");
+      const suffix = `registration=1&draft=${encodeURIComponent(prepared.draftId)}`;
+      await clerk.client.signIn.authenticateWithRedirect({ strategy: "oauth_google",
+        redirectUrl: `/sso-callback?${suffix}`, redirectUrlComplete: `/auth/complete?${suffix}` });
+    } catch { setError("Не удалось завершить вход. Отправленная анкета сохранена на сервере на 30 минут; попробуйте снова."); }
+    finally { setPending(false); }
+  }
+  async function saveChoice() {
+    if (!userId || !gender || affiliation !== "none") return;
+    setPending(true); setError("");
+    try {
+      const input = { affiliation, gender, expectedRevision: revision };
+      const result = await (draftId && initialDraft ? completeRegistrationDraft(draftId, input) : saveResourceChoice(userId, input));
+      if (result.success) { setRevision(result.revision); setSaved(true); router.refresh(); }
+      else setError(result.message);
+    } catch { setError("Не удалось сохранить выбор. Попробуйте ещё раз."); }
+    finally { setPending(false); }
+  }
+  return <div className="w-full max-w-3xl mx-auto rounded-[32px] md:rounded-[40px] border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 sm:p-8 md:p-12 shadow-xl">
+    <div className="space-y-4 mb-8">{WELCOME_PARAGRAPHS.map((text, index) => index === 0
+      ? <h1 key={text} className="text-2xl md:text-3xl font-black leading-tight">{text}</h1>
+      : <p key={text} className="leading-relaxed text-neutral-600 dark:text-neutral-300">{text}</p>)}</div>
+    <form onSubmit={submit} className="space-y-6">
+      <fieldset disabled={pending} className="space-y-4">
+        <legend className="font-bold text-lg mb-4">Пожалуйста, укажите Вашу связь с еврейством:</legend>
+        {AFFILIATIONS.map(value => <label key={value} className={`flex items-start gap-3 p-4 rounded-2xl border cursor-pointer ${affiliation === value ? "border-[#FFB800] bg-amber-50 dark:bg-amber-950/20" : "border-neutral-200 dark:border-neutral-700"}`}>
+          <input type="radio" required name="affiliation" value={value} checked={affiliation === value} onChange={() => { setAffiliation(value); setSaved(false); setError(""); if (value === "none" && attempt.current) { void discardRegistrationDraft(attempt.current.id).catch(() => {}); attempt.current = null; } }} className="mt-1 accent-[#FFB800]" />
+          <span>{AFFILIATION_LABELS[value]}</span>
+        </label>)}
+      </fieldset>
+      {affiliation && <fieldset disabled={pending}><legend className="font-bold mb-3">Пол</legend><div className="flex flex-wrap gap-5">
+        {([['male', 'Мужской'], ['female', 'Женский']] as const).map(([value, label]) => <label key={value} className="flex items-center gap-2"><input type="radio" required name="gender" checked={gender === value} onChange={() => { setGender(value); setSaved(false); }} value={value} className="accent-[#FFB800]" />{label}</label>)}
+      </div></fieldset>}
+      {affiliation === "giyur" && gender === "female" && <fieldset disabled={pending} className="space-y-3 rounded-2xl border border-neutral-200 dark:border-neutral-700 p-4"><legend className="font-bold px-1">Уточнение для детских прав</legend>
+        <p className="text-sm text-neutral-600 dark:text-neutral-300">Для личной записи это уточнение не требуется. Самостоятельное добавление и запись детей доступны после завершённого гиюра.</p>
+        {([['advanced', 'Нахожусь на продвинутом этапе'], ['completed', 'Гиюр завершён']] as const).map(([value, label]) => <label key={value} className="flex gap-3 items-center"><input type="radio" name="giyurStage" value={value} checked={giyurStage === value} onChange={() => setGiyurStage(value)} />{label}</label>)}
+      </fieldset>}
+      {expanded && <fieldset disabled={pending} className="space-y-6 min-w-0">
+        <div className="space-y-3 rounded-2xl bg-amber-50 dark:bg-amber-950/20 p-5">{FORM_EXPLANATION.map(text => <p key={text} className="leading-relaxed">{text}</p>)}</div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">{([
+          ["firstName", "Имя", "text"], ["lastName", "Фамилия", "text"], ["phone", "Номер телефона", "tel"],
+          ["dateOfBirth", "Дата рождения", "date"], ["city", "Город проживания", "text"],
+        ] as const).map(([name, label, type]) => <div key={name}><label htmlFor={`profile-${name}`} className="block font-bold text-sm mb-2">{label} *</label>
+          <input id={`profile-${name}`} name={name} type={type} required value={fields[name]} onChange={event => setFields(previous => ({ ...previous, [name]: event.target.value }))} className={inputClass} />
+        </div>)}
+          <div><label htmlFor="profile-marital" className="block font-bold text-sm mb-2">Семейное положение *</label><select id="profile-marital" required value={fields.maritalStatus} onChange={event => setFields(previous => ({ ...previous, maritalStatus: event.target.value as Fields['maritalStatus'] }))} className={inputClass}>
+            <option value="" disabled>Выберите…</option><option value="single">Холост / Не замужем</option><option value="married">В браке</option><option value="divorced">В разводе</option><option value="widowed">Вдовец / Вдова</option>
+          </select></div>
         </div>
-
-        <div>
-          <label className="block text-xs font-black uppercase tracking-widest text-neutral-500 mb-2 pl-1">
-            Номер телефона *
-          </label>
-          <div className="flex gap-2">
-            <select
-              name="phoneCode"
-              value={formData.phoneCode}
-              onChange={handleChange}
-              className="w-[110px] p-4 bg-neutral-100/50 border border-neutral-200 rounded-2xl font-medium"
-            >
-              <option value="+972">🇮🇱 +972</option>
-              <option value="+7">🇷🇺 +7</option>
-              <option value="+380">🇺🇦 +380</option>
-            </select>
-            <input
-              required
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handlePhoneChange}
-              placeholder="5X XXX XXXX"
-              className="flex-1 p-4 bg-neutral-100/50 border border-neutral-200 rounded-2xl outline-none focus:ring-2 focus:ring-[#FFB800]/50"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-xs font-black uppercase tracking-widest text-neutral-500 mb-2 pl-1">
-            Ваш статус *
-          </label>
-          <select
-            required
-            name="jewishStatus"
-            value={formData.jewishStatus}
-            onChange={handleChange}
-            className="w-full p-4 bg-neutral-100/50 border border-neutral-200 rounded-2xl outline-none focus:ring-2 focus:ring-[#FFB800]/50 font-medium"
-          >
-            <option value="" disabled>
-              Выберите...
-            </option>
-            <option value="Соблюдающий еврей">Соблюдающий еврей</option>
-            <option value="Светский еврей">Светский еврей</option>
-            <option value="Еврей по материнской линии">
-              Еврей по материнской линии
-            </option>
-            <option value="Еврей по отцовской линии">
-              Еврей по отцовской линии
-            </option>
-            <option value="Готовлюсь к Гиюру">Готовлюсь к Гиюру</option>
-            <option value="Прошел гиюр">Прошел гиюр</option>
-            <option value="Интересуюсь иудаизмом">
-              Не имею еврейских корней, но интересуюсь
-            </option>
-          </select>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-xs font-black uppercase tracking-widest text-neutral-500 mb-2 pl-1">
-              Дата рождения *
-            </label>
-            <input
-              required
-              type="date"
-              name="dateOfBirth"
-              value={formData.dateOfBirth}
-              onChange={handleChange}
-              className="w-full p-4 bg-neutral-100/50 border border-neutral-200 rounded-2xl"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-black uppercase tracking-widest text-neutral-500 mb-2 pl-1">
-              Город проживания *
-            </label>
-            <input
-              required
-              type="text"
-              name="city"
-              value={formData.city}
-              onChange={handleChange}
-              placeholder="Напр: Ришон ле-Цион"
-              className="w-full p-4 bg-neutral-100/50 border border-neutral-200 rounded-2xl"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-xs font-black uppercase tracking-widest text-neutral-500 mb-2 pl-1">
-              Семейное положение *
-            </label>
-            <select
-              required
-              name="maritalStatus"
-              value={formData.maritalStatus}
-              onChange={handleChange}
-              className="w-full p-4 bg-neutral-100/50 border border-neutral-200 rounded-2xl"
-            >
-              <option value="" disabled>
-                Выберите...
-              </option>
-              <option value="single">Холост / Не замужем</option>
-              <option value="married">В браке</option>
-              <option value="divorced">В разводе</option>
-              <option value="widowed">Вдовец / Вдова</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-xs font-black uppercase tracking-widest text-neutral-500 mb-2 pl-1">
-              Есть ли дети? *
-            </label>
-            <select
-              required
-              name="hasChildren"
-              value={formData.hasChildren}
-              onChange={handleChange}
-              className="w-full p-4 bg-neutral-100/50 border border-neutral-200 rounded-2xl"
-            >
-              <option value="" disabled>
-                Выберите...
-              </option>
-              <option value="yes">Да</option>
-              <option value="no">Нет</option>
-            </select>
-          </div>
-        </div>
-
-        {/* 🔥 ДИНАМИЧЕСКИЕ ПОЛЯ ДЛЯ СУПРУГА И ДЕТЕЙ */}
-        <AnimatePresence>
-          {formData.maritalStatus === "married" && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden"
-            >
-              <label className="block text-xs font-black uppercase tracking-widest text-neutral-500 mb-2 pl-1">
-                Имя супруга/и *
-              </label>
-              <input
-                required
-                type="text"
-                value={spouseName}
-                onChange={(e) => setSpouseName(e.target.value)}
-                placeholder="Имя супруга/и"
-                className="w-full p-4 bg-orange-50/50 border border-orange-200 rounded-2xl outline-none focus:border-orange-400"
-              />
-            </motion.div>
-          )}
-
-          {formData.hasChildren === "yes" && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="space-y-4 overflow-hidden pt-2"
-            >
-              <div className="flex items-center justify-between pl-1">
-                <label className="text-xs font-black uppercase tracking-widest text-neutral-500">
-                  Данные детей *
-                </label>
-                <button
-                  type="button"
-                  onClick={addChild}
-                  className="text-[#FFB800] text-xs font-bold flex items-center gap-1 hover:underline"
-                >
-                  <Plus size={14} /> Добавить ребенка
-                </button>
-              </div>
-
-              {childrenList.map((child, index) => (
-                <div
-                  key={index}
-                  className="flex gap-3 items-start bg-orange-50/30 p-4 rounded-2xl border border-orange-100"
-                >
-                  <div className="flex-1 space-y-3">
-                    <input
-                      required
-                      type="text"
-                      placeholder="Имя ребенка"
-                      value={child.name}
-                      onChange={(e) =>
-                        handleChildChange(index, "name", e.target.value)
-                      }
-                      className="w-full p-3 bg-white border border-neutral-200 rounded-xl outline-none focus:border-[#FFB800] text-sm"
-                    />
-                    <input
-                      required
-                      type="date"
-                      value={child.dateOfBirth}
-                      onChange={(e) =>
-                        handleChildChange(index, "dateOfBirth", e.target.value)
-                      }
-                      className="w-full p-3 bg-white border border-neutral-200 rounded-xl outline-none focus:border-[#FFB800] text-sm text-neutral-500"
-                    />
-                  </div>
-                  {childrenList.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeChild(index)}
-                      className="p-3 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  )}
-                </div>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* СОГЛАСИЕ И КНОПКА ОТПРАВКИ */}
-        <div className="pt-2">
-          <label className="flex items-start gap-3 cursor-pointer group">
-            <div className="relative flex items-center justify-center mt-1 shrink-0">
-              <input
-                type="checkbox"
-                checked={agreed}
-                onChange={(e) => setAgreed(e.target.checked)}
-                className="peer appearance-none w-5 h-5 border-2 border-neutral-300 rounded cursor-pointer checked:bg-[#FFB800] checked:border-[#FFB800] transition-all"
-              />
-              <Check
-                size={14}
-                className="absolute text-black opacity-0 peer-checked:opacity-100 pointer-events-none stroke-[3]"
-              />
-            </div>
-            <span className="text-sm font-medium text-neutral-600 leading-snug">
-              Я соглашаюсь с Политикой конфиденциальности.
-            </span>
-          </label>
-        </div>
-
-        <button
-          type="submit"
-          disabled={isSubmitting || !isFormValid}
-          className="w-full py-4 mt-4 bg-[#FFB800] hover:bg-[#E5A600] text-black rounded-2xl font-black uppercase tracking-[0.1em] transition-all disabled:opacity-50 flex justify-center items-center active:scale-[0.98]"
-        >
-          {isSubmitting ? (
-            <Loader2 size={24} className="animate-spin text-black" />
-          ) : (
-            "Завершить регистрацию"
-          )}
-        </button>
-      </form>
-    </motion.div>
-  );
+        {fields.maritalStatus === "married" && <div><label htmlFor="profile-spouse" className="block font-bold text-sm mb-2">Имя супруга/и *</label><input id="profile-spouse" required value={fields.spouseName} onChange={event => setFields(previous => ({ ...previous, spouseName: event.target.value }))} className={inputClass} /></div>}
+        <label className="flex gap-3 items-center"><input type="checkbox" checked={fields.hasChildren} onChange={event => { const checked = event.target.checked; setFields(previous => ({ ...previous, hasChildren: checked })); if (checked && canEditChildren && !children.length) setChildren([{ name: "", dateOfBirth: "" }]); }} className="accent-[#FFB800]" />Есть дети</label>
+        {canEditChildren && fields.hasChildren ? <section className="space-y-4" aria-label="Дети">
+          <h2 className="font-bold">Данные детей</h2>
+          {children.map((child, index) => <div key={child.id || `new-${index}`} className="rounded-2xl border border-amber-200 dark:border-amber-900 p-4 space-y-3">
+            <label className="block text-sm font-bold" htmlFor={`child-name-${index}`}>Имя ребёнка *</label><input id={`child-name-${index}`} required value={child.name} onChange={event => setChildren(previous => previous.map((value, i) => i === index ? { ...value, name: event.target.value } : value))} className={inputClass} />
+            <label className="block text-sm font-bold" htmlFor={`child-dob-${index}`}>Дата рождения ребёнка *</label><input id={`child-dob-${index}`} type="date" required value={child.dateOfBirth} onChange={event => setChildren(previous => previous.map((value, i) => i === index ? { ...value, dateOfBirth: event.target.value } : value))} className={inputClass} />
+            <button type="button" onClick={() => setChildren(previous => previous.filter((_, i) => i !== index))} className="text-red-600 text-sm flex gap-2 items-center"><Trash2 size={16} />Убрать из анкеты</button>
+          </div>)}
+          <button type="button" onClick={() => setChildren(previous => [...previous, { name: "", dateOfBirth: "" }])} className="font-bold text-amber-700 dark:text-amber-400 flex items-center gap-2"><Plus size={18} />Добавить ребёнка</button>
+        </section> : fields.hasChildren ? <p className="text-sm leading-relaxed text-neutral-600 dark:text-neutral-300">Дети добавляются и записываются с профиля еврейской мамы. Если ребёнка может записать только отец, обратитесь к администратору. Существующие семейные данные сохраняются.</p> : null}
+        <label className="flex gap-3 items-start"><input type="checkbox" required checked={agreed} onChange={event => setAgreed(event.target.checked)} className="mt-1 accent-[#FFB800]" /><span>Я соглашаюсь с <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline">Политикой конфиденциальности</a>.</span></label>
+        <div id="clerk-captcha" />
+        <button type="submit" className="w-full py-4 rounded-2xl bg-[#FFB800] text-black font-black disabled:opacity-60" disabled={pending || !gender || saved}>{pending ? "Сохраняем…" : userId ? "Сохранить анкету" : "Продолжить с Google"}</button>
+      </fieldset>}
+      {affiliation === "none" && <><ResourceMessage />{userId && <button type="button" onClick={saveChoice} disabled={pending || !gender || saved} className="w-full py-4 rounded-2xl border border-[#FFB800] font-bold disabled:opacity-50">{pending ? "Сохраняем…" : "Сохранить выбор"}</button>}</>}
+      {error && <p role="alert" className="rounded-xl bg-red-50 text-red-700 p-4">{error}</p>}
+      {saved && <div role="status" className="rounded-xl bg-emerald-50 text-emerald-800 p-4">{"Ваши данные сохранены."}{(affiliation === "maternal" || (affiliation === "giyur" && gender === "female")) && <a href="/dashboard/events" className="block font-bold underline mt-3">Продолжить</a>}</div>}
+    </form>
+  </div>;
 }

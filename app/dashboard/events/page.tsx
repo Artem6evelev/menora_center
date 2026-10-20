@@ -1,3 +1,7 @@
+import { requireDashboardFilter } from "@/lib/community/server";
+import AccessScreen from "@/components/community/access-screen";
+import { currentCommunityUser } from "@/lib/community/server";
+import { communityAccess, hasFilterProfile, isStaff } from "@/lib/community/policy";
 import { getEvents, getEventCategories } from "@/actions/event";
 import EventsClient from "@/components/dashboard/events/event-client";
 import { auth } from "@clerk/nextjs/server";
@@ -7,9 +11,13 @@ import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
 export default async function EventsPage() {
+  await requireDashboardFilter();
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 
+  const profile = await currentCommunityUser();
+  const access = communityAccess(profile);
+  if (!access.canViewEvents && !(hasFilterProfile(profile) && isStaff(profile))) return <AccessScreen reason={access.reason} returnTo="/events" />;
   const eventsData = await getEvents();
   const categories = await getEventCategories();
 

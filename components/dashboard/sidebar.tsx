@@ -204,7 +204,7 @@ export default function Sidebar({ userRole }: { userRole: string }) {
       </AnimatePresence>
       <div
         className={cn(
-          "fixed lg:sticky top-0 left-0 z-[70] h-[100dvh] w-[280px] bg-white dark:bg-neutral-950 border-r border-neutral-100 dark:border-neutral-800 flex flex-col transition-transform duration-500",
+          "fixed lg:sticky lg:shrink-0 top-0 left-0 z-[70] h-[100dvh] w-[280px] bg-white dark:bg-neutral-950 border-r border-neutral-100 dark:border-neutral-800 flex flex-col transition-transform duration-500",
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         )}
       >

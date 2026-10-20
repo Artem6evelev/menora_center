@@ -1,0 +1,11 @@
+{
+  "title": "AUDIT_SYNTHETIC_EVENT_TITLE | Menorah Center",
+  "description": "AUDIT_SYNTHETIC_PRIVATE_DESCRIPTION",
+  "openGraph": {
+    "title": "AUDIT_SYNTHETIC_EVENT_TITLE",
+    "description": "AUDIT_SYNTHETIC_PRIVATE_DESCRIPTION",
+    "images": [
+      "/audit-synthetic-event.png"
+    ]
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "checks": {
+    "66_unique_matrix_ids": true,
+    "counts_match_json": true,
+    "relative_links_exist": true,
+    "known_secret_values_absent": true,
+    "non_synthetic_email_addresses_absent": true,
+    "tracked_product_files_unchanged": true
+  },
+  "counts": {
+    "FAIL": 42,
+    "PARTIAL": 6,
+    "AMBIGUOUS": 14,
+    "NOT VERIFIED": 4,
+    "VERIFIED": 0,
+    "N/A": 0
+  },
+  "deliverables": {
+    "AUDIT_REPORT.md": {
+      "bytes": 52803,
+      "sha256": "27e4a9e132a69d8e693db35f67974055e8bcda51e208e3552c371339e0f16067"
+    },
+    "SPEC_COMPLIANCE.md": {
+      "bytes": 39080,
+      "sha256": "501ce9f4fb9664697ee8ca16eab5e684dfbe4ff8e0c2e56182c130813a4da22e"
+    },
+    "SPEC_DECISIONS.md": {
+      "bytes": 22075,
+      "sha256": "7c149e9c54f440bd2e3bbf0363afb5c3f04e32a7ebf1aeadc0c21197781a0080"
+    },
+    "TEST_MATRIX.md": {
+      "bytes": 29461,
+      "sha256": "9f002918ec2581b9fd789122d029ecad23e117b8f3c0ae121fa821548100fb7b"
+    },
+    "REMEDIATION_PLAN.md": {
+      "bytes": 22176,
+      "sha256": "d170c3202737bf584ea94ed9381eb2b3f14545924b7cb17b44fa89dbe037ad09"
+    }
+  }
+}

@@ -1,49 +1,23 @@
+import PrivateSession from "@/components/community/private-session";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { getEventById } from "@/actions/event";
-
-// Подключаем новый единый клиентский компонент
 import SingleEventClient from "@/components/events/single-event-client";
-
-interface Props {
-  params: Promise<{ id: string }>;
+import AccessScreen from "@/components/community/access-screen";
+import { currentCommunityUser } from "@/lib/community/server";
+import { communityAccess } from "@/lib/community/policy";
+interface Props { params: Promise<{ id: string }> }
+export const dynamic = "force-dynamic";
+export async function generateMetadata(): Promise<Metadata> {
+  // Public sharing reveals no event data, independently of the caller's session/cache.
+  return { title: "Событие общины | Menorah Center", description: "Войдите в аккаунт или зарегистрируйтесь в общине, чтобы продолжить.", robots: { index: false, follow: false }, openGraph: { title: "Событие общины | Menorah Center", description: "Вход и регистрационная анкета общины", images: [] } };
 }
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const resolvedParams = await params;
-  const eventData = await getEventById(resolvedParams.id);
-
-  if (!eventData) {
-    return { title: "Событие не найдено" };
-  }
-
-  const fallbackDescription =
-    "Присоединяйтесь к нашему мероприятию в Menorah Center.";
-  const description = eventData.description || fallbackDescription;
-  const title = eventData.title || "Событие";
-
-  return {
-    title: `${title} | Menorah Center`,
-    description: description,
-    openGraph: {
-      title: title,
-      description: description,
-      images: [eventData.imageUrl || "/og-default.jpg"],
-    },
-  };
-}
-
 export default async function SingleEventPage({ params }: Props) {
-  const resolvedParams = await params;
-  const eventData = await getEventById(resolvedParams.id);
-
-  if (!eventData) {
-    notFound();
-  }
-
-  // Получаем userId на сервере
-  const { userId } = await auth();
-
-  return <SingleEventClient eventData={eventData} userId={userId} />;
+  const { id } = await params; const { userId } = await auth();
+  const profile = await currentCommunityUser(); const access = communityAccess(profile);
+  if (!access.canViewEvents) return <AccessScreen reason={userId ? access.reason : "guest"} returnTo={`/events/${id}`} />;
+  const eventData = await getEventById(id);
+  if (!eventData) notFound();
+  return <PrivateSession key={profile!.id} expectedUserId={profile!.id}><SingleEventClient eventData={eventData} userId={userId} canRegisterChildren={access.canRegisterChildren} canRegisterSelf={access.canRegisterSelf} /></PrivateSession>;
 }

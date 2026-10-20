@@ -29,6 +29,34 @@
       "when": 1783278410413,
       "tag": "0003_chemical_falcon",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792518180402,
+      "tag": "0004_community_filtering",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792519876795,
+      "tag": "0005_giyur_stage",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792523309776,
+      "tag": "0006_reconcile_existing_schema",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792526637663,
+      "tag": "0007_filter_v2_and_registration_drafts",
+      "breakpoints": true
     }
   ]
 }

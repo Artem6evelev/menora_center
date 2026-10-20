@@ -1,3 +1,4 @@
+import { requireDashboardFilter } from "@/lib/community/server";
 // app/dashboard/kids-applications/page.tsx
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
@@ -8,12 +9,13 @@ import { getKidsApplications } from "@/actions/kids.actions";
 import KidsApplicationsClient from "@/components/dashboard/kids-applications/kids-applications-client";
 
 export default async function KidsApplicationsPage() {
+  await requireDashboardFilter();
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 
   const [dbUser] = await db.select().from(users).where(eq(users.id, userId));
   const role =
-    dbUser?.email === "artemdev.isr@gmail.com" ? "superadmin" : dbUser?.role;
+    dbUser?.role;
 
   if (role !== "admin" && role !== "superadmin") {
     redirect("/dashboard");
@@ -22,5 +24,5 @@ export default async function KidsApplicationsPage() {
   // Получаем все заявки из БД через серверный экшен
   const initialData = await getKidsApplications();
 
-  return <KidsApplicationsClient initialData={initialData} />;
+  return <><a href="/dashboard/kids/manual" className="inline-block mb-6 rounded-2xl bg-[#FFB800] text-black px-5 py-3 font-bold">Ручная запись ребёнка</a><KidsApplicationsClient initialData={initialData} /></>;
 }

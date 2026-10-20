@@ -1,3 +1,4 @@
+import { requireDashboardFilter } from "@/lib/community/server";
 // app/dashboard/videos/page.tsx
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
@@ -8,6 +9,7 @@ import { getVideos } from "@/actions/video";
 import AdminVideosClient from "@/components/dashboard/admin-videos-client";
 
 export default async function AdminVideosPage() {
+  await requireDashboardFilter();
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 

@@ -22,8 +22,7 @@ export async function POST(req: Request) {
     return new Response("Ошибка: отсутствуют заголовки svix", { status: 400 });
   }
 
-  const payload = await req.json();
-  const body = JSON.stringify(payload);
+  const body = await req.text();
 
   const wh = new Webhook(WEBHOOK_SECRET);
   let evt: WebhookEvent;
@@ -43,11 +42,7 @@ export async function POST(req: Request) {
 
   if (eventType === "user.created" || eventType === "user.updated") {
     const { id, email_addresses, first_name, last_name, image_url } = evt.data;
-    const primaryEmail = email_addresses?.[0]?.email_address || "";
-
-    // 🔥 ПРИНУДИТЕЛЬНАЯ ВЫДАЧА ПРАВ: При создании записи проверяем твой email
-    const initialRole =
-      primaryEmail === "artemdev.isr@gmail.com" ? "superadmin" : "client";
+    const primaryEmail = email_addresses?.find(item => item.id === evt.data.primary_email_address_id)?.email_address || email_addresses?.[0]?.email_address || "";
 
     try {
       await db
@@ -58,21 +53,19 @@ export async function POST(req: Request) {
           firstName: first_name || "",
           lastName: last_name || "",
           imageUrl: image_url || "",
-          role: initialRole,
+          role: "client",
           isProfileComplete: false,
         })
         .onConflictDoUpdate({
           target: users.id,
           set: {
             email: primaryEmail,
-            firstName: first_name || "",
-            lastName: last_name || "",
             imageUrl: image_url || "",
             // Заметь: мы НЕ обновляем 'role' здесь, чтобы не сбросить 'superadmin' обратно на 'client'
           },
         });
 
-      console.log(`✅ Юзер ${id} успешно синхронизирован через вебхук.`);
+
     } catch (error) {
       console.error("🔥 Ошибка Drizzle при синхронизации юзера:", error);
       return new Response("Ошибка базы данных", { status: 500 });
@@ -83,8 +76,8 @@ export async function POST(req: Request) {
     const { id } = evt.data;
     if (id) {
       try {
-        await db.delete(users).where(eq(users.id, id));
-        console.log(`🗑️ Юзер ${id} удален из базы.`);
+        await db.update(users).set({ identityDisabledAt: new Date() }).where(eq(users.id, id));
+
       } catch (error) {
         console.error("🔥 Ошибка при удалении:", error);
         return new Response("Ошибка базы данных", { status: 500 });

@@ -60,7 +60,7 @@ export default function AdminAuthorsClient({ authors }: { authors: any[] }) {
                 Пока нет ни одного спикера.
               </p>
               <p className="text-sm text-neutral-400 mt-2">
-                Назначьте лектора в разделе "База людей".
+                Назначьте лектора в разделе &quot;База людей&quot;.
               </p>
             </motion.div>
           ) : (

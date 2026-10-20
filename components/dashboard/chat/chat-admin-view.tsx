@@ -126,7 +126,7 @@ export default function ChatAdminView() {
                 >
                   <div className="relative shrink-0">
                     <img
-                      src={u.imageUrl || "/default-avatar.png"}
+                      src={u.imageUrl || "/default-avatar.svg"}
                       alt=""
                       className="w-12 h-12 rounded-2xl object-cover shadow-sm bg-gray-100"
                     />

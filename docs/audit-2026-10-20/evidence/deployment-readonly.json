@@ -1,0 +1,15 @@
+{
+  "url_from_source": "https://menorah-rishon.com",
+  "deployment_commit": "NOT VERIFIED",
+  "method": "public GET only, no login or writes",
+  "http_status": 200,
+  "final_url": "https://www.menorah-rishon.com/",
+  "headers": {
+    "Age": "0",
+    "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate",
+    "Server": "Vercel",
+    "X-Matched-Path": "/",
+    "X-Vercel-Cache": "MISS",
+    "X-Vercel-Id": "fra1::iad1::82l56-1792516107696-03e5dafca6f9"
+  }
+}

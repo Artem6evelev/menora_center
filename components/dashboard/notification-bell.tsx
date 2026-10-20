@@ -19,12 +19,13 @@ export default function NotificationBell({ userId }: { userId: string }) {
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const fetchNotifs = async () => {
-    const data = await getUserNotifications(userId);
-    setNotifications(data);
-  };
-
   useEffect(() => {
+    let active = true;
+    const fetchNotifs = async () => {
+      const data = await getUserNotifications(userId);
+      if (active) setNotifications(data);
+    };
+    setNotifications([]);
     fetchNotifs();
 
     const channel = supabase
@@ -43,6 +44,7 @@ export default function NotificationBell({ userId }: { userId: string }) {
       .subscribe();
 
     return () => {
+      active = false;
       supabase.removeChannel(channel);
     };
   }, [userId]);

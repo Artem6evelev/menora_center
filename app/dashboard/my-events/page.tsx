@@ -1,3 +1,4 @@
+import { requireDashboardFilter } from "@/lib/community/server";
 // app/dashboard/my-events/page.tsx
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
@@ -9,6 +10,7 @@ import MyEventsClient from "@/components/dashboard/events/my-events-client";
 // 🔥 ИСПРАВЛЕННЫЙ ПУТЬ ИМПОРТА
 
 export default async function MyEventsPage() {
+  await requireDashboardFilter();
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 

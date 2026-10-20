@@ -1,0 +1,32 @@
+{
+  "changedFromPriorManifest": [
+    "components/dashboard/applications/application-client.tsx",
+    "components/dashboard/authors/admin-authors-client.tsx",
+    "components/dashboard/notification-bell.tsx",
+    "components/dashboard/users/crm-table.client.tsx",
+    "components/dashboard/users/user-slider.tsx",
+    "components/testimonials.tsx",
+    "components/ui/infinite-moving-cards.tsx",
+    "drizzle/0004_community_filtering.sql",
+    "drizzle/meta/_journal.json",
+    "lib/db/schema.ts",
+    "mdx-components.tsx",
+    "package.json",
+    "tests/community/README.md"
+  ],
+  "newOutsidePriorManifest": [
+    "docs/audit-2026-10-20/diagnostics/data-integrations.cjs",
+    "docs/audit-2026-10-20/diagnostics/schema-diff.cjs",
+    "docs/audit-2026-10-20/diagnostics/ui-render-audit.cjs",
+    "docs/audit-2026-10-20/scripts/public-http.cjs",
+    "docs/audit-2026-10-20/scripts/read-only-db.cjs",
+    "docs/audit-2026-10-20/scripts/server-actions-isolated.cjs",
+    "docs/implementation-2026-10-20/acceptance/evidence/0004-before-native-fix.sql",
+    "drizzle/0006_reconcile_existing_schema.sql",
+    "drizzle/meta/0006_snapshot.json",
+    "scripts/migrate.cjs",
+    "scripts/migration-history.cjs",
+    "tests/community/migrations.cjs"
+  ],
+  "note": "v1 excluded all docs; diagnostics edits are therefore also listed as outside prior manifest. Existing implementation preserved."
+}

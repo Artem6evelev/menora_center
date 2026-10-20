@@ -1,8 +1,11 @@
+import { auth } from "@clerk/nextjs/server";
+import GuestNavbar from "./guest-navbar";
 import { getNavbarNewsData } from "@/actions/news";
 import { DesktopNavbar } from "./desktop-navbar";
 import { MobileNavbar } from "./mobile-navbar";
 
 export async function NavBar() {
+  if (!(await auth()).userId) return <GuestNavbar />;
   const { latestArticle, categories } = await getNavbarNewsData();
 
   const navItems = [

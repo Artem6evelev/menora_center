@@ -6,9 +6,11 @@ import { db } from "@/lib/db";
 import { news, videos, users, notifications } from "@/lib/db/schema";
 import { eq, desc, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { requirePrivateScope, requireStaff } from "@/lib/community/server";
 
 // 1. Получение контента автора (для Кабинета Автора)
 export async function getAuthorContent(authorUserId: string) {
+  await requirePrivateScope(authorUserId);
   const authorNews = await db.query.news.findMany({
     where: eq(news.authorId, authorUserId),
     orderBy: [desc(news.createdAt)],
@@ -25,6 +27,7 @@ export async function getAuthorContent(authorUserId: string) {
 export async function submitForReview(id: string, type: "news" | "video") {
   const { userId } = await auth();
   if (!userId) throw new Error("Не авторизован");
+  await requirePrivateScope(userId);
 
   const table = type === "news" ? news : videos;
 
@@ -72,6 +75,7 @@ export async function submitForReview(id: string, type: "news" | "video") {
 
 // 3. Получение всего контента, ожидающего проверку (Для Суперадмина)
 export async function getPendingContent() {
+  await requireStaff();
   const pendingNews = await db.query.news.findMany({
     where: eq(news.status, "pending"),
     with: { author: true },
@@ -96,7 +100,9 @@ export async function moderateContent(
 ) {
   const { userId } = await auth();
   if (!userId) throw new Error("Не авторизован");
+  await requirePrivateScope(userId);
 
+  await requireStaff();
   const [dbUser] = await db.select().from(users).where(eq(users.id, userId));
   if (dbUser?.role !== "superadmin" && dbUser?.role !== "admin") {
     throw new Error("Нет прав");
@@ -130,6 +136,7 @@ export async function authorCreateVideo(
 ) {
   const { userId } = await auth();
   if (!userId) throw new Error("Не авторизован");
+  await requirePrivateScope(userId);
 
   try {
     await db.insert(videos).values({
@@ -150,6 +157,7 @@ export async function authorCreateVideo(
 export async function authorDeleteContent(id: string, type: "news" | "video") {
   const { userId } = await auth();
   if (!userId) throw new Error("Не авторизован");
+  await requirePrivateScope(userId);
 
   try {
     const table = type === "news" ? news : videos;
@@ -168,6 +176,7 @@ export async function authorDeleteContent(id: string, type: "news" | "video") {
 
 // 🔥 НОВАЯ ФУНКЦИЯ ДЛЯ САЙДБАРА: Подсчет материалов на проверке
 export async function getPendingCount() {
+  await requireStaff();
   const pendingNews = await db
     .select()
     .from(news)

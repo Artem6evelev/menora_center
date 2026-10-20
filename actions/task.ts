@@ -5,6 +5,8 @@ import { db } from "@/lib/db";
 import { tasks } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { requireStaff } from "@/lib/community/server";
+import { z } from "zod";
 import { createNotification } from "./notification";
 
 // Тип для создания задачи
@@ -17,6 +19,7 @@ type CreateTaskInput = {
 };
 
 export async function getAllTasks() {
+  await requireStaff();
   // Вытаскиваем все задачи (пока без фильтрации по событиям)
   return await db.select().from(tasks);
 }
@@ -24,6 +27,8 @@ export async function getAllTasks() {
 // В начале файла добавь импорт:
 
 export async function createTask(data: CreateTaskInput) {
+  const actor = await requireStaff();
+  if (data.creatorId !== actor.id) return { success: false, error: "Нельзя подменять автора задачи" };
   // Внутри функции createTask, ПОСЛЕ вставки задачи в базу (db.insert):
   if (data.assigneeId) {
     await createNotification(
@@ -63,9 +68,10 @@ export async function updateTaskStatusAction(
   newStatus: string,
 ) {
   try {
+    await requireStaff();
     await db
       .update(tasks)
-      .set({ status: newStatus })
+      .set({ status: z.enum(["backlog", "todo", "in_progress", "done"]).parse(newStatus) })
       .where(eq(tasks.id, taskId));
 
     return { success: true };
@@ -79,6 +85,7 @@ export async function updateTaskStatusAction(
 
 export async function deleteTaskAction(taskId: string) {
   try {
+    await requireStaff();
     await db.delete(tasks).where(eq(tasks.id, taskId));
     return { success: true };
   } catch (error) {
@@ -89,7 +96,9 @@ export async function deleteTaskAction(taskId: string) {
 
 export async function updateTaskAction(taskId: string, data: any) {
   try {
-    await db.update(tasks).set(data).where(eq(tasks.id, taskId));
+    await requireStaff();
+    const input = z.object({ title: z.string().trim().min(1).max(300).optional(), description: z.string().max(10000).optional(), status: z.enum(["backlog", "todo", "in_progress", "done"]).optional(), assigneeId: z.string().nullable().optional() }).strict().parse(data);
+    await db.update(tasks).set(input).where(eq(tasks.id, taskId));
     return { success: true };
   } catch (error) {
     console.error("Ошибка при обновлении задачи:", error);

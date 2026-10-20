@@ -1,3 +1,4 @@
+import { requireDashboardFilter } from "@/lib/community/server";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
@@ -7,6 +8,7 @@ import ChatClientView from "@/components/dashboard/chat/chat-vlient-view";
 import ChatAdminView from "@/components/dashboard/chat/chat-admin-view";
 
 export default async function ChatPage() {
+  await requireDashboardFilter();
   const { userId } = await auth();
   if (!userId) return null;
 

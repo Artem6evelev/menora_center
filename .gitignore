@@ -1,4 +1,7 @@
 node_modules
+.env
+.env.*
+!.env.example
 
 # clerk configuration (can include secrets)
 /.clerk/

@@ -1,3 +1,4 @@
+import { requireDashboardFilter } from "@/lib/community/server";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import { news, users } from "@/lib/db/schema";
@@ -6,6 +7,7 @@ import { redirect } from "next/navigation";
 import AdminNewsClient from "@/components/dashboard/news/admin-news-client";
 
 export default async function DashboardNewsPage() {
+  await requireDashboardFilter();
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 

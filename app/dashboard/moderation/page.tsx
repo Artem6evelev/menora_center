@@ -1,3 +1,4 @@
+import { requireDashboardFilter } from "@/lib/community/server";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
@@ -7,6 +8,7 @@ import { getPendingContent } from "@/actions/moderation.actions";
 import ModerationClient from "@/components/dashboard/ModerationClient";
 
 export default async function ModerationPage() {
+  await requireDashboardFilter();
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 

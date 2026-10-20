@@ -1,0 +1,326 @@
+{
+  "files": 240,
+  "errorCount": 9,
+  "warningCount": 36,
+  "remainingErrors": [
+    {
+      "file": "components/dashboard/authors/admin-authors-client.tsx",
+      "line": 63,
+      "rule": "react/no-unescaped-entities",
+      "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.",
+      "origin": "Confirmed in HEAD"
+    },
+    {
+      "file": "components/dashboard/authors/admin-authors-client.tsx",
+      "line": 63,
+      "rule": "react/no-unescaped-entities",
+      "message": "`\"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.",
+      "origin": "Confirmed in HEAD"
+    },
+    {
+      "file": "components/testimonials.tsx",
+      "line": 117,
+      "rule": "no-redeclare",
+      "message": "'Testimonial' is already defined.",
+      "origin": "Confirmed in HEAD"
+    },
+    {
+      "file": "components/ui/infinite-moving-cards.tsx",
+      "line": 59,
+      "rule": "no-constant-condition",
+      "message": "Unexpected constant condition.",
+      "origin": "Confirmed in HEAD"
+    },
+    {
+      "file": "docs/audit-2026-10-20/diagnostics/ui-render-audit.cjs",
+      "line": 27,
+      "rule": "react/display-name",
+      "message": "Component definition is missing display name",
+      "origin": "Pre-existing historical audit script"
+    },
+    {
+      "file": "docs/audit-2026-10-20/diagnostics/ui-render-audit.cjs",
+      "line": 43,
+      "rule": "react-hooks/rules-of-hooks",
+      "message": "React Hook \"React.useState\" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?",
+      "origin": "Pre-existing historical audit script"
+    },
+    {
+      "file": "docs/audit-2026-10-20/diagnostics/ui-render-audit.cjs",
+      "line": 44,
+      "rule": "react-hooks/rules-of-hooks",
+      "message": "React Hook \"React.useState\" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?",
+      "origin": "Pre-existing historical audit script"
+    },
+    {
+      "file": "docs/audit-2026-10-20/diagnostics/ui-render-audit.cjs",
+      "line": 70,
+      "rule": "@next/next/no-assign-module-variable",
+      "message": "Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable",
+      "origin": "Pre-existing historical audit script"
+    },
+    {
+      "file": "docs/audit-2026-10-20/scripts/server-actions-isolated.cjs",
+      "line": 69,
+      "rule": "@next/next/no-assign-module-variable",
+      "message": "Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable",
+      "origin": "Pre-existing historical audit script"
+    }
+  ],
+  "warnings": [
+    {
+      "file": "app/(marketing)/news/[slug]/page.tsx",
+      "line": 106,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "app/(marketing)/news/[slug]/page.tsx",
+      "line": 128,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "app/(marketing)/news/[slug]/page.tsx",
+      "line": 153,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "app/dashboard/author-profile/page.tsx",
+      "line": 71,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/author/ContentTabs.tsx",
+      "line": 100,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/author/ContentTabs.tsx",
+      "line": 139,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/authors/ContentTabs.tsx",
+      "line": 112,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/authors/ContentTabs.tsx",
+      "line": 153,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/dashboard/applications/application-client.tsx",
+      "line": 566,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": true
+    },
+    {
+      "file": "components/dashboard/applications/application-client.tsx",
+      "line": 566,
+      "rule": "jsx-a11y/alt-text",
+      "message": "img elements must have an alt prop, either with meaningful text, or an empty string for decorative images.",
+      "changedFromHead": true
+    },
+    {
+      "file": "components/dashboard/authors/admin-authors-client.tsx",
+      "line": 78,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/dashboard/chat/chat-admin-view.tsx",
+      "line": 128,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/dashboard/events/event-card.tsx",
+      "line": 37,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": true
+    },
+    {
+      "file": "components/dashboard/events/event-modal.tsx",
+      "line": 264,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/dashboard/events/my-events-client.tsx",
+      "line": 156,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/dashboard/events/my-services-client.tsx",
+      "line": 242,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/dashboard/kanban/kanban-card.tsx",
+      "line": 101,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/dashboard/news/admin-news-client.tsx",
+      "line": 225,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/dashboard/news/comments-section.tsx",
+      "line": 131,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/dashboard/news/public-news-card.tsx",
+      "line": 21,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/dashboard/news/public-news-card.tsx",
+      "line": 51,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/dashboard/notification-bell.tsx",
+      "line": 48,
+      "rule": "react-hooks/exhaustive-deps",
+      "message": "React Hook useEffect has a missing dependency: 'fetchNotifs'. Either include it or remove the dependency array.",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/dashboard/service/service-card.tsx",
+      "line": 24,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/dashboard/service/service-modal.tsx",
+      "line": 198,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/dashboard/team-table.tsx",
+      "line": 63,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/dashboard/users/crm-table.client.tsx",
+      "line": 326,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/dashboard/users/crm-table.client.tsx",
+      "line": 326,
+      "rule": "jsx-a11y/alt-text",
+      "message": "img elements must have an alt prop, either with meaningful text, or an empty string for decorative images.",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/dashboard/users/user-slider.tsx",
+      "line": 148,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/dashboard/users/user-slider.tsx",
+      "line": 148,
+      "rule": "jsx-a11y/alt-text",
+      "message": "img elements must have an alt prop, either with meaningful text, or an empty string for decorative images.",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/events/public-event-card.tsx",
+      "line": 19,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/lessons/lessons-client.tsx",
+      "line": 272,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/navbar/desktop-navbar.tsx",
+      "line": 119,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/services/public-service-card.tsx",
+      "line": 150,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/services/public-service-card.tsx",
+      "line": 232,
+      "rule": "@next/next/no-img-element",
+      "message": "Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element",
+      "changedFromHead": false
+    },
+    {
+      "file": "components/ui/infinite-moving-cards.tsx",
+      "line": 22,
+      "rule": "react-hooks/exhaustive-deps",
+      "message": "React Hook useEffect has a missing dependency: 'addAnimation'. Either include it or remove the dependency array.",
+      "changedFromHead": false
+    },
+    {
+      "file": "mdx-components.tsx",
+      "line": 7,
+      "rule": "jsx-a11y/alt-text",
+      "message": "Image elements must have an alt prop, either with meaningful text, or an empty string for decorative images.",
+      "changedFromHead": false
+    }
+  ],
+  "newErrors": [],
+  "oldErrorsConfirmedInHead": 4
+}

@@ -1,3 +1,4 @@
+import { requireDashboardFilter } from "@/lib/community/server";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
@@ -10,6 +11,7 @@ import { Users } from "lucide-react";
 export const revalidate = 0;
 
 export default async function TeamPage() {
+  await requireDashboardFilter();
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 

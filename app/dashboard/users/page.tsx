@@ -1,3 +1,4 @@
+import { requireDashboardFilter } from "@/lib/community/server";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
@@ -7,6 +8,7 @@ import { getUsersPaginated } from "@/actions/user";
 import CrmTableClient from "@/components/dashboard/users/crm-table.client";
 
 export default async function CrmPage() {
+  await requireDashboardFilter();
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 

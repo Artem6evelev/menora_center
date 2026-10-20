@@ -1,0 +1,112 @@
+
+> nextjs@0.1.0 lint
+> eslint . --ext .js,.jsx,.ts,.tsx,.mjs,.cjs
+
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/app/(marketing)/news/[slug]/page.tsx
+  106:23  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  128:23  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  153:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/app/dashboard/author-profile/page.tsx
+  71:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/components/author/ContentTabs.tsx
+  100:23  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  139:23  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/components/authors/ContentTabs.tsx
+  112:23  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  153:23  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/components/dashboard/applications/application-client.tsx
+  566:35  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  566:35  warning  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                       jsx-a11y/alt-text
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/components/dashboard/authors/admin-authors-client.tsx
+  63:45  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                 react/no-unescaped-entities
+  63:56  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                 react/no-unescaped-entities
+  78:23  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/components/dashboard/chat/chat-admin-view.tsx
+  128:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/components/dashboard/events/event-card.tsx
+  37:9  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/components/dashboard/events/event-modal.tsx
+  264:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/components/dashboard/events/my-events-client.tsx
+  156:25  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/components/dashboard/events/my-services-client.tsx
+  242:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/components/dashboard/kanban/kanban-card.tsx
+  101:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/components/dashboard/news/admin-news-client.tsx
+  225:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/components/dashboard/news/comments-section.tsx
+  131:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/components/dashboard/news/public-news-card.tsx
+  21:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  51:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/components/dashboard/notification-bell.tsx
+  48:6  warning  React Hook useEffect has a missing dependency: 'fetchNotifs'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/components/dashboard/service/service-card.tsx
+  24:7  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/components/dashboard/service/service-modal.tsx
+  198:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/components/dashboard/team-table.tsx
+  63:23  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/components/dashboard/users/crm-table.client.tsx
+  326:25  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  326:25  warning  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                       jsx-a11y/alt-text
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/components/dashboard/users/user-slider.tsx
+  148:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  148:19  warning  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                       jsx-a11y/alt-text
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/components/events/public-event-card.tsx
+  19:7  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/components/lessons/lessons-client.tsx
+  272:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/components/navbar/desktop-navbar.tsx
+  119:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/components/services/public-service-card.tsx
+  150:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  232:9   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/components/testimonials.tsx
+  117:10  error  'Testimonial' is already defined  no-redeclare
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/components/ui/infinite-moving-cards.tsx
+  22:6   warning  React Hook useEffect has a missing dependency: 'addAnimation'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  59:19  error    Unexpected constant condition                                                                                    no-constant-condition
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/docs/audit-2026-10-20/diagnostics/ui-render-audit.cjs
+  27:30  error  Component definition is missing display name                                                                                                                                                      react/display-name
+  43:50  error  React Hook "React.useState" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?  react-hooks/rules-of-hooks
+  44:12  error  React Hook "React.useState" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?  react-hooks/rules-of-hooks
+  70:5   error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable                                                                                           @next/next/no-assign-module-variable
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/docs/audit-2026-10-20/scripts/server-actions-isolated.cjs
+  69:3  error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+
+/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/mdx-components.tsx
+  7:35  warning  Image elements must have an alt prop, either with meaningful text, or an empty string for decorative images  jsx-a11y/alt-text
+
+✖ 45 problems (9 errors, 36 warnings)
+

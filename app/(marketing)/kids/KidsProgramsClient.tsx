@@ -5,7 +5,6 @@ import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence, Variants } from "framer-motion";
-import { submitKidsApplication } from "@/actions/kids.actions";
 import {
   ArrowRight,
   Users,
@@ -27,14 +26,10 @@ import {
   MessageSquare,
   Compass,
   Gift,
-  Loader2,
-  CheckCircle,
-  Plus,
-  Trash2,
 } from "lucide-react";
 
 export default function KidsProgramsClient() {
-  const { user, isSignedIn } = useUser();
+  const { isSignedIn } = useUser();
 
   const [selectedProgram, setSelectedProgram] = useState<any | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -42,17 +37,7 @@ export default function KidsProgramsClient() {
   const [isExpanded, setIsExpanded] = useState(false);
 
   // --- СОСТОЯНИЯ ФОРМЫ ---
-  const [applyStep, setApplyStep] = useState<"details" | "form" | "success">(
-    "details",
-  );
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    parentFirstName: "",
-    parentLastName: "",
-    email: "",
-    phone: "",
-    children: [{ name: "", age: "", birthDate: "" }],
-  });
+  const [applyStep, setApplyStep] = useState<"details" | "form">("details");
 
   // --- ДАННЫЕ ДЛЯ КАРУСЕЛИ В HERO ---
   const heroSlides = [
@@ -81,109 +66,11 @@ export default function KidsProgramsClient() {
     return () => clearInterval(timer);
   }, [heroSlides.length]);
 
-  // Блокировка скролла и управление формой при открытии/закрытии модалки
   useEffect(() => {
-    if (selectedProgram) {
-      document.body.style.overflow = "hidden";
-      setApplyStep("details");
-
-      if (isSignedIn && user) {
-        setFormData({
-          parentFirstName: user.firstName || "",
-          parentLastName: user.lastName || "",
-          email: user.primaryEmailAddress?.emailAddress || "",
-          phone: "",
-          children: [{ name: "", age: "", birthDate: "" }],
-        });
-      }
-    } else {
-      document.body.style.overflow = "unset";
-      setTimeout(
-        () =>
-          setFormData({
-            parentFirstName: "",
-            parentLastName: "",
-            email: "",
-            phone: "",
-            children: [{ name: "", age: "", birthDate: "" }],
-          }),
-        300,
-      );
-    }
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [selectedProgram, isSignedIn, user]);
-
-  // Валидация телефона
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const sanitizedValue = value.replace(/[^\d+\s-]/g, "");
-    setFormData({ ...formData, phone: sanitizedValue });
-  };
-
-  // 🔥 ФУНКЦИЯ РАСЧЕТА ВОЗРАСТА 🔥
-  const calculateAge = (birthDateString: string) => {
-    if (!birthDateString) return "";
-    const today = new Date();
-    const birthDate = new Date(birthDateString);
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const m = today.getMonth() - birthDate.getMonth();
-
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    return age.toString();
-  };
-
-  // ЛОГИКА ДИНАМИЧЕСКИХ ПОЛЕЙ ДЛЯ ДЕТЕЙ
-  const updateChild = (
-    index: number,
-    field: "name" | "age" | "birthDate",
-    value: string,
-  ) => {
-    const newChildren = [...formData.children];
-    newChildren[index][field] = value;
-
-    // Автовычисление возраста при изменении даты
-    if (field === "birthDate") {
-      newChildren[index].age = calculateAge(value);
-    }
-
-    setFormData({ ...formData, children: newChildren });
-  };
-
-  const addChild = () => {
-    setFormData({
-      ...formData,
-      children: [...formData.children, { name: "", age: "", birthDate: "" }],
-    });
-  };
-
-  const removeChild = (index: number) => {
-    const newChildren = formData.children.filter((_, i) => i !== index);
-    setFormData({ ...formData, children: newChildren });
-  };
-
-  // Отправка формы на сервер
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    const res = await submitKidsApplication({
-      programTitle: selectedProgram.title,
-      parentFirstName: formData.parentFirstName,
-      parentLastName: formData.parentLastName,
-      email: formData.email,
-      phone: formData.phone,
-      children: formData.children,
-    });
-
-    if (res.success) {
-      setApplyStep("success");
-    }
-    setIsSubmitting(false);
-  };
+    if (selectedProgram) setApplyStep("details");
+    document.body.style.overflow = selectedProgram ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [selectedProgram]);
 
   // --- ПРОГРАММЫ ---
   const programs = [
@@ -977,207 +864,19 @@ export default function KidsProgramsClient() {
                   )}
 
                   {/* ШАГ 2: ФОРМА */}
-                  {applyStep === "form" && (
-                    <motion.div
-                      key="form"
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                    >
-                      <form
-                        id="kids-form"
-                        onSubmit={handleSubmit}
-                        className="space-y-4"
-                      >
-                        <div className="grid grid-cols-2 gap-4">
-                          <input
-                            required
-                            type="text"
-                            placeholder="Имя родителя *"
-                            value={formData.parentFirstName}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                parentFirstName: e.target.value,
-                              })
-                            }
-                            className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 p-4 rounded-2xl outline-none focus:border-[#FFB800] transition-colors"
-                          />
-                          <input
-                            required
-                            type="text"
-                            placeholder="Фамилия родителя *"
-                            value={formData.parentLastName}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                parentLastName: e.target.value,
-                              })
-                            }
-                            className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 p-4 rounded-2xl outline-none focus:border-[#FFB800] transition-colors"
-                          />
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <input
-                            required
-                            type="email"
-                            placeholder="Email *"
-                            value={formData.email}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                email: e.target.value,
-                              })
-                            }
-                            className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 p-4 rounded-2xl outline-none focus:border-[#FFB800] transition-colors"
-                          />
-                          <input
-                            required
-                            type="tel"
-                            placeholder="Номер телефона (+972...) *"
-                            value={formData.phone}
-                            onChange={handlePhoneChange}
-                            className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 p-4 rounded-2xl outline-none focus:border-[#FFB800] transition-colors"
-                          />
-                        </div>
-
-                        {/* 🔥 ДИНАМИЧЕСКИЕ ПОЛЯ ДЕТЕЙ С АВТОВЫЧИСЛЕНИЕМ ВОЗРАСТА 🔥 */}
-                        <div className="pt-4 border-t border-neutral-100 dark:border-neutral-800">
-                          <label className="text-xs font-black uppercase tracking-widest text-neutral-400 mb-4 block ml-2">
-                            Данные детей *
-                          </label>
-                          <div className="space-y-3">
-                            {formData.children.map((child, index) => (
-                              <div
-                                key={index}
-                                className="grid grid-cols-1 sm:grid-cols-[2fr_2fr_1fr_auto] gap-3 items-center bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 p-2 sm:p-3 rounded-2xl"
-                              >
-                                <input
-                                  required
-                                  type="text"
-                                  placeholder="Имя ребенка *"
-                                  value={child.name}
-                                  onChange={(e) =>
-                                    updateChild(index, "name", e.target.value)
-                                  }
-                                  className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 p-3 rounded-xl outline-none focus:border-[#FFB800] transition-colors text-sm"
-                                />
-
-                                <div className="relative">
-                                  <label className="absolute -top-2 left-3 bg-neutral-50 dark:bg-neutral-950 px-1 text-[9px] font-black uppercase text-neutral-400 tracking-widest">
-                                    Дата рожд. *
-                                  </label>
-                                  <input
-                                    required
-                                    type="date"
-                                    value={child.birthDate}
-                                    onChange={(e) =>
-                                      updateChild(
-                                        index,
-                                        "birthDate",
-                                        e.target.value,
-                                      )
-                                    }
-                                    className="w-full bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 p-3 rounded-xl outline-none focus:border-[#FFB800] transition-colors text-sm text-neutral-600 dark:text-neutral-300"
-                                  />
-                                </div>
-
-                                <div className="relative">
-                                  <input
-                                    required
-                                    readOnly
-                                    type="text"
-                                    placeholder="Возраст"
-                                    value={child.age ? `${child.age} лет` : ""}
-                                    className="w-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 p-3 rounded-xl outline-none text-sm font-bold text-neutral-500 cursor-not-allowed"
-                                  />
-                                </div>
-
-                                {/* Кнопка удаления показывается, если детей больше 1 */}
-                                {formData.children.length > 1 && (
-                                  <button
-                                    type="button"
-                                    onClick={() => removeChild(index)}
-                                    className="p-3 bg-red-50 dark:bg-red-500/10 text-red-500 rounded-xl hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors w-full sm:w-auto flex justify-center"
-                                    title="Удалить ребенка"
-                                  >
-                                    <Trash2 size={18} />
-                                  </button>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={addChild}
-                            className="text-xs font-bold uppercase tracking-widest text-[#FFB800] flex items-center gap-2 mt-4 ml-2 hover:text-amber-500 transition-colors"
-                          >
-                            <Plus size={16} /> Добавить еще ребенка
-                          </button>
-                        </div>
-                      </form>
-                    </motion.div>
+    {applyStep === "form" && (
+                <section className="p-6 md:p-8 space-y-5">
+                  <h3 className="text-2xl font-black">Запись на детскую программу</h3>
+                  <p className="text-neutral-600 dark:text-neutral-300">Дети добавляются и записываются с профиля еврейской мамы. Если ребёнка может записать только отец, обратитесь к администратору.</p>
+                  <a href={isSignedIn ? "/dashboard/kids" : "/register?returnTo=%2Fdashboard%2Fkids"} className="block rounded-2xl bg-[#FFB800] p-4 text-center font-bold text-black">{isSignedIn ? "Выбрать ребёнка в кабинете" : "Пройти регистрационную анкету"}</a>
+                </section>
                   )}
 
-                  {/* ШАГ 3: УСПЕХ */}
-                  {applyStep === "success" && (
-                    <motion.div
-                      key="success"
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      className="flex flex-col items-center text-center py-8"
-                    >
-                      <div className="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center mb-6">
-                        <CheckCircle size={40} />
-                      </div>
-                      <h3 className="text-2xl font-black mb-4">
-                        Спасибо, ваша заявка принята!
-                      </h3>
-
-                      {!isSignedIn ? (
-                        <>
-                          <p className="text-neutral-500 mb-8 max-w-sm">
-                            Наш администратор скоро свяжется с вами.{" "}
-                            <b className="text-neutral-900 dark:text-white">
-                              Зарегистрируйтесь на платформе
-                            </b>{" "}
-                            Menorah Center, чтобы быть в курсе всех наших
-                            событий и программ.
-                          </p>
-                          <div className="flex w-full gap-4">
-                            <Link
-                              href="/sign-up?redirect_url=/dashboard"
-                              className="flex-1 py-4 bg-black dark:bg-white text-white dark:text-black rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl hover:scale-105 transition-all"
-                            >
-                              Зарегистрироваться
-                            </Link>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <p className="text-neutral-500 mb-8 max-w-sm">
-                            Наш администратор скоро свяжется с вами по
-                            указанному телефону для уточнения деталей.
-                          </p>
-                          <div className="flex w-full gap-4">
-                            <Link
-                              href="/dashboard"
-                              className="flex-1 py-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
-                            >
-                              Вернуться в кабинет
-                            </Link>
-                          </div>
-                        </>
-                      )}
-                    </motion.div>
-                  )}
                 </AnimatePresence>
               </div>
 
               {/* ПОДВАЛ (КНОПКИ) */}
-              {applyStep !== "success" && (
+              {(
                 <div className="p-6 border-t border-neutral-100 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950/50 flex gap-4">
                   <button
                     onClick={() =>
@@ -1199,20 +898,7 @@ export default function KidsProgramsClient() {
                     </button>
                   )}
 
-                  {applyStep === "form" && (
-                    <button
-                      type="submit"
-                      form="kids-form"
-                      disabled={isSubmitting}
-                      className={`flex-[2] py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] text-white shadow-xl flex items-center justify-center gap-2 transition-transform active:scale-95 ${selectedProgram.glowBg}`}
-                    >
-                      {isSubmitting ? (
-                        <Loader2 size={16} className="animate-spin" />
-                      ) : (
-                        "Отправить"
-                      )}
-                    </button>
-                  )}
+
                 </div>
               )}
             </motion.div>

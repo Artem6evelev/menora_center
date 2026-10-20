@@ -22,6 +22,7 @@ import { updateUserTags } from "@/actions/user";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import CommunityProfileDetails from "./community-profile-details";
 
 const PREDEFINED_TAGS = [
   "VIP",
@@ -146,7 +147,8 @@ export default function UserSlider({ users }: { users: any[] }) {
               <div className="flex justify-between items-start relative z-10">
                 <div className="flex items-center gap-5">
                   <img
-                    src={user.imageUrl || "/default-avatar.png"}
+                    src={user.imageUrl || "/default-avatar.svg"}
+                    alt=""
                     className="w-16 h-16 rounded-full object-cover border border-neutral-200 dark:border-neutral-700 shadow-sm"
                   />
                   <div>
@@ -165,6 +167,7 @@ export default function UserSlider({ users }: { users: any[] }) {
                 </div>
                 <button
                   onClick={closeSlider}
+                  aria-label="Закрыть карточку человека"
                   className="p-2.5 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-full transition-all active:scale-95 shadow-sm"
                 >
                   <X size={16} strokeWidth={2.5} className="text-neutral-500" />
@@ -183,6 +186,7 @@ export default function UserSlider({ users }: { users: any[] }) {
               </div>
             </div>
 
+            <CommunityProfileDetails user={user} />
             {/* TAGS SECTION */}
             <div className="px-8 py-5 border-b border-neutral-100 dark:border-neutral-800/50 shrink-0">
               <div className="flex items-center gap-2 mb-3 text-[10px] font-black text-neutral-400 uppercase tracking-widest">

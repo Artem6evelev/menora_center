@@ -99,7 +99,7 @@ export default function KanbanCard({
                 {assignee.firstName}
               </span>
               <img
-                src={assignee.imageUrl || "/default-avatar.png"}
+                src={assignee.imageUrl || "/default-avatar.svg"}
                 alt="assignee"
                 className="w-7 h-7 rounded-full object-cover border-2 border-white dark:border-neutral-900 shadow-sm"
               />

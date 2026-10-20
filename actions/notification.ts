@@ -1,292 +1,98 @@
 "use server";
-
 import { db } from "@/lib/db";
 import { notifications, users } from "@/lib/db/schema";
-import { eq, or, and, desc, asc, sql, inArray } from "drizzle-orm";
+import { eq, or, and, desc, asc, sql, inArray, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { auth } from "@clerk/nextjs/server"; // Добавляем для CRM
+import { requireCommunityUser, requirePrivateScope, requireStaff } from "@/lib/community/server";
+import { isStaff } from "@/lib/community/policy";
+import { z } from "zod";
+const idInput = z.string().min(1).max(200);
+const messageInput = z.string().trim().min(1).max(5000);
 
-// 1. Получить все уведомления пользователя
 export async function getUserNotifications(userId: string) {
-  try {
-    return await db
-      .select()
-      .from(notifications)
-      .where(eq(notifications.userId, userId))
-      .orderBy(desc(notifications.createdAt));
-  } catch (error) {
-    console.error("Ошибка при получении уведомлений:", error);
-    return [];
-  }
+  await requirePrivateScope(idInput.parse(userId));
+  return db.select().from(notifications).where(eq(notifications.userId, userId)).orderBy(desc(notifications.createdAt));
 }
-
-// 2. Улучшенная функция создания уведомления (Старое не ломается!)
-export async function createNotification(
-  userId: string,
-  title: string,
-  message: string,
-  link?: string,
-  senderId?: string, // Новое: необязательно
-  type: string = "system", // Новое: по умолчанию "system" для Канбана
-) {
+export async function createNotification(userId: string, title: string, message: string, link?: string, senderId?: string, type = "system") {
   try {
-    const newId = `notif_${Math.random().toString(36).substring(2, 11)}`;
-    await db.insert(notifications).values({
-      id: newId,
-      userId,
-      title,
-      message,
-      link: link || null,
-      senderId: senderId || null, // Если не передано, будет null (ок для базы)
-      type: type, // "system", "crm_personal" и т.д.
-    });
-
-    revalidatePath("/");
-    return { success: true };
-  } catch (error) {
-    console.error("Ошибка при создании уведомления:", error);
-    return { success: false };
-  }
+    const actor = await requireStaff();
+    if (senderId && senderId !== actor.id) throw new Error("Sender mismatch");
+    const checked = z.object({ userId: idInput, title: z.string().trim().min(1).max(160), message: messageInput,
+      type: z.enum(["system", "crm_personal", "crm_bulk"]), link: z.string().regex(/^\/dashboard(?:\/[A-Za-z0-9_-]+)*$|^\/events\/[A-Za-z0-9_-]+$/).optional(),
+    }).strict().parse({ userId, title, message, type, link });
+    await db.insert(notifications).values({ id: crypto.randomUUID(), ...checked, link: checked.link || null, senderId: actor.id });
+    revalidatePath("/dashboard", "layout"); return { success: true };
+  } catch { return { success: false }; }
 }
-
-// --- НОВОЕ: СПЕЦИАЛЬНО ДЛЯ CRM ---
-
-// 3. Быстрая массовая рассылка (одним запросом в БД)
 export async function sendBulkCrmMessages(userIds: string[], message: string) {
-  const { userId: adminId } = await auth();
-  if (!adminId) throw new Error("Unauthorized");
-
   try {
-    const data = userIds.map((id) => ({
-      id: `notif_${Math.random().toString(36).substring(2, 11)}`,
-      userId: id,
-      senderId: adminId,
-      title: "Объявление общины",
-      message: message.trim(),
-      link: "/dashboard",
-      type: "crm_bulk",
-      isRead: false,
-    }));
-
-    // Вставляем сразу массив данных — это в десятки раз быстрее, чем цикл
-    await db.insert(notifications).values(data);
-
-    revalidatePath("/");
-    return { success: true };
-  } catch (error) {
-    console.error("Ошибка при массовой рассылке:", error);
-    return { success: false };
-  }
+    const actor = await requireStaff();
+    const ids = [...new Set(z.array(idInput).min(1).max(500).parse(userIds))];
+    const text = messageInput.parse(message);
+    await db.insert(notifications).values(ids.map(userId => ({ id: crypto.randomUUID(), userId, senderId: actor.id,
+      title: "Объявление общины", message: text, link: "/dashboard", type: "crm_bulk", isRead: false })));
+    revalidatePath("/dashboard", "layout"); return { success: true };
+  } catch { return { success: false }; }
 }
-
-// --- ОСТАЛЬНЫЕ СТАРЫЕ ФУНКЦИИ БЕЗ ИЗМЕНЕНИЙ ---
-
-// 4. Отметить как прочитанное
-export async function markAsRead(notificationId: string) {
-  try {
-    await db
-      .update(notifications)
-      .set({ isRead: true })
-      .where(eq(notifications.id, notificationId));
-
-    revalidatePath("/");
-    return { success: true };
-  } catch (error) {
-    return { success: false };
-  }
+async function requireNotification(id: string) {
+  const [row] = await db.select().from(notifications).where(eq(notifications.id, idInput.parse(id)));
+  if (!row) throw new Error("Notification not found");
+  await requirePrivateScope(row.userId); return row;
 }
-
-// 5. Отметить ВСЕ как прочитанные
+export async function markAsRead(id: string) {
+  try { await requireNotification(id); await db.update(notifications).set({ isRead: true }).where(eq(notifications.id, id)); revalidatePath("/dashboard", "layout"); return { success: true }; }
+  catch { return { success: false }; }
+}
 export async function markAllAsRead(userId: string) {
-  try {
-    await db
-      .update(notifications)
-      .set({ isRead: true })
-      .where(eq(notifications.userId, userId));
-    revalidatePath("/");
-    return { success: true };
-  } catch (error) {
-    return { success: false };
-  }
+  try { await requirePrivateScope(idInput.parse(userId)); await db.update(notifications).set({ isRead: true }).where(eq(notifications.userId, userId)); revalidatePath("/dashboard", "layout"); return { success: true }; }
+  catch { return { success: false }; }
 }
-
-// 6. Удалить уведомление
 export async function deleteNotification(id: string) {
-  try {
-    await db.delete(notifications).where(eq(notifications.id, id));
-    revalidatePath("/");
-    return { success: true };
-  } catch (error) {
-    return { success: false };
-  }
+  try { await requireNotification(id); await db.delete(notifications).where(eq(notifications.id, id)); revalidatePath("/dashboard", "layout"); return { success: true }; }
+  catch { return { success: false }; }
 }
-
-// Получить историю переписки для CRM
 export async function getNotificationHistory(userId: string) {
-  try {
-    const history = await db
-      .select({
-        id: notifications.id,
-        message: notifications.message,
-        createdAt: notifications.createdAt,
-        type: notifications.type,
-        senderId: notifications.senderId,
-      })
-      .from(notifications)
-      .where(eq(notifications.userId, userId))
-      .orderBy(desc(notifications.createdAt))
-      .limit(50); // Не берем больше 50, чтобы не тормозило
-
-    return history;
-  } catch (error) {
-    console.error("Ошибка при загрузке истории:", error);
-    return [];
-  }
+  await requireStaff(); idInput.parse(userId);
+  return db.select({ id: notifications.id, message: notifications.message, createdAt: notifications.createdAt,
+    type: notifications.type, senderId: notifications.senderId }).from(notifications)
+    .where(or(eq(notifications.userId, userId), eq(notifications.senderId, userId))).orderBy(desc(notifications.createdAt)).limit(50);
 }
-
-// Получить всю переписку для клиента (его сообщения и ответы админов)
 export async function getMyChatHistory(userId: string) {
-  try {
-    return await db
-      .select()
-      .from(notifications)
-      .where(
-        or(
-          eq(notifications.userId, userId), // Сообщения мне
-          eq(notifications.senderId, userId), // Сообщения от меня
-        ),
-      )
-      .orderBy(asc(notifications.createdAt)); // Сортируем от старых к новым для чата
-  } catch (error) {
-    return [];
-  }
+  await requirePrivateScope(idInput.parse(userId));
+  return db.select().from(notifications).where(or(eq(notifications.userId, userId), eq(notifications.senderId, userId))).orderBy(asc(notifications.createdAt));
 }
-
-// Универсальная отправка сообщения (от клиента к админу)
 export async function sendClientMessage(message: string) {
-  const { userId: clientId } = await auth();
-  if (!clientId) throw new Error("Unauthorized");
-
   try {
-    // 1. Находим в базе любого админа, чтобы указать его как получателя (userId)
-    // Это нужно, чтобы не было ошибки Foreign Key
-    const admin = await db.query.users.findFirst({
-      where: or(eq(users.role, "admin"), eq(users.role, "superadmin")),
-    });
-
-    // Если админ не найден, отправим сообщение самому себе (как системное)
-    const receiverId = admin ? admin.id : clientId;
-
-    const newId = `notif_${Math.random().toString(36).substring(2, 11)}`;
-
-    await db.insert(notifications).values({
-      id: newId,
-      userId: receiverId, // Кому (админу)
-      senderId: clientId, // От кого (клиента)
-      title: "Ответ клиента",
-      message: message.trim(),
-      type: "client_reply",
-      isRead: false,
-    });
-
-    revalidatePath("/dashboard/chat");
-    return { success: true };
-  } catch (error) {
-    // ОБЯЗАТЕЛЬНО посмотри в терминал (консоль VS Code), там будет видна точная ошибка
-    console.error("ОШИБКА БД:", error);
-    return { success: false };
-  }
+    const client = await requireCommunityUser(); await requirePrivateScope(client.id);
+    const text = messageInput.parse(message);
+    const [admin] = await db.select().from(users).where(and(inArray(users.role, ["admin", "superadmin"]), isNull(users.identityDisabledAt))).limit(1);
+    if (!admin) return { success: false };
+    await db.insert(notifications).values({ id: crypto.randomUUID(), userId: admin.id, senderId: client.id,
+      title: "Ответ клиента", message: text, type: "client_reply", isRead: false });
+    revalidatePath("/dashboard/chat"); return { success: true };
+  } catch { return { success: false }; }
 }
-
-// 1. Получить список людей с подсчетом непрочитанных
 export async function getActiveChats() {
-  const { userId: adminId } = await auth();
-  if (!adminId) return [];
-
-  try {
-    // Используем группировку, чтобы достать юзеров и сразу посчитать непрочитанные от них
-    const activeUsers = await db
-      .select({
-        id: users.id,
-        firstName: users.firstName,
-        lastName: users.lastName,
-        imageUrl: users.imageUrl,
-        // Считаем: если isRead = false И отправил этот клиент И сообщение для админа -> +1
-        unreadCount: sql<number>`CAST(SUM(CASE WHEN ${notifications.isRead} = false AND ${notifications.senderId} = ${users.id} THEN 1 ELSE 0 END) AS INTEGER)`,
-      })
-      .from(users)
-      .innerJoin(
-        notifications,
-        or(
-          eq(notifications.senderId, users.id),
-          eq(notifications.userId, users.id),
-        ),
-      )
-      .where(
-        inArray(notifications.type, [
-          "crm_personal",
-          "client_reply",
-          "crm_bulk",
-        ]),
-      )
-      .groupBy(users.id);
-
-    // Сортируем: сначала те, у кого есть непрочитанные (unreadCount > 0), затем остальные
-    return activeUsers.sort((a, b) => b.unreadCount - a.unreadCount);
-  } catch (error) {
-    console.error("Error fetching chat list:", error);
-    return [];
-  }
+  await requireStaff();
+  const result = await db.select({ id: users.id, firstName: users.firstName, lastName: users.lastName, imageUrl: users.imageUrl,
+    unreadCount: sql<number>`CAST(SUM(CASE WHEN ${notifications.isRead} = false AND ${notifications.senderId} = ${users.id} THEN 1 ELSE 0 END) AS INTEGER)`,
+  }).from(users).innerJoin(notifications, or(eq(notifications.senderId, users.id), eq(notifications.userId, users.id)))
+    .where(inArray(notifications.type, ["crm_personal", "client_reply", "crm_bulk"])).groupBy(users.id);
+  return result.sort((a, b) => b.unreadCount - a.unreadCount);
 }
-
-// НОВАЯ ФУНКЦИЯ: Пометить сообщения конкретного чата как прочитанные
 export async function markChatAsRead(clientId: string) {
-  const { userId: adminId } = await auth();
-  if (!adminId) return { success: false };
-
   try {
-    await db
-      .update(notifications)
-      .set({ isRead: true })
-      .where(
-        and(
-          eq(notifications.senderId, clientId), // Сообщения от этого клиента
-          eq(notifications.userId, adminId), // Адресованные мне (админу)
-          eq(notifications.isRead, false), // Которые еще не прочитаны
-        ),
-      );
+    const actor = await requireStaff(); idInput.parse(clientId);
+    await db.update(notifications).set({ isRead: true }).where(and(eq(notifications.senderId, clientId), eq(notifications.userId, actor.id), eq(notifications.isRead, false)));
     return { success: true };
-  } catch (error) {
-    return { success: false };
-  }
+  } catch { return { success: false }; }
 }
-
-// Получить переписку между двумя конкретными пользователями (Админ <-> Клиент)
 export async function getConversation(adminId: string, clientId: string) {
-  try {
-    const chat = await db
-      .select()
-      .from(notifications)
-      .where(
-        or(
-          // Сообщения от Админа к Клиенту
-          and(
-            eq(notifications.senderId, adminId),
-            eq(notifications.userId, clientId),
-          ),
-          // Сообщения от Клиента к Админу
-          and(
-            eq(notifications.senderId, clientId),
-            eq(notifications.userId, adminId),
-          ),
-        ),
-      )
-      .orderBy(asc(notifications.createdAt)) // asc - от старых к новым (для чата)
-      .limit(100); // Берем последние 100, чтобы не грузить память
-
-    return chat;
-  } catch (error) {
-    console.error("Ошибка при получении переписки:", error);
-    return [];
-  }
+  const actor = await requirePrivateScope(idInput.parse(clientId)); idInput.parse(adminId);
+  const [peer] = await db.select().from(users).where(eq(users.id, adminId));
+  if (!isStaff(peer) || (!isStaff(actor) && clientId !== actor.id)) throw new Error("Нет доступа к переписке");
+  return db.select().from(notifications).where(or(
+    and(eq(notifications.senderId, adminId), eq(notifications.userId, clientId)),
+    and(eq(notifications.senderId, clientId), eq(notifications.userId, adminId)),
+  )).orderBy(asc(notifications.createdAt)).limit(100);
 }

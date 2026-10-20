@@ -1,0 +1,114 @@
+{
+  "engine": "PGlite 0.5.10 PostgreSQL/WASM, Drizzle real SQL/transactions; auth and external side effects injected",
+  "limitations": [
+    "Not real Clerk/Google OAuth or browser E2E",
+    "PGlite serializes transactions; multi-connection PostgreSQL locking/load not measured",
+    "No real DB, external delivery or payments"
+  ],
+  "checks": [
+    {
+      "name": "video author projection works on baseline without any filtering columns",
+      "status": "PASS"
+    },
+    {
+      "name": "additive migration preserves legacy fields and child entries",
+      "status": "PASS"
+    },
+    {
+      "name": "migration is idempotent; database rejects unknown affiliation/gender",
+      "status": "PASS"
+    },
+    {
+      "name": "policy separates current completion, personal admission and staff authority",
+      "status": "PASS"
+    },
+    {
+      "name": "return paths reject external, protocol-relative, encoded slash and OAuth loops",
+      "status": "PASS"
+    },
+    {
+      "name": "guest receives no event list, details, categories or foreign family",
+      "status": "PASS"
+    },
+    {
+      "name": "new Google account cannot skip questionnaire using the login branch",
+      "status": "PASS"
+    },
+    {
+      "name": "missing/unknown fields, foreign user ID and forged role do not complete a profile",
+      "status": "PASS"
+    },
+    {
+      "name": "maternal questionnaire persists separate fields and survives a fresh read",
+      "status": "PASS"
+    },
+    {
+      "name": "combined giyur saves full form without inferring completion or child rights",
+      "status": "PASS"
+    },
+    {
+      "name": "advanced giyur woman registers herself but no child through every existing entry point",
+      "status": "PASS"
+    },
+    {
+      "name": "one-field completion clarification grants eligible mother child rights, without replacing profile/history",
+      "status": "PASS"
+    },
+    {
+      "name": "third branch accepts only minimal choice, preserves family and revokes fresh actions",
+      "status": "PASS"
+    },
+    {
+      "name": "father cannot create child via profile, either legacy action, family update or event",
+      "status": "PASS"
+    },
+    {
+      "name": "father cannot enroll an already existing child or use anonymous child counts",
+      "status": "PASS"
+    },
+    {
+      "name": "mother cannot read/update foreign parent or inject foreign child IDs/parentId/gender",
+      "status": "PASS"
+    },
+    {
+      "name": "mother saves a new child and enrolls only linked children in a program",
+      "status": "PASS"
+    },
+    {
+      "name": "server prices linked child correctly; restricted payments create no pending registration",
+      "status": "PASS"
+    },
+    {
+      "name": "closed event fails before child creation; legacy registration delegates to policy",
+      "status": "PASS"
+    },
+    {
+      "name": "ordinary account cannot elevate role or invoke manual/admin event operations",
+      "status": "PASS"
+    },
+    {
+      "name": "admin manual exception records actor/reason and never changes father's status",
+      "status": "PASS"
+    },
+    {
+      "name": "admin free child exception preserves unknown father status and is idempotent",
+      "status": "PASS"
+    },
+    {
+      "name": "historical positional child identity is snapshotted before profile edit",
+      "status": "PASS"
+    },
+    {
+      "name": "database failure after family update rolls back child and registration together",
+      "status": "PASS"
+    },
+    {
+      "name": "repeat/concurrent transaction entry creates one logical free registration",
+      "status": "PASS"
+    },
+    {
+      "name": "fresh profile changes revoke old prepared registration requests",
+      "status": "PASS"
+    }
+  ]
+}

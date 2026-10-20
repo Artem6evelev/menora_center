@@ -8,16 +8,13 @@ import {
   Heart,
   Baby,
   Edit2,
-  Check,
   X,
-  Plus,
-  Trash2,
-  Loader2,
   Mail,
 } from "lucide-react";
-import { updateUserProfile } from "@/actions/user";
-import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { AFFILIATION_LABELS, Affiliation } from "@/lib/community/policy";
+import GiyurStageForm from "@/components/community/giyur-stage-form";
+import OnboardingForm from "./main/onboarding-form";
 
 // --- Вспомогательные функции для расчета возраста ---
 function getPlural(number: number, words: string[]) {
@@ -57,78 +54,7 @@ function calculateAge(dateString: string | Date | null) {
 // ----------------------------------------------------
 
 export default function ProfileManager({ user }: { user: any }) {
-  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Форматируем дату для input type="date"
-  const formatDateForInput = (dateString: string | Date | null) => {
-    if (!dateString) return "";
-    const d = new Date(dateString);
-    return d.toISOString().split("T")[0];
-  };
-
-  const [formData, setFormData] = useState({
-    firstName: user.firstName || "",
-    lastName: user.lastName || "",
-    phone: user.phone || "",
-    dateOfBirth: formatDateForInput(user.dateOfBirth),
-    city: user.city || "",
-    maritalStatus: user.maritalStatus || "",
-    jewishStatus: user.jewishStatus || "",
-    hasChildren: user.hasChildren ? "yes" : "no",
-  });
-
-  const [spouseName, setSpouseName] = useState(user.spouseName || "");
-  const [childrenList, setChildrenList] = useState<any[]>(
-    Array.isArray(user.childrenData) && user.childrenData.length > 0
-      ? user.childrenData
-      : [{ name: "", dateOfBirth: "" }],
-  );
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleChildChange = (
-    index: number,
-    field: "name" | "dateOfBirth",
-    value: string,
-  ) => {
-    const newList = [...childrenList];
-    newList[index][field] = value;
-    setChildrenList(newList);
-  };
-
-  const addChild = () =>
-    setChildrenList([...childrenList, { name: "", dateOfBirth: "" }]);
-  const removeChild = (index: number) => {
-    if (childrenList.length > 1) {
-      setChildrenList(childrenList.filter((_, i) => i !== index));
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    const submitData = {
-      ...formData,
-      spouseName,
-      childrenData: childrenList,
-    };
-
-    const res = await updateUserProfile(user.id, submitData);
-    if (res.success) {
-      setIsEditing(false);
-      router.refresh();
-    } else {
-      alert("Ошибка при сохранении профиля");
-    }
-    setIsSubmitting(false);
-  };
 
   // ==========================================
   // РЕЖИМ ПРОСМОТРА ПРОФИЛЯ
@@ -156,6 +82,7 @@ export default function ProfileManager({ user }: { user: any }) {
           </button>
         </div>
 
+        {user.affiliation === "giyur" && user.gender === "female" && !user.giyurStage && <div className="mb-6"><GiyurStageForm revision={user.filterRevision || 0} /></div>}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="space-y-5">
             <InfoRow
@@ -170,6 +97,8 @@ export default function ProfileManager({ user }: { user: any }) {
             />
             <InfoRow icon={Phone} label="Телефон" value={user.phone} />
             <InfoRow icon={MapPin} label="Город" value={user.city} />
+            <InfoRow icon={User} label="Пол" value={user.gender === "female" ? "Женский" : user.gender === "male" ? "Мужской" : "Не указан"} />
+            <InfoRow icon={Heart} label="Связь с еврейством" value={AFFILIATION_LABELS[user.affiliation as Affiliation] || "Требуется уточнить в анкете"} />
           </div>
 
           <div className="bg-orange-50/50 dark:bg-orange-950/20 p-6 md:p-8 rounded-3xl border border-orange-100 dark:border-orange-900/30 flex flex-col h-full">
@@ -236,269 +165,9 @@ export default function ProfileManager({ user }: { user: any }) {
     );
   }
 
-  // ==========================================
-  // РЕЖИМ РЕДАКТИРОВАНИЯ
-  // ==========================================
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.98 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="bg-white dark:bg-neutral-900 border-2 border-[#FFB800] rounded-[32px] p-6 md:p-8 shadow-xl relative"
-    >
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl font-black text-neutral-900 dark:text-white tracking-tight">
-          Редактирование профиля
-        </h2>
-        <button
-          onClick={() => setIsEditing(false)}
-          className="w-10 h-10 bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center rounded-full text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors"
-        >
-          <X size={20} />
-        </button>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <div>
-            <label className="text-xs font-bold text-neutral-500 uppercase ml-1">
-              Имя
-            </label>
-            <input
-              required
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleChange}
-              className="w-full mt-1 p-3.5 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl outline-none focus:border-[#FFB800] transition-colors font-medium"
-            />
-          </div>
-          <div>
-            <label className="text-xs font-bold text-neutral-500 uppercase ml-1">
-              Фамилия
-            </label>
-            <input
-              required
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleChange}
-              className="w-full mt-1 p-3.5 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl outline-none focus:border-[#FFB800] transition-colors font-medium"
-            />
-          </div>
-          <div>
-            <label className="text-xs font-bold text-neutral-500 uppercase ml-1">
-              Телефон
-            </label>
-            <input
-              required
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              className="w-full mt-1 p-3.5 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl outline-none focus:border-[#FFB800] transition-colors font-medium"
-            />
-          </div>
-          <div>
-            <label className="text-xs font-bold text-neutral-500 uppercase ml-1">
-              Дата рождения
-            </label>
-            <input
-              required
-              type="date"
-              name="dateOfBirth"
-              value={formData.dateOfBirth}
-              onChange={handleChange}
-              className="w-full mt-1 p-3.5 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl outline-none focus:border-[#FFB800] transition-colors font-medium text-neutral-700 dark:text-neutral-300"
-            />
-          </div>
-          <div>
-            <label className="text-xs font-bold text-neutral-500 uppercase ml-1">
-              Город
-            </label>
-            <input
-              required
-              name="city"
-              value={formData.city}
-              onChange={handleChange}
-              className="w-full mt-1 p-3.5 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl outline-none focus:border-[#FFB800] transition-colors font-medium"
-            />
-          </div>
-
-          <div>
-            <label className="text-xs font-bold text-neutral-500 uppercase ml-1">
-              Еврейский статус
-            </label>
-            <select
-              required
-              name="jewishStatus"
-              value={formData.jewishStatus}
-              onChange={handleChange}
-              className="w-full mt-1 p-3.5 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl outline-none focus:border-[#FFB800] transition-colors font-medium"
-            >
-              <option value="Соблюдающий еврей">Соблюдающий еврей</option>
-              <option value="Светский еврей">Светский еврей</option>
-              <option value="Еврей по отцовской линии">
-                Еврей по отцовской линии
-              </option>
-              <option value="Готовлюсь к Гиюру">Готовлюсь к Гиюру</option>
-              <option value="Прошел гиюр">Прошел гиюр</option>
-              <option value="Интересуюсь иудаизмом">
-                Не имею еврейских корней, но интересуюсь
-              </option>
-            </select>
-          </div>
-
-          <div>
-            <label className="text-xs font-bold text-neutral-500 uppercase ml-1">
-              Семейное положение
-            </label>
-            <select
-              required
-              name="maritalStatus"
-              value={formData.maritalStatus}
-              onChange={handleChange}
-              className="w-full mt-1 p-3.5 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl outline-none focus:border-[#FFB800] transition-colors font-medium"
-            >
-              <option value="single">Холост / Не замужем</option>
-              <option value="married">В браке</option>
-              <option value="divorced">В разводе</option>
-              <option value="widowed">Вдовец / Вдова</option>
-            </select>
-          </div>
-          <div>
-            <label className="text-xs font-bold text-neutral-500 uppercase ml-1">
-              Есть ли дети?
-            </label>
-            <select
-              required
-              name="hasChildren"
-              value={formData.hasChildren}
-              onChange={handleChange}
-              className="w-full mt-1 p-3.5 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl outline-none focus:border-[#FFB800] transition-colors font-medium"
-            >
-              <option value="yes">Да</option>
-              <option value="no">Нет</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Динамические поля семьи */}
-        <AnimatePresence>
-          {formData.maritalStatus === "married" && (
-            <motion.div
-              key="spouse-field"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden pt-2"
-            >
-              <label className="text-xs font-bold text-neutral-500 uppercase ml-1">
-                Имя супруга/и
-              </label>
-              <input
-                required
-                type="text"
-                value={spouseName}
-                onChange={(e) => setSpouseName(e.target.value)}
-                className="w-full mt-1 p-3.5 bg-orange-50/50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900 rounded-xl outline-none focus:border-orange-400 font-medium"
-              />
-            </motion.div>
-          )}
-
-          {formData.hasChildren === "yes" && (
-            <motion.div
-              key="children-fields"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="space-y-4 overflow-hidden pt-6 border-t border-neutral-200 dark:border-neutral-800"
-            >
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-neutral-500 uppercase ml-1">
-                  Данные детей
-                </label>
-                <button
-                  type="button"
-                  onClick={addChild}
-                  className="text-[#FFB800] bg-[#FFB800]/10 px-3 py-1.5 rounded-lg text-xs font-black flex items-center gap-1.5 hover:bg-[#FFB800]/20 transition-colors"
-                >
-                  <Plus size={14} strokeWidth={3} /> Добавить
-                </button>
-              </div>
-
-              <div className="space-y-3">
-                {childrenList.map((child, index) => (
-                  <div
-                    key={index}
-                    className="flex flex-col sm:flex-row gap-3 items-start sm:items-center bg-orange-50/50 dark:bg-orange-950/20 p-4 rounded-2xl border border-orange-100 dark:border-orange-900/30"
-                  >
-                    <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <input
-                        required
-                        type="text"
-                        placeholder="Имя ребенка"
-                        value={child.name}
-                        onChange={(e) =>
-                          handleChildChange(index, "name", e.target.value)
-                        }
-                        className="w-full p-3 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl outline-none focus:border-[#FFB800] text-sm font-medium"
-                      />
-                      <input
-                        required
-                        type="date"
-                        value={child.dateOfBirth}
-                        onChange={(e) =>
-                          handleChildChange(
-                            index,
-                            "dateOfBirth",
-                            e.target.value,
-                          )
-                        }
-                        className="w-full p-3 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl outline-none focus:border-[#FFB800] text-sm font-medium text-neutral-700 dark:text-neutral-300"
-                      />
-                    </div>
-                    {childrenList.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeChild(index)}
-                        className="w-full sm:w-auto p-3 text-red-400 hover:text-red-600 bg-white dark:bg-neutral-900 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl border border-neutral-200 dark:border-neutral-800 transition-colors flex justify-center items-center"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-neutral-200 dark:border-neutral-800 mt-8">
-          <button
-            type="button"
-            onClick={() => setIsEditing(false)}
-            className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-bold bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
-          >
-            Отмена
-          </button>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-black tracking-wide bg-[#FFB800] text-black hover:bg-[#E5A600] flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 shadow-lg shadow-[#FFB800]/20"
-          >
-            {isSubmitting ? (
-              <Loader2 size={18} className="animate-spin" />
-            ) : (
-              <>
-                <Check size={18} strokeWidth={3} /> Сохранить профиль
-              </>
-            )}
-          </button>
-        </div>
-      </form>
-    </motion.div>
-  );
+  return <div className="space-y-4"><button type="button" onClick={() => setIsEditing(false)} className="font-bold underline">Отмена</button><OnboardingForm userId={user.id} initialProfile={user} onSaved={() => setIsEditing(false)} /></div>;
 }
 
-// Строка информации для режима просмотра
 function InfoRow({
   icon: Icon,
   label,

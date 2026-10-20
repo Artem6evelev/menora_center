@@ -12,7 +12,8 @@ export async function getVideos() {
       orderBy: [desc(videos.createdAt)],
       with: {
         author: {
-          with: { authorProfile: true },
+          columns: { firstName: true, lastName: true },
+          with: { authorProfile: { columns: { slug: true } } },
         },
       },
     });

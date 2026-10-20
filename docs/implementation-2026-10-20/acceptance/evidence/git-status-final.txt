@@ -1,0 +1,57 @@
+ M actions/event-registration.ts
+ M actions/event.ts
+ M actions/kids-profile.ts
+ M actions/kids.actions.ts
+ M actions/user.ts
+ M actions/video.ts
+ M app/(auth)/sign-in/[[...sign-in]]/page.tsx
+ M app/(auth)/sign-up/[[...sign-up]]/page.tsx
+ M app/(marketing)/events/[id]/page.tsx
+ M app/(marketing)/events/page.tsx
+ M app/(marketing)/kids/KidsProgramsClient.tsx
+ M app/(marketing)/page.tsx
+ M app/dashboard/events/page.tsx
+ M app/dashboard/kids-applications/page.tsx
+ M app/dashboard/kids/page.tsx
+ M app/dashboard/layout.tsx
+ M app/dashboard/page.tsx
+ M app/sitemap.ts
+ M components/dashboard/applications/application-client.tsx
+ M components/dashboard/authors/admin-authors-client.tsx
+ M components/dashboard/events/event-card.tsx
+ M components/dashboard/kids/kids-dashboard-client.tsx
+ M components/dashboard/main/onboarding-form.tsx
+ M components/dashboard/notification-bell.tsx
+ M components/dashboard/profile-manager.tsx
+ M components/dashboard/users/crm-table.client.tsx
+ M components/dashboard/users/user-slider.tsx
+ M components/events/single-event-client.tsx
+ M components/navbar/index.tsx
+ M components/testimonials.tsx
+ M components/ui/infinite-moving-cards.tsx
+ M drizzle/meta/_journal.json
+ M lib/db/schema.ts
+ M mdx-components.tsx
+ M package.json
+?? .eslintignore
+?? .eslintrc.cjs
+?? actions/community-admin.ts
+?? actions/community-children.ts
+?? actions/community.ts
+?? app/(marketing)/register/
+?? app/auth/
+?? app/dashboard/kids/manual/
+?? app/sso-callback/
+?? components/community/
+?? components/navbar/guest-navbar.tsx
+?? docs/
+?? drizzle/0004_community_filtering.sql
+?? drizzle/0005_giyur_stage.sql
+?? drizzle/0006_reconcile_existing_schema.sql
+?? drizzle/meta/0004_snapshot.json
+?? drizzle/meta/0005_snapshot.json
+?? drizzle/meta/0006_snapshot.json
+?? lib/community/
+?? public/logos/menora-logo-dark.svg
+?? scripts/
+?? tests/

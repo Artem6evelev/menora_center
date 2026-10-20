@@ -54,7 +54,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // 2. ДИНАМИЧЕСКИЕ СТРАНИЦЫ ИЗ БАЗЫ ДАННЫХ (Параллельный запрос для скорости)
     const [newsData, eventsData] = await Promise.all([
       getPublicNews(),
-      getPublicEventsPaginated(1, 100, null), // Берем до 100 актуальных событий
+      Promise.resolve({ events: [] }), // Events are private; never put per-user event links in public sitemap.
     ]);
 
     // Генерируем ссылки для каждой отдельной новости
@@ -70,19 +70,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }),
     );
 
-    // Генерируем ссылки для каждого отдельного мероприятия
-    const dynamicEventRoutes: MetadataRoute.Sitemap = (
-      eventsData?.events || []
-    ).map(({ event }) => ({
-      url: `${baseUrl}/events/${event.id}`,
-      // ИСПРАВЛЕНИЕ: Проверяем, есть ли event.date, прежде чем передавать в new Date()
-      lastModified: event.date ? new Date(event.date) : new Date(),
-      changeFrequency: "weekly",
-      priority: 0.7,
-    }));
-
     // Объединяем статику и динамику в один массив
-    return [...staticRoutes, ...dynamicNewsRoutes, ...dynamicEventRoutes];
+    return [...staticRoutes, ...dynamicNewsRoutes];
   } catch (error) {
     console.error("Ошибка генерации Sitemap:", error);
     // Если база данных недоступна, возвращаем хотя бы статические страницы (чтобы SEO не упало)

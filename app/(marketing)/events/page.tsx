@@ -1,3 +1,7 @@
+import PrivateSession from "@/components/community/private-session";
+import AccessScreen from "@/components/community/access-screen";
+import { currentCommunityUser } from "@/lib/community/server";
+import { communityAccess } from "@/lib/community/policy";
 import { Metadata } from "next";
 import { auth } from "@clerk/nextjs/server";
 import {
@@ -21,6 +25,8 @@ export const metadata: Metadata = {
 
 export default async function PublicEventsPage() {
   const { userId } = await auth();
+  const access = communityAccess(await currentCommunityUser());
+  if (!access.canViewEvents) return <AccessScreen reason={userId ? access.reason : "guest"} returnTo="/events" />;
 
   // Параллельный фетчинг данных
   const [initialData, categories] = await Promise.all([
@@ -32,7 +38,7 @@ export default async function PublicEventsPage() {
     process.env.NEXT_PUBLIC_APP_URL || "https://menorah-rishon.com";
 
   return (
-    <main className="min-h-screen bg-white dark:bg-neutral-950 pt-32 pb-20 relative overflow-hidden">
+    <PrivateSession key={userId!} expectedUserId={userId!}><main className="min-h-screen bg-white dark:bg-neutral-950 pt-32 pb-20 relative overflow-hidden">
       {/* 2. JSON-LD СХЕМА: ИНДЕКСАЦИЯ СПИСКА МЕРОПРИЯТИЙ (ItemList) */}
       {initialData.events.length > 0 && (
         <script
@@ -88,6 +94,6 @@ export default async function PublicEventsPage() {
           userId={userId}
         />
       </div>
-    </main>
+    </main></PrivateSession>
   );
 }

@@ -1,5 +1,8 @@
 "use client";
 
+import GiyurStageForm from "@/components/community/giyur-stage-form";
+import Link from "next/link";
+import { communityAccess, isStaff } from "@/lib/community/policy";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -96,6 +99,7 @@ export default function KidsDashboardClient({
           : user.childrenData;
       if (Array.isArray(parsed) && parsed.length > 0) {
         return parsed.map((c) => ({
+          id: c.id,
           name: c.name || "",
           dateOfBirth: c.dateOfBirth || c.birthDate || "",
         }));
@@ -107,7 +111,7 @@ export default function KidsDashboardClient({
   };
 
   const [children, setChildren] =
-    useState<{ name: string; dateOfBirth: string }[]>(getInitialChildren());
+    useState<{ id?: string; name: string; dateOfBirth: string }[]>(getInitialChildren());
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [enrollingProgram, setEnrollingProgram] = useState<string | null>(null);
@@ -137,20 +141,22 @@ export default function KidsDashboardClient({
   const handleSaveProfile = async () => {
     setIsSaving(true);
     const validChildren = children.filter((c) => c.name.trim() !== "");
+    try {
     const res = await updateFamilyProfile(user.id, spouseName, validChildren);
 
     if (res.success) {
       setSaveSuccess(true);
       if (validChildren.length === 0)
         setChildren([{ name: "", dateOfBirth: "" }]);
-      else setChildren(validChildren);
+      else setChildren(res.children || validChildren);
 
       setTimeout(() => setSaveSuccess(false), 3000);
       router.refresh();
     } else {
       alert("Не удалось сохранить профили. Попробуйте еще раз.");
     }
-    setIsSaving(false);
+    } catch { alert("Не удалось сохранить профили. Данные остаются в форме."); }
+    finally { setIsSaving(false); }
   };
 
   const handleEnroll = async (programTitle: string) => {
@@ -158,7 +164,7 @@ export default function KidsDashboardClient({
 
     if (
       validChildren.length === 0 ||
-      validChildren.some((c) => !c.dateOfBirth)
+      validChildren.some((c) => !c.dateOfBirth || !c.id)
     ) {
       alert(
         "Сначала добавьте ребенка (Имя и Дата рождения) во вкладке 'Моя семья' и сохраните профиль.",
@@ -170,18 +176,14 @@ export default function KidsDashboardClient({
     setIsEnrolling(true);
     setEnrollingProgram(programTitle);
 
+    try {
     const res = await submitKidsApplication({
       programTitle,
       parentFirstName: user.firstName || "Не указано",
       parentLastName: user.lastName || "Не указано",
       email: user.email,
       phone: user.phone || "Не указан",
-      children: validChildren.map((c) => ({
-        name: c.name,
-        birthDate: c.dateOfBirth,
-        dateOfBirth: c.dateOfBirth,
-        age: calculateAge(c.dateOfBirth),
-      })),
+      childIds: validChildren.map(c => c.id),
     });
 
     if (res.success) {
@@ -191,10 +193,20 @@ export default function KidsDashboardClient({
       alert("Ошибка при отправке заявки.");
     }
 
-    setIsEnrolling(false);
-    setEnrollingProgram(null);
+    } catch { alert("Не удалось отправить заявку. Попробуйте ещё раз."); }
+    finally { setIsEnrolling(false); setEnrollingProgram(null); }
   };
 
+  if (!communityAccess(user).canManageChildren) return <section className="max-w-3xl mx-auto p-6 rounded-3xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 space-y-5">
+    <h1 className="text-2xl font-black">Дети и семейные программы</h1>
+    {user.affiliation === "giyur" && user.gender === "female" && <GiyurStageForm revision={user.filterRevision || 0} initialStage={user.giyurStage} />}
+    <p>Самостоятельное добавление и запись детей доступны с профиля еврейской мамы. Если ребёнка может записать только отец, обратитесь к администратору.</p>
+    {(user.childrenData || []).map((child: any) => <p key={child.id}>{child.name}</p>)}
+    <p className="text-sm text-neutral-500">Существующие дети, семейные связи и прежние заявки сохранены.</p>
+    <Link href="/dashboard/my-events" className="block font-bold underline">Мои прежние записи</Link>
+    <Link href="/register?returnTo=%2Fdashboard%2Fkids" className="block underline">Моя анкета</Link>
+    {isStaff(user) && <Link href="/dashboard/kids/manual" className="block font-bold text-amber-700 underline">Ручная запись администратором</Link>}
+  </section>;
   return (
     <div className="max-w-6xl mx-auto w-full pb-20 px-4 sm:px-6 relative">
       {/* Декоративный бэкграунд-блик */}

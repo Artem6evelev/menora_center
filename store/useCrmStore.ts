@@ -18,7 +18,8 @@ interface CrmStore {
   isFiltersOpen: boolean;
   toggleFilters: () => void;
   activeFilters: {
-    jewishStatus: string;
+    affiliation: string;
+    filterCompletion: string;
     maritalStatus: string;
     hasChildren: string;
   };
@@ -50,7 +51,7 @@ export const useCrmStore = create<CrmStore>((set) => ({
   toggleFilters: () =>
     set((state) => ({ isFiltersOpen: !state.isFiltersOpen })),
   activeFilters: {
-    jewishStatus: "",
+    affiliation: "", filterCompletion: "",
     maritalStatus: "",
     hasChildren: "",
   },
@@ -60,7 +61,7 @@ export const useCrmStore = create<CrmStore>((set) => ({
     })),
   clearFilters: () =>
     set({
-      activeFilters: { jewishStatus: "", maritalStatus: "", hasChildren: "" },
+      activeFilters: { affiliation: "", filterCompletion: "", maritalStatus: "", hasChildren: "" },
       isFiltersOpen: false,
     }),
 }));

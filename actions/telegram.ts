@@ -1,5 +1,6 @@
 "use server";
 
+import { requireStaff } from "@/lib/community/server";
 import { Telegraf } from "telegraf";
 import { db } from "@/lib/db";
 import { users, botSettings } from "@/lib/db/schema";
@@ -9,6 +10,7 @@ import { auth } from "@clerk/nextjs/server";
 // 1. МАССОВАЯ РАССЫЛКА
 export async function sendBroadcastMessage(message: string) {
   try {
+    await requireStaff();
     const { userId } = await auth();
     if (!userId) return { success: false, error: "Не авторизован" };
 

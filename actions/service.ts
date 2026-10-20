@@ -1,4 +1,6 @@
 "use server";
+import { requireCommunityUser, requirePrivateScope, requireStaff } from "@/lib/community/server";
+import { requirePaymentConfirmationReady } from "@/lib/community/payments";
 
 import { db } from "@/lib/db";
 import {
@@ -22,6 +24,7 @@ export async function getServiceCategories() {
 }
 
 export async function createServiceCategory(name: string, color: string) {
+  await requireStaff();
   const id = `scat_${Math.random().toString(36).substring(2, 11)}`;
   await db.insert(serviceCategories).values({ id, name, color });
   revalidatePath("/dashboard/services");
@@ -29,6 +32,7 @@ export async function createServiceCategory(name: string, color: string) {
 }
 
 export async function deleteServiceCategory(id: string) {
+  await requireStaff();
   try {
     await db
       .update(services)
@@ -53,6 +57,7 @@ export async function getServices() {
 }
 
 export async function createService(data: any) {
+  await requireStaff();
   try {
     const id = `ser_${Math.random().toString(36).substring(2, 11)}`;
     const cleanData = {
@@ -70,6 +75,7 @@ export async function createService(data: any) {
 }
 
 export async function updateService(id: string, data: any) {
+  await requireStaff();
   try {
     const cleanData = {
       ...data,
@@ -86,6 +92,7 @@ export async function updateService(id: string, data: any) {
 }
 
 export async function deleteService(id: string) {
+  await requireStaff();
   try {
     await db.delete(services).where(eq(services.id, id));
     revalidatePath("/dashboard/services");
@@ -97,6 +104,7 @@ export async function deleteService(id: string) {
 
 // --- Заявки на услуги ---
 export async function getServiceApplications(serviceId?: string) {
+  await requireStaff();
   try {
     let query = db
       .select({
@@ -152,6 +160,7 @@ export async function checkServiceRegistration(
   serviceId: string,
   userId: string,
 ) {
+  await requirePrivateScope(userId);
   try {
     const existing = await db
       .select()
@@ -173,6 +182,13 @@ export async function registerForService(
   userId: string,
   phone: string,
 ) {
+  await requireCommunityUser(userId);
+  await requirePrivateScope(userId);
+  const [requestedService] = await db.select().from(services).where(eq(services.id, serviceId));
+  if (!requestedService?.isActive) return { success: false, message: "Услуга недоступна" };
+  if (requestedService.price?.trim() && Number.parseFloat(requestedService.price) !== 0) {
+    try { requirePaymentConfirmationReady(); } catch { return { success: false, message: "Платная запись временно недоступна" }; }
+  }
   try {
     const isAlreadyRegistered = await checkServiceRegistration(
       serviceId,
@@ -220,6 +236,7 @@ export async function registerForService(
 }
 
 export async function getUserRegisteredServices(userId: string) {
+  await requirePrivateScope(userId);
   try {
     return await db
       .select({

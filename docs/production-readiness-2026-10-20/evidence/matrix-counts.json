@@ -1,0 +1,21 @@
+{
+  "total": 66,
+  "counts": {
+    "VERIFIED": 59,
+    "PARTIAL": 7,
+    "FAIL": 0,
+    "AMBIGUOUS": 0,
+    "NOT VERIFIED": 0,
+    "N/A": 0
+  },
+  "open": [
+    "MC-017",
+    "MC-052",
+    "MC-053",
+    "MC-054",
+    "MC-062",
+    "MC-065",
+    "MC-066"
+  ],
+  "originalRequirementsPreserved": true
+}

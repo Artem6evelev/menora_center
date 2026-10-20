@@ -1,0 +1,26 @@
+{
+  "actualSourcesRead": [
+    {
+      "path": "/Users/aaronshalev/Downloads/ТЗ ФИЛЬТРАЦИИ MENORAH CENTER.pdf",
+      "sha256": "b80e7d279de5df49beea062e71defffbc94d45f717c31efb1324385fa6535d5b"
+    },
+    {
+      "path": "/Users/aaronshalev/Downloads/ТЗ ФИЛЬТРАЦИИ MENORAH CENTER.docx",
+      "sha256": "e43cd300b93f5f2a31a150e98df1376e37bae26fb7df506e0bfdf29772079d34"
+    }
+  ],
+  "pdfPages": 7,
+  "docxPartsRead": [
+    "word/document.xml",
+    "word/comments.xml"
+  ],
+  "applicableAgentsFilesFound": [],
+  "approvedDecisionsPreserved": [
+    "OD-01",
+    "OD-02",
+    "OD-03",
+    "OD-04",
+    "OD-05",
+    "OD-06"
+  ]
+}

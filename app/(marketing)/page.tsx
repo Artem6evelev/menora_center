@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { currentCommunityUser } from "@/lib/community/server";
+import { communityAccess } from "@/lib/community/policy";
 import { auth } from "@clerk/nextjs/server";
 import { getPublicNews } from "@/actions/news";
 import { getPublicEventsPaginated } from "@/actions/event";
@@ -63,11 +65,12 @@ const getYoutubeThumbnail = (url: string) => {
 
 export default async function Home() {
   const { userId } = await auth();
+  const canViewEvents = communityAccess(await currentCommunityUser()).canViewEvents;
 
   // 1. ПАРАЛЛЕЛЬНО ЗАПРАШИВАЕМ 3 ТИПА ДАННЫХ
   const [allNews, eventsData, videosData] = await Promise.all([
     getPublicNews(),
-    getPublicEventsPaginated(1, 3, null),
+    canViewEvents ? getPublicEventsPaginated(1, 3, null) : Promise.resolve({ events: [], hasMore: false }),
     getVideos(),
   ]);
 
@@ -182,7 +185,7 @@ export default async function Home() {
       {/* Основной контент страницы */}
       <Container className="flex flex-col items-center justify-between relative z-10">
         <Features />
-        <UpcomingEvents events={upcomingEvents} userId={userId} />
+        {canViewEvents && <UpcomingEvents events={upcomingEvents} userId={userId} />}
         <ServicesSection />
         <GridFeatures />
       </Container>

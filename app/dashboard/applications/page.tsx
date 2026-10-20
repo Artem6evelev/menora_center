@@ -1,3 +1,4 @@
+import { requireDashboardFilter } from "@/lib/community/server";
 // app/dashboard/applications/page.tsx
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
@@ -7,6 +8,7 @@ import { redirect } from "next/navigation";
 import ApplicationsClient from "@/components/dashboard/applications/application-client";
 
 export default async function ApplicationsPage() {
+  await requireDashboardFilter();
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 
@@ -18,7 +20,7 @@ export default async function ApplicationsPage() {
 
   // Жесткий оверрайд прав, как мы делали ранее
   const role =
-    dbUser?.email === "artemdev.isr@gmail.com" ? "superadmin" : dbUser?.role;
+    dbUser?.role;
 
   if (role !== "admin" && role !== "superadmin") {
     redirect("/dashboard");

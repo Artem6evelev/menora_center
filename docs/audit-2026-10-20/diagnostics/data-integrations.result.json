@@ -1,0 +1,45 @@
+{
+  "scope": "Only real local function bodies with mocked side effects; no HTTP E2E or production assertions",
+  "probes": [
+    {
+      "id": "DI-BOT-UNAUTHENTICATED-UPDATE-ALL",
+      "result": "CONFIRMED_IN_ISOLATED_MOCK"
+    },
+    {
+      "id": "DI-NOTIFICATIONS-FOREIGN-READ-DELETE-CREATE",
+      "result": "CONFIRMED_IN_ISOLATED_MOCK"
+    },
+    {
+      "id": "DI-WHATSAPP-UNAUTHENTICATED-SEND",
+      "result": "CONFIRMED_IN_ISOLATED_MOCK"
+    },
+    {
+      "id": "DI-STORAGE-UNAUTHENTICATED-SERVICE-ROLE-UPLOAD",
+      "result": "CONFIRMED_IN_ISOLATED_MOCK"
+    },
+    {
+      "id": "DI-PAYMENT-UNSIGNED-PAID-THEN-DOWNGRADE",
+      "result": "CONFIRMED_IN_ISOLATED_MOCK"
+    },
+    {
+      "id": "DI-CRON-MISSING-SECRET-AND-HTTP-FAILURE-SUCCESS",
+      "result": "CONFIRMED_IN_ISOLATED_MOCK"
+    },
+    {
+      "id": "DI-TELEGRAM-UNSIGNED-UPDATE-ACCEPTED",
+      "result": "CONFIRMED_IN_ISOLATED_MOCK"
+    },
+    {
+      "id": "DI-CLERK-SIGNATURE-RAW-BODY-RESERIALIZATION",
+      "result": "CONFIRMED_IN_ISOLATED_MOCK"
+    },
+    {
+      "id": "DI-SMTP-FAILURE-AFTER-PERSISTED-PROFILE",
+      "result": "CONFIRMED_IN_ISOLATED_MOCK"
+    },
+    {
+      "id": "DI-EVENT-OMITTED-AMOUNT-PAID-AND-PARALLEL-DUPLICATES",
+      "result": "CONFIRMED_IN_ISOLATED_MOCK"
+    }
+  ]
+}

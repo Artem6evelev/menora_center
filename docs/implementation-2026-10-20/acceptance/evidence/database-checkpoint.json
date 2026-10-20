@@ -1,0 +1,164 @@
+{
+  "mode": "READ ONLY; migrations not reapplied",
+  "projectRef": "gwuzekpkfrkmgluzblty",
+  "apiHost": "gwuzekpkfrkmgluzblty.supabase.co",
+  "transportHost": "aws-1-eu-central-1.pooler.supabase.com",
+  "databaseName": "postgres",
+  "connectedProjectAvailableInConnector": false,
+  "environmentName": "Hosted Supabase project gwuzekpkfrkmgluzblty, used by local .env/.env.local; production/staging label not established",
+  "migrationFiles": [
+    {
+      "filename": "0004_community_filtering.sql",
+      "sha256": "34124c4a9c89a348323b834556d45e41c7d2d2f1364c1e96e9f9a27b99f3a7bb",
+      "recordedInDrizzle": false,
+      "recordedByNameInSupabase": false
+    },
+    {
+      "filename": "0005_giyur_stage.sql",
+      "sha256": "a09bbe7e8c4efccc1ee1b9c2641a14cc24ac460f862eaa9e72ee380bf1a19c16",
+      "recordedInDrizzle": false,
+      "recordedByNameInSupabase": false
+    }
+  ],
+  "columns": [
+    {
+      "column_name": "affiliation",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "filter_revision",
+      "data_type": "integer",
+      "is_nullable": "NO",
+      "column_default": "0"
+    },
+    {
+      "column_name": "filter_version",
+      "data_type": "integer",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "gender",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "giyur_stage",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    }
+  ],
+  "constraints": [
+    {
+      "conname": "users_affiliation_check",
+      "definition": "CHECK (((affiliation IS NULL) OR (affiliation = ANY (ARRAY['maternal'::text, 'giyur'::text, 'none'::text]))))"
+    },
+    {
+      "conname": "users_gender_check",
+      "definition": "CHECK (((gender IS NULL) OR (gender = ANY (ARRAY['male'::text, 'female'::text]))))"
+    },
+    {
+      "conname": "users_giyur_stage_check",
+      "definition": "CHECK (((giyur_stage IS NULL) OR (giyur_stage = ANY (ARRAY['advanced'::text, 'completed'::text]))))"
+    }
+  ],
+  "audit": [
+    {
+      "relname": "community_audit",
+      "relrowsecurity": true,
+      "policy_count": 0
+    }
+  ],
+  "drizzleJournal": [
+    {
+      "id": 1,
+      "hash": "ad2a06696c21bd2be25083489ddaea6b792b85d4564ab48e03ba2fc512820ab9",
+      "created_at": "1773604602794"
+    },
+    {
+      "id": 2,
+      "hash": "ccdba012740edf96fb5bba5d6226f1a23c676f02930bd6053443e625c99ee14b",
+      "created_at": "1773644876377"
+    },
+    {
+      "id": 3,
+      "hash": "ba9961610e05e4e213221a998aef5b850447fd2d32478666d4fe3f29f220b98b",
+      "created_at": "1773649907617"
+    },
+    {
+      "id": 4,
+      "hash": "86c993f478cfcf1a3a736c03aba76a4ea514892a59fe4f3cc3dd66b277af5a89",
+      "created_at": "1773652653449"
+    },
+    {
+      "id": 5,
+      "hash": "8feb4711809e18ba4638998ff49d72bf870c724043ab3724af37f8028611329b",
+      "created_at": "1773660780050"
+    },
+    {
+      "id": 6,
+      "hash": "0a40870b155d6d7bf2febe0ab58ec870e899df0d60a442c9d1d47071e76003d2",
+      "created_at": "1773661405244"
+    },
+    {
+      "id": 7,
+      "hash": "396da33d8d7b10317b872f090164476b918adfe86474d4376dcdd6630c402c9a",
+      "created_at": "1773661638286"
+    },
+    {
+      "id": 8,
+      "hash": "8d942defd3e2b0f4cbfc6876597e042db408007db93531acf8dbf3c34d18259c",
+      "created_at": "1773661753365"
+    },
+    {
+      "id": 9,
+      "hash": "14965302db643c45e73a65e938256ef7e74bf33ee37bad34157263054988bcf8",
+      "created_at": "1773663338060"
+    },
+    {
+      "id": 10,
+      "hash": "cc30561bc6611ce8ab24ace46cdf11036d3005d845f7f9a7c76adc687e1c57c4",
+      "created_at": "1773669776058"
+    },
+    {
+      "id": 11,
+      "hash": "2a8d2ce25ceea6861cc4bbdae9301bd3e25f6e38901b567e467530553b89d756",
+      "created_at": "1773676191563"
+    },
+    {
+      "id": 12,
+      "hash": "8421e27cb69f91fcace671c11a1137ffca4630e807ea627bf3ddca21fd235a8e",
+      "created_at": "1773676627166"
+    },
+    {
+      "id": 13,
+      "hash": "813ff35a63d9aae4c68ebcee6c258e2f97663d77bb6d9b2cfbd281d070c6440f",
+      "created_at": "1773737576251"
+    },
+    {
+      "id": 14,
+      "hash": "51bbd4183b3c8de8333f4623ebed5620f9689fec0cffc7b4d5aabb4c74f8e723",
+      "created_at": "1773817937324"
+    },
+    {
+      "id": 15,
+      "hash": "d02cb6816076ab044127ea230e839de1b69ad2f5df08870ddcdf5e981c76466a",
+      "created_at": "1773820575672"
+    },
+    {
+      "id": 16,
+      "hash": "57aff6969c81e8e1b0956897ff85d9a8365bebc0e1ea8d06aa2f3180fa932e51",
+      "created_at": "1773900727040"
+    },
+    {
+      "id": 17,
+      "hash": "bb964e78c7212b24209139b88d9e68eab7fa3f26b9208dff191a17ab6e6e6dac",
+      "created_at": "1773916312666"
+    }
+  ],
+  "supabaseJournal": []
+}

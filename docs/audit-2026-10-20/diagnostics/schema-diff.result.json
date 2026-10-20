@@ -1,0 +1,112 @@
+{
+  "limitation": "Snapshots describe repository migration histories, not actual deployment. Observed DB metadata is compared separately when evidence is present.",
+  "results": [
+    {
+      "snapshot": "drizzle/meta/0003_snapshot.json",
+      "tables": 15,
+      "missingTables": [
+        "kids_applications"
+      ],
+      "missingColumns": {
+        "users": [
+          "spouse_name",
+          "children_data",
+          "username"
+        ],
+        "events": [
+          "child_price",
+          "payment_url"
+        ],
+        "event_participants": [
+          "extra_data"
+        ],
+        "news": [
+          "status",
+          "rejection_reason"
+        ],
+        "videos": [
+          "status",
+          "rejection_reason",
+          "category"
+        ],
+        "bot_settings": [
+          "notification_group_id",
+          "events_topic_id",
+          "services_topic_id"
+        ]
+      },
+      "missingIndexes": {
+        "users": [
+          "telegram_chat_id_idx"
+        ]
+      },
+      "rlsEnabledInSnapshot": 0
+    },
+    {
+      "snapshot": "supabase/migrations/meta/0016_snapshot.json",
+      "tables": 13,
+      "missingTables": [
+        "author_profiles",
+        "videos",
+        "kids_applications"
+      ],
+      "missingColumns": {
+        "users": [
+          "spouse_name",
+          "children_data",
+          "username",
+          "jewish_status",
+          "agreed_to_privacy"
+        ],
+        "events": [
+          "child_price",
+          "payment_url",
+          "is_registration_closed"
+        ],
+        "event_participants": [
+          "extra_data"
+        ],
+        "news": [
+          "status",
+          "rejection_reason"
+        ],
+        "bot_settings": [
+          "notification_group_id",
+          "events_topic_id",
+          "services_topic_id"
+        ]
+      },
+      "missingIndexes": {
+        "users": [
+          "telegram_chat_id_idx"
+        ]
+      },
+      "rlsEnabledInSnapshot": 0
+    }
+  ],
+  "observedDatabase": {
+    "source": "evidence/db-readonly.json (read by parent agent in read-only transaction)",
+    "environment": "DATABASE_URL resolved from local .env.local; deployment identity not established",
+    "missingTables": [],
+    "missingColumns": [],
+    "extraColumns": [
+      "bot_settings.admin_notification_chat_id"
+    ],
+    "typeMismatches": [
+      {
+        "column": "videos.created_at",
+        "expected": "timestamp without time zone",
+        "observed": "timestamp with time zone"
+      }
+    ],
+    "nullabilityMismatches": [],
+    "missingForeignKeys": [
+      "news: FOREIGN KEY (author_id) REFERENCES users(id)",
+      "news_comments: FOREIGN KEY (user_id) REFERENCES users(id)"
+    ],
+    "missingIndexes": [],
+    "rlsEnabledTables": 16,
+    "publicPolicies": 0,
+    "limitation": "Column lengths/default expression equivalence and FK delete action equivalence are separately inspected; connected DB is not proven to be production."
+  }
+}

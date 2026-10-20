@@ -1,3 +1,4 @@
+import { requireDashboardFilter } from "@/lib/community/server";
 import { getServices, getServiceCategories } from "@/actions/service";
 import ServicesClient from "@/components/dashboard/service/service-client";
 import { auth } from "@clerk/nextjs/server";
@@ -6,6 +7,7 @@ import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
 export default async function ServicesPage() {
+  await requireDashboardFilter();
   const servicesData = await getServices();
   const categories = await getServiceCategories();
   const { userId } = await auth();

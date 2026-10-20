@@ -1,67 +1,46 @@
 "use server";
+import { CommunityError, communityErrorMessage } from "@/lib/community/errors";
 
-import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import { kidsApplications, users } from "@/lib/db/schema";
 import { desc, eq } from "drizzle-orm";
+import { saveOwnChildren } from "./community-children";
+import { requireCommunityUser, requireChildPermission, requireStaff } from "@/lib/community/server";
+import { profileChildren } from "@/lib/community/children";
 import { revalidatePath } from "next/cache";
 
 // 1. СОЗДАНИЕ ЗАЯВКИ (с лендинга или из кабинета)
 export async function submitKidsApplication(data: any) {
   try {
-    const { userId } = await auth(); // Может быть null, если с лендинга
-
-    await db.insert(kidsApplications).values({
-      programTitle: data.programTitle,
-      parentFirstName: data.parentFirstName,
-      parentLastName: data.parentLastName,
-      email: data.email,
-      phone: data.phone,
-      children: data.children, // Массив детей
-      userId: userId || null, // Привязываем к юзеру, если он залогинен
+    const actor = await requireCommunityUser();
+    requireChildPermission(actor);
+    if (data.userId || data.parentId || data.gender || data.affiliation) throw new CommunityError("Недопустимые поля запроса");
+    const children = profileChildren(actor.id, actor.childrenData);
+    const ids: string[] = data.childIds || (Array.isArray(data.children) ? data.children.map((child: any) => child.id) : []);
+    if (!Array.isArray(ids) || !ids.length || ids.length > 20 || new Set(ids).size !== ids.length) throw new CommunityError("Выберите сохранённых детей из своего профиля");
+    const selected = ids.map(id => {
+      const child = children.find(item => item.id === id && item.parentId === actor.id);
+      if (!child) throw new CommunityError("Ребёнок не связан с Вашим профилем");
+      return child;
     });
-
-    revalidatePath("/dashboard/kids");
-    revalidatePath("/dashboard/kids-applications");
-    return { success: true };
-  } catch (error) {
-    console.error("Ошибка при создании заявки Menorah Kids:", error);
-    return { success: false, error: "Ошибка БД" };
-  }
+    if (typeof data.programTitle !== "string" || !data.programTitle.trim() || data.programTitle.length > 200) throw new CommunityError("Выберите программу");
+    await db.transaction(async tx => {
+      const [fresh] = await tx.select().from(users).where(eq(users.id, actor.id)).for("update");
+      requireChildPermission(fresh);
+      const actual = profileChildren(actor.id, fresh.childrenData);
+      if (ids.some(id => !actual.some(child => child.id === id))) throw new CommunityError("Данные детей изменились. Обновите страницу.");
+      await tx.insert(kidsApplications).values({ programTitle: data.programTitle, parentFirstName: fresh.firstName || "",
+        parentLastName: fresh.lastName || "", email: fresh.email, phone: fresh.phone || "", children: ids.map(id => actual.find(child => child.id === id)!), userId: actor.id });
+    });
+    revalidatePath("/dashboard/kids"); revalidatePath("/dashboard/kids-applications");
+    return { success: true as const };
+  } catch (error) { return { success: false as const, error: communityErrorMessage(error, "Не удалось отправить заявку") }; }
 }
-
-// 2. ОБНОВЛЕНИЕ ДАННЫХ ДЕТЕЙ В ПРОФИЛЕ ПОЛЬЗОВАТЕЛЯ
-export async function updateUserChildren(childrenData: any[]) {
-  const { userId } = await auth();
-  if (!userId) return { success: false, error: "Не авторизован" };
-
-  try {
-    await db
-      .update(users)
-      .set({
-        childrenData,
-        hasChildren: childrenData.length > 0,
-      })
-      .where(eq(users.id, userId));
-
-    revalidatePath("/dashboard/kids");
-    return { success: true };
-  } catch (error) {
-    console.error("Ошибка обновления детей:", error);
-    return { success: false, error: "Ошибка БД" };
-  }
-}
+export async function updateUserChildren(childrenData: unknown[]) { return saveOwnChildren(childrenData); }
 
 // 3. ПОЛУЧЕНИЕ ВСЕХ ЗАЯВОК (ДЛЯ АДМИНА)
 export async function getKidsApplications() {
-  const { userId } = await auth();
-  if (!userId) return [];
-
-  const [caller] = await db.select().from(users).where(eq(users.id, userId));
-  const role =
-    caller?.email === "artemdev.isr@gmail.com" ? "superadmin" : caller?.role;
-
-  if (role !== "admin" && role !== "superadmin") return [];
+  await requireStaff();
 
   // 🔥 ДЕЛАЕМ JOIN С ТАБЛИЦЕЙ USERS, ЧТОБЫ ПОЛУЧИТЬ СТАТУС РОДИТЕЛЯ
   const data = await db
@@ -85,16 +64,9 @@ export async function updateKidsApplicationStatus(
   id: string,
   newStatus: string,
 ) {
-  const { userId } = await auth();
-  if (!userId) return { success: false, error: "Не авторизован" };
-
-  const [caller] = await db.select().from(users).where(eq(users.id, userId));
-  const role =
-    caller?.email === "artemdev.isr@gmail.com" ? "superadmin" : caller?.role;
-  if (role !== "admin" && role !== "superadmin")
-    return { success: false, error: "Нет прав" };
-
   try {
+    await requireStaff();
+    if (!["pending", "approved", "rejected"].includes(newStatus)) throw new CommunityError("Недопустимый статус заявки");
     await db
       .update(kidsApplications)
       .set({ status: newStatus })
@@ -109,16 +81,8 @@ export async function updateKidsApplicationStatus(
 
 // 5. УДАЛЕНИЕ ЗАЯВКИ (ДЛЯ АДМИНА)
 export async function deleteKidsApplication(id: string) {
-  const { userId } = await auth();
-  if (!userId) return { success: false, error: "Не авторизован" };
-
-  const [caller] = await db.select().from(users).where(eq(users.id, userId));
-  const role =
-    caller?.email === "artemdev.isr@gmail.com" ? "superadmin" : caller?.role;
-  if (role !== "admin" && role !== "superadmin")
-    return { success: false, error: "Нет прав" };
-
   try {
+    await requireStaff();
     await db.delete(kidsApplications).where(eq(kidsApplications.id, id));
     revalidatePath("/dashboard/kids-applications");
     return { success: true };

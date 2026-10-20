@@ -1,0 +1,18 @@
+{
+  "checkedDate": "2026-10-20 Asia/Jerusalem",
+  "inventory": {
+    "browserProviders": [],
+    "nativeChromeRunning": true,
+    "nativeChromeForTestingRunning": true
+  },
+  "attempt": "cua.getApp('com.google.chrome.for.testing')",
+  "response": "Computer Use permissions are not granted",
+  "blockedBoundary": "Computer Use authorization before app UI state/navigation; browser network/server was not reached",
+  "osVersusApplicationPermission": "Exact OS/app setting is not identified by this tool response; no assumption that this is macOS Accessibility alone",
+  "technicalWorkaroundsUsed": false,
+  "desktopScenariosCompleted": 0,
+  "mobileScenariosCompleted": 0,
+  "realGoogleOAuthCompleted": false,
+  "clerkConfiguredMode": "test (pk_test/sk_test prefix only inspected; values not recorded)",
+  "requiredUserAction": "Enable Computer Use access for this ChatGPT/Codex session"
+}

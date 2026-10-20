@@ -1,0 +1,26 @@
+
+> nextjs@0.1.0 db:generate
+> drizzle-kit generate --name=schema_check
+
+No config path provided, using default 'drizzle.config.ts'
+Reading config file '/Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/drizzle.config.ts'
+17 tables
+author_profiles 13 columns 0 indexes 1 fks
+bot_settings 11 columns 0 indexes 0 fks
+community_audit 8 columns 0 indexes 0 fks
+event_categories 4 columns 0 indexes 0 fks
+event_participants 7 columns 0 indexes 2 fks
+events 19 columns 0 indexes 1 fks
+kids_applications 10 columns 0 indexes 1 fks
+news 14 columns 0 indexes 2 fks
+news_categories 6 columns 0 indexes 0 fks
+news_comments 5 columns 0 indexes 2 fks
+notifications 9 columns 0 indexes 2 fks
+service_categories 4 columns 0 indexes 0 fks
+service_participants 6 columns 0 indexes 2 fks
+services 9 columns 0 indexes 1 fks
+tasks 9 columns 0 indexes 3 fks
+users 26 columns 1 indexes 0 fks
+videos 12 columns 0 indexes 1 fks
+
+No schema changes, nothing to migrate 😴

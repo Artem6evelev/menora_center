@@ -1,0 +1,30 @@
+{
+  ".eslintignore": {
+    "before": null,
+    "after": "8293cd0aa463867677a7e9cfae4937ae1ea3615c34bbaab62ea81d1c77c27215"
+  },
+  ".eslintrc.cjs": {
+    "before": null,
+    "after": "0de076c83489bf831c1596990a933f2b51c2e727d8a08b4719d179428754cd5c"
+  },
+  "components/dashboard/main/onboarding-form.tsx": {
+    "before": "2ad6b7a5d97522e27955fef9d1053a3bec4941277525942e02ce2a5a27b5132c",
+    "after": "87e80dd2ed6d0065b64e790e875df89ebb6345ffa5e24bf0bc137244f41ca6b0"
+  },
+  "package.json": {
+    "before": "57a901c6002a34ec2df9a54ff90ccda916e8fab21050c39683edd4f4c52c3a21",
+    "after": "fd0ecfe335f5335539e7968645f53929752358d624f184f317248736502c82c8"
+  },
+  "tests/community/README.md": {
+    "before": "3aeb33a42cf1ce566e7da069941bdd63899cf8db79b7bfb854ce305644200791",
+    "after": "3c2eb2715174f0db3107425cc0d70c4ebf50e388cb9a48774bf858795efb5abd"
+  },
+  "tests/community/regression.cjs": {
+    "before": "a5a7a48a2f63bbae559b792b1f491a36ad969e3bf743211dfcdc1660c6995faf",
+    "after": "39714403a8d04c575c567e0c796cf98f1acfb4fc5c717d156a98aa62f126539e"
+  },
+  "tests/community/render.cjs": {
+    "before": "36ff75d5ed726c94fff594b131c177ddcafb5f2d0c02388817ffe880cef3fe5c",
+    "after": "0bf839e8ca5c5495644ffa5cb30ed1e6466050d75a3e93d5b4701a7a46162a0d"
+  }
+}

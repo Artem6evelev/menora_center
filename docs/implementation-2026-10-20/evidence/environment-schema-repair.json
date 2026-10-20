@@ -1,0 +1,108 @@
+{
+  "checkedAt": "2026-10-20T18:15:32.707Z",
+  "environment": "DATABASE_URL from local env files; production deployment identity unverified",
+  "mode": "Explicit owner-requested additive schema repair; no business rows updated",
+  "authorAlias": "videos_author is public.users joined by videos.author_id = users.id",
+  "videoAuthorProjection": [
+    "first_name",
+    "last_name",
+    "author_profiles.slug"
+  ],
+  "before": {
+    "filterColumns": [],
+    "projectedVideoQuerySucceeded": true,
+    "videoCount": 8
+  },
+  "migrations": [
+    {
+      "filename": "0004_community_filtering.sql",
+      "sha256": "34124c4a9c89a348323b834556d45e41c7d2d2f1364c1e96e9f9a27b99f3a7bb"
+    },
+    {
+      "filename": "0005_giyur_stage.sql",
+      "sha256": "a09bbe7e8c4efccc1ee1b9c2641a14cc24ac460f862eaa9e72ee380bf1a19c16"
+    }
+  ],
+  "dataBefore": {
+    "users": {
+      "count": 175,
+      "hash": "b5c8a4ebf73f23bc0e505acd32f8d255"
+    },
+    "events": {
+      "count": 7,
+      "hash": "4034aacb321d34b8057dd67bef2c2a42"
+    },
+    "event_participants": {
+      "count": 42,
+      "hash": "b86fcd31ee26aaeedd6cf9b8e0f307e5"
+    },
+    "kids_applications": {
+      "count": 36,
+      "hash": "dd9a1a4a9942767ac4fa4dfc9bcd5dbf"
+    },
+    "service_participants": {
+      "count": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    }
+  },
+  "dataAfter": {
+    "users": {
+      "count": 175,
+      "hash": "b5c8a4ebf73f23bc0e505acd32f8d255"
+    },
+    "events": {
+      "count": 7,
+      "hash": "4034aacb321d34b8057dd67bef2c2a42"
+    },
+    "event_participants": {
+      "count": 42,
+      "hash": "b86fcd31ee26aaeedd6cf9b8e0f307e5"
+    },
+    "kids_applications": {
+      "count": 36,
+      "hash": "dd9a1a4a9942767ac4fa4dfc9bcd5dbf"
+    },
+    "service_participants": {
+      "count": 0,
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    }
+  },
+  "businessDataUnchanged": true,
+  "auditRls": [
+    {
+      "relrowsecurity": true,
+      "policy_count": 0
+    }
+  ],
+  "after": {
+    "filterColumns": [
+      {
+        "column_name": "affiliation",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "column_name": "filter_revision",
+        "data_type": "integer",
+        "is_nullable": "NO"
+      },
+      {
+        "column_name": "filter_version",
+        "data_type": "integer",
+        "is_nullable": "YES"
+      },
+      {
+        "column_name": "gender",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "column_name": "giyur_stage",
+        "data_type": "text",
+        "is_nullable": "YES"
+      }
+    ],
+    "projectedVideoQuerySucceeded": true,
+    "videoCount": 8
+  }
+}

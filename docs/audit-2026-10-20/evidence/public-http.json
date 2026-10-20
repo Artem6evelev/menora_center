@@ -1,0 +1,25 @@
+{
+  "scope": "Unauthenticated public GET, deployment SHA unknown. No state-changing request.",
+  "checked_at": "2026-10-20T17:09:30.363Z",
+  "home": {
+    "status": 200,
+    "url": "https://www.menorah-rishon.com/",
+    "server": "Vercel",
+    "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate",
+    "event_links": 3,
+    "has_upcoming_heading": true,
+    "has_new_filter_question": false,
+    "contains_supabase_image_url": true,
+    "has_event_menu": true
+  },
+  "first_event": {
+    "path_sha256": "41e09ccf4d1a6ac194f660d75317ee167a9dceca49f3d77ef89423f8a4255629",
+    "status": 200,
+    "cache_control": "private, no-cache, no-store, max-age=0, must-revalidate",
+    "has_old_guest_heading": true,
+    "has_old_google_button": true,
+    "has_new_two_branch_copy": false,
+    "has_description_meta": true,
+    "contains_image_source": true
+  }
+}

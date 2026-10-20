@@ -1,10 +1,12 @@
 "use server";
 
+import { requireStaff } from "@/lib/community/server";
 import { db } from "@/lib/db";
 import { users, events, news } from "@/lib/db/schema";
 import { count, eq } from "drizzle-orm";
 
 export async function getDashboardStats() {
+  await requireStaff();
   try {
     // 1. Считаем общее количество резидентов (пользователей)
     const totalUsers = await db.select({ value: count() }).from(users);

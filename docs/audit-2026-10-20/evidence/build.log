@@ -1,0 +1,55 @@
+
+> nextjs@0.1.0 build
+> next build --webpack
+
+⚠ `images.domains` is deprecated in favor of `images.remotePatterns`. Please update next.config.mjs to protect your application from malicious users.
+▲ Next.js 16.1.7 (webpack)
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (194kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+✓ Compiled successfully in 21.7s
+  Running TypeScript ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/38) ...
+  Generating static pages using 7 workers (9/38) 
+  Generating static pages using 7 workers (18/38) 
+Ошибка генерации Sitemap: Error: Failed query: select "id", "title", "slug", "content", "image_url", "is_published", "is_pinned", "views", "status", "rejection_reason", "author_id", "category_id", "created_at", "updated_at" from "news" "news" where "news"."is_published" = $1 order by "news"."is_pinned" desc, "news"."created_at" desc
+params: true
+    at av.queryWithCache (.next/server/chunks/5460.js:28:35048)
+    at async (.next/server/chunks/5460.js:28:37536)
+    at async s (.next/server/app/sitemap.xml/route.js:1:3524)
+    at async y (.next/server/app/sitemap.xml/route.js:16:1113)
+    at async A (.next/server/app/sitemap.xml/route.js:16:1580) {
+  query: 'select "id", "title", "slug", "content", "image_url", "is_published", "is_pinned", "views", "status", "rejection_reason", "author_id", "category_id", "created_at", "updated_at" from "news" "news" where "news"."is_published" = $1 order by "news"."is_pinned" desc, "news"."created_at" desc',
+  params: [Array],
+  [cause]: Error: connect ECONNREFUSED 127.0.0.1:9
+      at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:9) {
+    errno: -61,
+    code: 'ECONNREFUSED',
+    syscall: 'connect',
+    address: '127.0.0.1',
+    port: 9
+  }
+}
+Error occurred prerendering page "/contact". Read more: https://nextjs.org/docs/messages/prerender-error
+Error: Failed query: select "id", "title", "slug", "content", "image_url", "is_published", "is_pinned", "views", "status", "rejection_reason", "author_id", "category_id", "created_at", "updated_at" from "news" "news" where "news"."is_published" = $1 order by "news"."created_at" desc limit $2
+params: true,1
+    at av.queryWithCache (.next/server/chunks/5460.js:28:35048)
+    at async (.next/server/chunks/5460.js:28:37536)
+    at async x (.next/server/chunks/2472.js:1:4451)
+    at async h (.next/server/chunks/2472.js:1:6805) {
+  query: 'select "id", "title", "slug", "content", "image_url", "is_published", "is_pinned", "views", "status", "rejection_reason", "author_id", "category_id", "created_at", "updated_at" from "news" "news" where "news"."is_published" = $1 order by "news"."created_at" desc limit $2',
+  params: [Array],
+  digest: '2104359906',
+  [cause]: Error: connect ECONNREFUSED 127.0.0.1:9
+      at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:9) {
+    errno: -61,
+    code: 'ECONNREFUSED',
+    syscall: 'connect',
+    address: '127.0.0.1',
+    port: 9
+  }
+}
+Export encountered an error on /(marketing)/contact/page: /contact, exiting the build.
+⨯ Next.js build worker exited with code: 1 and signal: null

@@ -1,0 +1,39 @@
+{
+  "tool": "mcp__cua_repl.js",
+  "currentAction": "cua.rewriteDocumentation() only; no repeated previously denied app selection",
+  "dedicatedPermissionRequestMethodExposed": false,
+  "promptSent": false,
+  "promptPending": false,
+  "browserUiOpenedThisFollowup": false,
+  "previousActualError": "Computer Use permissions are not granted",
+  "pluginManagerReadResult": {
+    "plugin": "Computer Use",
+    "status": "not_installed",
+    "defaultPermission": "Allow read actions"
+  },
+  "catalogSearch": "No matching Computer Use package returned; existing CUA server is exposed. Catalog result alone does not establish macOS or host app permission state.",
+  "classification": "No callable standalone request mechanism in this session; existing Computer Use access ungranted. Exact host/macOS/admin layer remains unobserved.",
+  "policyOrSettingsChanged": false,
+  "browserFallbackUsed": false,
+  "userActionRequested": "Open ChatGPT Plugins > Computer Use and enable it for this session; retry browser access only after a reported permission change.",
+  "officialReference": "https://learn.chatgpt.com/docs/computer-use",
+  "permissionChangeReportedByOwner": true,
+  "afterPermissionChange": {
+    "inventory": "Chrome for Testing running; browsers=[]",
+    "getApp": "SUCCESS: initial New Tab chrome://newtab accessibility tree received",
+    "navigationAttempt": "Failed with ScreenCaptureKit error; URL transition not verified",
+    "getAXState": "Same error",
+    "clientResetAndRebind": "Same error",
+    "actualError": "Computer Use server error -10005; SCStreamErrorDomain -3811: Failed to start stream due to audio/video capture failure",
+    "classification": "ScreenCaptureKit internal capture failure, not a site HTTP error and not the former permissions-not-granted error",
+    "localSdkEvidence": "SCError.h:25 SCStreamErrorInternalError = -3811; distinct from UserDeclined -3801 and FailedToStartAudioCapture -3818",
+    "macOS": "27.0.1 (26A434)",
+    "serverRestartRequested": true,
+    "ownerReply": "Сейчас перезапустить не могу",
+    "nextAction": "Restart the Computer Use server in ChatGPT Plugins > Computer Use; retry only after restart. OS capture privilege state was not inferred from internal error."
+  },
+  "browserWindowObserved": true,
+  "desktopScenariosPassed": 0,
+  "mobileScenariosPassed": 0,
+  "realGoogleOAuth": "NOT VERIFIED; stopped before Google navigation"
+}

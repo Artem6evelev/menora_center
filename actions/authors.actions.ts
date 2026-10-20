@@ -8,6 +8,9 @@ import { users, authorProfiles, news, videos } from "@/lib/db/schema";
 // 🔥 Добавили sql и desc для сортировки и подсчета
 import { eq, sql, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { requireStaff, requirePrivateScope } from "@/lib/community/server";
+import { hasFilterProfile, isStaff } from "@/lib/community/policy";
+import { updateUserRole } from "./role";
 
 // Простая функция для перевода русских имен в английскую ссылку (транслитерация)
 const transliterate = (text: string) => {
@@ -58,6 +61,7 @@ const transliterate = (text: string) => {
 };
 
 export async function makeUserAuthor(targetUserId: string) {
+  await requireStaff();
   const { userId } = await auth();
   if (!userId) throw new Error("Не авторизован");
 
@@ -77,11 +81,8 @@ export async function makeUserAuthor(targetUserId: string) {
     .where(eq(users.id, targetUserId));
   if (!targetUser) throw new Error("Пользователь не найден");
 
-  // 3. Обновляем роль
-  await db
-    .update(users)
-    .set({ role: "author" })
-    .where(eq(users.id, targetUserId));
+  const changed = await updateUserRole(targetUserId, "author");
+  if (changed.error) throw new Error(changed.error);
 
   // 4. Проверяем, нет ли у него уже профиля (на случай если роль туда-сюда меняли)
   const [existingProfile] = await db
@@ -112,6 +113,8 @@ export async function makeUserAuthor(targetUserId: string) {
 }
 
 export async function createProfile(userId: string) {
+  const actor = await requirePrivateScope(userId);
+  if (!isStaff(actor) && actor.role !== "author") throw new Error("Нет прав на профиль спикера");
   const [user] = await db.select().from(users).where(eq(users.id, userId));
   if (!user) return;
   const slug = `${user.firstName?.toLowerCase() || "author"}-${Date.now()}`;
@@ -123,6 +126,7 @@ export async function createProfile(userId: string) {
 // ==========================================
 
 export async function getAdminAuthorsList() {
+  await requireStaff();
   try {
     const profiles = await db.query.authorProfiles.findMany({
       with: { user: true },
@@ -158,15 +162,17 @@ export async function getAdminAuthorsList() {
 }
 
 export async function deleteAuthorProfile(userId: string) {
+  const actor = await requireStaff();
+  if (actor.role !== "superadmin") return { success: false, error: "Только superadmin может менять роль автора" };
   try {
-    // 1. Удаляем публичный профиль Спикера
-    await db.delete(authorProfiles).where(eq(authorProfiles.userId, userId));
-
-    // 2. Возвращаем обычную роль (если он был author)
-    const [user] = await db.select().from(users).where(eq(users.id, userId));
-    if (user && user.role === "author") {
-      await db.update(users).set({ role: "user" }).where(eq(users.id, userId));
-    }
+    await db.transaction(async tx => {
+      const [freshActor] = await tx.select().from(users).where(eq(users.id, actor.id)).for("update");
+      if (freshActor?.role !== "superadmin" || !hasFilterProfile(freshActor)) throw new Error("Нет прав");
+      const [target] = await tx.select().from(users).where(eq(users.id, userId)).for("update");
+      if (!target) throw new Error("Пользователь не найден");
+      await tx.delete(authorProfiles).where(eq(authorProfiles.userId, userId));
+      if (target.role === "author") await tx.update(users).set({ role: "client" }).where(eq(users.id, userId));
+    });
 
     revalidatePath("/dashboard/authors");
     revalidatePath("/authors");

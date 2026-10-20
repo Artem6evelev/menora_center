@@ -1,0 +1,772 @@
+{
+  "checkedAt": "2026-10-20T20:38:14.562Z",
+  "mode": "READ ONLY transaction; metadata + LIMIT 0 projection; no identity rows or writes",
+  "environment": {
+    "projectRef": "gwuzekpkfrkmgluzblty",
+    "database": "postgres",
+    "purpose": "production/staging not confirmed"
+  },
+  "columns": [
+    {
+      "table_name": "community_audit",
+      "column_name": "id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "column_default": "gen_random_uuid()"
+    },
+    {
+      "table_name": "community_audit",
+      "column_name": "actor_id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "community_audit",
+      "column_name": "parent_id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "community_audit",
+      "column_name": "action",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "community_audit",
+      "column_name": "target_id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "community_audit",
+      "column_name": "reason",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "community_audit",
+      "column_name": "details",
+      "data_type": "jsonb",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "community_audit",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "event_participants",
+      "column_name": "id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "event_participants",
+      "column_name": "event_id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "event_participants",
+      "column_name": "user_id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "event_participants",
+      "column_name": "status",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": "'pending'::text"
+    },
+    {
+      "table_name": "event_participants",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "event_participants",
+      "column_name": "phone",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": "'Не указан'::text"
+    },
+    {
+      "table_name": "event_participants",
+      "column_name": "extra_data",
+      "data_type": "jsonb",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "kids_applications",
+      "column_name": "id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "column_default": "gen_random_uuid()"
+    },
+    {
+      "table_name": "kids_applications",
+      "column_name": "program_title",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "kids_applications",
+      "column_name": "parent_first_name",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "kids_applications",
+      "column_name": "parent_last_name",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "kids_applications",
+      "column_name": "email",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "kids_applications",
+      "column_name": "phone",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "kids_applications",
+      "column_name": "status",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": "'pending'::text"
+    },
+    {
+      "table_name": "kids_applications",
+      "column_name": "user_id",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "kids_applications",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "kids_applications",
+      "column_name": "children",
+      "data_type": "jsonb",
+      "is_nullable": "NO",
+      "column_default": "'[]'::jsonb"
+    },
+    {
+      "table_name": "users",
+      "column_name": "id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "email",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "first_name",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "last_name",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "image_url",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "role",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": "'client'::text"
+    },
+    {
+      "table_name": "users",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "users",
+      "column_name": "is_profile_complete",
+      "data_type": "boolean",
+      "is_nullable": "NO",
+      "column_default": "false"
+    },
+    {
+      "table_name": "users",
+      "column_name": "phone",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "date_of_birth",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "city",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "marital_status",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "has_children",
+      "data_type": "boolean",
+      "is_nullable": "YES",
+      "column_default": "false"
+    },
+    {
+      "table_name": "users",
+      "column_name": "source",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "tags",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": "'[]'::text"
+    },
+    {
+      "table_name": "users",
+      "column_name": "telegram_chat_id",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "jewish_status",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "agreed_to_privacy",
+      "data_type": "boolean",
+      "is_nullable": "YES",
+      "column_default": "false"
+    },
+    {
+      "table_name": "users",
+      "column_name": "username",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "children_data",
+      "data_type": "jsonb",
+      "is_nullable": "NO",
+      "column_default": "'[]'::jsonb"
+    },
+    {
+      "table_name": "users",
+      "column_name": "spouse_name",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "gender",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "affiliation",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "filter_version",
+      "data_type": "integer",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "filter_revision",
+      "data_type": "integer",
+      "is_nullable": "NO",
+      "column_default": "0"
+    },
+    {
+      "table_name": "users",
+      "column_name": "giyur_stage",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "videos",
+      "column_name": "id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "column_default": "gen_random_uuid()"
+    },
+    {
+      "table_name": "videos",
+      "column_name": "title",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "videos",
+      "column_name": "link",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "videos",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "videos",
+      "column_name": "description",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "videos",
+      "column_name": "image_url",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "videos",
+      "column_name": "author_id",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "videos",
+      "column_name": "views",
+      "data_type": "integer",
+      "is_nullable": "YES",
+      "column_default": "0"
+    },
+    {
+      "table_name": "videos",
+      "column_name": "is_published",
+      "data_type": "boolean",
+      "is_nullable": "YES",
+      "column_default": "true"
+    },
+    {
+      "table_name": "videos",
+      "column_name": "category",
+      "data_type": "character varying",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "videos",
+      "column_name": "status",
+      "data_type": "character varying",
+      "is_nullable": "NO",
+      "column_default": "'draft'::character varying"
+    },
+    {
+      "table_name": "videos",
+      "column_name": "rejection_reason",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    }
+  ],
+  "constraints": [
+    {
+      "table_name": "community_audit",
+      "conname": "community_audit_pkey",
+      "contype": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "event_participants",
+      "conname": "event_participants_event_id_events_id_fk",
+      "contype": "f",
+      "definition": "FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE"
+    },
+    {
+      "table_name": "event_participants",
+      "conname": "event_participants_pkey",
+      "contype": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "event_participants",
+      "conname": "event_participants_user_id_users_id_fk",
+      "contype": "f",
+      "definition": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+    },
+    {
+      "table_name": "kids_applications",
+      "conname": "kids_applications_pkey",
+      "contype": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "kids_applications",
+      "conname": "kids_applications_user_id_fkey",
+      "contype": "f",
+      "definition": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL"
+    },
+    {
+      "table_name": "users",
+      "conname": "users_affiliation_check",
+      "contype": "c",
+      "definition": "CHECK (((affiliation IS NULL) OR (affiliation = ANY (ARRAY['maternal'::text, 'giyur'::text, 'none'::text]))))"
+    },
+    {
+      "table_name": "users",
+      "conname": "users_gender_check",
+      "contype": "c",
+      "definition": "CHECK (((gender IS NULL) OR (gender = ANY (ARRAY['male'::text, 'female'::text]))))"
+    },
+    {
+      "table_name": "users",
+      "conname": "users_giyur_stage_check",
+      "contype": "c",
+      "definition": "CHECK (((giyur_stage IS NULL) OR (giyur_stage = ANY (ARRAY['advanced'::text, 'completed'::text]))))"
+    },
+    {
+      "table_name": "users",
+      "conname": "users_pkey",
+      "contype": "p",
+      "definition": "PRIMARY KEY (id)"
+    }
+  ],
+  "indexes": [
+    {
+      "tablename": "community_audit",
+      "indexname": "community_audit_pkey",
+      "indexdef": "CREATE UNIQUE INDEX community_audit_pkey ON public.community_audit USING btree (id)"
+    },
+    {
+      "tablename": "users",
+      "indexname": "telegram_chat_id_idx",
+      "indexdef": "CREATE UNIQUE INDEX telegram_chat_id_idx ON public.users USING btree (telegram_chat_id)"
+    },
+    {
+      "tablename": "users",
+      "indexname": "users_pkey",
+      "indexdef": "CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id)"
+    }
+  ],
+  "journals": [
+    {
+      "table_schema": "supabase_migrations",
+      "table_name": "schema_migrations"
+    },
+    {
+      "table_schema": "drizzle",
+      "table_name": "__drizzle_migrations"
+    }
+  ],
+  "ledger": {
+    "supabase": [],
+    "drizzle": [
+      {
+        "hash": "ad2a06696c21bd2be25083489ddaea6b792b85d4564ab48e03ba2fc512820ab9",
+        "created_at": "1773604602794"
+      },
+      {
+        "hash": "ccdba012740edf96fb5bba5d6226f1a23c676f02930bd6053443e625c99ee14b",
+        "created_at": "1773644876377"
+      },
+      {
+        "hash": "ba9961610e05e4e213221a998aef5b850447fd2d32478666d4fe3f29f220b98b",
+        "created_at": "1773649907617"
+      },
+      {
+        "hash": "86c993f478cfcf1a3a736c03aba76a4ea514892a59fe4f3cc3dd66b277af5a89",
+        "created_at": "1773652653449"
+      },
+      {
+        "hash": "8feb4711809e18ba4638998ff49d72bf870c724043ab3724af37f8028611329b",
+        "created_at": "1773660780050"
+      },
+      {
+        "hash": "0a40870b155d6d7bf2febe0ab58ec870e899df0d60a442c9d1d47071e76003d2",
+        "created_at": "1773661405244"
+      },
+      {
+        "hash": "396da33d8d7b10317b872f090164476b918adfe86474d4376dcdd6630c402c9a",
+        "created_at": "1773661638286"
+      },
+      {
+        "hash": "8d942defd3e2b0f4cbfc6876597e042db408007db93531acf8dbf3c34d18259c",
+        "created_at": "1773661753365"
+      },
+      {
+        "hash": "14965302db643c45e73a65e938256ef7e74bf33ee37bad34157263054988bcf8",
+        "created_at": "1773663338060"
+      },
+      {
+        "hash": "cc30561bc6611ce8ab24ace46cdf11036d3005d845f7f9a7c76adc687e1c57c4",
+        "created_at": "1773669776058"
+      },
+      {
+        "hash": "2a8d2ce25ceea6861cc4bbdae9301bd3e25f6e38901b567e467530553b89d756",
+        "created_at": "1773676191563"
+      },
+      {
+        "hash": "8421e27cb69f91fcace671c11a1137ffca4630e807ea627bf3ddca21fd235a8e",
+        "created_at": "1773676627166"
+      },
+      {
+        "hash": "813ff35a63d9aae4c68ebcee6c258e2f97663d77bb6d9b2cfbd281d070c6440f",
+        "created_at": "1773737576251"
+      },
+      {
+        "hash": "51bbd4183b3c8de8333f4623ebed5620f9689fec0cffc7b4d5aabb4c74f8e723",
+        "created_at": "1773817937324"
+      },
+      {
+        "hash": "d02cb6816076ab044127ea230e839de1b69ad2f5df08870ddcdf5e981c76466a",
+        "created_at": "1773820575672"
+      },
+      {
+        "hash": "57aff6969c81e8e1b0956897ff85d9a8365bebc0e1ea8d06aa2f3180fa932e51",
+        "created_at": "1773900727040"
+      },
+      {
+        "hash": "bb964e78c7212b24209139b88d9e68eab7fa3f26b9208dff191a17ab6e6e6dac",
+        "created_at": "1773916312666"
+      }
+    ]
+  },
+  "rls": [
+    {
+      "relname": "author_profiles",
+      "relrowsecurity": true,
+      "policy_count": 0
+    },
+    {
+      "relname": "bot_settings",
+      "relrowsecurity": true,
+      "policy_count": 0
+    },
+    {
+      "relname": "community_audit",
+      "relrowsecurity": true,
+      "policy_count": 0
+    },
+    {
+      "relname": "event_categories",
+      "relrowsecurity": true,
+      "policy_count": 0
+    },
+    {
+      "relname": "event_participants",
+      "relrowsecurity": true,
+      "policy_count": 0
+    },
+    {
+      "relname": "events",
+      "relrowsecurity": true,
+      "policy_count": 0
+    },
+    {
+      "relname": "kids_applications",
+      "relrowsecurity": true,
+      "policy_count": 0
+    },
+    {
+      "relname": "news",
+      "relrowsecurity": true,
+      "policy_count": 0
+    },
+    {
+      "relname": "news_categories",
+      "relrowsecurity": true,
+      "policy_count": 0
+    },
+    {
+      "relname": "news_comments",
+      "relrowsecurity": true,
+      "policy_count": 0
+    },
+    {
+      "relname": "notifications",
+      "relrowsecurity": true,
+      "policy_count": 0
+    },
+    {
+      "relname": "service_categories",
+      "relrowsecurity": true,
+      "policy_count": 0
+    },
+    {
+      "relname": "service_participants",
+      "relrowsecurity": true,
+      "policy_count": 0
+    },
+    {
+      "relname": "services",
+      "relrowsecurity": true,
+      "policy_count": 0
+    },
+    {
+      "relname": "tasks",
+      "relrowsecurity": true,
+      "policy_count": 0
+    },
+    {
+      "relname": "users",
+      "relrowsecurity": true,
+      "policy_count": 0
+    },
+    {
+      "relname": "videos",
+      "relrowsecurity": true,
+      "policy_count": 0
+    }
+  ],
+  "projectedVideoQuerySucceeded": true,
+  "historicalMatches": [
+    {
+      "hash": "ad2a06696c21bd2be25083489ddaea6b792b85d4564ab48e03ba2fc512820ab9",
+      "file": "0000_large_magus.sql"
+    },
+    {
+      "hash": "ccdba012740edf96fb5bba5d6226f1a23c676f02930bd6053443e625c99ee14b",
+      "file": "0001_black_hydra.sql"
+    },
+    {
+      "hash": "ba9961610e05e4e213221a998aef5b850447fd2d32478666d4fe3f29f220b98b",
+      "file": "0002_mixed_wiccan.sql"
+    },
+    {
+      "hash": "86c993f478cfcf1a3a736c03aba76a4ea514892a59fe4f3cc3dd66b277af5a89",
+      "file": "0003_daffy_omega_red.sql"
+    },
+    {
+      "hash": "8feb4711809e18ba4638998ff49d72bf870c724043ab3724af37f8028611329b",
+      "file": "0004_melodic_gamora.sql"
+    },
+    {
+      "hash": "0a40870b155d6d7bf2febe0ab58ec870e899df0d60a442c9d1d47071e76003d2",
+      "file": "0005_demonic_hairball.sql"
+    },
+    {
+      "hash": "396da33d8d7b10317b872f090164476b918adfe86474d4376dcdd6630c402c9a",
+      "file": "0006_dear_madame_hydra.sql"
+    },
+    {
+      "hash": "8d942defd3e2b0f4cbfc6876597e042db408007db93531acf8dbf3c34d18259c",
+      "file": "0007_flaky_freak.sql"
+    },
+    {
+      "hash": "14965302db643c45e73a65e938256ef7e74bf33ee37bad34157263054988bcf8",
+      "file": "0008_steady_vargas.sql"
+    },
+    {
+      "hash": "cc30561bc6611ce8ab24ace46cdf11036d3005d845f7f9a7c76adc687e1c57c4",
+      "file": "0009_freezing_kabuki.sql"
+    },
+    {
+      "hash": "2a8d2ce25ceea6861cc4bbdae9301bd3e25f6e38901b567e467530553b89d756",
+      "file": "0010_fixed_morph.sql"
+    },
+    {
+      "hash": "8421e27cb69f91fcace671c11a1137ffca4630e807ea627bf3ddca21fd235a8e",
+      "file": "0011_greedy_rumiko_fujikawa.sql"
+    },
+    {
+      "hash": "813ff35a63d9aae4c68ebcee6c258e2f97663d77bb6d9b2cfbd281d070c6440f",
+      "file": "0012_worried_bedlam.sql"
+    },
+    {
+      "hash": "51bbd4183b3c8de8333f4623ebed5620f9689fec0cffc7b4d5aabb4c74f8e723",
+      "file": "0013_smiling_the_liberteens.sql"
+    },
+    {
+      "hash": "d02cb6816076ab044127ea230e839de1b69ad2f5df08870ddcdf5e981c76466a",
+      "file": "0014_real_ultron.sql"
+    },
+    {
+      "hash": "57aff6969c81e8e1b0956897ff85d9a8365bebc0e1ea8d06aa2f3180fa932e51",
+      "file": "0015_open_harry_osborn.sql"
+    },
+    {
+      "hash": "bb964e78c7212b24209139b88d9e68eab7fa3f26b9208dff191a17ab6e6e6dac",
+      "file": "0016_lean_justice.sql"
+    }
+  ]
+}

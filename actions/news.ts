@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { news, newsCategories, newsComments } from "@/lib/db/schema";
 import { desc, eq, sql, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { requireStaff } from "@/lib/community/server";
 import { createClient } from "@supabase/supabase-js";
 import { auth } from "@clerk/nextjs/server";
 
@@ -53,6 +54,7 @@ function transliterate(word: string) {
 
 // 1. Получение новостей для Админки
 export async function getAdminNews() {
+  await requireStaff();
   return await db.query.news.findMany({ orderBy: [desc(news.createdAt)] });
 }
 
@@ -247,11 +249,12 @@ export async function getNewsBySlug(slug: string) {
       where: eq(news.slug, slug),
       with: {
         comments: {
-          with: { user: true },
+          with: { user: { columns: { id: true, firstName: true, lastName: true, imageUrl: true } } },
           orderBy: [desc(newsComments.createdAt)],
         },
         // 🔥 ДОБАВЛЯЕМ ЭТУ СТРОКУ, ЧТОБЫ ПОДТЯНУТЬ АВТОРА
         author: {
+          columns: { id: true, firstName: true, lastName: true, imageUrl: true },
           with: { authorProfile: true },
         },
       },

@@ -16,7 +16,7 @@ export const metadata = {
 export default async function AuthorsDirectoryPage() {
   const authors = await db.query.authorProfiles.findMany({
     where: eq(authorProfiles.isActive, true),
-    with: { user: true },
+    with: { user: { columns: { id: true, firstName: true, lastName: true, imageUrl: true } } },
     orderBy: [desc(authorProfiles.createdAt)],
   });
 

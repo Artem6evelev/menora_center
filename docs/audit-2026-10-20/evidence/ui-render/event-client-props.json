@@ -1,0 +1,16 @@
+{
+  "eventData": {
+    "id": "audit-synthetic-event",
+    "title": "AUDIT_SYNTHETIC_EVENT_TITLE",
+    "description": "AUDIT_SYNTHETIC_PRIVATE_DESCRIPTION",
+    "imageUrl": "/audit-synthetic-event.png",
+    "date": "2026-11-01",
+    "time": "19:00",
+    "status": "planned",
+    "isFree": false,
+    "price": "100",
+    "childPrice": "40",
+    "isRegistrationClosed": false
+  },
+  "userId": null
+}

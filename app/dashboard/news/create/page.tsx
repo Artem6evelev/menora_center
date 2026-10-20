@@ -1,3 +1,4 @@
+import { requireDashboardFilter } from "@/lib/community/server";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
@@ -11,6 +12,7 @@ export default async function CreateNewsPage({
 }: {
   searchParams: Promise<{ asAuthor?: string }>;
 }) {
+  await requireDashboardFilter();
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 

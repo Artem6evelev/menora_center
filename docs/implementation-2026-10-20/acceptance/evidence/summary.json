@@ -1,0 +1,57 @@
+{
+  "codeManifestSha256": "24317fb81c171ba10681e3ac67a76c35d2756e1bfab73a5fc06a706c3368a588",
+  "branch": "main",
+  "head": "c43b0d54a84038b257aa1ef7b151942d95baa629",
+  "worktreeDirty": true,
+  "lint": {
+    "exitCode": 0,
+    "errors": 0,
+    "warnings": 30,
+    "files": 243
+  },
+  "typecheck": {
+    "exitCode": 0
+  },
+  "build": {
+    "exitCode": 0,
+    "sourceMismatches": [],
+    "actualResult": "build-followup-result.json"
+  },
+  "tests": {
+    "regression": 26,
+    "render": 12,
+    "http": 11,
+    "nativeMigrations": 8,
+    "allPassed": true
+  },
+  "desktop": {
+    "completed": 0,
+    "status": "NOT VERIFIED"
+  },
+  "mobile": {
+    "completed": 0,
+    "status": "NOT VERIFIED"
+  },
+  "realGoogleOAuth": {
+    "completed": false,
+    "status": "NOT VERIFIED"
+  },
+  "matrix": {
+    "VERIFIED": 44,
+    "PARTIAL": 18,
+    "FAIL": 0,
+    "AMBIGUOUS": 0,
+    "NOT VERIFIED": 4,
+    "N/A": 0
+  },
+  "database": {
+    "projectRef": "gwuzekpkfrkmgluzblty",
+    "designation": "unknown production/staging",
+    "accessMode": "READ ONLY",
+    "ledgerChanged": false
+  },
+  "deploymentPerformed": false,
+  "publicVersionUpdated": false,
+  "realPaymentsPerformed": false,
+  "participantNotificationsSent": false
+}

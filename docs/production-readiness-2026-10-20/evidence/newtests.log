@@ -1,0 +1,29 @@
+PASS Manual SQL before0004: complete additive effect and unchanged business history
+PASS Manual SQL has0004and0005: complete additive effect and unchanged business history
+PASS Manual SQL partialEmpty: complete additive effect and unchanged business history
+PASS Manual SQL rejects wrongType atomically instead of silently skipping
+PASS Manual SQL rejects wrongCheck atomically instead of silently skipping
+PASS Manual SQL rejects wrongDefault atomically instead of silently skipping
+PASS Manual SQL rejects wrongNamedCheck atomically instead of silently skipping
+PASS Manual SQL rejects wrongIndex atomically instead of silently skipping
+PASS Manual SQL rejects wrongFK atomically instead of silently skipping
+PASS Manual SQL rejects missingEventFK atomically instead of silently skipping
+PASS Old complete profile and active admin session both require fixed version2; direct event/admin calls deny
+PASS Full questionnaire roundtrip: every field, explicit false and preserved omitted family/source
+PASS Explicit clear/list/false persist; stale revision and service-field injection reject
+PASS Signed third branch completes filter independently of full form, preserves history and remains denied
+PASS CRM filters use three persisted categories and completion, never the historical status enum
+PASS Anonymous submitted form is in DB before OAuth, HttpOnly bound, and creates no identified profile
+PASS Verified-identity seam consumes draft atomically, keeps one Clerk-ID profile and child ownership
+PASS Failure after profile write rolls back profile, children, draft claim and completion stamp
+PASS Two pending attempts cannot overwrite a completed current profile; explicit review keeps the draft
+PASS Explicit review and third-branch save consume the original draft atomically and deny another identity
+PASS Manual SQL after actual form completion is repeatable and never resets v2 or saved fields
+PASS Clerk signed create/update/replay preserve questionnaire; deleted identity preserves history but loses access
+PASS Private people/tags/chat/notification actions deny foreign IDs, guests, forged sender and ordinary bulk
+PASS Public article/comments expose only public author fields; private task/admin getters require fresh staff
+PASS Bot settings deny ordinary/stale admin and arbitrary fields, update one known row only
+PASS Role changes require current superadmin and a known role, with no email-based elevation
+PASS Restricted payments reject paid operations, manual paid status and every webhook without changing history
+PASS Father/admin exception keeps father status and logs actor/reason; ordinary account cannot use it
+28/28 production checks passed

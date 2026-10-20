@@ -1,0 +1,27 @@
+{
+  "fixture": "http://localhost:3330",
+  "identity": "real Clerk test mode; original middleware; no mock import",
+  "database": "isolated synthetic PGlite; no hosted DB connection",
+  "externalDelivery": "disabled",
+  "oauthExecuted": false,
+  "testGoogleAccount": "not selected; owner handoff required when needed",
+  "http": [
+    {
+      "route": "/sign-in?returnTo=%2Fevents%2Ffixture-event",
+      "status": 200,
+      "hasGoogleButton": true
+    },
+    {
+      "route": "/events/fixture-event",
+      "status": 200,
+      "hasGuestGate": true
+    }
+  ],
+  "bindHost": "localhost",
+  "preparationIssue": {
+    "before": "HTTP localhost URL with server bound to 127.0.0.1 led to same-origin rewrite proxy failure ECONNRESET",
+    "fix": "Temporary fixture binds localhost, matching its localhost origin; original Clerk middleware retained",
+    "after": "Sign-in returns HTTP200 with Google button",
+    "authenticationWeakened": false
+  }
+}

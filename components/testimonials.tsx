@@ -114,7 +114,7 @@ const testimonials: Testimonial[] = [
   },
 ];
 
-function Testimonial({
+function TestimonialCard({
   name,
   quote,
   src,
@@ -190,7 +190,7 @@ function TestimonialColumn({
       {testimonials
         .concat(testimonials)
         .map((testimonial, testimonialIndex) => (
-          <Testimonial
+              <TestimonialCard
             name={testimonial.name}
             quote={testimonial.quote}
             src={testimonial.src}

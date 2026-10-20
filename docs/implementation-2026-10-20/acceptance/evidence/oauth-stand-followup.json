@@ -1,0 +1,44 @@
+{
+  "checkedAt": "2026-10-20T19:27:49.703600+00:00",
+  "url": "http://localhost:3330",
+  "sameLocalMachine": true,
+  "bind": "localhost/::1",
+  "codeManifestSha256": "24317fb81c171ba10681e3ac67a76c35d2756e1bfab73a5fc06a706c3368a588",
+  "sourceDifferencesForIsolationOnly": [
+    "actions/telegram.ts",
+    "app/layout.tsx",
+    "lib/db/index.ts",
+    "lib/community/welcome.ts"
+  ],
+  "realClerkImports": true,
+  "originalMiddleware": true,
+  "clerkMode": "TEST; launcher asserts pk_test_/sk_test_ prefixes without exposing values",
+  "identityMocked": false,
+  "database": "isolated in-memory PGlite; initialized with full native drizzle/0000…0006 chain",
+  "fixtures": "free synthetic fixture-event only; actual Clerk ID profiles not yet created",
+  "hostedMenorahDatabaseUsed": false,
+  "outboundDisabled": [
+    "Telegram (stub)",
+    "community welcome (stub)",
+    "Analytics mount removed",
+    "EMAIL_USER/PASS empty; Telegram token empty"
+  ],
+  "preparedLaunchCommand": "node /tmp/menora-acceptance-oauth-launcher.cjs",
+  "temporaryStandPath": "/tmp/menora-acceptance-oauth",
+  "httpChecks": {
+    "home": 200,
+    "sign-in with event returnTo": 200,
+    "dark logo": 200
+  },
+  "browserChecksCompleted": 0,
+  "oauthExecuted": false,
+  "googleScreenOpened": false,
+  "currentBlocker": "ScreenCaptureKit internal error -3811 after initial app selection; user cannot restart server now",
+  "providerTenantWebhookConfigurationVerified": false,
+  "standSourceSha256": {
+    "actions/telegram.ts": "49e963280958307f8b48a876ff8213ef3eeb2079fdf5adbebe04bf5fef0f174a",
+    "app/layout.tsx": "84c8ee48395615498126363a07eab6d7e8cb7486a0f7e431c75f54aae39e1866",
+    "lib/db/index.ts": "6da7dc23ef278f7c57752cbfba56c33ef175825fed7eaa5f385f3816c0fd9460",
+    "lib/community/welcome.ts": "ae47dae0770c9f548e8ea6a5ed859c757eb134bd1006ac8c912f6310e709570c"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-20",
+  "timezone": "Asia/Jerusalem",
+  "commit": "c43b0d54a84038b257aa1ef7b151942d95baa629",
+  "branch": "main",
+  "initial_worktree": "clean",
+  "remote": "https://github.com/Artem6evelev/menora_center.git",
+  "node": "22.20.0",
+  "npm": "11.6.2",
+  "lint": {
+    "command": "npm run lint",
+    "exit": 1,
+    "output": "Invalid project directory provided: <repo>/lint (next lint unsupported)"
+  },
+  "typecheck": {
+    "command": "./node_modules/.bin/tsc --noEmit --incremental false",
+    "exit": 0,
+    "output": ""
+  },
+  "test_scripts": [],
+  "tracked_env_files": [
+    ".env",
+    ".env.local"
+  ],
+  "env_values": "redacted, not copied to sandbox",
+  "build": {
+    "command": "npm run build",
+    "environment": "isolated HEAD archive, node_modules symlink, synthetic env, DATABASE_URL=127.0.0.1:9",
+    "exit": 1,
+    "compiled": true,
+    "typecheck": true,
+    "failure": "prerender /contact: PostgreSQL ECONNREFUSED; sitemap also caught DB failure",
+    "log": "build.log"
+  },
+  "npm_audit": {
+    "command": "npm audit --json --fetch-timeout=15000 --fetch-retries=0",
+    "note": "First default-timeout invocation terminated after no output; bounded retry completed",
+    "counts": {
+      "info": 0,
+      "low": 2,
+      "moderate": 16,
+      "high": 28,
+      "critical": 3,
+      "total": 49
+    }
+  },
+  "browser": {
+    "status": "NOT VERIFIED",
+    "reason": "cua createBrowserTab: iab and chrome unavailable; playwright/cypress not installed in project"
+  },
+  "dev": {
+    "command": "npm run dev -- --port 3107 --hostname 127.0.0.1",
+    "environment": "same isolated HEAD with synthetic env",
+    "started": true,
+    "http_root": "two GET attempts each timed out at 20s, no response headers",
+    "stopped": true
+  }
+}

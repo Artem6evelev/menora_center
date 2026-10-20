@@ -1,0 +1,14 @@
+{
+  "docx_sha256": "e43cd300b93f5f2a31a150e98df1376e37bae26fb7df506e0bfdf29772079d34",
+  "pdf_sha256": "b80e7d279de5df49beea062e71defffbc94d45f717c31efb1324385fa6535d5b",
+  "word_comments_part_present": true,
+  "word_media": [
+    "word/media/image2.png",
+    "word/media/image1.png"
+  ],
+  "word_revisions": {
+    "ins": 0,
+    "del": 0,
+    "commentRangeStart": 2
+  }
+}

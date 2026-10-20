@@ -61,7 +61,7 @@ export default function TeamTable({
                   <td className="px-8 py-5 flex items-center gap-4">
                     <div className="relative w-12 h-12 shrink-0">
                       <img
-                        src={user.imageUrl || "/default-avatar.png"}
+                        src={user.imageUrl || "/default-avatar.svg"}
                         alt="avatar"
                         className="w-full h-full rounded-full bg-neutral-100 dark:bg-neutral-800 object-cover border border-neutral-200 dark:border-neutral-700 shadow-sm"
                       />

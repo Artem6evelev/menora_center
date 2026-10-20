@@ -1,7 +1,8 @@
 // lib/db/schema.ts
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   pgTable,
+  check,
   text,
   timestamp,
   boolean,
@@ -40,7 +41,14 @@ export const users = pgTable(
     tags: text("tags").default("[]"),
     telegramChatId: text("telegram_chat_id"),
     username: text("username"),
-    jewishStatus: text("jewish_status"),
+    jewishStatus: text("jewish_status"), // Legacy self-report is retained, never inferred/backfilled.
+    gender: text("gender", { enum: ["male", "female"] }),
+    affiliation: text("affiliation", { enum: ["maternal", "giyur", "none"] }),
+    giyurStage: text("giyur_stage", { enum: ["advanced", "completed"] }),
+    filterVersion: integer("filter_version"),
+    filterCompletedAt: timestamp("filter_completed_at", { withTimezone: true }),
+    identityDisabledAt: timestamp("identity_disabled_at", { withTimezone: true }),
+    filterRevision: integer("filter_revision").default(0).notNull(),
     agreedToPrivacy: boolean("agreed_to_privacy").default(false),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
@@ -48,12 +56,16 @@ export const users = pgTable(
   },
   (table) => {
     return {
+      genderCheck: check("users_gender_check", sql`${table.gender} IS NULL OR ${table.gender} IN ('male', 'female')`),
+      affiliationCheck: check("users_affiliation_check", sql`${table.affiliation} IS NULL OR ${table.affiliation} IN ('maternal', 'giyur', 'none')`),
+      giyurStageCheck: check("users_giyur_stage_check", sql`${table.giyurStage} IS NULL OR ${table.giyurStage} IN ('advanced', 'completed')`),
+      filterCompletionCheck: check("users_filter_completion_check", sql`${table.filterVersion} IS DISTINCT FROM 2 OR ${table.filterCompletedAt} IS NOT NULL`),
       telegramChatIdIdx: uniqueIndex("telegram_chat_id_idx").on(
         table.telegramChatId,
       ),
     };
   },
-);
+).enableRLS();
 
 export const authorProfiles = pgTable("author_profiles", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -77,7 +89,7 @@ export const authorProfiles = pgTable("author_profiles", {
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+}).enableRLS();
 
 // ==========================================
 // 2. СОБЫТИЯ И КАТЕГОРИИ
@@ -89,7 +101,7 @@ export const eventCategories = pgTable("event_categories", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
-});
+}).enableRLS();
 
 export const events = pgTable("events", {
   id: text("id").primaryKey(),
@@ -113,7 +125,7 @@ export const events = pgTable("events", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
-});
+}).enableRLS();
 
 export const eventParticipants = pgTable("event_participants", {
   id: text("id")
@@ -135,7 +147,7 @@ export const eventParticipants = pgTable("event_participants", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
-});
+}).enableRLS();
 
 // ==========================================
 // 3. УСЛУГИ (SERVICES)
@@ -147,7 +159,7 @@ export const serviceCategories = pgTable("service_categories", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
-});
+}).enableRLS();
 
 export const services = pgTable("services", {
   id: text("id").primaryKey(),
@@ -163,7 +175,7 @@ export const services = pgTable("services", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
-});
+}).enableRLS();
 
 export const serviceParticipants = pgTable("service_participants", {
   id: text("id").primaryKey(),
@@ -178,7 +190,7 @@ export const serviceParticipants = pgTable("service_participants", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
-});
+}).enableRLS();
 
 // ==========================================
 // 4. CRM: ЗАДАЧИ И УВЕДОМЛЕНИЯ
@@ -195,7 +207,7 @@ export const tasks = pgTable("tasks", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
-});
+}).enableRLS();
 
 export const notifications = pgTable("notifications", {
   // 🔥 ИСПРАВЛЕНА ЭТА СТРОКА:
@@ -216,7 +228,7 @@ export const notifications = pgTable("notifications", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
-});
+}).enableRLS();
 
 // ==========================================
 // 5. КОНТЕНТ: НОВОСТИ / СТАТЬИ
@@ -228,7 +240,7 @@ export const newsCategories = pgTable("news_categories", {
   icon: text("icon"),
   slug: text("slug").notNull().unique(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+}).enableRLS();
 
 export const news = pgTable("news", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -255,7 +267,7 @@ export const news = pgTable("news", {
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+}).enableRLS();
 
 export const newsComments = pgTable("news_comments", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -267,7 +279,7 @@ export const newsComments = pgTable("news_comments", {
     .notNull(),
   content: text("content").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+}).enableRLS();
 
 // ==========================================
 // 6. КОНТЕНТ: ВИДЕОУРОКИ
@@ -295,7 +307,7 @@ export const videos = pgTable("videos", {
   category: varchar("category", { length: 255 }),
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+}).enableRLS();
 
 export const botSettings = pgTable("bot_settings", {
   id: text("id")
@@ -318,7 +330,7 @@ export const botSettings = pgTable("bot_settings", {
   servicesTopicId: text("services_topic_id"), // 👇 ДОБАВЛЕНО
 
   updatedAt: timestamp("updated_at").defaultNow(),
-});
+}).enableRLS();
 
 // ==========================================
 // 🔥 ОТНОШЕНИЯ (RELATIONS) ДЛЯ DRIZZLE
@@ -387,4 +399,29 @@ export const kidsApplications = pgTable("kids_applications", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
-});
+}).enableRLS();
+
+// Append-only evidence of explicitly authorized manual child registrations.
+export const communityAudit = pgTable("community_audit", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  actorId: text("actor_id").notNull(),
+  parentId: text("parent_id").notNull(),
+  action: text("action").notNull(),
+  targetId: text("target_id").notNull(),
+  reason: text("reason").notNull(),
+  details: jsonb("details").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+}).enableRLS();
+
+// Temporary submitted questionnaire, bound to an OAuth attempt by a random
+// HttpOnly cookie. No provider token or entered email is used as identity.
+export const communityRegistrationDrafts = pgTable("community_registration_drafts", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  tokenHash: text("token_hash").notNull().unique(),
+  payload: jsonb("payload").notNull(),
+  filterVersion: integer("filter_version").notNull(),
+  ownerId: text("owner_id").references(() => users.id, { onDelete: "set null" }),
+  consumedAt: timestamp("consumed_at", { withTimezone: true }),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+}).enableRLS();

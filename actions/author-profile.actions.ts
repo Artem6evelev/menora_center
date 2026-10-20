@@ -1,6 +1,7 @@
 // app/actions/author-profile.actions.ts
 "use server";
 
+import { requirePrivateScope } from "@/lib/community/server";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import { authorProfiles } from "@/lib/db/schema";
@@ -10,6 +11,7 @@ import { revalidatePath } from "next/cache";
 export async function updateAuthorProfile(data: any) {
   const { userId } = await auth();
   if (!userId) throw new Error("Не авторизован");
+  await requirePrivateScope(userId);
 
   try {
     await db

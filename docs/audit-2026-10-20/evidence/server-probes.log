@@ -1,0 +1,24 @@
+PASS SEC-01 guest role escalation reaches DB write
+PASS SEC-02 guest reads sensitive synthetic profile fields
+PASS SEC-03 guest overwrites another family
+PASS SEC-03 guest completes victim profile without required status
+PASS SEC-04 guest updates event and payment URL
+PASS SEC-05 omitted amount marks priced closed event as paid
+PASS SEC-06 child selection and creation accepted without eligibility or ownership
+PASS SEC-06 both authenticated child update variants ignore parental eligibility
+PASS SEC-06 guest creates Kids application
+PASS SEC-07 guest registers victim for service
+PASS SEC-08 two concurrent event requests create duplicates
+PASS SEC-08 two concurrent service requests create duplicates
+PASS SEC-09 profile commits before missing event validation
+PASS SEC-09 profile remains changed when participant DB write fails
+PASS SEC-10 guest can delete video and task
+PASS SEC-11 ordinary client publishes attributed raw HTML
+PASS SEC-12 guest reads unpublished article with complete commenter record
+PASS SEC-13 authenticated client unpublishes someone else via review
+PASS SEC-14 guest upload handler accepts HTML without auth
+PASS SEC-15 retry of pending zero-amount registration reports success but remains pending
+PASS CONTROL secure role action rejects guest and client
+PASS CONTROL secure participant and Kids admin actions reject client
+PASS CONTROL own-children update constrains userId to session
+23/23 audit probes passed; PASS confirms the named current behavior, not security readiness.

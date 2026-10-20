@@ -66,11 +66,12 @@ export default function TelegramClient({
   const handleSaveSettings = async () => {
     setIsSavingSettings(true);
     try {
-      await updateBotSettings({
+      const result = await updateBotSettings({
         notificationGroupId: groupId,
         eventsTopicId: eventsTopicId,
         servicesTopicId: servicesTopicId,
       });
+      if (!result.success) throw new Error(result.error);
       alert("Настройки успешно сохранены!");
     } catch (error) {
       alert("Ошибка при сохранении.");
@@ -88,11 +89,12 @@ export default function TelegramClient({
       setGroupId("");
       setEventsTopicId("");
       setServicesTopicId("");
-      await updateBotSettings({
+      const result = await updateBotSettings({
         notificationGroupId: "",
         eventsTopicId: "",
         servicesTopicId: "",
       });
+      if (!result.success) throw new Error(result.error);
       alert("Уведомления отключены!");
     } catch (error) {
       alert("Ошибка при отключении.");

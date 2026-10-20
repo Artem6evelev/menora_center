@@ -1,3 +1,4 @@
+import { requireDashboardFilter } from "@/lib/community/server";
 import { getServices } from "@/actions/service";
 import ServiceApplicationsClient from "@/components/dashboard/service/service-applications-client";
 import { auth } from "@clerk/nextjs/server";
@@ -7,6 +8,7 @@ import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
 export default async function ServiceApplicationsPage() {
+  await requireDashboardFilter();
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 

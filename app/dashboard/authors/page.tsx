@@ -1,3 +1,4 @@
+import { requireDashboardFilter } from "@/lib/community/server";
 // app/dashboard/authors/page.tsx
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
@@ -8,6 +9,7 @@ import { getAdminAuthorsList } from "@/actions/authors.actions";
 import AdminAuthorsClient from "@/components/dashboard/authors/admin-authors-client";
 
 export default async function AdminAuthorsPage() {
+  await requireDashboardFilter();
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 

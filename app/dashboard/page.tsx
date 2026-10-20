@@ -1,3 +1,5 @@
+import { requireDashboardFilter } from "@/lib/community/server";
+import { profileChildren } from "@/lib/community/children";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
@@ -28,15 +30,13 @@ import ProfileManager from "@/components/dashboard/profile-manager";
 export const revalidate = 0;
 
 export default async function DashboardPage() {
+  await requireDashboardFilter();
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 
   const [dbUser] = await db.select().from(users).where(eq(users.id, userId));
 
-  const role =
-    dbUser?.email === "artemdev.isr@gmail.com"
-      ? "superadmin"
-      : dbUser?.role || "client";
+  const role = dbUser?.role || "client";
   const isAdmin = role === "superadmin" || role === "admin";
 
   let stats = null;
@@ -207,7 +207,7 @@ export default async function DashboardPage() {
 
       {/* 🔥 НОВЫЙ БЛОК: УПРАВЛЕНИЕ ПРОФИЛЕМ ПОЛЬЗОВАТЕЛЯ */}
       <div className="mb-12">
-        <ProfileManager user={dbUser} />
+        <ProfileManager user={{ ...dbUser, childrenData: profileChildren(userId, dbUser?.childrenData) }} />
       </div>
 
       {/* {isAdmin && stats && (

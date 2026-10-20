@@ -22,6 +22,7 @@ import BulkMessageModal from "./bulk-message-modal";
 import { motion, AnimatePresence, easeInOut } from "framer-motion";
 import { cn } from "@/lib/utils";
 import dayjs from "dayjs";
+import { AFFILIATIONS, AFFILIATION_LABELS, hasFilterProfile } from "@/lib/community/policy";
 
 export default function CrmTableClient({
   initialData,
@@ -92,16 +93,18 @@ export default function CrmTableClient({
   };
 
   useEffect(() => {
+    let active = true;
     const timer = setTimeout(async () => {
       setIsLoading(true);
       const res = await getUsersPaginated(page, 20, search, activeFilters);
+      if (!active) return;
       setData(res.users);
       setTotalPages(res.totalPages);
       setTotalUsers(res.totalUsers);
       setIsLoading(false);
     }, 400);
-    return () => clearTimeout(timer);
-  }, [search, page, activeFilters]);
+    return () => { active = false; clearTimeout(timer); };
+  }, [search, page, activeFilters, initialData]);
 
   return (
     <div className="max-w-[1400px] mx-auto w-full pb-32 relative min-h-[80vh]">
@@ -158,6 +161,7 @@ export default function CrmTableClient({
 
           <button
             onClick={toggleFilters}
+            aria-label="Фильтры базы людей"
             className={cn(
               "p-3.5 rounded-2xl border transition-all active:scale-95 flex items-center gap-2 font-bold text-sm",
               isFiltersOpen ||
@@ -183,31 +187,29 @@ export default function CrmTableClient({
           >
             <div className="bg-white/80 dark:bg-neutral-900/80 backdrop-blur-2xl p-6 rounded-3xl border border-neutral-200/50 dark:border-neutral-800/50 shadow-sm flex flex-wrap gap-4 items-end">
               <div className="flex flex-col gap-1.5 min-w-[200px] flex-1">
-                <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">
-                  Еврейский статус
+                <label htmlFor="crm-filter-affiliation" className="text-[10px] font-black uppercase tracking-widest text-neutral-400">
+                  Связь с еврейством
                 </label>
                 <select
-                  value={activeFilters.jewishStatus}
+                  id="crm-filter-affiliation"
+                  value={activeFilters.affiliation}
                   onChange={(e) => {
-                    setFilter("jewishStatus", e.target.value);
+                    setFilter("affiliation", e.target.value);
                     setPage(1);
                   }}
                   className="w-full p-3 bg-neutral-100/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 rounded-xl outline-none font-medium text-sm"
                 >
-                  <option value="">Все статусы</option>
-                  <option value="Соблюдающий еврей">Соблюдающий еврей</option>
-                  <option value="Светский еврей">Светский еврей</option>
-                  <option value="Еврей по отцовской линии">
-                    Еврей по отцовской линии
-                  </option>
-                  <option value="Готовлюсь к Гиюру">Готовлюсь к Гиюру</option>
-                  <option value="Прошел гиюр">Прошел гиюр</option>
-                  <option value="Интересуюсь иудаизмом">
-                    Интересуюсь иудаизмом
-                  </option>
+                  <option value="">Все категории</option>
+                  {AFFILIATIONS.map(value => <option key={value} value={value}>{AFFILIATION_LABELS[value]}</option>)}
                 </select>
               </div>
 
+              <div className="flex flex-col gap-1.5 min-w-[180px] flex-1">
+                <label htmlFor="crm-filter-completion" className="text-xs font-bold">Актуальный фильтр</label>
+                <select id="crm-filter-completion" value={activeFilters.filterCompletion} onChange={e => { setFilter("filterCompletion", e.target.value); setPage(1); }} className="w-full p-3 bg-neutral-100 dark:bg-neutral-950 border rounded-xl">
+                  <option value="">Все</option><option value="passed">Пройден</option><option value="required">Новый фильтр не пройден</option>
+                </select>
+              </div>
               <div className="flex flex-col gap-1.5 min-w-[150px] flex-1">
                 <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">
                   Семья
@@ -295,7 +297,7 @@ export default function CrmTableClient({
                 const isSelected = selectedUserIds.includes(user.id);
                 const role = user.role || "client";
 
-                const isProtectedUser = user.email === "artemdev.isr@gmail.com";
+                const isProtectedUser = user.role === "superadmin" && currentUserRole !== "superadmin";
                 const canEditRole =
                   currentUserRole === "superadmin" && !isProtectedUser;
 
@@ -324,7 +326,8 @@ export default function CrmTableClient({
                         onClick={() => openSlider(user.id)}
                       >
                         <img
-                          src={user.imageUrl || "/default-avatar.png"}
+                          src={user.imageUrl || "/default-avatar.svg"}
+                          alt=""
                           className="w-12 h-12 rounded-full object-cover bg-neutral-100 dark:border-neutral-700"
                         />
                         <div>
@@ -373,13 +376,15 @@ export default function CrmTableClient({
                       <span
                         className={cn(
                           "text-[10px] px-3 py-1.5 rounded-lg font-black uppercase tracking-widest",
-                          user.jewishStatus
+                          user.affiliation
                             ? "bg-blue-500/10 text-blue-600 dark:text-blue-400"
                             : "bg-neutral-100 text-neutral-400",
                         )}
                       >
-                        {user.jewishStatus || "Не указан"}
+                        {AFFILIATION_LABELS[user.affiliation as keyof typeof AFFILIATION_LABELS] || "Не указан"}
                       </span>
+                      <p className="text-xs mt-2">{hasFilterProfile(user) ? "Актуальный фильтр пройден" : "Новый фильтр не пройден"}</p>
+                      {user.affiliation === "giyur" && <p className="text-xs mt-1">{user.giyurStage === "completed" ? "Гиюр завершён" : user.giyurStage === "advanced" ? "Продвинутый этап" : "Этап не уточнён"}</p>}
                     </td>
 
                     {/* 🔥 ИНТЕРФЕЙС РОЛЕЙ (ТЕПЕРЬ БЕЗ ДУБЛИРУЮЩЕЙ КНОПКИ) 🔥 */}
@@ -438,6 +443,7 @@ export default function CrmTableClient({
                     <td className="py-4 px-8 text-right">
                       <button
                         onClick={() => openSlider(user.id)}
+                        aria-label={`Открыть карточку ${user.firstName || ""} ${user.lastName || ""}`}
                         className="p-3 bg-neutral-100 dark:bg-neutral-800 text-neutral-500 hover:text-[#FFB800] rounded-xl transition-all shadow-sm active:scale-95"
                       >
                         <MessageCircle size={18} strokeWidth={2.5} />

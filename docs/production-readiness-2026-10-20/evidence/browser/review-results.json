@@ -1,0 +1,15 @@
+{
+  "method": "Targeted local browser review regression; injected identity, no Google OAuth",
+  "checks": [
+    {
+      "name": "Explicit full review consumes restored draft and lands on events",
+      "status": "PASS",
+      "environment": "Actual Chromium1440; mock Clerk identity3327; real actions/isolated PostgreSQL; not genuine OAuth"
+    },
+    {
+      "name": "Explicit none save consumes restored draft and keeps completion without admission",
+      "status": "PASS",
+      "environment": "Actual Chromium1440; mock Clerk identity3327; real actions/isolated PostgreSQL; not genuine OAuth"
+    }
+  ]
+}

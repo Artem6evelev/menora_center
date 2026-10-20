@@ -1,0 +1,11 @@
+{
+  "scope": "isolated synthetic component render",
+  "assertions": 14,
+  "passed": 14,
+  "output": "docs/audit-2026-10-20/evidence/ui-render",
+  "limitations": [
+    "Component render with injected synthetic data. This is not Next SSR, hydration, RSC, OAuth or an E2E test.",
+    "Animation, navigation, Clerk SDK widgets and unrelated homepage sections are mocked.",
+    "Mobile drawer-open render forces initial useState; no click or browser viewport was exercised."
+  ]
+}

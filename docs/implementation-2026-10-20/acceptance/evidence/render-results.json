@@ -1,0 +1,53 @@
+{
+  "method": "React component SSR with injected auth/navigation, not browser E2E",
+  "checks": [
+    {
+      "name": "initial questionnaire contains complete welcome and exactly three affiliation answers",
+      "status": "PASS"
+    },
+    {
+      "name": "initial questionnaire hides full fields and does not turn gender into affiliation",
+      "status": "PASS"
+    },
+    {
+      "name": "maternal expands existing fields, explanation and separate gender without duplicate status",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur expands existing fields, explanation and separate gender without duplicate status",
+      "status": "PASS"
+    },
+    {
+      "name": "third branch contains all gratitude text/resources and no full-profile submit fields",
+      "status": "PASS"
+    },
+    {
+      "name": "father questionnaire offers no child creation control",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur advanced child UI matches explicit stage rights and keeps three main answers",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur completed child UI matches explicit stage rights and keeps three main answers",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur null child UI matches explicit stage rights and keeps three main answers",
+      "status": "PASS"
+    },
+    {
+      "name": "guest event has exact two branches and safe return context without event title/image",
+      "status": "PASS"
+    },
+    {
+      "name": "guest event header contains no menu, generic registration or extra sign-in branch",
+      "status": "PASS"
+    },
+    {
+      "name": "guest home header retains Google login and questionnaire link without menu",
+      "status": "PASS"
+    }
+  ]
+}

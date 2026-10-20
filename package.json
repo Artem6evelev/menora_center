@@ -6,7 +6,11 @@
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.mjs,.cjs",
+    "typecheck": "tsc --noEmit --incremental false",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "node scripts/migrate.cjs",
+    "db:test": "node tests/community/migrations.cjs"
   },
   "dependencies": {
     "@clerk/localizations": "^4.2.1",

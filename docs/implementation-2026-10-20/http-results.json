@@ -1,0 +1,49 @@
+{
+  "method": "Next.js development HTTP SSR/RSC with mocked Clerk identity and synthetic PostgreSQL/WASM; no browser or OAuth",
+  "checks": [
+    {
+      "name": "guest direct event SSR has exact gate and no event data or generic registration",
+      "status": "PASS"
+    },
+    {
+      "name": "guest homepage SSR omits event cards, posters and upcoming block",
+      "status": "PASS"
+    },
+    {
+      "name": "registration route initially hides full fields and contains three required main answers",
+      "status": "PASS"
+    },
+    {
+      "name": "known mother receives event; following guest and RSC requests receive no cached event data",
+      "status": "PASS"
+    },
+    {
+      "name": "new Google identity login branch and legacy identity return to questionnaire with event context",
+      "status": "PASS"
+    },
+    {
+      "name": "existing complete login returns to event; registration draft callback resumes only questionnaire",
+      "status": "PASS"
+    },
+    {
+      "name": "combined giyur woman can view event; children screen asks only completion clarification",
+      "status": "PASS"
+    },
+    {
+      "name": "father children screen retains old child and removes self-service; mother has own child controls",
+      "status": "PASS"
+    },
+    {
+      "name": "ordinary user cannot open manual exception; administrator can",
+      "status": "PASS"
+    },
+    {
+      "name": "third branch signed profile SSR contains resources and no full form",
+      "status": "PASS"
+    },
+    {
+      "name": "unsafe return target cannot escape application; dark logo resolves",
+      "status": "PASS"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-20",
+  "regression": {
+    "passed": 26,
+    "failed": 0
+  },
+  "render": {
+    "passed": 12,
+    "failed": 0
+  },
+  "next_http": {
+    "passed": 11,
+    "failed": 0
+  },
+  "typecheck_exit": 0,
+  "targeted_lint_exit": 0,
+  "production_build_exit": 0,
+  "native_lint_exit": 1,
+  "native_lint_reason": "Existing next lint command unsupported by Next16",
+  "diff_check_exit": 0,
+  "browser_status": "NOT RUN: Computer Use permissions are not granted",
+  "oauth_payment_status": "NOT RUN with real providers",
+  "current_environment_schema_repair": "0004+0005 applied transactionally; business row fingerprints unchanged",
+  "hosting_release": "NOT PERFORMED",
+  "fixture_server": "stopped; original localhost:3000 server preserved"
+}

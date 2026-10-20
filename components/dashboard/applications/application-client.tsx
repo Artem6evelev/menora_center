@@ -190,8 +190,8 @@ const StatusSelect = ({ currentStatus, onChange }: any) => {
       dot: "bg-amber-500",
     },
     {
-      value: "contacted",
-      label: "Связались",
+      value: "abandoned",
+      label: "Не завершено",
       color: "text-blue-600",
       bg: "bg-blue-50 dark:bg-blue-500/10",
       border: "border-blue-100 dark:border-blue-500/20",
@@ -206,8 +206,8 @@ const StatusSelect = ({ currentStatus, onChange }: any) => {
       dot: "bg-purple-500",
     },
     {
-      value: "approved",
-      label: "Одобрено",
+      value: "confirmed",
+      label: "Подтверждено",
       color: "text-green-600",
       bg: "bg-green-50 dark:bg-green-500/10",
       border: "border-green-100 dark:border-green-500/20",
@@ -229,6 +229,8 @@ const StatusSelect = ({ currentStatus, onChange }: any) => {
   return (
     <div className="relative" ref={ref}>
       <button
+        disabled={currentStatus === "paid"}
+        title={currentStatus === "paid" ? "Историческая оплата доступна только для чтения" : undefined}
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "flex items-center justify-between w-[130px] px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border",
@@ -256,6 +258,8 @@ const StatusSelect = ({ currentStatus, onChange }: any) => {
             {statuses.map((s) => (
               <button
                 key={s.value}
+                disabled={s.value === "paid"}
+                title={s.value === "paid" ? "Подтверждение оплаты временно недоступно" : undefined}
                 onClick={() => {
                   onChange(s.value);
                   setIsOpen(false);
@@ -534,10 +538,10 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
                             : [];
                       } catch (e) {}
 
-                      const selectedChildren: any[] = [];
-                      if (extra?.family) {
+                      const selectedChildren: any[] = Array.isArray(extra?.childrenSnapshot) ? [...extra.childrenSnapshot] : [];
+                      if (!Array.isArray(extra?.childrenSnapshot) && extra?.family) {
                         userChildren.forEach((child: any, idx: number) => {
-                          if (extra.family[`child_${idx}`])
+                          if (extra.family[`child_${idx}`] || extra.family[`child_${child.id}`])
                             selectedChildren.push(child);
                         });
                       }
@@ -565,6 +569,7 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
                                 {row.user?.imageUrl ? (
                                   <img
                                     src={row.user.imageUrl}
+                                    alt=""
                                     className="w-full h-full object-cover"
                                   />
                                 ) : (
@@ -682,6 +687,8 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
                                 }
                               />
                               <button
+                                disabled={row.participant.status === "paid"}
+                                title={row.participant.status === "paid" ? "Историческая оплата доступна только для чтения" : "Удалить запись"}
                                 onClick={() =>
                                   handleDeleteParticipant(row.participant.id)
                                 }

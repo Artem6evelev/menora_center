@@ -17,7 +17,7 @@ export default async function AuthorPage({
 
   const authorProfile = await db.query.authorProfiles.findFirst({
     where: eq(authorProfiles.slug, decodedSlug),
-    with: { user: true },
+    with: { user: { columns: { id: true, firstName: true, lastName: true, imageUrl: true } } },
   });
 
   // Если профиля нет или он отключен - показываем 404

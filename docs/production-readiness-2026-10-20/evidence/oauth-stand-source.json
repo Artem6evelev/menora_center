@@ -1,0 +1,34 @@
+{
+  "checkedAt": "2026-10-20T21:15:15.454607+00:00",
+  "stand": "localhost:3330",
+  "identity": "actual Clerk TEST imports/middleware; no injected session; owner skipped sign-in",
+  "database": "native Drizzle0000–0007 isolated PGlite",
+  "filesCompared": 278,
+  "differences": [
+    {
+      "file": "app/layout.tsx",
+      "reason": "analytics mount removed"
+    },
+    {
+      "file": "actions/telegram.ts",
+      "reason": "delivery disabled"
+    },
+    {
+      "file": "lib/db/index.ts",
+      "reason": "isolated native PGlite adapter"
+    },
+    {
+      "file": "lib/community/welcome.ts",
+      "reason": "email disabled"
+    },
+    {
+      "file": "next.config.mjs",
+      "reason": "PGlite external bundling only"
+    }
+  ],
+  "missing": [],
+  "unexpectedDifferences": 0,
+  "testFixtureImportsInRuntime": false,
+  "publicDeploymentChanged": false,
+  "codeManifestSha256": "b1e64dc975bf39ae8f6ad76f2bde8f162a4955aae6b98af7d21c39792c933a06"
+}

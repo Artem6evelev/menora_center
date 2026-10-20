@@ -1,0 +1,162 @@
+{
+  "browser": "156.0.8078.4",
+  "method": "Actual local Playwright Chromium; viewport emulation, not physical phones; identity boundary specified for each check; no real OAuth completed",
+  "checks": [
+    {
+      "name": "desktop guest homepage, buttons, dark logo and no overflow",
+      "environment": "REAL browser / localhost:3330 / real Clerk TEST / synthetic DB",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop direct event new-user branch preserves event context",
+      "environment": "REAL browser / localhost:3330 / real Clerk TEST / synthetic DB",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop questionnaire branch changes, separate gender, children and resources",
+      "environment": "REAL browser / localhost:3330 / real Clerk TEST / synthetic DB",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile guest homepage, buttons, dark logo and no overflow",
+      "environment": "REAL browser / localhost:3330 / real Clerk TEST / synthetic DB",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile direct event new-user branch preserves event context",
+      "environment": "REAL browser / localhost:3330 / real Clerk TEST / synthetic DB",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile questionnaire branch changes, separate gender, children and resources",
+      "environment": "REAL browser / localhost:3330 / real Clerk TEST / synthetic DB",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile320 guest homepage, buttons, dark logo and no overflow",
+      "environment": "REAL browser / localhost:3330 / real Clerk TEST / synthetic DB",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile320 direct event new-user branch preserves event context",
+      "environment": "REAL browser / localhost:3330 / real Clerk TEST / synthetic DB",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile320 questionnaire branch changes, separate gender, children and resources",
+      "environment": "REAL browser / localhost:3330 / real Clerk TEST / synthetic DB",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop old session cannot enter closed events or bypass fresh answers",
+      "environment": "REAL browser / 127.0.0.1:3327 / mock identity / real actions / synthetic PostgreSQL",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop authenticated full form persists fields/child and lands exactly on events",
+      "environment": "REAL browser / 127.0.0.1:3327 / mock identity / real actions / synthetic PostgreSQL",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop mother registers her child for free event and state survives refresh",
+      "environment": "REAL browser / 127.0.0.1:3327 / mock identity / real actions / synthetic PostgreSQL",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop father keeps old child but has no child creation/registration controls",
+      "environment": "REAL browser / 127.0.0.1:3327 / mock identity / real actions / synthetic PostgreSQL",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop advanced giyur woman registers herself and cannot select existing child",
+      "environment": "REAL browser / 127.0.0.1:3327 / mock identity / real actions / synthetic PostgreSQL",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop administrator manual child registration preserves father and audits reason/actor",
+      "environment": "REAL browser / 127.0.0.1:3327 / mock identity / real actions / synthetic PostgreSQL",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop authorized second session reads persisted questionnaire in CRM card",
+      "environment": "REAL browser / 127.0.0.1:3327 / mock identity / real actions / synthetic PostgreSQL",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop form error retains entered values and third choice saves without events",
+      "environment": "REAL browser / 127.0.0.1:3327 / mock identity / real actions / synthetic PostgreSQL",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop logout, back, account switch and reload do not show previous private state (mock session boundary)",
+      "environment": "REAL browser / 127.0.0.1:3327 / mock identity / real actions / synthetic PostgreSQL",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop network failure does not complete form and retry saves same entered values",
+      "environment": "REAL browser / 127.0.0.1:3327 / mock identity / real actions / synthetic PostgreSQL",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop another tab revokes event rights and old open screen cannot register",
+      "environment": "REAL browser / 127.0.0.1:3327 / mock identity / real actions / synthetic PostgreSQL",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile old session cannot enter closed events or bypass fresh answers",
+      "environment": "REAL browser / 127.0.0.1:3327 / mock identity / real actions / synthetic PostgreSQL",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile authenticated full form persists fields/child and lands exactly on events",
+      "environment": "REAL browser / 127.0.0.1:3327 / mock identity / real actions / synthetic PostgreSQL",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile mother registers her child for free event and state survives refresh",
+      "environment": "REAL browser / 127.0.0.1:3327 / mock identity / real actions / synthetic PostgreSQL",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile father keeps old child but has no child creation/registration controls",
+      "environment": "REAL browser / 127.0.0.1:3327 / mock identity / real actions / synthetic PostgreSQL",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile advanced giyur woman registers herself and cannot select existing child",
+      "environment": "REAL browser / 127.0.0.1:3327 / mock identity / real actions / synthetic PostgreSQL",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile administrator manual child registration preserves father and audits reason/actor",
+      "environment": "REAL browser / 127.0.0.1:3327 / mock identity / real actions / synthetic PostgreSQL",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile authorized second session reads persisted questionnaire in CRM card",
+      "environment": "REAL browser / 127.0.0.1:3327 / mock identity / real actions / synthetic PostgreSQL",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile form error retains entered values and third choice saves without events",
+      "environment": "REAL browser / 127.0.0.1:3327 / mock identity / real actions / synthetic PostgreSQL",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile logout, back, account switch and reload do not show previous private state (mock session boundary)",
+      "environment": "REAL browser / 127.0.0.1:3327 / mock identity / real actions / synthetic PostgreSQL",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile network failure does not complete form and retry saves same entered values",
+      "environment": "REAL browser / 127.0.0.1:3327 / mock identity / real actions / synthetic PostgreSQL",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile another tab revokes event rights and old open screen cannot register",
+      "environment": "REAL browser / 127.0.0.1:3327 / mock identity / real actions / synthetic PostgreSQL",
+      "status": "PASS"
+    }
+  ],
+  "pageErrors": []
+}

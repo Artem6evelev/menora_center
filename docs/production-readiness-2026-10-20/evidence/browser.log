@@ -1,0 +1,32 @@
+PASS desktop guest homepage, buttons, dark logo and no overflow
+PASS desktop direct event new-user branch preserves event context
+PASS desktop questionnaire branch changes, separate gender, children and resources
+PASS mobile guest homepage, buttons, dark logo and no overflow
+PASS mobile direct event new-user branch preserves event context
+PASS mobile questionnaire branch changes, separate gender, children and resources
+PASS mobile320 guest homepage, buttons, dark logo and no overflow
+PASS mobile320 direct event new-user branch preserves event context
+PASS mobile320 questionnaire branch changes, separate gender, children and resources
+PASS desktop old session cannot enter closed events or bypass fresh answers
+PASS desktop authenticated full form persists fields/child and lands exactly on events
+PASS desktop mother registers her child for free event and state survives refresh
+PASS desktop father keeps old child but has no child creation/registration controls
+PASS desktop advanced giyur woman registers herself and cannot select existing child
+PASS desktop administrator manual child registration preserves father and audits reason/actor
+PASS desktop authorized second session reads persisted questionnaire in CRM card
+PASS desktop form error retains entered values and third choice saves without events
+PASS desktop logout, back, account switch and reload do not show previous private state (mock session boundary)
+PASS desktop network failure does not complete form and retry saves same entered values
+PASS desktop another tab revokes event rights and old open screen cannot register
+PASS mobile old session cannot enter closed events or bypass fresh answers
+PASS mobile authenticated full form persists fields/child and lands exactly on events
+PASS mobile mother registers her child for free event and state survives refresh
+PASS mobile father keeps old child but has no child creation/registration controls
+PASS mobile advanced giyur woman registers herself and cannot select existing child
+PASS mobile administrator manual child registration preserves father and audits reason/actor
+PASS mobile authorized second session reads persisted questionnaire in CRM card
+PASS mobile form error retains entered values and third choice saves without events
+PASS mobile logout, back, account switch and reload do not show previous private state (mock session boundary)
+PASS mobile network failure does not complete form and retry saves same entered values
+PASS mobile another tab revokes event rights and old open screen cannot register
+31/31 browser checks passed

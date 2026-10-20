@@ -1,0 +1,42 @@
+{
+  "checkedAt": "2026-10-20T19:12:20.285Z",
+  "environment": "DATABASE_URL from local env files; production deployment identity unverified",
+  "mode": "READ ONLY",
+  "authorAlias": "videos_author is public.users joined by videos.author_id = users.id",
+  "videoAuthorProjection": [
+    "first_name",
+    "last_name",
+    "author_profiles.slug"
+  ],
+  "before": {
+    "filterColumns": [
+      {
+        "column_name": "affiliation",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "column_name": "filter_revision",
+        "data_type": "integer",
+        "is_nullable": "NO"
+      },
+      {
+        "column_name": "filter_version",
+        "data_type": "integer",
+        "is_nullable": "YES"
+      },
+      {
+        "column_name": "gender",
+        "data_type": "text",
+        "is_nullable": "YES"
+      },
+      {
+        "column_name": "giyur_stage",
+        "data_type": "text",
+        "is_nullable": "YES"
+      }
+    ],
+    "projectedVideoQuerySucceeded": true,
+    "videoCount": 8
+  }
+}

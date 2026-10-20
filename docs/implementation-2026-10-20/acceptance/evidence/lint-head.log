@@ -1,0 +1,4 @@
+
+> nextjs@0.1.0 lint
+> eslint . --ext .js,.jsx,.ts,.tsx,.mjs,.cjs --format json --output-file /Users/aaronshalev/Desktop/Artcodesh WebStudio/Menorah Center - Rishon Lezion/menora/docs/implementation-2026-10-20/acceptance/evidence/lint-head.json
+

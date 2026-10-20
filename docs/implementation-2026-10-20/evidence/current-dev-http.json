@@ -1,0 +1,23 @@
+[
+  {
+    "path": "/events/fixture-public-check",
+    "status": 200,
+    "guestGate": true,
+    "hasQuestion": false,
+    "isSvg": false
+  },
+  {
+    "path": "/register",
+    "status": 200,
+    "guestGate": false,
+    "hasQuestion": true,
+    "isSvg": false
+  },
+  {
+    "path": "/logos/menora-logo-dark.svg",
+    "status": 200,
+    "guestGate": false,
+    "hasQuestion": false,
+    "isSvg": true
+  }
+]

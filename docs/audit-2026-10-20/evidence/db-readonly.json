@@ -1,0 +1,1754 @@
+{
+  "checked_at": "2026-10-20T17:26:12.246Z",
+  "environment": "DATABASE_URL resolved from local .env.local; deployment identity not established",
+  "mode": "BEGIN READ ONLY; metadata + aggregates only",
+  "status": "read succeeded",
+  "event_triggers": [
+    {
+      "name": "ensure_rls",
+      "event": "ddl_command_end",
+      "enabled": "O",
+      "function_name": "rls_auto_enable"
+    },
+    {
+      "name": "issue_graphql_placeholder",
+      "event": "sql_drop",
+      "enabled": "O",
+      "function_name": "set_graphql_placeholder"
+    },
+    {
+      "name": "issue_pg_cron_access",
+      "event": "ddl_command_end",
+      "enabled": "O",
+      "function_name": "grant_pg_cron_access"
+    },
+    {
+      "name": "issue_pg_graphql_access",
+      "event": "ddl_command_end",
+      "enabled": "O",
+      "function_name": "grant_pg_graphql_access"
+    },
+    {
+      "name": "issue_pg_net_access",
+      "event": "ddl_command_end",
+      "enabled": "O",
+      "function_name": "grant_pg_net_access"
+    },
+    {
+      "name": "pgrst_ddl_watch",
+      "event": "ddl_command_end",
+      "enabled": "O",
+      "function_name": "pgrst_ddl_watch"
+    },
+    {
+      "name": "pgrst_drop_watch",
+      "event": "sql_drop",
+      "enabled": "O",
+      "function_name": "pgrst_drop_watch"
+    }
+  ],
+  "migration_counts": [
+    {
+      "table_schema": "drizzle",
+      "table_name": "__drizzle_migrations",
+      "count": 17
+    },
+    {
+      "table_schema": "supabase_migrations",
+      "table_name": "schema_migrations",
+      "count": 0
+    }
+  ],
+  "transaction_mode": [
+    {
+      "transaction_read_only": "on"
+    }
+  ],
+  "tables": [
+    {
+      "name": "author_profiles",
+      "rls": true,
+      "force_rls": false,
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "name": "bot_settings",
+      "rls": true,
+      "force_rls": false,
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "name": "event_categories",
+      "rls": true,
+      "force_rls": false,
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "name": "event_participants",
+      "rls": true,
+      "force_rls": false,
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "name": "events",
+      "rls": true,
+      "force_rls": false,
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "name": "kids_applications",
+      "rls": true,
+      "force_rls": false,
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "name": "news",
+      "rls": true,
+      "force_rls": false,
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "name": "news_categories",
+      "rls": true,
+      "force_rls": false,
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "name": "news_comments",
+      "rls": true,
+      "force_rls": false,
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "name": "notifications",
+      "rls": true,
+      "force_rls": false,
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "name": "service_categories",
+      "rls": true,
+      "force_rls": false,
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "name": "service_participants",
+      "rls": true,
+      "force_rls": false,
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "name": "services",
+      "rls": true,
+      "force_rls": false,
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "name": "tasks",
+      "rls": true,
+      "force_rls": false,
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "name": "users",
+      "rls": true,
+      "force_rls": false,
+      "anon_select": true,
+      "authenticated_select": true
+    },
+    {
+      "name": "videos",
+      "rls": true,
+      "force_rls": false,
+      "anon_select": true,
+      "authenticated_select": true
+    }
+  ],
+  "columns": [
+    {
+      "table_name": "author_profiles",
+      "column_name": "id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "column_default": "gen_random_uuid()"
+    },
+    {
+      "table_name": "author_profiles",
+      "column_name": "user_id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "author_profiles",
+      "column_name": "slug",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "author_profiles",
+      "column_name": "short_bio",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "author_profiles",
+      "column_name": "donation_link",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "author_profiles",
+      "column_name": "website_url",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "author_profiles",
+      "column_name": "facebook_url",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "author_profiles",
+      "column_name": "instagram_url",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "author_profiles",
+      "column_name": "youtube_url",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "author_profiles",
+      "column_name": "telegram_url",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "author_profiles",
+      "column_name": "is_active",
+      "data_type": "boolean",
+      "is_nullable": "NO",
+      "column_default": "true"
+    },
+    {
+      "table_name": "author_profiles",
+      "column_name": "created_at",
+      "data_type": "timestamp without time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "author_profiles",
+      "column_name": "updated_at",
+      "data_type": "timestamp without time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "bot_settings",
+      "column_name": "id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "bot_settings",
+      "column_name": "is_active",
+      "data_type": "boolean",
+      "is_nullable": "NO",
+      "column_default": "true"
+    },
+    {
+      "table_name": "bot_settings",
+      "column_name": "channel_link",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "bot_settings",
+      "column_name": "tzedakah_link",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "bot_settings",
+      "column_name": "reminder_message",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": "'Доброе утро! ☕️ Утренний Хасидут начнется через 10 минут. Ждем вас!'::text"
+    },
+    {
+      "table_name": "bot_settings",
+      "column_name": "tzedakah_message",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": "'Спасибо, что были с нами на эфире! Поддержать общину можно по ссылке ниже:'::text"
+    },
+    {
+      "table_name": "bot_settings",
+      "column_name": "superadmin_telegram_id",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "bot_settings",
+      "column_name": "updated_at",
+      "data_type": "timestamp without time zone",
+      "is_nullable": "YES",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "bot_settings",
+      "column_name": "admin_notification_chat_id",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "bot_settings",
+      "column_name": "notification_group_id",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "bot_settings",
+      "column_name": "events_topic_id",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "bot_settings",
+      "column_name": "services_topic_id",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "event_categories",
+      "column_name": "id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "event_categories",
+      "column_name": "name",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "event_categories",
+      "column_name": "color",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": "'#3b82f6'::text"
+    },
+    {
+      "table_name": "event_categories",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "event_participants",
+      "column_name": "id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "event_participants",
+      "column_name": "event_id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "event_participants",
+      "column_name": "user_id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "event_participants",
+      "column_name": "status",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": "'pending'::text"
+    },
+    {
+      "table_name": "event_participants",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "event_participants",
+      "column_name": "phone",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": "'Не указан'::text"
+    },
+    {
+      "table_name": "event_participants",
+      "column_name": "extra_data",
+      "data_type": "jsonb",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "events",
+      "column_name": "id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "events",
+      "column_name": "title",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "events",
+      "column_name": "description",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "events",
+      "column_name": "date",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "events",
+      "column_name": "location",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "events",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "events",
+      "column_name": "image_url",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "events",
+      "column_name": "price",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "events",
+      "column_name": "status",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": "'planned'::text"
+    },
+    {
+      "table_name": "events",
+      "column_name": "category_id",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "events",
+      "column_name": "time",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "events",
+      "column_name": "is_free",
+      "data_type": "boolean",
+      "is_nullable": "NO",
+      "column_default": "false"
+    },
+    {
+      "table_name": "events",
+      "column_name": "audience",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": "'all'::text"
+    },
+    {
+      "table_name": "events",
+      "column_name": "is_recurring",
+      "data_type": "boolean",
+      "is_nullable": "NO",
+      "column_default": "false"
+    },
+    {
+      "table_name": "events",
+      "column_name": "recurring_pattern",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "events",
+      "column_name": "recurring_days",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "events",
+      "column_name": "is_registration_closed",
+      "data_type": "boolean",
+      "is_nullable": "YES",
+      "column_default": "false"
+    },
+    {
+      "table_name": "events",
+      "column_name": "payment_url",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "events",
+      "column_name": "child_price",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "kids_applications",
+      "column_name": "id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "column_default": "gen_random_uuid()"
+    },
+    {
+      "table_name": "kids_applications",
+      "column_name": "program_title",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "kids_applications",
+      "column_name": "parent_first_name",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "kids_applications",
+      "column_name": "parent_last_name",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "kids_applications",
+      "column_name": "email",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "kids_applications",
+      "column_name": "phone",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "kids_applications",
+      "column_name": "status",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": "'pending'::text"
+    },
+    {
+      "table_name": "kids_applications",
+      "column_name": "user_id",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "kids_applications",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "kids_applications",
+      "column_name": "children",
+      "data_type": "jsonb",
+      "is_nullable": "NO",
+      "column_default": "'[]'::jsonb"
+    },
+    {
+      "table_name": "news",
+      "column_name": "id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "column_default": "gen_random_uuid()"
+    },
+    {
+      "table_name": "news",
+      "column_name": "title",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "news",
+      "column_name": "slug",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "news",
+      "column_name": "content",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "news",
+      "column_name": "image_url",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "news",
+      "column_name": "is_published",
+      "data_type": "boolean",
+      "is_nullable": "YES",
+      "column_default": "true"
+    },
+    {
+      "table_name": "news",
+      "column_name": "is_pinned",
+      "data_type": "boolean",
+      "is_nullable": "YES",
+      "column_default": "false"
+    },
+    {
+      "table_name": "news",
+      "column_name": "views",
+      "data_type": "integer",
+      "is_nullable": "YES",
+      "column_default": "0"
+    },
+    {
+      "table_name": "news",
+      "column_name": "author_id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "news",
+      "column_name": "created_at",
+      "data_type": "timestamp without time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "news",
+      "column_name": "updated_at",
+      "data_type": "timestamp without time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "news",
+      "column_name": "category_id",
+      "data_type": "uuid",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "news",
+      "column_name": "status",
+      "data_type": "character varying",
+      "is_nullable": "NO",
+      "column_default": "'draft'::character varying"
+    },
+    {
+      "table_name": "news",
+      "column_name": "rejection_reason",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "news_categories",
+      "column_name": "id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "column_default": "gen_random_uuid()"
+    },
+    {
+      "table_name": "news_categories",
+      "column_name": "name",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "news_categories",
+      "column_name": "description",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "news_categories",
+      "column_name": "icon",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "news_categories",
+      "column_name": "slug",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "news_categories",
+      "column_name": "updated_at",
+      "data_type": "timestamp without time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "news_comments",
+      "column_name": "id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "column_default": "gen_random_uuid()"
+    },
+    {
+      "table_name": "news_comments",
+      "column_name": "news_id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "news_comments",
+      "column_name": "user_id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "news_comments",
+      "column_name": "content",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "news_comments",
+      "column_name": "created_at",
+      "data_type": "timestamp without time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "notifications",
+      "column_name": "id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": "(gen_random_uuid())::text"
+    },
+    {
+      "table_name": "notifications",
+      "column_name": "user_id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "notifications",
+      "column_name": "title",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "notifications",
+      "column_name": "message",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "notifications",
+      "column_name": "link",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "notifications",
+      "column_name": "is_read",
+      "data_type": "boolean",
+      "is_nullable": "NO",
+      "column_default": "false"
+    },
+    {
+      "table_name": "notifications",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "notifications",
+      "column_name": "sender_id",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "notifications",
+      "column_name": "type",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": "'system'::text"
+    },
+    {
+      "table_name": "service_categories",
+      "column_name": "id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "service_categories",
+      "column_name": "name",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "service_categories",
+      "column_name": "color",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": "'#10b981'::text"
+    },
+    {
+      "table_name": "service_categories",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "service_participants",
+      "column_name": "id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "service_participants",
+      "column_name": "service_id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "service_participants",
+      "column_name": "user_id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "service_participants",
+      "column_name": "phone",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "service_participants",
+      "column_name": "status",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": "'pending'::text"
+    },
+    {
+      "table_name": "service_participants",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "services",
+      "column_name": "id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "services",
+      "column_name": "title",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "services",
+      "column_name": "description",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "services",
+      "column_name": "image_url",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "services",
+      "column_name": "price",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "services",
+      "column_name": "duration",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "services",
+      "column_name": "category_id",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "services",
+      "column_name": "is_active",
+      "data_type": "boolean",
+      "is_nullable": "NO",
+      "column_default": "true"
+    },
+    {
+      "table_name": "services",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "tasks",
+      "column_name": "id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "tasks",
+      "column_name": "title",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "tasks",
+      "column_name": "description",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "tasks",
+      "column_name": "status",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": "'backlog'::text"
+    },
+    {
+      "table_name": "tasks",
+      "column_name": "creator_id",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "tasks",
+      "column_name": "assignee_id",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "tasks",
+      "column_name": "event_id",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "tasks",
+      "column_name": "deadline",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "tasks",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "users",
+      "column_name": "id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "email",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "first_name",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "last_name",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "image_url",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "role",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": "'client'::text"
+    },
+    {
+      "table_name": "users",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "users",
+      "column_name": "is_profile_complete",
+      "data_type": "boolean",
+      "is_nullable": "NO",
+      "column_default": "false"
+    },
+    {
+      "table_name": "users",
+      "column_name": "phone",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "date_of_birth",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "city",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "marital_status",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "has_children",
+      "data_type": "boolean",
+      "is_nullable": "YES",
+      "column_default": "false"
+    },
+    {
+      "table_name": "users",
+      "column_name": "source",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "tags",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": "'[]'::text"
+    },
+    {
+      "table_name": "users",
+      "column_name": "telegram_chat_id",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "jewish_status",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "agreed_to_privacy",
+      "data_type": "boolean",
+      "is_nullable": "YES",
+      "column_default": "false"
+    },
+    {
+      "table_name": "users",
+      "column_name": "username",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "users",
+      "column_name": "children_data",
+      "data_type": "jsonb",
+      "is_nullable": "NO",
+      "column_default": "'[]'::jsonb"
+    },
+    {
+      "table_name": "users",
+      "column_name": "spouse_name",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "videos",
+      "column_name": "id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "column_default": "gen_random_uuid()"
+    },
+    {
+      "table_name": "videos",
+      "column_name": "title",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "videos",
+      "column_name": "link",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_name": "videos",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_name": "videos",
+      "column_name": "description",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "videos",
+      "column_name": "image_url",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "videos",
+      "column_name": "author_id",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "videos",
+      "column_name": "views",
+      "data_type": "integer",
+      "is_nullable": "YES",
+      "column_default": "0"
+    },
+    {
+      "table_name": "videos",
+      "column_name": "is_published",
+      "data_type": "boolean",
+      "is_nullable": "YES",
+      "column_default": "true"
+    },
+    {
+      "table_name": "videos",
+      "column_name": "category",
+      "data_type": "character varying",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_name": "videos",
+      "column_name": "status",
+      "data_type": "character varying",
+      "is_nullable": "NO",
+      "column_default": "'draft'::character varying"
+    },
+    {
+      "table_name": "videos",
+      "column_name": "rejection_reason",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    }
+  ],
+  "constraints": [
+    {
+      "table_name": "author_profiles",
+      "name": "author_profiles_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "author_profiles",
+      "name": "author_profiles_slug_key",
+      "type": "u",
+      "definition": "UNIQUE (slug)"
+    },
+    {
+      "table_name": "author_profiles",
+      "name": "author_profiles_user_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+    },
+    {
+      "table_name": "author_profiles",
+      "name": "author_profiles_user_id_key",
+      "type": "u",
+      "definition": "UNIQUE (user_id)"
+    },
+    {
+      "table_name": "bot_settings",
+      "name": "bot_settings_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "event_categories",
+      "name": "event_categories_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "event_participants",
+      "name": "event_participants_event_id_events_id_fk",
+      "type": "f",
+      "definition": "FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE"
+    },
+    {
+      "table_name": "event_participants",
+      "name": "event_participants_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "event_participants",
+      "name": "event_participants_user_id_users_id_fk",
+      "type": "f",
+      "definition": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+    },
+    {
+      "table_name": "events",
+      "name": "events_category_id_event_categories_id_fk",
+      "type": "f",
+      "definition": "FOREIGN KEY (category_id) REFERENCES event_categories(id)"
+    },
+    {
+      "table_name": "events",
+      "name": "events_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "kids_applications",
+      "name": "kids_applications_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "kids_applications",
+      "name": "kids_applications_user_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL"
+    },
+    {
+      "table_name": "news",
+      "name": "news_category_id_news_categories_id_fk",
+      "type": "f",
+      "definition": "FOREIGN KEY (category_id) REFERENCES news_categories(id) ON DELETE SET NULL"
+    },
+    {
+      "table_name": "news",
+      "name": "news_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "news",
+      "name": "news_slug_unique",
+      "type": "u",
+      "definition": "UNIQUE (slug)"
+    },
+    {
+      "table_name": "news_categories",
+      "name": "news_categories_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "news_categories",
+      "name": "news_categories_slug_unique",
+      "type": "u",
+      "definition": "UNIQUE (slug)"
+    },
+    {
+      "table_name": "news_comments",
+      "name": "news_comments_news_id_news_id_fk",
+      "type": "f",
+      "definition": "FOREIGN KEY (news_id) REFERENCES news(id) ON DELETE CASCADE"
+    },
+    {
+      "table_name": "news_comments",
+      "name": "news_comments_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "notifications",
+      "name": "notifications_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "notifications",
+      "name": "notifications_sender_id_users_id_fk",
+      "type": "f",
+      "definition": "FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE SET NULL"
+    },
+    {
+      "table_name": "notifications",
+      "name": "notifications_user_id_users_id_fk",
+      "type": "f",
+      "definition": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+    },
+    {
+      "table_name": "service_categories",
+      "name": "service_categories_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "service_participants",
+      "name": "service_participants_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "service_participants",
+      "name": "service_participants_service_id_services_id_fk",
+      "type": "f",
+      "definition": "FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE CASCADE"
+    },
+    {
+      "table_name": "service_participants",
+      "name": "service_participants_user_id_users_id_fk",
+      "type": "f",
+      "definition": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+    },
+    {
+      "table_name": "services",
+      "name": "services_category_id_service_categories_id_fk",
+      "type": "f",
+      "definition": "FOREIGN KEY (category_id) REFERENCES service_categories(id) ON DELETE SET NULL"
+    },
+    {
+      "table_name": "services",
+      "name": "services_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "tasks",
+      "name": "tasks_assignee_id_users_id_fk",
+      "type": "f",
+      "definition": "FOREIGN KEY (assignee_id) REFERENCES users(id)"
+    },
+    {
+      "table_name": "tasks",
+      "name": "tasks_creator_id_users_id_fk",
+      "type": "f",
+      "definition": "FOREIGN KEY (creator_id) REFERENCES users(id)"
+    },
+    {
+      "table_name": "tasks",
+      "name": "tasks_event_id_events_id_fk",
+      "type": "f",
+      "definition": "FOREIGN KEY (event_id) REFERENCES events(id)"
+    },
+    {
+      "table_name": "tasks",
+      "name": "tasks_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "users",
+      "name": "users_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "videos",
+      "name": "videos_author_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE SET NULL"
+    },
+    {
+      "table_name": "videos",
+      "name": "videos_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    }
+  ],
+  "indexes": [
+    {
+      "tablename": "author_profiles",
+      "indexname": "author_profiles_pkey",
+      "indexdef": "CREATE UNIQUE INDEX author_profiles_pkey ON public.author_profiles USING btree (id)"
+    },
+    {
+      "tablename": "author_profiles",
+      "indexname": "author_profiles_slug_key",
+      "indexdef": "CREATE UNIQUE INDEX author_profiles_slug_key ON public.author_profiles USING btree (slug)"
+    },
+    {
+      "tablename": "author_profiles",
+      "indexname": "author_profiles_user_id_key",
+      "indexdef": "CREATE UNIQUE INDEX author_profiles_user_id_key ON public.author_profiles USING btree (user_id)"
+    },
+    {
+      "tablename": "bot_settings",
+      "indexname": "bot_settings_pkey",
+      "indexdef": "CREATE UNIQUE INDEX bot_settings_pkey ON public.bot_settings USING btree (id)"
+    },
+    {
+      "tablename": "event_categories",
+      "indexname": "event_categories_pkey",
+      "indexdef": "CREATE UNIQUE INDEX event_categories_pkey ON public.event_categories USING btree (id)"
+    },
+    {
+      "tablename": "event_participants",
+      "indexname": "event_participants_pkey",
+      "indexdef": "CREATE UNIQUE INDEX event_participants_pkey ON public.event_participants USING btree (id)"
+    },
+    {
+      "tablename": "events",
+      "indexname": "events_pkey",
+      "indexdef": "CREATE UNIQUE INDEX events_pkey ON public.events USING btree (id)"
+    },
+    {
+      "tablename": "kids_applications",
+      "indexname": "kids_applications_pkey",
+      "indexdef": "CREATE UNIQUE INDEX kids_applications_pkey ON public.kids_applications USING btree (id)"
+    },
+    {
+      "tablename": "news",
+      "indexname": "news_pkey",
+      "indexdef": "CREATE UNIQUE INDEX news_pkey ON public.news USING btree (id)"
+    },
+    {
+      "tablename": "news",
+      "indexname": "news_slug_unique",
+      "indexdef": "CREATE UNIQUE INDEX news_slug_unique ON public.news USING btree (slug)"
+    },
+    {
+      "tablename": "news_categories",
+      "indexname": "news_categories_pkey",
+      "indexdef": "CREATE UNIQUE INDEX news_categories_pkey ON public.news_categories USING btree (id)"
+    },
+    {
+      "tablename": "news_categories",
+      "indexname": "news_categories_slug_unique",
+      "indexdef": "CREATE UNIQUE INDEX news_categories_slug_unique ON public.news_categories USING btree (slug)"
+    },
+    {
+      "tablename": "news_comments",
+      "indexname": "news_comments_pkey",
+      "indexdef": "CREATE UNIQUE INDEX news_comments_pkey ON public.news_comments USING btree (id)"
+    },
+    {
+      "tablename": "notifications",
+      "indexname": "notifications_pkey",
+      "indexdef": "CREATE UNIQUE INDEX notifications_pkey ON public.notifications USING btree (id)"
+    },
+    {
+      "tablename": "service_categories",
+      "indexname": "service_categories_pkey",
+      "indexdef": "CREATE UNIQUE INDEX service_categories_pkey ON public.service_categories USING btree (id)"
+    },
+    {
+      "tablename": "service_participants",
+      "indexname": "service_participants_pkey",
+      "indexdef": "CREATE UNIQUE INDEX service_participants_pkey ON public.service_participants USING btree (id)"
+    },
+    {
+      "tablename": "services",
+      "indexname": "services_pkey",
+      "indexdef": "CREATE UNIQUE INDEX services_pkey ON public.services USING btree (id)"
+    },
+    {
+      "tablename": "tasks",
+      "indexname": "tasks_pkey",
+      "indexdef": "CREATE UNIQUE INDEX tasks_pkey ON public.tasks USING btree (id)"
+    },
+    {
+      "tablename": "users",
+      "indexname": "telegram_chat_id_idx",
+      "indexdef": "CREATE UNIQUE INDEX telegram_chat_id_idx ON public.users USING btree (telegram_chat_id)"
+    },
+    {
+      "tablename": "users",
+      "indexname": "users_pkey",
+      "indexdef": "CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id)"
+    },
+    {
+      "tablename": "videos",
+      "indexname": "videos_pkey",
+      "indexdef": "CREATE UNIQUE INDEX videos_pkey ON public.videos USING btree (id)"
+    }
+  ],
+  "policies": [],
+  "aggregates": {
+    "users": [
+      {
+        "count": 175
+      }
+    ],
+    "events": [
+      {
+        "count": 7
+      }
+    ],
+    "event_participants": [
+      {
+        "count": 42
+      }
+    ],
+    "service_participants": [
+      {
+        "count": 0
+      }
+    ],
+    "kids_applications": [
+      {
+        "count": 36
+      }
+    ]
+  },
+  "users_summary": [
+    {
+      "total": 175,
+      "complete": 54,
+      "missing_status": 121,
+      "unknown_status": 0,
+      "profiles_with_children": 15,
+      "child_entries": 28,
+      "invalid_children_container": 0
+    }
+  ],
+  "email_duplicates": [
+    {
+      "duplicate_email_groups": 1
+    }
+  ],
+  "registration_duplicates": [
+    {
+      "duplicate_event_user_groups": 0
+    }
+  ],
+  "historical_registrations": [
+    {
+      "total": 42,
+      "paid": 11,
+      "pending": 6,
+      "abandoned": 0,
+      "contains_index_child_reference": 0
+    }
+  ],
+  "connection_role": [
+    {
+      "superuser": false,
+      "bypass_rls": true
+    }
+  ],
+  "storage_buckets": [
+    {
+      "id": "events",
+      "public": true,
+      "file_size_limit": null,
+      "allowed_mime_types": null
+    },
+    {
+      "id": "images",
+      "public": true,
+      "file_size_limit": null,
+      "allowed_mime_types": null
+    }
+  ],
+  "storage_policies": [
+    {
+      "tablename": "objects",
+      "cmd": "INSERT",
+      "roles": [
+        "public"
+      ],
+      "qual": null,
+      "with_check": "(bucket_id = 'events'::text)"
+    },
+    {
+      "tablename": "objects",
+      "cmd": "SELECT",
+      "roles": [
+        "public"
+      ],
+      "qual": "(bucket_id = 'events'::text)",
+      "with_check": null
+    }
+  ],
+  "public_views": [],
+  "public_security_definer_functions": [
+    {
+      "name": "rls_auto_enable",
+      "security_definer": true,
+      "return_type": "event_trigger",
+      "arguments": "",
+      "anon_execute": true
+    }
+  ],
+  "public_triggers": [],
+  "storage_object_privileges": [
+    {
+      "anon_insert": true,
+      "anon_select": true,
+      "rls": true
+    }
+  ],
+  "migration_table_metadata": [
+    {
+      "table_schema": "drizzle",
+      "table_name": "__drizzle_migrations"
+    },
+    {
+      "table_schema": "supabase_migrations",
+      "table_name": "schema_migrations"
+    }
+  ]
+}

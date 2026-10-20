@@ -1,0 +1,219 @@
+{
+  "filesChecked": 243,
+  "errors": 0,
+  "warnings": 30,
+  "remaining": [
+    {
+      "file": "app/(marketing)/news/[slug]/page.tsx",
+      "line": 106,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "app/(marketing)/news/[slug]/page.tsx",
+      "line": 128,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "app/(marketing)/news/[slug]/page.tsx",
+      "line": 153,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "app/dashboard/author-profile/page.tsx",
+      "line": 71,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/author/ContentTabs.tsx",
+      "line": 100,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/author/ContentTabs.tsx",
+      "line": 139,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/authors/ContentTabs.tsx",
+      "line": 112,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/authors/ContentTabs.tsx",
+      "line": 153,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/dashboard/applications/application-client.tsx",
+      "line": 566,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/dashboard/authors/admin-authors-client.tsx",
+      "line": 78,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/dashboard/chat/chat-admin-view.tsx",
+      "line": 128,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/dashboard/events/event-card.tsx",
+      "line": 37,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/dashboard/events/event-modal.tsx",
+      "line": 264,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/dashboard/events/my-events-client.tsx",
+      "line": 156,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/dashboard/events/my-services-client.tsx",
+      "line": 242,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/dashboard/kanban/kanban-card.tsx",
+      "line": 101,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/dashboard/news/admin-news-client.tsx",
+      "line": 225,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/dashboard/news/comments-section.tsx",
+      "line": 131,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/dashboard/news/public-news-card.tsx",
+      "line": 21,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/dashboard/news/public-news-card.tsx",
+      "line": 51,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/dashboard/service/service-card.tsx",
+      "line": 24,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/dashboard/service/service-modal.tsx",
+      "line": 198,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/dashboard/team-table.tsx",
+      "line": 63,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/dashboard/users/crm-table.client.tsx",
+      "line": 326,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/dashboard/users/user-slider.tsx",
+      "line": 148,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/events/public-event-card.tsx",
+      "line": 19,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/lessons/lessons-client.tsx",
+      "line": 272,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/navbar/desktop-navbar.tsx",
+      "line": 119,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/services/public-service-card.tsx",
+      "line": 150,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    },
+    {
+      "file": "components/services/public-service-card.tsx",
+      "line": 232,
+      "rule": "@next/next/no-img-element",
+      "severity": 1,
+      "reasonRetained": "Image optimization recommendation; alt is present; requires separately verified remote/blob image sizing/loader behavior. No source exclusions or rule suppression."
+    }
+  ],
+  "nativeCommand": "npm run lint",
+  "nativeExitCode": 0
+}
