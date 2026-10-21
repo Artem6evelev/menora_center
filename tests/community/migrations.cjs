@@ -43,7 +43,7 @@ async function metadata(pg) {
 async function fingerprint(pg) {
   const result = {};
   for (const table of ['users', 'events', 'event_participants', 'kids_applications', 'service_participants', 'news', 'videos']) {
-    result[table] = (await pg.query(`select md5(coalesce(string_agg((to_jsonb(t)-'gender'-'affiliation'-'filter_version'-'filter_revision'-'giyur_stage'-'filter_completed_at'-'identity_disabled_at')::text,'' order by id),'')) as hash,count(*)::int as count from public."${table}" t`)).rows[0];
+    result[table] = (await pg.query(`select md5(coalesce(string_agg((to_jsonb(t)-'city_id'-'gender'-'affiliation'-'filter_version'-'filter_revision'-'giyur_stage'-'filter_completed_at'-'identity_disabled_at')::text,'' order by id),'')) as hash,count(*)::int as count from public."${table}" t`)).rows[0];
   }
   return result;
 }
@@ -92,7 +92,7 @@ async function repeat(pg) {
     const legacy = structuredClone(current);
     delete legacy.tables['public.community_audit'];
     delete legacy.tables['public.community_registration_drafts'];
-    for (const col of ['gender', 'affiliation', 'filter_version', 'filter_revision', 'giyur_stage', 'filter_completed_at', 'identity_disabled_at']) delete legacy.tables['public.users'].columns[col];
+    for (const col of ['city_id', 'gender', 'affiliation', 'filter_version', 'filter_revision', 'giyur_stage', 'filter_completed_at', 'identity_disabled_at']) delete legacy.tables['public.users'].columns[col];
     legacy.tables['public.users'].checkConstraints = {};
     // Represent the previously observed additive schema drift (families/payments already exist).
     const historical = JSON.parse(fs.readFileSync(path.join(folder, 'meta/0003_snapshot.json')));
@@ -136,7 +136,7 @@ async function repeat(pg) {
     pass('Already registered 0004 v1 remains compatible with statement-boundary-only v2');
   } finally { await pg.close(); fs.rmSync(prefix, { recursive: true, force: true }); }
 
-  const output = path.join(root, 'docs/implementation-2026-10-20/acceptance/evidence/migration-results.json');
+  const output = path.join(process.env.COMMUNITY_TEST_OUTPUT || path.join(root, 'docs/implementation-2026-10-20/acceptance/evidence'), 'migration-results.json');
   fs.writeFileSync(output, JSON.stringify(evidence, null, 2) + '\n');
   console.log(`${checks.length}/${checks.length} native migration checks passed`);
 })().catch(error => { console.error(error); process.exitCode = 1; });

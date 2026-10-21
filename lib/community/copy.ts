@@ -17,7 +17,7 @@ export const RESOURCE_PARAGRAPHS = [
 ];
 // Selected additionally, checked against the organizations' own sites on 2026-10-20.
 export const COMMUNITY_RESOURCES = [
-  { label: "Семь заповедей и общины Бней Ноах", href: "https://noahideworldcenter.org/pages/about" },
-  { label: "Государственная программа гиюра в Израиле", href: "https://www.gov.il/he/Departments/conversion_authority" },
-  { label: "«Натив» — подготовка к гиюру", href: "https://nativhagiur.org.il/" },
+  { label: "Семь заповедей и общины Бней Ноах", href: "https://noahideworldcenter.org/ru" },
+  { label: "Государственная программа гиюра в Израиле", href: "https://www.gov.il/ru/departments/conversion_authority" },
+  { label: "«Натив» — подготовка к гиюру", href: "https://nativhagiur.org.il/ru/" },
 ];

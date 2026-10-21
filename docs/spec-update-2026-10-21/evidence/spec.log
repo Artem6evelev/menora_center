@@ -1,0 +1,17 @@
+PASS owner SQL adds nullable city_id, repeats without changing accounts/filter/history or inventing child gender
+PASS owner SQL refuses wrong-city-type and preserves incompatible schema for inspection
+PASS owner SQL refuses missing-base-column and preserves incompatible schema for inspection
+PASS third branch needs no gender, preserves old data and completes filter without granting admission
+PASS explicit hasChildren=false persists for a father without deleting children or granting child permissions
+PASS city IDs require a known canonical name; stale IDs, arbitrary city strings and foreign redirects fail
+PASS legacy free-text city remains unchanged without guessed normalization
+PASS Russian, Hebrew and English search variants share one stable city ID
+PASS CRM filters on canonical locality ID and counts genderless completed resource profiles
+PASS anonymous full draft rejects foreign existing child IDs and missing/invalid new child gender
+PASS anonymous child saves/edits/removes in protected partial draft and survives fresh read
+PASS draft data binds to authenticated Clerk ID, persists child gender and returns to its original event
+PASS editing and deleting existing child preserves ID, paid ticket and immutable historical snapshot
+PASS child gender/ownership and giyur restrictions are enforced in direct server calls
+PASS current member returns directly, old member completes filter and returns to the same event
+PASS parallel tabs keep separate targets; event titles/return destinations do not disclose hidden data
+16/16 spec checks passed

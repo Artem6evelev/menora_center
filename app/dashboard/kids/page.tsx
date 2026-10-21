@@ -7,8 +7,10 @@ import { users, kidsApplications } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import KidsDashboardClient from "@/components/dashboard/kids/kids-dashboard-client";
+import { eventReturnTo } from "@/lib/community/policy";
 
-export default async function DashboardKidsPage() {
+export default async function DashboardKidsPage({ searchParams }: { searchParams: Promise<{ returnTo?: string }> }) {
+  const target = eventReturnTo((await searchParams).returnTo);
   await requireDashboardFilter();
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
@@ -23,5 +25,5 @@ export default async function DashboardKidsPage() {
     .from(kidsApplications)
     .where(eq(kidsApplications.userId, userId));
 
-  return <KidsDashboardClient user={{ ...dbUser, childrenData: profileChildren(userId, dbUser.childrenData) }} applications={myApplications} />;
+  return <KidsDashboardClient user={{ ...dbUser, childrenData: profileChildren(userId, dbUser.childrenData) }} applications={myApplications} returnTo={target} />;
 }

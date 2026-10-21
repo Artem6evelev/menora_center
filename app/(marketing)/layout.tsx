@@ -3,6 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import { NavBar } from "@/components/navbar";
 import { cn } from "@/lib/utils";
 import { Footer } from "@/components/footer";
+import { AttemptProvider } from "@/components/community/attempt-context";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -40,10 +41,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <main>
+    <AttemptProvider><main>
       <NavBar />
       {children}
       <Footer />
-    </main>
+    </main></AttemptProvider>
   );
 }

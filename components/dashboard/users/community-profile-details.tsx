@@ -16,7 +16,7 @@ export default function CommunityProfileDetails({ user }: { user: any }) {
     ["Пол", user.gender === "female" ? "Женский" : user.gender === "male" ? "Мужской" : "Не указано"],
     ["Имя", valueLabel(user.firstName)], ["Фамилия", valueLabel(user.lastName)],
     ["Email аккаунта Clerk", valueLabel(user.email)], ["Телефон", valueLabel(user.phone)],
-    ["Дата рождения", dateLabel(user.dateOfBirth)], ["Город", valueLabel(user.city)],
+    ["Дата рождения", dateLabel(user.dateOfBirth)], ["Город", valueLabel(user.city)], ["Код населённого пункта", valueLabel(user.cityId)],
     ["Семейное положение", ({ single: "Холост / Не замужем", married: "В браке", divorced: "В разводе", widowed: "Вдовец / Вдова" } as Record<string, string>)[user.maritalStatus] || "Не указано"],
     ["Имя супруга/и", valueLabel(user.spouseName)],
     ["Ответ «Есть дети»", user.hasChildren === null ? "Не указано" : user.hasChildren ? "Да" : "Нет"],
@@ -28,6 +28,6 @@ export default function CommunityProfileDetails({ user }: { user: any }) {
     <h3 className="font-bold mb-4">Сохранённая анкета</h3>
     <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">{fields.map(([label, value]) => <div key={label} className="min-w-0"><dt className="text-neutral-500">{label}</dt><dd className="font-medium break-words">{value}</dd></div>)}</dl>
     <h4 className="font-bold mt-5">Сохранённые дети</h4>
-    {Array.isArray(user.childrenData) && user.childrenData.length ? <ul className="mt-2 space-y-2 text-sm">{user.childrenData.map((child: any, i: number) => <li key={child.id || i} className="break-words">{valueLabel(child.name)} · {dateLabel(child.dateOfBirth || child.birthDate)}</li>)}</ul> : <p className="text-sm mt-2">Пустой список</p>}
+    {Array.isArray(user.childrenData) && user.childrenData.length ? <ul className="mt-2 space-y-2 text-sm">{user.childrenData.map((child: any, i: number) => <li key={child.id || i} className="break-words">{valueLabel(child.name)} · {dateLabel(child.dateOfBirth || child.birthDate)} · {child.gender === "male" ? "Мальчик" : child.gender === "female" ? "Девочка" : "Пол не указан"}</li>)}</ul> : <p className="text-sm mt-2">Пустой список</p>}
   </section>;
 }

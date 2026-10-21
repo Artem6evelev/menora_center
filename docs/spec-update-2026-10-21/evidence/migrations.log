@@ -1,0 +1,13 @@
+
+> nextjs@0.1.0 db:test
+> node tests/community/migrations.cjs
+
+PASS Empty database: complete native chain matches ORM columns/types/defaults/FKs/checks/indexes/RLS
+PASS Every migration, including 0004/0005/0006, registered by native Drizzle
+PASS Second native run on fresh database: no migration statements reapplied, journal/schema unchanged
+PASS Equivalent pre-existing child FK with a different name is retained without a duplicate
+PASS Old synthetic schema: native upgrade preserves children/families/paid registrations/content and unknown giyur
+PASS Second native run after upgrade: no migrations reapplied, business rows preserved
+PASS Migration preflight rejects existing untracked schema, foreign chain and changed checksums
+PASS Already registered 0004 v1 remains compatible with statement-boundary-only v2
+8/8 native migration checks passed

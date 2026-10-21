@@ -1,0 +1,13 @@
+{
+  "fixture": "/tmp/menora-spec-http",
+  "comparison": "Current product source vs fixture after documented Clerk import substitution",
+  "differingProductFiles": [],
+  "excludedFixtureOverridesAndNonRuntimeProvenance": [
+    "actions/telegram.ts",
+    "app/layout.tsx",
+    "lib/community/data/README.md",
+    "lib/community/data/SOURCE.json",
+    "lib/community/welcome.ts",
+    "lib/db/index.ts"
+  ]
+}

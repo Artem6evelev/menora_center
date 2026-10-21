@@ -1,0 +1,21 @@
+PASS initial questionnaire contains complete welcome and exactly three affiliation answers
+PASS initial questionnaire hides full fields and does not turn gender into affiliation
+PASS maternal expands existing fields, explanation and separate gender without duplicate status
+PASS giyur expands existing fields, explanation and separate gender without duplicate status
+PASS old version does not preselect religious answers even when old answers are populated
+PASS third branch contains all gratitude text/resources and no full-profile submit fields
+PASS father questionnaire offers no child creation control
+PASS giyur female/advanced removes main clarification and keeps correct child UI
+PASS giyur female/completed removes main clarification and keeps correct child UI
+PASS giyur female/null removes main clarification and keeps correct child UI
+PASS giyur male/advanced removes main clarification and keeps correct child UI
+PASS giyur male/completed removes main clarification and keeps correct child UI
+PASS giyur male/null removes main clarification and keeps correct child UI
+PASS administrative card reads canonical city ID and explicit/unknown child genders
+PASS person card shows persisted giyur null
+PASS person card shows persisted giyur advanced
+PASS person card shows persisted giyur completed
+PASS guest event has exact two branches and safe return context without event title/image
+PASS guest event header contains no menu, generic registration or extra sign-in branch
+PASS guest home header retains Google login and questionnaire link without menu
+20/20 render checks passed.

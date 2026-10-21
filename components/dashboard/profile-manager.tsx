@@ -82,7 +82,7 @@ export default function ProfileManager({ user }: { user: any }) {
           </button>
         </div>
 
-        {user.affiliation === "giyur" && user.gender === "female" && !user.giyurStage && <div className="mb-6"><GiyurStageForm revision={user.filterRevision || 0} /></div>}
+        {user.affiliation === "giyur" && user.gender === "female" && !user.giyurStage && <div className="mb-6"><a href="/dashboard/kids" className="font-bold underline">Добавить или записать ребёнка — перейти в детский раздел</a></div>}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="space-y-5">
             <InfoRow

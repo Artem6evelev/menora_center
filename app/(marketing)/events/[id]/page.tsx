@@ -19,5 +19,5 @@ export default async function SingleEventPage({ params }: Props) {
   if (!access.canViewEvents) return <AccessScreen reason={userId ? access.reason : "guest"} returnTo={`/events/${id}`} />;
   const eventData = await getEventById(id);
   if (!eventData) notFound();
-  return <PrivateSession key={profile!.id} expectedUserId={profile!.id}><SingleEventClient eventData={eventData} userId={userId} canRegisterChildren={access.canRegisterChildren} canRegisterSelf={access.canRegisterSelf} /></PrivateSession>;
+  return <PrivateSession key={profile!.id} expectedUserId={profile!.id}><SingleEventClient eventData={eventData} userId={userId} canRegisterChildren={access.canRegisterChildren} canRegisterSelf={access.canRegisterSelf} canClarifyChildren={profile?.affiliation === "giyur" && profile?.gender === "female" && !access.canManageChildren} /></PrivateSession>;
 }

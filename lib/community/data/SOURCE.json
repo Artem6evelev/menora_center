@@ -1,0 +1,31 @@
+{
+  "dataset": "https://data.gov.il/dataset/citiesandsettelments",
+  "api": "https://data.gov.il/api/3/action/datastore_search?resource_id=8f714b6f-c35c-4b40-a0e7-547b675eee0e&limit=5000",
+  "resource": "8f714b6f-c35c-4b40-a0e7-547b675eee0e",
+  "sourceFileDate": "2026-10-19",
+  "retrieved": "2026-10-21",
+  "records": 1316,
+  "russianNames": 752,
+  "russianGovernmentReference": {
+    "dataset": "https://data.gov.il/he/datasets/cio/unified",
+    "resource": "e9701dcb-9f1c-43bb-bd44-eb380ade542f",
+    "url": "https://aws-e.data.gov.il/dataset/7a6d0673-920c-470a-ad90-600d4ce3adcb/resource/e9701dcb-9f1c-43bb-bd44-eb380ade542f/download/_-23.csv",
+    "modified": "2025-03-04T08:03:48.169183",
+    "license": "Other (Open)",
+    "api": "https://data.gov.il/api/3/action/datastore_search?resource_id=e9701dcb-9f1c-43bb-bd44-eb380ade542f&limit=5000",
+    "retrieved": "2026-10-21",
+    "records": 1256,
+    "russianNames": 745,
+    "sha256": "faa4b0ebd1a2c6fe75d87f787e9e3383d3f17ec50d41f68a010456b6f5ec2dd9",
+    "officialRussianNames": 283,
+    "wikidataRussianNames": 462,
+    "wikidata": {
+      "property": "https://www.wikidata.org/wiki/Property:P3466",
+      "endpoint": "https://query.wikidata.org/sparql",
+      "query": "SELECT ?code ?ru WHERE { ?item wdt:P3466 ?code . ?item rdfs:label ?ru FILTER(LANG(?ru) = \"ru\") }",
+      "matching": "Exact CBS ID; only one unique label; official Russian names take priority; ambiguous matches skipped"
+    }
+  },
+  "matching": "Exact CBS codes only, no ambiguous Russian labels chosen. Official 2026 Hebrew/English locality list defines current IDs.",
+  "sha256": "5ab8bf21215f044950b2ed96b5ce5bb33b3ec79ae2bc605c944e32a6fbf8b4bb"
+}

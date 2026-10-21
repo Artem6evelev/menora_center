@@ -30,6 +30,7 @@ export const users = pgTable(
     phone: text("phone"),
     dateOfBirth: timestamp("date_of_birth", { withTimezone: true }),
     city: text("city"),
+    cityId: text("city_id"),
     maritalStatus: text("marital_status"),
     spouseName: text("spouse_name"), // 🔥 ДОБАВЛЕНО: Имя супруга/и
     hasChildren: boolean("has_children").default(false),

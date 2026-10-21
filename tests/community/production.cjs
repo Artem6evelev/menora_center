@@ -12,7 +12,7 @@ const { migrate } = require('drizzle-orm/pglite/migrator');
 const { generateDrizzleJson, generateMigration } = require('drizzle-kit/api');
 const { eq, and } = require('drizzle-orm');
 const root = path.resolve(__dirname, '../..');
-const output = path.join(root, 'docs/production-readiness-2026-10-20/evidence');
+const output = process.env.COMMUNITY_TEST_OUTPUT || path.join(root, 'docs/production-readiness-2026-10-20/evidence');
 fs.mkdirSync(output, { recursive: true });
 let db, actor = null, browser = 'a', currentHeaders = new Headers();
 const jars = new Map(), cookieOptions = [], cache = new Map(), afterCallbacks = [];
@@ -20,6 +20,7 @@ const secret = 'whsec_' + Buffer.alloc(32, 7).toString('base64');
 const jar = () => { if (!jars.has(browser)) jars.set(browser, new Map()); return jars.get(browser); };
 function source(file) {
   const full = path.join(root, file);
+  if (file.endsWith('.json')) return JSON.parse(fs.readFileSync(path.join(root,file),'utf8'));
   if (cache.has(full)) return cache.get(full).exports;
   const sourceModule = { exports: {} }; cache.set(full, sourceModule);
   function localRequire(id) {
@@ -60,7 +61,7 @@ const checks = [];
 async function test(name, fn) { await fn(); checks.push({ name, status: 'PASS' }); console.log('PASS ' + name); }
 const payload = extra => ({ affiliation: 'maternal', gender: 'female', expectedRevision: 0,
   firstName: 'Persisted given', lastName: 'Persisted surname', phone: '+972501234567', dateOfBirth: '1990-02-03',
-  city: 'Synthetic city', maritalStatus: 'married', spouseName: 'Persisted spouse', hasChildren: false,
+  city: 'Ришон ле-Цион', cityId: '8300', maritalStatus: 'married', spouseName: 'Persisted spouse', hasChildren: false,
   agreedToPrivacy: true, ...extra });
 async function row(id) { return (await db.select().from(schema.users).where(eq(schema.users.id, id)))[0]; }
 async function legacyDatabase() {
@@ -132,7 +133,7 @@ async function clerkEvent(type, id) {
   const pg = new PGlite(); db = drizzle(pg, { schema });
   try {
     await migrate(db, { migrationsFolder: path.join(root, 'drizzle') });
-    const child = { id: 'legacy-child', parentId: 'legacy', name: 'Preserved child', dateOfBirth: '2020-01-01' };
+    const child = { id: 'legacy-child', parentId: 'legacy', name: 'Preserved child', gender:'female',dateOfBirth: '2020-01-01' };
     await db.insert(schema.users).values([
       { id: 'legacy', email: 'legacy@example.invalid', firstName: 'Old name', role: 'client', isProfileComplete: true,
         affiliation: 'maternal', gender: 'female', filterVersion: 1, childrenData: [child], source: 'Preserved source' },
@@ -186,14 +187,14 @@ async function clerkEvent(type, id) {
     const attempt = crypto.randomUUID(); let copiedCookies;
     await test('Anonymous submitted form is in DB before OAuth, HttpOnly bound, and creates no identified profile', async () => {
       actor = null; browser = 'draft';
-      const result = await drafts.prepareRegistrationDraft(payload({ hasChildren: true, childrenData: [{ name: 'New linked child', dateOfBirth: '2020-03-04' }] }), attempt);
+      const result = await drafts.prepareRegistrationDraft(payload({ hasChildren: true, childrenData: [{ name: 'New linked child', gender:'female',dateOfBirth: '2020-03-04' }] }), attempt);
       assert.equal(result.success, true); assert.equal((await db.select().from(schema.users).where(eq(schema.users.id, 'new-google'))).length, 0);
       const [draft] = await db.select().from(schema.communityRegistrationDrafts).where(eq(schema.communityRegistrationDrafts.id, attempt));
-      assert.equal(draft.payload.spouseName, 'Persisted spouse'); assert.equal(draft.ownerId, null); assert.equal(draft.consumedAt, null);
+      assert.equal(draft.payload.form.spouseName, 'Persisted spouse'); assert.equal(draft.ownerId, null); assert.equal(draft.consumedAt, null);
       assert.equal(cookieOptions.at(-1).httpOnly, true); assert.equal(cookieOptions.at(-1).sameSite, 'lax');
       assert.notEqual(draft.tokenHash, jar().get(cookieName(attempt)));
       copiedCookies = new Map(jar());
-      assert.equal((await drafts.prepareRegistrationDraft(payload({ hasChildren: true, childrenData: [{ name: 'New linked child', dateOfBirth: '2020-03-04' }] }), attempt)).success, true);
+      assert.equal((await drafts.prepareRegistrationDraft(payload({ hasChildren: true, childrenData: [{ name: 'New linked child', gender:'female',dateOfBirth: '2020-03-04' }] }), attempt)).success, true);
       assert.equal((await db.select().from(schema.communityRegistrationDrafts).where(eq(schema.communityRegistrationDrafts.id, attempt))).length, 1);
     });
     await test('Verified-identity seam consumes draft atomically, keeps one Clerk-ID profile and child ownership', async () => {
@@ -201,7 +202,7 @@ async function clerkEvent(type, id) {
       const saved = await row(actor); assert.equal(saved.firstName, 'Persisted given'); assert.equal(saved.email, 'new-google@example.invalid');
       assert.equal(saved.childrenData[0].parentId, actor); assert.ok(saved.childrenData[0].id); assert.equal(saved.role, 'client');
       const [draft] = await db.select().from(schema.communityRegistrationDrafts).where(eq(schema.communityRegistrationDrafts.id, attempt));
-      assert.equal(draft.ownerId, actor); assert.ok(draft.consumedAt); assert.deepEqual(draft.payload, {});
+      assert.equal(draft.ownerId, actor); assert.ok(draft.consumedAt); assert.deepEqual(draft.payload, {returnTo:'/dashboard/events'});
       browser = 'replay'; jars.set(browser, new Map(copiedCookies));
       const replay = await drafts.completeRegistrationDraft(attempt); assert.equal(replay.success, true); assert.equal((await row(actor)).filterRevision, saved.filterRevision);
       assert.equal((await db.select().from(schema.users).where(eq(schema.users.id, actor))).length, 1);
@@ -232,7 +233,7 @@ async function clerkEvent(type, id) {
         const input=resource?{affiliation:'none',gender:'female',expectedRevision:before.filterRevision}:payload({firstName:'Explicit reviewed',expectedRevision:before.filterRevision});
         const saved=await drafts.completeRegistrationDraft(id,input);assert.equal(saved.success,true);assert.equal(saved.access.canViewEvents,!resource);
         const [draft]=await db.select().from(schema.communityRegistrationDrafts).where(eq(schema.communityRegistrationDrafts.id,id));
-        assert.equal(draft.ownerId,actor);assert.ok(draft.consumedAt);assert.deepEqual(draft.payload,{});
+        assert.equal(draft.ownerId,actor);assert.ok(draft.consumedAt);assert.deepEqual(draft.payload,{returnTo:'/dashboard/events'});
         browser='review-other-'+resource;jars.set(browser,copied);actor='other';assert.equal((await drafts.completeRegistrationDraft(id)).success,false);
       }
     });
@@ -308,7 +309,7 @@ async function clerkEvent(type, id) {
       actor = 'admin'; assert.equal((await admin.registerChildManually(request)).success, true);
       assert.equal((await row('father')).affiliation, 'maternal');
       const [audit] = await db.select().from(schema.communityAudit).where(eq(schema.communityAudit.id, request.requestId)); assert.equal(audit.actorId, 'admin'); assert.equal(audit.reason, request.reason);
-      actor = 'father'; assert.equal((await source('actions/community-children.ts').saveOwnChildren([{ name: 'Forbidden', dateOfBirth: '2020-01-01' }])).success, false);
+      actor = 'father'; assert.equal((await source('actions/community-children.ts').saveOwnChildren([{ name: 'Forbidden', gender:'female',dateOfBirth: '2020-01-01' }])).success, false);
     });
     fs.writeFileSync(path.join(output, 'production-results.json'), JSON.stringify({ engine: 'PGlite/Drizzle real SQL + current source; mock identity/cookies, no real OAuth/browser/network', manualSqlSha256: crypto.createHash('sha256').update(manual).digest('hex'), checks }, null, 2) + '\n');
     console.log(`${checks.length}/${checks.length} production checks passed`);

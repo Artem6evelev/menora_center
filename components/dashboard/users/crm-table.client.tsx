@@ -1,4 +1,5 @@
 "use client";
+import CityPicker from "@/components/community/city-picker";
 
 import { useState, useEffect } from "react";
 import { useCrmStore } from "@/store/useCrmStore";
@@ -31,6 +32,7 @@ export default function CrmTableClient({
   initialData: any;
   currentUserRole: string;
 }) {
+  const [cityFilterText, setCityFilterText] = useState("");
   const [data, setData] = useState(initialData.users);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(initialData.totalPages);
@@ -186,6 +188,7 @@ export default function CrmTableClient({
             className="overflow-hidden"
           >
             <div className="bg-white/80 dark:bg-neutral-900/80 backdrop-blur-2xl p-6 rounded-3xl border border-neutral-200/50 dark:border-neutral-800/50 shadow-sm flex flex-wrap gap-4 items-end">
+              <div className="flex flex-col gap-1.5 min-w-[180px] flex-1"><label htmlFor="crm-city" className="text-xs font-bold">Город</label><CityPicker id="crm-city" required={false} value={cityFilterText} cityId={activeFilters.cityId} onChange={(name, id) => { setCityFilterText(name); setFilter('cityId', id || ''); setPage(1); }} /></div>
               <div className="flex flex-col gap-1.5 min-w-[200px] flex-1">
                 <label htmlFor="crm-filter-affiliation" className="text-[10px] font-black uppercase tracking-widest text-neutral-400">
                   Связь с еврейством
@@ -248,7 +251,7 @@ export default function CrmTableClient({
               </div>
 
               <button
-                onClick={clearFilters}
+                onClick={() => { clearFilters(); setCityFilterText(""); }}
                 className="p-3 bg-red-500/10 text-red-500 hover:bg-red-500/20 rounded-xl font-bold text-sm transition-all flex items-center gap-2"
               >
                 <FilterX size={18} /> Сбросить

@@ -28,7 +28,7 @@ export function prepareEventRegistration(profile: any, event: any, raw: unknown,
   const selectedChildren = [...selectedIds].map(id => {
     const child = children.find(item => item.id === id);
     if (!child || child.parentId !== profile.id) throw new CommunityError("Ребёнок не связан с Вашим профилем");
-    return { id: child.id, parentId: profile.id, name: child.name, dateOfBirth: child.dateOfBirth };
+    return { id: child.id, parentId: profile.id, name: child.name, dateOfBirth: child.dateOfBirth, gender: child.gender || null };
   });
   const spouseName = profileUpdate.newSpouseName || profile.spouseName;
   if (input.family.spouse && !spouseName) throw new CommunityError("Укажите супруга или супругу");

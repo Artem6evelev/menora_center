@@ -1,0 +1,78 @@
+{
+  "recordedAt": "2026-10-21T10:46:07.306Z",
+  "sourceCheckpoint": "source-checkpoint.json",
+  "commands": {
+    "lint": {
+      "exitCode": 0,
+      "errors": 0,
+      "warnings": 30
+    },
+    "typecheck": {
+      "exitCode": 0
+    },
+    "build": {
+      "command": "npm run build",
+      "exitCode": 0,
+      "copy": "/tmp/menora-production-build",
+      "currentWorkingTree": true,
+      "realEnvCopied": false,
+      "database": "unavailable synthetic 127.0.0.1:1, no remote writes",
+      "log": "build.log"
+    }
+  },
+  "suites": {
+    "regression-results.json": {
+      "total": 35,
+      "statuses": [
+        "PASS"
+      ]
+    },
+    "production-results.json": {
+      "total": 28,
+      "statuses": [
+        "PASS"
+      ]
+    },
+    "spec-results.json": {
+      "total": 16,
+      "statuses": [
+        "PASS"
+      ]
+    },
+    "render-results.json": {
+      "total": 20,
+      "statuses": [
+        "PASS"
+      ]
+    },
+    "migration-results.json": {
+      "total": 8,
+      "statuses": [
+        "PASS"
+      ]
+    },
+    "browser/results.json": {
+      "total": 26,
+      "statuses": [
+        "PASS"
+      ]
+    }
+  },
+  "google": {
+    "firstGoogleScreenReached": true,
+    "genuineCallbackVerified": false,
+    "brandingApplied": false
+  },
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844
+    }
+  ]
+}

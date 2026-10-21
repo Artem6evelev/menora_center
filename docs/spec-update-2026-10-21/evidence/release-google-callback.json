@@ -1,0 +1,14 @@
+{
+  "recordedAt": "2026-10-21T11:07:16.264Z",
+  "environment": "http://localhost:3334",
+  "database": "isolated local PGlite",
+  "genuineGoogleScreenReached": true,
+  "identityMocked": false,
+  "genuineGoogleCallbackVerified": false,
+  "returnAndSavedDataAfterGenuineLogin": "NOT VERIFIED",
+  "reason": "Owner deferred login",
+  "productionGoogleConfigurationVerified": false,
+  "externalBrandingApplied": false,
+  "piiOrSessionTokensIncluded": false,
+  "nextAction": "Start a fresh event-linked TEST registration attempt, owner signs in with an authorized Google test account, then verify original event and persisted profile after reload"
+}

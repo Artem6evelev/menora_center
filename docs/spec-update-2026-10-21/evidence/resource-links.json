@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://noahideworldcenter.org/ru",
+    "status": 429,
+    "finalUrl": "https://noahideworldcenter.org/ru",
+    "russianText": false,
+    "note": "This direct request returned 429; Russian main content with some English storefront labels was observed separately in the earlier web read. The 429 response itself does not confirm page language."
+  },
+  {
+    "url": "https://www.gov.il/ru/departments/conversion_authority",
+    "status": 403,
+    "finalUrl": "https://www.gov.il/ru/departments/conversion_authority",
+    "russianText": false,
+    "note": "External site refuses automated request; exact requested URL retained"
+  },
+  {
+    "url": "https://nativhagiur.org.il/ru/",
+    "status": 200,
+    "finalUrl": "https://nativhagiur.org.il/ru/",
+    "russianText": true
+  }
+]

@@ -1,0 +1,43 @@
+{
+  "checkedAt": "2026-10-21T11:01:37.324Z",
+  "projectRef": "gwuzekpkfrkmgluzblty",
+  "environment": "Configured Supabase project; production designation not established by metadata",
+  "mode": "READ ONLY",
+  "remoteMutations": false,
+  "transactionReadOnly": true,
+  "columns": [
+    {
+      "table_schema": "public",
+      "table_name": "users",
+      "column_name": "children_data",
+      "data_type": "jsonb",
+      "udt_name": "jsonb",
+      "is_nullable": "NO",
+      "column_default": "'[]'::jsonb",
+      "is_generated": "NEVER"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "users",
+      "column_name": "city",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null,
+      "is_generated": "NEVER"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "users",
+      "column_name": "city_id",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null,
+      "is_generated": "NEVER"
+    }
+  ],
+  "ormReadProjectionCompiled": true,
+  "compatible": true,
+  "expected": "public.users.city_id text NULL, no default, writable ordinary column; application validates CBS ID/name"
+}

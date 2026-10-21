@@ -1,0 +1,70 @@
+{
+  "database": "isolated PGlite, real SQL/Drizzle/actions",
+  "identity": "mock Clerk",
+  "checks": [
+    {
+      "name": "owner SQL adds nullable city_id, repeats without changing accounts/filter/history or inventing child gender",
+      "status": "PASS"
+    },
+    {
+      "name": "owner SQL refuses wrong-city-type and preserves incompatible schema for inspection",
+      "status": "PASS"
+    },
+    {
+      "name": "owner SQL refuses missing-base-column and preserves incompatible schema for inspection",
+      "status": "PASS"
+    },
+    {
+      "name": "third branch needs no gender, preserves old data and completes filter without granting admission",
+      "status": "PASS"
+    },
+    {
+      "name": "explicit hasChildren=false persists for a father without deleting children or granting child permissions",
+      "status": "PASS"
+    },
+    {
+      "name": "city IDs require a known canonical name; stale IDs, arbitrary city strings and foreign redirects fail",
+      "status": "PASS"
+    },
+    {
+      "name": "legacy free-text city remains unchanged without guessed normalization",
+      "status": "PASS"
+    },
+    {
+      "name": "Russian, Hebrew and English search variants share one stable city ID",
+      "status": "PASS"
+    },
+    {
+      "name": "CRM filters on canonical locality ID and counts genderless completed resource profiles",
+      "status": "PASS"
+    },
+    {
+      "name": "anonymous full draft rejects foreign existing child IDs and missing/invalid new child gender",
+      "status": "PASS"
+    },
+    {
+      "name": "anonymous child saves/edits/removes in protected partial draft and survives fresh read",
+      "status": "PASS"
+    },
+    {
+      "name": "draft data binds to authenticated Clerk ID, persists child gender and returns to its original event",
+      "status": "PASS"
+    },
+    {
+      "name": "editing and deleting existing child preserves ID, paid ticket and immutable historical snapshot",
+      "status": "PASS"
+    },
+    {
+      "name": "child gender/ownership and giyur restrictions are enforced in direct server calls",
+      "status": "PASS"
+    },
+    {
+      "name": "current member returns directly, old member completes filter and returns to the same event",
+      "status": "PASS"
+    },
+    {
+      "name": "parallel tabs keep separate targets; event titles/return destinations do not disclose hidden data",
+      "status": "PASS"
+    }
+  ]
+}

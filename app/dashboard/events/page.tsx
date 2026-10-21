@@ -10,7 +10,8 @@ import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
-export default async function EventsPage() {
+export default async function EventsPage({ searchParams }: { searchParams: Promise<{ notice?: string }> }) {
+  const notice = (await searchParams).notice;
   await requireDashboardFilter();
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
@@ -30,10 +31,10 @@ export default async function EventsPage() {
     dbUser[0]?.role === "admin" || dbUser[0]?.role === "superadmin";
 
   return (
-    <EventsClient
+    <>{notice === "event-unavailable" && <p role="status" className="mb-5 rounded-2xl bg-sky-50 p-5 text-slate-900">Исходное событие удалено или сейчас недоступно для записи. Выберите другое мероприятие.</p>}<EventsClient
       initialEvents={eventsData}
       categories={categories}
       isAdmin={isAdmin}
-    />
+    /></>
   );
 }

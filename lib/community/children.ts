@@ -19,6 +19,8 @@ export function prepareChildren(parentId: string, input: unknown, previous: unkn
     const parsed = childInput.parse(raw);
     if (parsed.id && (!known.has(parsed.id) || used.has(parsed.id))) throw new CommunityError("Ребёнок не связан с Вашим профилем");
     const id = parsed.id || randomUUID(); used.add(id);
-    return { ...(known.get(id) || {}), ...parsed, id, parentId };
+    if (!parsed.id && !parsed.gender) throw new CommunityError("Укажите пол ребёнка");
+    const { draftId: _draftId, ...fields } = parsed;
+    return { ...(known.get(id) || {}), ...fields, id, parentId };
   });
 }

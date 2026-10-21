@@ -5,6 +5,7 @@ import { users } from "@/lib/db/schema";
 import { and, eq } from "drizzle-orm";
 import { AFFILIATIONS, FILTER_VERSION } from "@/lib/community/policy";
 import { z } from "zod";
+import { localityById } from "@/lib/community/cities";
 import { saveCommunityProfile } from "./community";
 import { saveOwnChildren } from "./community-children";
 import { updateUserRole } from "./role";
@@ -33,6 +34,7 @@ export async function getUsersPaginated(
   filters?: {
     affiliation?: string;
     filterCompletion?: string;
+    cityId?: string;
     maritalStatus?: string;
     hasChildren?: string;
   },
@@ -59,13 +61,17 @@ export async function getUsersPaginated(
     }
 
     // 2. Условия из фильтров (выпадающих списков)
+    if (filters?.cityId) {
+      const id = z.string().regex(/^\d{4}$/).refine(value => !!localityById(value)).parse(filters.cityId);
+      allConditions.push(eq(users.cityId, id));
+    }
     if (filters?.affiliation) {
       const value = z.enum(AFFILIATIONS).parse(filters.affiliation);
       allConditions.push(eq(users.affiliation, value));
     }
     if (filters?.filterCompletion) {
       const value = z.enum(["passed", "required"]).parse(filters.filterCompletion);
-      const passed = sql`coalesce((${users.filterVersion} = ${FILTER_VERSION} and ${users.filterCompletedAt} is not null and ${users.affiliation} in ('maternal','giyur','none') and ${users.gender} in ('male','female')),false)`;
+      const passed = sql`coalesce((${users.filterVersion} = ${FILTER_VERSION} and ${users.filterCompletedAt} is not null and ${users.affiliation} in ('maternal','giyur','none') and (${users.affiliation} = 'none' or ${users.gender} in ('male','female'))),false)`;
       allConditions.push(value === "passed" ? passed : sql`not (${passed})`);
     }
     if (filters?.maritalStatus) {

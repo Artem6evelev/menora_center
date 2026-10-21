@@ -29,7 +29,7 @@ export function isStaff(profile: CommunityProfile | null | undefined) {
 export function hasFilterProfile(profile: CommunityProfile | null | undefined) {
   return !!profile && !profile.identityDisabledAt && profile.filterVersion === FILTER_VERSION && !!profile.filterCompletedAt &&
     AFFILIATIONS.includes(profile.affiliation as Affiliation) &&
-    (profile.gender === "male" || profile.gender === "female");
+    (profile.affiliation === "none" || profile.gender === "male" || profile.gender === "female");
 }
 export function communityAccess(profile: CommunityProfile | null | undefined) {
   const complete = hasFilterProfile(profile) && !!profile?.isProfileComplete;
@@ -53,4 +53,8 @@ export function safeReturnTo(value: unknown, fallback = "/dashboard") {
 }
 export function registrationUrl(returnTo: unknown = "/dashboard") {
   return `/register?returnTo=${encodeURIComponent(safeReturnTo(returnTo))}`;
+}
+export function eventReturnTo(value: unknown) {
+  const safe = safeReturnTo(value, "/dashboard/events");
+  return /^\/events\/[A-Za-z0-9_-]+$/.test(safe) ? safe : "/dashboard/events";
 }

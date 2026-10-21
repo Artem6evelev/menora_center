@@ -6,6 +6,8 @@ import { fullProfileInput, filterInput } from "./validation";
 import { preserveChildHistory } from "./history";
 import { prepareChildren } from "./children";
 import { CommunityError } from "./errors";
+import { cityLabel, localityById } from "./cities";
+import { eventDestination } from "./event-return";
 
 /** Caller owns the transaction. Used by direct saves and OAuth draft completion. */
 export async function writeCommunityProfile(tx: any, identity: any, raw: unknown, resourceOnly: boolean, submittedAt?: Date) {
@@ -24,19 +26,22 @@ export async function writeCommunityProfile(tx: any, identity: any, raw: unknown
   } else if (previous.filterRevision !== parsed.expectedRevision) {
     throw new CommunityError("Анкета уже изменена. Обновите страницу перед сохранением.");
   }
-  const filterFields = { affiliation: parsed.affiliation, gender: parsed.gender,
-    giyurStage: !resourceOnly && parsed.affiliation === "giyur" ? fullProfileInput.parse(raw).giyurStage ?? null : null,
+  const filterFields = { affiliation: parsed.affiliation, gender: parsed.gender ?? previous.gender,
+    giyurStage: previous.giyurStage,
     filterVersion: FILTER_VERSION, filterCompletedAt: new Date(), filterRevision: previous.filterRevision + 1,
     isProfileComplete: resourceOnly ? previous.isProfileComplete : true };
   let fields: Record<string, unknown> = { ...filterFields, email };
   if (!resourceOnly) {
     const data = fullProfileInput.parse(raw);
+    const city = data.cityId ? localityById(data.cityId) : null;
+    if (data.cityId && (!city || data.city !== cityLabel(city))) throw new CommunityError("Выберите город из справочника заново");
+    if (!city && (previous.cityId || !previous.city || data.city !== previous.city)) throw new CommunityError("Выберите город из справочника");
     const eligibleMother = communityAccess(filterFields).canManageChildren;
     if (!eligibleMother && data.childrenData?.length) throw new CommunityError("Добавление детей доступно только с профиля еврейской мамы");
     const children = eligibleMother && data.childrenData !== undefined
       ? prepareChildren(userId, data.childrenData, previous.childrenData) : previous.childrenData;
     fields = { ...fields, firstName: data.firstName, lastName: data.lastName, phone: data.phone,
-      dateOfBirth: new Date(data.dateOfBirth + "T00:00:00Z"), city: data.city,
+      dateOfBirth: new Date(data.dateOfBirth + "T00:00:00Z"), city: city ? cityLabel(city) : previous.city, cityId: city?.id || null,
       maritalStatus: data.maritalStatus, spouseName: data.maritalStatus === "married" ? data.spouseName ?? null : null,
       hasChildren: data.hasChildren, childrenData: children, agreedToPrivacy: true,
       source: data.source !== undefined ? data.source : previous.source };
@@ -45,5 +50,5 @@ export async function writeCommunityProfile(tx: any, identity: any, raw: unknown
   await tx.update(users).set(fields).where(eq(users.id, userId));
   const access = communityAccess({ ...previous, ...filterFields });
   return { revision: filterFields.filterRevision, access, welcome: !resourceOnly && !previous.agreedToPrivacy, email,
-    redirectTo: access.canViewEvents ? "/dashboard/events" : `/register?result=${parsed.affiliation === "none" ? "resources" : "restricted"}` };
+    redirectTo: access.canViewEvents ? await eventDestination(parsed.returnTo, tx) : `/register?result=${parsed.affiliation === "none" ? "resources" : "restricted"}` };
 }

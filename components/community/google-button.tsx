@@ -1,19 +1,26 @@
 "use client";
 import { useState } from "react";
 import { useClerk, useAuth } from "@clerk/nextjs";
-import { safeReturnTo, validAttemptId } from "@/lib/community/policy";
+import { eventReturnTo, validAttemptId } from "@/lib/community/policy";
+import { ensureRegistrationAttempt } from "@/actions/community-progress";
+import { useAttempt } from "./attempt-context";
 export default function GoogleButton({ returnTo = "/dashboard", label = "Войти", registration = false, draftId }: { returnTo?: string; label?: string; registration?: boolean; draftId?: string }) {
   const clerk = useClerk();
   const { isSignedIn, isLoaded } = useAuth();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
-  const target = safeReturnTo(returnTo);
+  const target = eventReturnTo(returnTo); const attempt = useAttempt();
   async function start() {
     setPending(true); setError("");
-    const suffix = registration ? `&registration=1${validAttemptId(draftId) ? `&draft=${encodeURIComponent(draftId)}` : ""}` : "";
-    const destination = `/auth/complete?returnTo=${encodeURIComponent(target)}${suffix}`;
-    if (isSignedIn) { window.location.assign(destination); return; }
     try {
+      const preparedId = await attempt.prepare();
+      const id = preparedId || (validAttemptId(draftId) ? draftId : crypto.randomUUID());
+      let saved = await ensureRegistrationAttempt(id, target);
+      if (!saved.success && !preparedId) saved = await ensureRegistrationAttempt(crypto.randomUUID(), target);
+      if (!saved.success) throw new Error(saved.message);
+      const suffix = `&draft=${encodeURIComponent(saved.draftId)}${registration ? '&registration=1' : ''}`;
+      const destination = `/auth/complete?returnTo=${encodeURIComponent(target)}${suffix}`;
+      if (isSignedIn) { window.location.assign(destination); return; }
       if (!clerk.client) throw new Error("Вход ещё загружается");
       // The installed Clerk v7 still supports this low-level redirect API used by this project.
       // Callback handling stays in Clerk, including OAuth state/nonce and sign-in/sign-up transfer.

@@ -1,4 +1,6 @@
 "use client";
+import ChildEditor, { ChildValue } from "@/components/community/child-editor";
+import { saveOwnChildren } from "@/actions/community-children";
 
 import GiyurStageForm from "@/components/community/giyur-stage-form";
 import Link from "next/link";
@@ -81,9 +83,11 @@ const programs = [
 export default function KidsDashboardClient({
   user,
   applications,
+  returnTo,
 }: {
   user: any;
   applications: any[];
+  returnTo?: string;
 }) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"family" | "programs">("family");
@@ -99,7 +103,7 @@ export default function KidsDashboardClient({
           : user.childrenData;
       if (Array.isArray(parsed) && parsed.length > 0) {
         return parsed.map((c) => ({
-          id: c.id,
+          id: c.id, gender: c.gender,
           name: c.name || "",
           dateOfBirth: c.dateOfBirth || c.birthDate || "",
         }));
@@ -111,7 +115,7 @@ export default function KidsDashboardClient({
   };
 
   const [children, setChildren] =
-    useState<{ id?: string; name: string; dateOfBirth: string }[]>(getInitialChildren());
+    useState<ChildValue[]>(getInitialChildren());
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [enrollingProgram, setEnrollingProgram] = useState<string | null>(null);
@@ -199,6 +203,7 @@ export default function KidsDashboardClient({
 
   if (!communityAccess(user).canManageChildren) return <section className="max-w-3xl mx-auto p-6 rounded-3xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 space-y-5">
     <h1 className="text-2xl font-black">Дети и семейные программы</h1>
+    {returnTo?.startsWith('/events/') && <Link href={returnTo} className="block underline">Вернуться к мероприятию</Link>}
     {user.affiliation === "giyur" && user.gender === "female" && <GiyurStageForm revision={user.filterRevision || 0} initialStage={user.giyurStage} />}
     <p>Самостоятельное добавление и запись детей доступны с профиля еврейской мамы. Если ребёнка может записать только отец, обратитесь к администратору.</p>
     {(user.childrenData || []).map((child: any) => <p key={child.id}>{child.name}</p>)}
@@ -209,6 +214,7 @@ export default function KidsDashboardClient({
   </section>;
   return (
     <div className="max-w-6xl mx-auto w-full pb-20 px-4 sm:px-6 relative">
+      {returnTo?.startsWith('/events/') && <Link href={returnTo} className="block underline mb-5">Вернуться к мероприятию</Link>}
       {/* Декоративный бэкграунд-блик */}
       <div className="absolute top-0 left-10 w-72 h-72 bg-pink-500/10 rounded-full blur-[100px] pointer-events-none -z-10" />
 
@@ -343,110 +349,12 @@ export default function KidsDashboardClient({
                     </div>
                   </div>
 
-                  <motion.div layout className="space-y-4 mb-8">
-                    <AnimatePresence initial={false}>
-                      {children.map((child, idx) => (
-                        <motion.div
-                          key={idx}
-                          layout
-                          initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                          animate={{ opacity: 1, scale: 1, y: 0 }}
-                          exit={{
-                            opacity: 0,
-                            scale: 0.9,
-                            height: 0,
-                            overflow: "hidden",
-                          }}
-                          transition={{
-                            type: "spring",
-                            bounce: 0.2,
-                            duration: 0.5,
-                          }}
-                          className="group bg-neutral-50/50 dark:bg-neutral-950/50 border border-neutral-200/60 dark:border-neutral-800/60 rounded-[24px] p-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 relative transition-all duration-300 focus-within:bg-white dark:focus-within:bg-neutral-900 focus-within:shadow-lg focus-within:shadow-indigo-500/5 focus-within:border-indigo-200 dark:focus-within:border-indigo-500/30"
-                        >
-                          <div className="flex-1 px-4 py-2">
-                            <label className="block text-[10px] font-black uppercase tracking-widest text-neutral-400 mb-1">
-                              Имя ребенка *
-                            </label>
-                            <input
-                              type="text"
-                              value={child.name}
-                              onChange={(e) =>
-                                handleUpdateChild(idx, "name", e.target.value)
-                              }
-                              placeholder="Например: Ной"
-                              className="w-full bg-transparent border-none p-0 text-base font-bold outline-none placeholder:text-neutral-300 dark:placeholder:text-neutral-700 text-neutral-900 dark:text-white"
-                            />
-                          </div>
-
-                          <div className="w-full sm:w-[1px] h-[1px] sm:h-12 bg-neutral-200/60 dark:bg-neutral-800/60 my-2 sm:my-0" />
-
-                          <div className="flex-1 px-4 py-2">
-                            <label className="block text-[10px] font-black uppercase tracking-widest text-neutral-400 mb-1">
-                              Дата рождения *
-                            </label>
-                            <input
-                              type="date"
-                              value={child.dateOfBirth}
-                              onChange={(e) =>
-                                handleUpdateChild(
-                                  idx,
-                                  "dateOfBirth",
-                                  e.target.value,
-                                )
-                              }
-                              className="w-full bg-transparent border-none p-0 text-base font-bold text-neutral-600 dark:text-neutral-300 outline-none cursor-pointer"
-                            />
-                          </div>
-
-                          <div className="w-full sm:w-[1px] h-[1px] sm:h-12 bg-neutral-200/60 dark:bg-neutral-800/60 my-2 sm:my-0" />
-
-                          <div className="sm:w-28 shrink-0 px-4 py-2 flex flex-col justify-center bg-white dark:bg-neutral-900 rounded-xl sm:rounded-r-xl border border-neutral-100 dark:border-neutral-800 m-1">
-                            <label className="block text-[10px] font-black uppercase tracking-widest text-neutral-400 mb-1 text-center">
-                              Возраст
-                            </label>
-                            <div className="w-full text-base font-black text-center text-indigo-500 dark:text-indigo-400">
-                              {child.dateOfBirth
-                                ? `${calculateAge(child.dateOfBirth)} лет`
-                                : "—"}
-                            </div>
-                          </div>
-
-                          {children.length > 1 && (
-                            <button
-                              onClick={() =>
-                                setChildren(
-                                  children.filter((_, i) => i !== idx),
-                                )
-                              }
-                              className="absolute -top-3 -right-3 w-8 h-8 bg-white dark:bg-neutral-800 border border-red-100 dark:border-red-500/20 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 hover:scale-110 transition-all shadow-md hover:bg-red-500 hover:text-white hover:border-red-500 z-10"
-                              title="Удалить ребенка"
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          )}
-                        </motion.div>
-                      ))}
-                    </AnimatePresence>
-                  </motion.div>
-
-                  <div className="flex flex-col sm:flex-row items-center justify-between mt-8 gap-6 border-t border-neutral-100 dark:border-neutral-800 pt-8">
-                    <button
-                      onClick={() =>
-                        setChildren([
-                          ...children,
-                          { name: "", dateOfBirth: "" },
-                        ])
-                      }
-                      className="group flex items-center gap-2 text-sm font-black uppercase tracking-widest text-indigo-500 hover:text-indigo-600 dark:text-indigo-400 px-6 py-4 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-2xl transition-all w-full sm:w-auto justify-center border border-dashed border-indigo-200 dark:border-indigo-500/30 hover:border-indigo-500"
-                    >
-                      <Plus
-                        size={18}
-                        className="group-hover:rotate-90 transition-transform"
-                      />{" "}
-                      Добавить ребенка
-                    </button>
-
+                  <div className="mb-8"><ChildEditor items={children.filter(child => child.name)} onSave={async next => {
+                    const result = await saveOwnChildren(next, user.id, spouseName);
+                    if (!result.success) throw new Error(result.error);
+                    setChildren(result.children as ChildValue[]); setSaveSuccess(true);
+                  }} /></div>
+                  <div className="space-y-4">
                     <button
                       onClick={handleSaveProfile}
                       disabled={isSaving}

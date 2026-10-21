@@ -8,16 +8,21 @@ export const childInput = z.object({
   id: z.string().min(1).max(150).optional(),
   name: z.string().trim().min(2, "Укажите имя ребёнка").max(100),
   dateOfBirth: dateOnly,
+  gender: z.enum(["male", "female"]).nullable().optional(),
+  draftId: z.string().uuid().optional(),
 }).strict();
+const returnTo = z.string().max(500).regex(/^\/(?:events\/[A-Za-z0-9_-]+|dashboard\/events)$/).optional();
 export const filterInput = z.object({
-  affiliation: z.enum(AFFILIATIONS), gender: z.enum(["male", "female"]),
+  affiliation: z.enum(AFFILIATIONS), gender: z.enum(["male", "female"]).optional(), returnTo,
   expectedRevision: z.number().int().nonnegative(),
 }).strict();
 export const fullProfileInput = z.object({
   ...filterInput.shape,
+  gender: z.enum(["male", "female"]),
   firstName: z.string().trim().min(2).max(100), lastName: z.string().trim().min(2).max(100),
   phone: z.string().regex(/^\+?[\d ()-]{7,25}$/, "Укажите номер телефона"),
   dateOfBirth: dateOnly, city: z.string().trim().min(1).max(150),
+  cityId: z.string().regex(/^\d{4}$/).nullable().optional(),
   maritalStatus: z.enum(["single", "married", "divorced", "widowed"]),
   spouseName: z.string().trim().max(150).nullable().optional(),
   hasChildren: z.boolean(), childrenData: z.array(childInput).max(20).optional(),

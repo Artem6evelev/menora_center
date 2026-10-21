@@ -20,6 +20,7 @@ interface CrmStore {
   activeFilters: {
     affiliation: string;
     filterCompletion: string;
+    cityId: string;
     maritalStatus: string;
     hasChildren: string;
   };
@@ -51,7 +52,7 @@ export const useCrmStore = create<CrmStore>((set) => ({
   toggleFilters: () =>
     set((state) => ({ isFiltersOpen: !state.isFiltersOpen })),
   activeFilters: {
-    affiliation: "", filterCompletion: "",
+    affiliation: "", filterCompletion: "", cityId: "",
     maritalStatus: "",
     hasChildren: "",
   },
@@ -61,7 +62,7 @@ export const useCrmStore = create<CrmStore>((set) => ({
     })),
   clearFilters: () =>
     set({
-      activeFilters: { affiliation: "", filterCompletion: "", maritalStatus: "", hasChildren: "" },
+      activeFilters: { affiliation: "", filterCompletion: "", cityId: "", maritalStatus: "", hasChildren: "" },
       isFiltersOpen: false,
     }),
 }));

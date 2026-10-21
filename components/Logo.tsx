@@ -3,9 +3,10 @@
 import Link from "next/link";
 import Image from "next/image";
 
-export const Logo = () => {
+export const Logo = ({ linked = true }: { linked?: boolean }) => {
+  const Wrapper = linked ? Link : "div";
   return (
-    <Link
+    <Wrapper
       href="/"
       className="relative z-20 flex items-center justify-center outline-none transition-transform active:scale-95 hover:opacity-90"
     >
@@ -30,6 +31,6 @@ export const Logo = () => {
         priority
         className="h-10 md:h-12 lg:h-14 w-auto object-contain hidden dark:block"
       />
-    </Link>
+    </Wrapper>
   );
 };

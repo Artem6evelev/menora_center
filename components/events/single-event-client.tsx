@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import ChildEditor from "@/components/community/child-editor";
+import { saveOwnChildren } from "@/actions/community-children";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
@@ -87,11 +90,13 @@ export default function SingleEventClient({
   userId,
   canRegisterChildren = false,
   canRegisterSelf = true,
+  canClarifyChildren = false,
 }: {
   eventData: any;
   userId: string | null;
   canRegisterChildren?: boolean;
   canRegisterSelf?: boolean;
+  canClarifyChildren?: boolean;
 }) {
   const router = useRouter();
 
@@ -113,9 +118,7 @@ export default function SingleEventClient({
   const [isAddingSpouse, setIsAddingSpouse] = useState(false);
   const [newSpouseName, setNewSpouseName] = useState("");
 
-  const [isAddingChild, setIsAddingChild] = useState(false);
-  const [newChildName, setNewChildName] = useState("");
-  const [newChildDob, setNewChildDob] = useState("");
+
 
   const eventImageUrl = eventData.imageUrl || "/default-event-poster.png";
   const isClosed = eventData.isRegistrationClosed;
@@ -155,7 +158,7 @@ export default function SingleEventClient({
     if (selectedFamily.spouse) adultsCount++;
     adultsCount += extraAdults;
 
-    let kidsCount = Number(canRegisterChildren && isAddingChild && !!newChildName.trim() && !!newChildDob);
+    let kidsCount = 0;
     const kidsKeys = Object.keys(selectedFamily).filter((k) =>
       k.startsWith("child_"),
     );
@@ -181,27 +184,8 @@ export default function SingleEventClient({
       extraKids,
     };
 
-    let profileUpdates: any = undefined;
-    if (
-      (isAddingSpouse && newSpouseName.trim()) ||
-      (isAddingChild && newChildName.trim() && newChildDob)
-    ) {
-      profileUpdates = {
-        newSpouseName:
-          isAddingSpouse && newSpouseName.trim() ? newSpouseName : undefined,
-        newChild:
-          isAddingChild && newChildName.trim() && newChildDob
-            ? { name: newChildName, dateOfBirth: newChildDob }
-            : undefined,
-      };
-
-      if (profileUpdates.newSpouseName) extraData.family.spouse = true;
-      if (profileUpdates.newChild) {
-        const newChildIdx = userData?.childrenData?.length || 0;
-        extraData.family[`child_${newChildIdx}`] = true;
-      }
-    }
-
+    const profileUpdates = isAddingSpouse && newSpouseName.trim() ? { newSpouseName } : undefined;
+    if (profileUpdates) extraData.family.spouse = true;
     try {
     const res = await registerForEvent(
       eventData.id,
@@ -509,46 +493,18 @@ export default function SingleEventClient({
                       ),
                     )}
 
-                    {/* ДОБАВИТЬ РЕБЕНКА */}
-                    <div>
-                      {canRegisterChildren && (!isAddingChild ? (
-                        <button
-                          onClick={() => setIsAddingChild(true)}
-                          className="flex items-center gap-2 text-xs font-bold text-[#FFB800] hover:underline mt-2"
-                        >
-                          <UserPlus size={14} /> Добавить ребенка
-                        </button>
-                      ) : (
-                        <div className="flex flex-col gap-2 mt-2 bg-orange-50/50 dark:bg-orange-950/20 p-3 rounded-xl border border-orange-100 dark:border-orange-900/30">
-                          <div className="flex items-center gap-2">
-                            <input
-                              autoFocus
-                              type="text"
-                              placeholder="Имя ребенка"
-                              value={newChildName}
-                              onChange={(e) => setNewChildName(e.target.value)}
-                              className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg p-2 text-sm outline-none focus:border-[#FFB800]"
-                            />
-                            <button
-                              onClick={() => {
-                                setIsAddingChild(false);
-                                setNewChildName("");
-                                setNewChildDob("");
-                              }}
-                              className="p-2 text-neutral-400 hover:text-red-500 shrink-0"
-                            >
-                              <X size={16} />
-                            </button>
-                          </div>
-                          <input
-                            type="date"
-                            value={newChildDob}
-                            onChange={(e) => setNewChildDob(e.target.value)}
-                            className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg p-2 text-sm outline-none focus:border-[#FFB800] text-neutral-500"
-                          />
-                        </div>
-                      ))}
-                    </div>
+                    {canRegisterChildren && <ChildEditor items={userData.childrenData || []} onSave={async next => {
+                      const result = await saveOwnChildren(next, userId!);
+                      if (!result.success) throw new Error(result.error);
+                      const previous = new Set((userData.childrenData || []).map((child: any) => child.id));
+                      setUserData({ ...userData, childrenData: result.children });
+                      setSelectedFamily(current => {
+                        const selected = { self: true, ...(current.spouse ? { spouse: true } : {}) } as Record<string, boolean>;
+                        result.children.forEach(child => { selected[`child_${child.id}`] = !previous.has(child.id) || !!current[`child_${child.id}`]; });
+                        return selected;
+                      });
+                    }} />}
+                    {canClarifyChildren && <Link className="block underline font-bold text-sm" href={`/dashboard/kids?returnTo=${encodeURIComponent(`/events/${eventData.id}`)}`}>Добавить или записать ребёнка — уточнить этап гиюра</Link>}
                   </div>
                 </div>
 
@@ -652,9 +608,6 @@ export default function SingleEventClient({
                   setSelectedFamily({ self: true });
                   setIsAddingSpouse(false);
                   setNewSpouseName("");
-                  setIsAddingChild(false);
-                  setNewChildName("");
-                  setNewChildDob("");
                 }}
                 className="p-2.5 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-700 transition active:scale-90"
               >
