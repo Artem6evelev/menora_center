@@ -1,0 +1,17 @@
+{
+  "checkedAt": "2026-10-21T12:35:01.929221+00:00",
+  "environment": "http://localhost:3337",
+  "database": "isolated local PGlite; server/data preserved",
+  "clerk": "real TEST; no identity substitution",
+  "status": "NOT VERIFIED",
+  "genuineGoogleCallbackVerified": false,
+  "lastObservedPhase": "Google identifier screen; no callback observed",
+  "ownerResponse": "Window unavailable / cannot sign in now",
+  "attemptClosed": true,
+  "ownBrowserAndHelperStopped": true,
+  "newAttemptRequiredForContinuation": true,
+  "productionGoogleConfigurationVerified": false,
+  "externalBrandingApplied": false,
+  "credentialsEnteredByAgent": false,
+  "personalDataStoredInEvidence": false
+}

@@ -1,0 +1,23 @@
+{
+  "checkedAt": "2026-10-21T12:28:28.281359+00:00",
+  "method": "Unauthenticated GET only; no login/actions/database writes",
+  "productionSource": "https://www.menorah-rishon.com",
+  "status": 200,
+  "liveFrontends": [
+    "clerk.menorah-rishon.com"
+  ],
+  "environmentEndpoint": "https://clerk.menorah-rishon.com/v1/environment",
+  "environmentStatus": 200,
+  "publicClientFields": [
+    {
+      "path": "environment.display_config.google_one_tap_client_id",
+      "clientId": "666442068619-v9dlmortolk1p71pnsb6munrgv57lr64.apps.googleusercontent.com"
+    }
+  ],
+  "liveRedirectClientVerified": false,
+  "liveAuthorizedRedirectUriVerified": false,
+  "googleCloudOriginsAndRedirectsVerified": false,
+  "liveCallbackVerified": false,
+  "publishedGoogleBrandingVerified": false,
+  "dashboardAccess": "Native Chrome actions rejected because user changed the app; private LIVE settings not reached. No permissions bypass."
+}

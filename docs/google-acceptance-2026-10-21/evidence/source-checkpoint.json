@@ -1,0 +1,1595 @@
+{
+  "checkedAt": "2026-10-21T12:28:45.634664+00:00",
+  "head": "1af635bbc651ee3e6bd203b80dac15d55fdcc9a9",
+  "fixture": "localhost:3337",
+  "filesCompared": 263,
+  "unexpectedDifferences": [],
+  "overrides": [
+    "actions/telegram.ts",
+    "app/layout.tsx",
+    "lib/community/welcome.ts",
+    "lib/db/index.ts",
+    "next.config.mjs: PGlite externals only"
+  ],
+  "fixtureOnlyRoute": "app/api/acceptance-state/route.ts; own authenticated profile, boolean assertions only; local PGlite guarded",
+  "entries": [
+    {
+      "file": "app/robots.ts",
+      "sha256": "e696448e604b878c956fc365d6ba659d1d193f78cefd6922a20be87765360d23",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/favicon.ico",
+      "sha256": "9b6195235cff638052b1b49004680b2ef578829e50ec0d10e081b4cde37bd35a",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/sitemap.ts",
+      "sha256": "edf00f7280ca5f8a0d16f65ede07b57f782612408c2fdb4e8b5f56a06d800045",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/layout.tsx",
+      "sha256": "b3b38641fdb92526f83cd376c7121a4e8610e52a6c5c4fb07c2fa9e310158677",
+      "fixtureSame": false,
+      "expectedIsolationOverride": true
+    },
+    {
+      "file": "app/prism.css",
+      "sha256": "d56163e5ed2d4785113180f2a8dd7e5c58ac39669d84400c72e9d78917785b7b",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/globals.css",
+      "sha256": "1ea728c650b9dbee1b1f963df8d202bd1d62fda151be8900ebe70c974a1cb02c",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/sso-callback/page.tsx",
+      "sha256": "182829f7fd6ad03357db4b7907a1b6504ae16acdf41664dd07aa266c1442b36b",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/auth/complete/page.tsx",
+      "sha256": "76ea225562a4a3e9ca0da422cb9e913ed8fb24647e6a34412b972b3fdef92958",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/admin/page.tsx",
+      "sha256": "2425576d981efdec419344c75f67a2f9716137388a87c20d3305f2c1c5d1bf29",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/(marketing)/layout.tsx",
+      "sha256": "5861fd302027de515de04bf5f820bc0a29b1fdee92cb523c0291469a5c6cbbbe",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/(marketing)/page.tsx",
+      "sha256": "8f4a5f2deffa500274ddeeaaac5696685a5516304ce5d9ed12302630e947b5ad",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/(marketing)/contact/page.tsx",
+      "sha256": "b9d05a4609012682b3e6aca7e0830bdbe9e8ba647c55ad161966e1f8bc2e9e1d",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/(marketing)/privacy/page.tsx",
+      "sha256": "368e73de81fb4b3b969355e8b277d00b852c523c352d924cb1839c9272c4ef6a",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/(marketing)/authors/page.tsx",
+      "sha256": "c0dbc9b5ba796bde607c021517ba5aa430d79aa7c2aec62611e04da8c1fad544",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/(marketing)/authors/[slug]/page.tsx",
+      "sha256": "1b2892cdcd9b4e9a4dd327a2196219ba60b863b6fab39946456c1c90afefd16f",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/(marketing)/terms/page.tsx",
+      "sha256": "ef5ce5fd8239fa870fbffeaa9a9c5451e00962a65ad58ab2dc3e5a7c45706e53",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/(marketing)/about/team-grid.tsx",
+      "sha256": "9d81546303ab0e312ef2bcd4b3ae70cabcb2189dfbf9c495ac892ebd1411fc1d",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/(marketing)/about/page.tsx",
+      "sha256": "fbc8566fb247f13a5d2e68a861f70685d091118bcafbf264439dd7980eff0f64",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/(marketing)/welcome/WelcomeClient.tsx",
+      "sha256": "ee0d58e163a2cf5ab5f8fa6bb63691f0ca48659090520886d176115f33931c57",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/(marketing)/welcome/page.tsx",
+      "sha256": "927cf0bfa05dc88f81931517e45771b81ee9b47ddafbe763c7574c6376e62a77",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/(marketing)/register/page.tsx",
+      "sha256": "a273c371221876f0fb56591424c95187226d44247e5500c0fe65873c50cc36a4",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/(marketing)/news/page.tsx",
+      "sha256": "3f015db803d601b233e86ee9c27f23609f76b29ed0c7f03c9ae0cea1e98108f9",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/(marketing)/news/[slug]/page.tsx",
+      "sha256": "ee5cc255dac034a8bb070ce2242ffe88c0c63b68f5e4554ad651dfc685796710",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/(marketing)/rules/page.tsx",
+      "sha256": "24dc9cb05f998136848c7d2bd9d5b7294684236e01889757907beebb3bd61f7a",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/(marketing)/lessons/page.tsx",
+      "sha256": "0ea045e7bbf359373f66638690b9c331add55b6c7b1c42e48b64572f9eb99a6d",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/(marketing)/events/page.tsx",
+      "sha256": "1b2261d3cd123f9d1db17905ba1cc421860ce214ac6d079ce43788fd334daade",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/(marketing)/events/[id]/page.tsx",
+      "sha256": "1a04632cad5f4cdf53032349cf5cf95101932e61cfd5ee53d5c9dadd6a420cd4",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/(marketing)/kids/KidsProgramsClient.tsx",
+      "sha256": "9cf9e695074c820b608ad3cad1c6ba4a47d7e293eb385dc66dce92a42b9c849e",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/(marketing)/kids/page.tsx",
+      "sha256": "58307268f121e386a2b2d16f3f4560a0a6f7baff28d108d3cf78c19cd767cd8b",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/(marketing)/pricing/pricing-table.tsx",
+      "sha256": "40e10316d0faa5b242dacc58b92d4e07180e4b86f27861a6c1efa7e3538e22a0",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/(marketing)/pricing/page.tsx",
+      "sha256": "9579644a74bb87e614ac1332054ae8d31cca2cd9933787747b3f04e69358b132",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/(marketing)/services/page.tsx",
+      "sha256": "eb04b3b109d10ef3d31969b1f0173ee35f5103ffc872ba69c070b9625b0a047b",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/dashboard/layout.tsx",
+      "sha256": "2e0fe8f91a3d742dd037fa8635d366fe545abda13b6694d155628b5f0cd83e55",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/dashboard/page.tsx",
+      "sha256": "b67a12d60ae4ed01912f551205478f425612d2eb6e3824c37556629b556a7c72",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/dashboard/chat/page.tsx",
+      "sha256": "6fe12e35598f908864f1fe418d5e0357d0b4d6bb92c76031f003b57675354859",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/dashboard/authors/page.tsx",
+      "sha256": "d1047269f4d80f0ba45724598643ad0ff9b440c4573db937c348a6d78d77f0af",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/dashboard/my-events/page.tsx",
+      "sha256": "1c57a617098027a6a78efd1153de2ac0cdd82e660ce0f94928408685013fdb62",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/dashboard/my-services/page.tsx",
+      "sha256": "b577f6a99b70d6b30424ad0e26861b07096c4ae00f44f68f94c2be90b5e577e2",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/dashboard/videos/page.tsx",
+      "sha256": "78ad01ea8d59bea40eda3f68fb2322842c22a2892593c017b47e8e5673ed931e",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/dashboard/news/page.tsx",
+      "sha256": "a3ab50e2547fd2e8a302a24988e9ab2e9adc0bda2823cc4e7b947dc4f65c9423",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/dashboard/news/create/page.tsx",
+      "sha256": "5869ff342f539681508d943e0966a13b69b87c96fac32faa1529aac1c7c02dc9",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/dashboard/team/page.tsx",
+      "sha256": "584c775d6a263eb54fcf78a8602167087e8fee02aee18206fc9317019ba42b5d",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/dashboard/author-profile/page.tsx",
+      "sha256": "e1c8d77abdb44fe7ac8f45eef455095d7a2c7250437ae641c420bdff1e080ef2",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/dashboard/kanban/page.tsx",
+      "sha256": "8dceea88bfb2b4890dd566d1703667877d1f9be4c46fac9f534f557b47187a69",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/dashboard/telegram/page.tsx",
+      "sha256": "c3d97f2e35fdc13a154159986a0314bb3eb194dc391e58be96b3b00272fe211c",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/dashboard/users/page.tsx",
+      "sha256": "f790bc7cc8026e8aa403f5df79cfde112b1a37cc650d030249f51bcfce9ef65f",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/dashboard/kids-applications/page.tsx",
+      "sha256": "778656fedac3de62e7d779cdc39a7afb2e021dfb79b77bb51a07013592cb2c16",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/dashboard/applications/page.tsx",
+      "sha256": "9aa48d9f7822b0bdbd0c58c5c5fb1f818bb5ca5a49eff73c5df845fa82ea6d1b",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/dashboard/service-applications/page.tsx",
+      "sha256": "028e5ccf5888a84591060e8fd4f2ce14827c59d2632c5571060f498f952bb509",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/dashboard/events/page.tsx",
+      "sha256": "3765ab9f91f2fc5dcff130b4f6c6358459a01a484dedbd864645c42a28a811a3",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/dashboard/kids/KidsAdminClient.tsx",
+      "sha256": "a051648801169a2fd4f06d1832534c097d3277ee24b5dd19b6aabadcab0c0374",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/dashboard/kids/page.tsx",
+      "sha256": "2ea56e9c69e02c3d031b4cb73170756ac7a7186bb3d6a4245da12da4963a284f",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/dashboard/kids/manual/page.tsx",
+      "sha256": "a0b131906a52deceef725ebde089bc4eecbf10e260b895fbd9a747c4923c73e1",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/dashboard/services/page.tsx",
+      "sha256": "f8101899c9c0be47223e3f9986870fca43f7e2096d8a2af3fd630208db2172f4",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/dashboard/moderation/page.tsx",
+      "sha256": "36d20f66e41a48ab1414578d3962104c2ef8bb6b601d89d21cf30b03411957fc",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/api/telegram/webhook/route.ts",
+      "sha256": "a838da0054d65388415f7352621aac4e5e2e2eddd1a6c62b0adba5b07b79923c",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/api/telegram/remind/route.ts",
+      "sha256": "5c0e5b39cc92b1088f3b5d7607ca4e776114cad6b845b61e9242100b3cf0b0b4",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/api/community/event-title/route.ts",
+      "sha256": "798aa00a17a5e950054a323872c206084cc0261555254381cdeec95dfbea5306",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/api/community/cities/route.ts",
+      "sha256": "f05a763e71dc7ec349cd411619737f1f437ee08fd9345b6d65ad3cc779044d71",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/api/webhooks/shutafim/route.ts",
+      "sha256": "eb2d47b034d3862941886da2e03ef0b2606788547f2e4457c07fb811cae01bff",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/api/webhooks/clerk/route.ts",
+      "sha256": "f893d4a23ebeebe0cfed0ebf4dbcca38cf6a3e70b1221f2b5af194f64ea523f2",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/(auth)/sign-up/[[...sign-up]]/page.tsx",
+      "sha256": "9c8b2075caea2611800972e18cf43aa99ebc26625cf06cf098b106727b7214bf",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "app/(auth)/sign-in/[[...sign-in]]/page.tsx",
+      "sha256": "eeeafec25e417027536d133350001509202802f2ea6d02dbd182357255cf6107",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "actions/community-children.ts",
+      "sha256": "00b187dcb4d1607a3b05ab078be1c2e8aab9a866d737413161eee0e25b32cecc",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "actions/news.ts",
+      "sha256": "d5020766f28cab00118ec87c61b29c83a7501c162025226a8b04586a72b6481f",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "actions/video.ts",
+      "sha256": "6b97b285fea8d61f4f24f3c9429edfba8095fbcee900a9d51b9ce3a0a2ef05ae",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "actions/event-registration.ts",
+      "sha256": "798b0f221bc5f6512c607b5a17e7d3ae3fefb103acdda04e67eec612f535fb98",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "actions/community-drafts.ts",
+      "sha256": "b8a9c4f7687fcbc51d5e53a5f2c9b092dda5466b1fc13ecfdd5c40aaf3be8809",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "actions/moderation.actions.ts",
+      "sha256": "77332563dddcea970fbcc06db409054678ef7ef9f725fc7435e50e062b68be85",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "actions/community.ts",
+      "sha256": "fcfda2cd5d807ee28f06d2a7fa67abfdd6282a87e362a01174920e45890e9e6e",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "actions/kids-profile.ts",
+      "sha256": "ac4592b99dec9cc55f6551b69db9e3e3ed39a92c2c57c3278888e1388905eb6e",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "actions/dashboard.ts",
+      "sha256": "8a2faee87bb07c971e84a55577eeacd8eda20879b9e29b838c8e01e4f5ef8c0c",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "actions/role.ts",
+      "sha256": "7094591cc6f71cd6a0068f6a5d30976ecd6627c513a177e7aef51ce817265429",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "actions/kids.actions.ts",
+      "sha256": "29e3528af367957a6caed45f2dfe9deb5ab66d800fc8034dfb46a830630a8608",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "actions/bot-settings.ts",
+      "sha256": "ed746712fd53b2ae25fa58380a5773d78baba1506063da695b80aa46bb6c1744",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "actions/notification.ts",
+      "sha256": "d7e6b2ca4e8319114c8f3f08cc9e7fc20b3505e5d00836670e2a62685a3a8bc0",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "actions/telegram.ts",
+      "sha256": "d595951dcb445feae0df81b706e7f23f9b686569fc7c8be080ce65e1e3c34340",
+      "fixtureSame": false,
+      "expectedIsolationOverride": true
+    },
+    {
+      "file": "actions/author-profile.actions.ts",
+      "sha256": "072cd842d58d755f5301b5f7e0a43a97333704161b59ca3e93cbfab59a9fb695",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "actions/whatsapp.ts",
+      "sha256": "b7f6fabaa66bc8718f3132ffca3ea5da78c7fb9663445b116c0393bbd4d841d5",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "actions/event.ts",
+      "sha256": "b0508311eecffea2c0af13e2a35f48bd0b413ffd7652fdb46b08c2e964f6bb7f",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "actions/user.ts",
+      "sha256": "dc78d1f65325d2254f3e496558d70d8f5e9e1ec2fd3be1f7f14679fd1ec7157c",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "actions/service.ts",
+      "sha256": "7e78bb819921c30626878d0b9f2f6b337f5635c7f03183900d298adb12b76b0c",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "actions/community-admin.ts",
+      "sha256": "5874df8d5242b094378142fe1ca40d36ae994ae2d7f4b7d17739a0fd6ca495e9",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "actions/task.ts",
+      "sha256": "baeda3b2f2a6b199a8dbfe7ea26a4fb1ddb5a7ff78ec607d5f51834ae32a91dd",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "actions/authors.actions.ts",
+      "sha256": "e9b64970b9f1e80d34271eee7640c0c1d9562e1703e40b78b9a3cc5a9bf86a0a",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "actions/community-progress.ts",
+      "sha256": "85ff56b8f182ad93ecf8dbf676101edf3f2e175cf9bea4d0d7cb2b2bb30135d4",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/grid-lines.tsx",
+      "sha256": "fe98ab083a168d47af3331a80f262f309e7e5914356192ecb7c9b230241efb93",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/pricing.tsx",
+      "sha256": "8bd2c6112fc48719908d23f53e89a199eb1b3873c1e166ed0360156a05277d62",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/UniversalPaymentForm.tsx",
+      "sha256": "b8446f15b9852c25f75e0992c24662871bcd905f0a261620d369e71b69b7a808",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/horizontal-gradient.tsx",
+      "sha256": "221cf731a885ff5353da4bb7bd2889d8c20e87d606bef8dbc400c88fbda90e2d",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/login.tsx",
+      "sha256": "44aaa6f39ef7b1e512af508cc783524a1fb2cfbaf6da2e0ff144f464b5eb6d05",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/features.tsx",
+      "sha256": "75cb162897a1d819f23acdc3576fd48964fe7a1da8b7de1316529b159ffd8a09",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/container.tsx",
+      "sha256": "03bd775086e6f2d09355fde903101b2e76be6caa624b3a0d57ca18ff26a0dfc2",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/blur-image.tsx",
+      "sha256": "ce61d17387ed0933e9ee9a7bb1c62154f434f0d81dae9496e274fc1e48424835",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/background.tsx",
+      "sha256": "c5e3b5d367f337cf567102a373e63172de130988e05798a4b76337f7d59b212d",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/contact.tsx",
+      "sha256": "5dec4ed07b04f596f9616feaa9af881dc78d885e9575abdc19a36f75651279d1",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/blog-card.tsx",
+      "sha256": "fc76fff780c6eb8301fcc3f280c67ce54243260a6acc7c0da1a71890ffb89f1f",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/featured-testimonials.tsx",
+      "sha256": "5cbc781fd1e6b72c2f99c9c0995a79a2ee9eb9791035ac73503858d34d25ae07",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/testimonial-column-container.tsx",
+      "sha256": "cb8c473b58305a2d6f1f3ceedf4084b08c1cfc3652105570acda3648d35f82df",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/blog-layout.tsx",
+      "sha256": "52e3083e0d2f587b0c7de6204212ff631e3e4528eaba279f2ff4262a6a4806e4",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/heading.tsx",
+      "sha256": "ec05b8eed8553fd574861c616b119db84a95b858b08d891b2c4ac4a584422c4a",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/common.module.css",
+      "sha256": "2d7eb17804d82dc6b7c108c40b7b2763bd7b6a6b2827a7af12ec54ef55998a0c",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/footer.tsx",
+      "sha256": "6bbe839ad0bd8fbe89e9858141fbb36533acf7310340b481983314d4bdd6677e",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/switch.tsx",
+      "sha256": "3d16d27399378ffb7528618fa75b2ca85a0089a4da378493d4056b4b3f4470dc",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/testimonials.tsx",
+      "sha256": "4105ded846316693c818443e9e2b74daab9d7871705374df67e5ab15cb9e9b61",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/signup.tsx",
+      "sha256": "f6ecff01cbd50a4cb7de74df4698c61f2b4d1b83e3c6baaacbd1fe79ee1cc16f",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/globe.tsx",
+      "sha256": "2d78ede82009b3807d56c8aec814e170b5c500951584301cee4c3ea07f0ca60b",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/companies.tsx",
+      "sha256": "acc7213ed146611e363e7118fc0e8cb1abfa3fcb193febc19f7e385b92b0974d",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/grid-features.tsx",
+      "sha256": "ea543d63344a863f48892c53993c5478ef598e2cd31e207c4631d45d9704c78a",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/cta.tsx",
+      "sha256": "47933bd173d8e351af82996c1c18b65727fbc394f7e0ea0e36565d26a969b98d",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/Logo.tsx",
+      "sha256": "4bf381f3bf581af2ae9e7f70ab24375069c9000dc46c3ef69270a0953eb6f545",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/password.tsx",
+      "sha256": "f9204773cccb946c682e8e486178a95c776c24d55935e49e8fe37d8996d4b444",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/badge.tsx",
+      "sha256": "2ca8f5abc59c921b313dd89b631614f34003d0bd4394135e5c8f92372c0419ec",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/mode-toggle.tsx",
+      "sha256": "9b72f976dfb9cc03e53581a3850f744846e8eb44e69df4903ff9fe25fddebb96",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/button.tsx",
+      "sha256": "46d82fbe4b24a4be2e6cce97607b2f02f5e962f3e1510e2bed632e9cdd31dc0d",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/in-view-div.tsx",
+      "sha256": "08998bf16dc72a3a07d36a703585f09f6160af0544e3377ae9b89cca584f195b",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/subheading.tsx",
+      "sha256": "4d80257b421b18f27bcc3836eaf25444c765bf5f648d261569a81517daafc50f",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/ui/popover.tsx",
+      "sha256": "5bb0d109be0be9a09a4cbdc346821403d616efd25ff95461c4c314a4cf2823f5",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/ui/animated-tooltip.tsx",
+      "sha256": "5795c4048b5ff286b1d10d964cf2a6a1eaaf3996c96e93e006bc8628b00e15ea",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/ui/label.tsx",
+      "sha256": "6622e79a1d1ba2fb0d0ab2e68cc0beb1d36c331806b0a5f452e6490ca2d41cf8",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/ui/calendar.tsx",
+      "sha256": "a9afa652cc1d22f8f0d6174bd159c4434800add0522090294727f0b241a98b0d",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/ui/infinite-moving-cards.tsx",
+      "sha256": "d938c43d669cb4abfae838c84483f0b573ff2b839edf2ac9286027ed7d2d06b1",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/ui/form.tsx",
+      "sha256": "b36131e4973b539aab9d03cd5588d90dc3809bce23cff379ec60831fabfd09f3",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/navbar/index.tsx",
+      "sha256": "0dc405fe1290ee23a50070b51e58df16b814be1b405f56b3cb265d8a9215c16d",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/navbar/navbar-item.tsx",
+      "sha256": "47d3e67022bbf278465a2a8e33b59fe00577b4a9ccc1dde6de573f6617af3222",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/navbar/guest-navbar.tsx",
+      "sha256": "dae94ab044237f0785537f5a1734b0e41db883ed570fc97c3800759f49c0e3a2",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/navbar/route-navbar.tsx",
+      "sha256": "846d11ef905fdbb37cd1bdf195db00bd41597025047d0703054d029a585b1d86",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/navbar/mobile-navbar.tsx",
+      "sha256": "5b8f6218ca80f2ac47d67d9613e355525dd42fbf9106c91878936ec8b71ef962",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/navbar/desktop-navbar.tsx",
+      "sha256": "d557fbecbbd60fee96366e6f0127d6e590caa9ccf90139563ec914b343489bb4",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/landing/hero.tsx",
+      "sha256": "640fee0278598497e16ac74054261ba469c97ace5cca09a03155e6e4faadef7c",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/landing/upcomming-events.tsx",
+      "sha256": "f710e1347512e8fe18b1c4ddd0aeb5732180cf6f561256a84659aca3b1fc1538",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/sections/service-section.tsx",
+      "sha256": "00dec1c5af2f7fdd2ab7b12bf883daee255c8075ea9b9dea3def03189ce60add",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/sections/event-section.tsx",
+      "sha256": "48fd1ee6f87bb54617847e6def228a37d75660a21e07756251a8814c20d3943d",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/authors/ContentTabs.tsx",
+      "sha256": "a67cefa9718bdf1887b00ff7c4f2ef86adfcf20f9dad8fae382630b3e8bef1e9",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/authors/AuthorSidebar.tsx",
+      "sha256": "d5f7c55f8569e2924eaed5ea62ef90d80f74b4fac814fba3c26dd7d2d9b5c57f",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/author/ContentTabs.tsx",
+      "sha256": "b5b825a5862f83539c92ffc6a6390c545d854497695e126ad3ab03b7856455d0",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/author/AuthorSidebar.tsx",
+      "sha256": "9556d3f44bfa72398caa040351e064103289787a9d80f8dcb7b814f065a8f808",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/admin/MakeAuthorButton.tsx",
+      "sha256": "fa155a94b4ce3f7f6ea3d4c69aff5e36e8611d1bfa2d065aaecc6f9384dec02f",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/notification-bell.tsx",
+      "sha256": "3ac1e822db5f2df89e2ac8c11bbc0c270577059e89206929511084da6fa73eac",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/ModerationClient.tsx",
+      "sha256": "ef720006125e1eba1c4977da76a83414d14cae8976d85b185356442d68bc353f",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/admin-videos-client.tsx",
+      "sha256": "455977a165b2b083a4a4db82ff220439649fa01ee61edb20d3ded1c1afccc730",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/auto-register.tsx",
+      "sha256": "dc5be09c04ea714998a617acbcf7ecb8812f59a9b20760efad84225271cf480c",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/AuthorProfileForm.tsx",
+      "sha256": "a062313f2364287004c79fddc39cef89672618aba0b4499145266bb227f2aeb4",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/team-table.tsx",
+      "sha256": "2d4c1e96ec5aad02acf930951c830a41c53ccbc408e1a8be83f1536fdfafc688",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/dashboard-client.tsx",
+      "sha256": "bf9859a9a46e8a2eaf4ee2b88a180f7e6b954413fde2047822461326525eeede",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/sidebar.tsx",
+      "sha256": "7923d27d0f056b2ea6def3fe3eb81e59077b91add5f15d1c2fd25bac617a0a3a",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/AuthorContentList.tsx",
+      "sha256": "5c3f548d88def3f5ea69ade4545982af808c7ce26da54205ee2526feaca6b46f",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/profile-manager.tsx",
+      "sha256": "655849277753b63182d04dfc69ee0d339df53b9e1eaac68cd3883a3f4789da07",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/chat/chat-vlient-view.tsx",
+      "sha256": "4b0665292a60a5c8cd4d13207843510b9c49c25552a4ed8f76cd822d8fd1db0c",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/chat/chat-admin-view.tsx",
+      "sha256": "67f494e4550036acc7abffe84b970c912acfa9d0663357a5cf3321c4cec97972",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/authors/admin-authors-client.tsx",
+      "sha256": "a30983ce3f21088a8c508c83ea28fd555560df8dab6a5d3c0692d99609634d74",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/my-events/page.tsx",
+      "sha256": "85b08d3c57ba6a1babfc0921ae1f3198d8e10fa233dde2d7e5e7965c586fdd8d",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/news/comments-section.tsx",
+      "sha256": "b353c5e9787c815d18fc90bf875e116968cff0aa8e4b87e17ed23b65fe56ae2d",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/news/admin-news-client.tsx",
+      "sha256": "90a5376a683a9de1fd0aac5e36a71ac9260d1ae3c9ec75559620ade6cf8a457e",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/news/public-news-card.tsx",
+      "sha256": "fc506df95a2ceec7026b1e1aaef671545d96d312f1a8526dfc513667e972e1ef",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/news/create-news-client.tsx",
+      "sha256": "387f867f02c27781288eb494bb3a67ac22c65a16ecf125ca8ff9996c9911d465",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/kanban/kanban-card.tsx",
+      "sha256": "aae40514801f4a0fe294f579ec1fca4bd286b3583690648e9c3382c3eb130e28",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/kanban/kanban-board.tsx",
+      "sha256": "c51f8079bfc5b8b9ace5f19e4f8353166de5d25527dbd8a854726f5a7841ea88",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/kanban/task-modal.tsx",
+      "sha256": "4a4537134f9454a374ae27e29f0900de1e5d87c72efa918c2fd07337ebce39f8",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/kanban/kanban-column.tsx",
+      "sha256": "6f5284e6c5fc1f6e6ff675cda4e394a067b94dbd709cf163928535c2316dc728",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/telegram/telegram-client.tsx",
+      "sha256": "4009d882873e88176cc87e871c0a6a9f903271b4740ac0375c53cb112437dd36",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/users/bulk-message-modal.tsx",
+      "sha256": "23da45ccb4c175764027307ef12870c3b655e3de1a144d09ec3b55b92514b61e",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/users/user-slider.tsx",
+      "sha256": "f8d85b644fe9730510f6efef55206cb3daf158d328cefb28fe163be9acbaab36",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/users/crm-table.client.tsx",
+      "sha256": "fde66d6a3b393e748d989ed156083c50d706b2dfe8dfc86426cf3d8293d21897",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/users/community-profile-details.tsx",
+      "sha256": "bc3d72136aa6ea43a135f9de4170d3b128400de00dbef91c55566432d6121967",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/kids-applications/kids-applications-client.tsx",
+      "sha256": "6e8e8cf6e31e40b9ab8abb5d8e26904d1c8c64f834a66bd20d6de919f98060fd",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/applications/application-client.tsx",
+      "sha256": "845107895c8776fe17bc3a5c7c4785b86da483024af7b9acdd765145dc25faa3",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/service/service-category-modal.tsx",
+      "sha256": "8a4e3e307cfc4dcedab65e1dec49236c69176b759a3f36df4223f0b290a29f6b",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/service/service-card.tsx",
+      "sha256": "6feb1ed020fb3d3efd27864d3432b355735b7fb231742371431add7e55f0a52e",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/service/service-modal.tsx",
+      "sha256": "041f2e2981d53155725720b1d1d4584dbfc39fe9953e6edaf17f9c44a535bf00",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/service/service-client.tsx",
+      "sha256": "bf48897373ce87c81533ad2ed83ca2c8e67bc7fbe7fc5fc0e66daac3e87bf340",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/service/service-applications-client.tsx",
+      "sha256": "b98f78c651be972b3ead4904dbcdbd4a65ddc164aedd940b5d440f3a1742c5df",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/events/event-modal.tsx",
+      "sha256": "1297439514f452df6eeae9ec8d0caec0fb4d8573033d98406997453bded34520",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/events/event-card.tsx",
+      "sha256": "986b9f5d94f3368d681ff95a7d89ff9a34df370d4b96bfe4139ff16bd567940e",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/events/my-events-client.tsx",
+      "sha256": "8f1a7b3768baf4015ed786aba05dbd568400126ce29df44a70b1e0a8500606d0",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/events/mass-whatsapp-modal.tsx",
+      "sha256": "1143a4dac602e0b63448acbcf5a440ebefdbccfcdbc28885de723e4bfc1a73c7",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/events/event-client.tsx",
+      "sha256": "a990f1b5076907be5720f89437ef8cad74577b52eff85cca2e9c677a8195418c",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/events/my-services-client.tsx",
+      "sha256": "89896dd8612e99b592399ab94dad9857a9e03d46f710b6cf707f1130f67c028b",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/main/onboarding-form.tsx",
+      "sha256": "a6ceb398c129ff4c9914d3338e8a9054c815dff562da8b21e7f2a743b236ead9",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/dashboard/kids/kids-dashboard-client.tsx",
+      "sha256": "c3721d23b8f20b83b72d6f8b3cdb467663eee23ef4573b52e0ddf9350b9c5d74",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/skeletons/second.tsx",
+      "sha256": "0a4a665c32b96cbe09b69e62882ee556489bd7660af9373486fbd7239d596a0d",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/skeletons/third.tsx",
+      "sha256": "6ed5e6e92bb580867f4b6e4c1a70c07ecd09f43b3db18087ee2243d8d88cb2a8",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/skeletons/first.tsx",
+      "sha256": "9541849afd7a4f25b3b06f66127b5dce0e34e04d3b1d4d2530b2a7d8ef107cac",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/skeletons/fourth.tsx",
+      "sha256": "603486ed42e0a664011b0e8f1b91ee5efc71f1ae0e8ff73f2d2cc6088c757ef0",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/news/article-content.tsx",
+      "sha256": "a9e2a69f90fce7d13900785394665393eaccceb15edc055c7f08f27ead421304",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/lessons/lessons-client.tsx",
+      "sha256": "1178eae2e77d74c8bdab34d5259bbc5400b45b76490f7b25167bdd3ebd18202a",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/events/single-event-action.tsx",
+      "sha256": "12ea1b129a602cea8087336728a06deb9a6b650ef27e279f206a97ebb48f7692",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/events/events-page-client.tsx",
+      "sha256": "f68b4728f2c14cc046a84b4d808fe5d4a19498982e6d0ae18705c14ef21ab38b",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/events/single-event-client.tsx",
+      "sha256": "ac01c35554b8a5b216abac50d541be4f615251c9bb4398a510674fc5bd12d907",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/events/public-event-card.tsx",
+      "sha256": "150bff1e098aa19d290c50b8bef8de1fbd2b23ae84c26f11bf1c368accc109ae",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/community/manual-child-form.tsx",
+      "sha256": "ed8164fa31b8a3d3532b2eb970ebb463555eed219646cccdb6be8a59fe99455f",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/community/google-button.tsx",
+      "sha256": "2cbf66ebbd16a4f67322321999e4ec583d7a0bd7f25ce533a9db0f5c05e2b490",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/community/access-screen.tsx",
+      "sha256": "505a8a7e433abf8232ed22d5d3dbb2525204422398396aff61155af616b786ae",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/community/giyur-stage-form.tsx",
+      "sha256": "47ee726034f645be0b087e9411a61cfdd29f4173b4f783b2108e0c4c77455fe2",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/community/private-session.tsx",
+      "sha256": "fc4a70f1ddb138eb841e83346cb7b97a5bb93796e6039e1ee68b8787c14814e3",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/community/resource-message.tsx",
+      "sha256": "bddf73e213c5203e961604adbf42999f7c56a34ef6bfb3254326f3e30c27e826",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/community/child-editor.tsx",
+      "sha256": "71aecca0cc4c1b884e1a490fea83942efad94521d2d8a7be870c43315c10cb89",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/community/city-picker.tsx",
+      "sha256": "b7850c9f0dd5b73c38917f05e863de10324ad31f7f7a75726a7eb669e912c37f",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/community/attempt-context.tsx",
+      "sha256": "af378e12c3b24d1119fd3920ba5db4dea491d8186397c16d8d137f99e07c4085",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/services/services-page-client.tsx",
+      "sha256": "a6319faebc4ed3f6ec7cc67cc35573b7eaee03850d718d9adee4da5d60699177",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "components/services/public-service-card.tsx",
+      "sha256": "6b652671e766b00fc630c9036f28cccb79c3e899f5ac5030837d04888435fa7c",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "lib/blog.ts",
+      "sha256": "383e90ca48e76e429a4a7f3fa7ad292f63182d5c0a08d45def32bbd7c79f0a96",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "lib/utils.ts",
+      "sha256": "d1f1e0d62cb8d8d1e04c26e14de842d8a151f75812d81b046c65b5d1fe8e4b27",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "lib/db/schema.ts",
+      "sha256": "188632cf34c2026f64d952e65e3a713352d0e7a0250cd94252c9df5eafec01e2",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "lib/db/index.ts",
+      "sha256": "d8315d042136c07346b6e9e10b97deeaf7e81f0b4ce37969d45cb4361858e85e",
+      "fixtureSame": false,
+      "expectedIsolationOverride": true
+    },
+    {
+      "file": "lib/community/validation.ts",
+      "sha256": "e0dde79ecdce9d8a5e16d5eebdf180a757341419c86d353b04ac1703e48cabd7",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "lib/community/history.ts",
+      "sha256": "e93927c969e23c67a79ddc3f79b427bde86e0f16bddda5fbf8316bce354fe72a",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "lib/community/draft-progress.ts",
+      "sha256": "fd154ed07898e66a8c8d05c332ea9939d2c207a3dcf840ad79c4dac2111a878a",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "lib/community/welcome.ts",
+      "sha256": "41e5389a7c4d387c55b27fef7ea51093d0f7e0c0f127a5bfb803c89edf24064f",
+      "fixtureSame": false,
+      "expectedIsolationOverride": true
+    },
+    {
+      "file": "lib/community/errors.ts",
+      "sha256": "a97c4f3ef68964dc50aa82b0a4597253ec4386e5127c4269a3cf46c27f01620e",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "lib/community/cities.ts",
+      "sha256": "4bb009d053be446e2d250408352895c65f23bbad8e7846a52dbef212c808bb83",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "lib/community/drafts.ts",
+      "sha256": "f3022eef05fa217f4d10bd495e039357b5a73c95f5efdae4108548978d817cdb",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "lib/community/journey.ts",
+      "sha256": "0bdd0fb916d2de6828b17a9caa7a222a17a634b880f84ca520aeab178a83bd1f",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "lib/community/profile-write.ts",
+      "sha256": "6c78a23b9300a1e169461ad12f38b8d5146223d0fdc86eed4addd7cab9e9322c",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "lib/community/copy.ts",
+      "sha256": "b3d1d502ebdbf3544c80c1845f9bcb6c7e5805494a0fd7006faa283a7da842b9",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "lib/community/policy.ts",
+      "sha256": "cfbc68a587ae4ec35f1243f8655f1902bebe95e1dbf957962ea8e31a20c4abec",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "lib/community/event-return.ts",
+      "sha256": "6a188b62269e0d83643db87cf2cdbf5c9f4ae9228245e000643863cb9201a7a4",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "lib/community/payments.ts",
+      "sha256": "5518f8f78bea73a9efd0a8c098b8c17301e4f44f85e029c24f2f0b131e91a022",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "lib/community/children.ts",
+      "sha256": "36c71f504f1a0823142fae1a0aa8ce3d77cd1ce351cb9d9b5b6af3bd280472cb",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "lib/community/server.ts",
+      "sha256": "68a712f0d2f4d3f3d676aa89bb11f01e51184aadede19efb15c39e5efc4cf5f3",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "lib/community/registration.ts",
+      "sha256": "a74c793893e9bad032e9492899af49c18d387981dee128e6e5033c4c8b7b1736",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "lib/community/data/SOURCE.json",
+      "sha256": "1de2416e6fd6adb8e11f29f6c16ae1e806f822171ce61e3805773e6b9aa9abf3",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "lib/community/data/README.md",
+      "sha256": "464e8d1c3739aa7b4362d9040a1a7c99c863c42a1e0eaba4cf8e53ab296bd435",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "lib/community/data/israel-localities.json",
+      "sha256": "5ab8bf21215f044950b2ed96b5ce5bb33b3ec79ae2bc605c944e32a6fbf8b4bb",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "store/useTaskStore.ts",
+      "sha256": "cb4ae059bd4fdd53e174fb909b13b477e75201173575c9d38d9345a17a1fcc66",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "store/useEventsDiscovery.ts",
+      "sha256": "76c0e072ad7c81babb1e8869f54685e15ac48fbd84b21fd6e084c24b71952932",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "store/useChatStore.ts",
+      "sha256": "32af7bfbb88e8bb390be9f0349cecff363b7c1a7a2077d931ed191bc09e82917",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "store/usePublicEventsStore.ts",
+      "sha256": "192cddda4b017996e7fe62610d9f541f0369464248a5c3fa5ef8a919647ef043",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "store/useRegistrationStore.ts",
+      "sha256": "4fdc03029ea37960ae8020a8b869e08a11f0803705e238b89ee7a8d3d5704b32",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "store/useVideoStore.ts",
+      "sha256": "94db65ec0cad8779a73da702289f7d0f7d4e19d4c8d837bbeaf705f562f9e2e6",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "store/useNewsAdmin.ts",
+      "sha256": "f789a38f8e349cd9075091d75ea3ac5abacc529057b032dd7eb58bbe811e6436",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "store/useUserStore.ts",
+      "sha256": "5eaac6b83b771b71360902339319897d201d6c4b8ea450da7a7c425c8156c867",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "store/useServiceStore.ts",
+      "sha256": "ec1783a7158cab33fd3beadf662a9a5fb783092ed524eacfd5ad5d21cf47088a",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "store/useServiceRegistration.ts",
+      "sha256": "6cbf0ae3ffb3bd9e25f42342ff76f15079a6cc79f3f4842d99c9dc8fe0765f9b",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "store/useAuthorStore.ts",
+      "sha256": "2d5f869ae4f6293341fca5ab8299e96705e09d6f18f0d3c0fca59eca3b965139",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "store/useEventStore.ts",
+      "sha256": "37c4f7c96e0f39396e5aca2343949df931ed74c841d87d71fc7ff1fba6ce4842",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "store/useCrmStore.ts",
+      "sha256": "6a9d5394d34d950d89a37c612b1c0f3ff2f76f8b8db25859a64d39b718ea7b94",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "store/useNewsComments.ts",
+      "sha256": "b17c75d58a84c1e5fda68a9dac526740fa99aeb1f3fa2d7165c993453dfde9d7",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "store/useServiceDiscovery.ts",
+      "sha256": "1a06db89a556933ca230cff262ed7b3bc03ae1b604b04be811b25cfae97f819d",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "drizzle/0007_filter_v2_and_registration_drafts.sql",
+      "sha256": "4e0aafde81ccf079d7d03d34d6c947377ea045b3be0d9e9d6431edd38db04f1e",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "drizzle/0006_reconcile_existing_schema.sql",
+      "sha256": "790700b4212614d8ada5301ca937fa5716f207b256325bafdf71954ec75b65f8",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "drizzle/0004_community_filtering.sql",
+      "sha256": "cef39399cddcc59ac5654848d0ccfeee1be7c3fc3b1ed531a96f55c2b75130c7",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "drizzle/0001_shallow_doctor_faustus.sql",
+      "sha256": "6d96aff4a7957e0d8dd5179b0b7eb7cc2d554a18ed0ddc0e07cb30e85a5d560c",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "drizzle/0005_giyur_stage.sql",
+      "sha256": "a09bbe7e8c4efccc1ee1b9c2641a14cc24ac460f862eaa9e72ee380bf1a19c16",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "drizzle/0000_sudden_living_lightning.sql",
+      "sha256": "901e018c3ec116e1f701ff9ce2fe6451d9675319dd6485116f6de1118a995635",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "drizzle/0002_massive_wilson_fisk.sql",
+      "sha256": "444fc5920e11e0e2d5c814fbf5faa3388bd655f939496a18a55bafaf8ebd3007",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "drizzle/0003_chemical_falcon.sql",
+      "sha256": "3e22e1f7c8a7b7a92015ace31eb3146a17234fcdcc0ad252a3093f62d8b069d6",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "drizzle/0008_city_identity.sql",
+      "sha256": "5cff7fb6291fb5eb2dac27c7c245280b1804bbed6c46f5ec8e8a127d0c67dbd8",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "drizzle/meta/0007_snapshot.json",
+      "sha256": "445e9daff9f747ff0fbc2cbbe00c75528fe15ba51d768b762467c5356443d2ee",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "drizzle/meta/0003_snapshot.json",
+      "sha256": "0e19cf8c9c097bc33ca08e6705f551a5a562db9c59457f1762a21cb2a606cf85",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "drizzle/meta/0004_snapshot.json",
+      "sha256": "ea5837d020239ad439d5d35323ac3f56e091e843c5f8a18d0363b707ef37c79d",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "drizzle/meta/0000_snapshot.json",
+      "sha256": "aeab6d14822476153f4a880a88d1062884c13fd70f70a9fafcd2c5df563638cf",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "drizzle/meta/0008_snapshot.json",
+      "sha256": "71a525cd4d41abc99b5dda7a5d06f98890ae68c93ffc6086d073d8740a90f7e3",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "drizzle/meta/_journal.json",
+      "sha256": "5b6cdfb42e04bd53d111fd260ddfb24a2f522ec3d98f0c9baca5a28762b5c6de",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "drizzle/meta/0001_snapshot.json",
+      "sha256": "baccc1fd1975c2e094ec657bfa018d79d2657b9297dd81b320ac7543874fa074",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "drizzle/meta/0005_snapshot.json",
+      "sha256": "eaf18998423aa6b5119c4fb33db510d660ff3f29bb1bb0c3c0f35237ce576e40",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "drizzle/meta/0002_snapshot.json",
+      "sha256": "62f1cdf06857fdb1bd3b82e6e8b8f90a9f13df363d87a9b02f0838f00d877b7b",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "drizzle/meta/0006_snapshot.json",
+      "sha256": "f38c50cacc8f1d172671cd108b5f5333341c85ae6b2b49fc0b81870f903fe034",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "middleware.ts",
+      "sha256": "80cd510dbe93ee0f3292e1fbad8fd550ad45aa8d6ebfeb88f14c38a16dbb314a",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "package.json",
+      "sha256": "4f82a79b80a99922f1d1a34ac4c82f45be861537d5fbc484768e24bffeaf679e",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "package-lock.json",
+      "sha256": "2242c680b34d603e67fc18af65a61e0d1fd306f2cdd16fabc01116183de6f6e2",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "tsconfig.json",
+      "sha256": "b49d4711643da0ed1b29b9ec6e2fb60199d129bdf04653ae85225a312c1976c5",
+      "fixtureSame": true,
+      "expectedIsolationOverride": false
+    },
+    {
+      "file": "next.config.mjs",
+      "sha256": "f53165e07d30b4007cc29d0c4b4cecec08c7844bb35dadb1a3eccdb9990ecbfd",
+      "fixtureSame": false,
+      "expectedIsolationOverride": true
+    }
+  ]
+}

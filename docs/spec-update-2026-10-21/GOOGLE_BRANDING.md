@@ -27,3 +27,18 @@
 Чтением публичного HTML `https://www.menorah-rishon.com` подтверждён **LIVE** frontend `clerk.menorah-rishon.com`; это другая конфигурация относительно локального TEST. Публичный `GET https://clerk.menorah-rishon.com/v1/environment` содержит `display_config.google_one_tap_client_id = 666442068619-v9dlmortolk1p71pnsb6munrgv57lr64.apps.googleusercontent.com`. Это подтверждает объявленный клиент **Google One Tap**. Его совпадение с redirect OAuth client в SSO connections не предполагается. [Отдельные доказательства](../spec-finalization-2026-10-21/evidence/public-clerk-config.json).
 
 Перед изменением Branding владелец сверяет именно **Google SSO Client ID** существующей LIVE instance с клиентом в существующем Google Cloud-проекте. Найденный One Tap ID — ориентир для сверки, не доказательство, что он обслуживает redirect OAuth. Production callback, принадлежность проекта и опубликованный Google-логотип по этим GET-запросам не подтверждены. На опубликованном сайте login/actions не запускались, данные в удалённую БД не записывались.
+
+## Свежая подготовка Google-проверки, 21.10.2026
+
+[Текущие доказательства](../google-acceptance-2026-10-21/REPORT.md) относятся к новой попытке `localhost:3337`, отдельной пустой PGlite и прежним настоящим Clerk TEST keys. Прежний стенд `3334` сохранён. Наблюдённый TEST redirect URI — `https://clerk.shared.lcl.dev/v1/oauth_callback`; внешний экран показывает **Clerk**. Этот общий TEST client не является местом установки production-логотипа Menorah Center.
+
+Публичные LIVE GET снова подтверждают `clerk.menorah-rishon.com` и только One Tap Client ID. Кабинет LIVE/Google Cloud не достигнут; соответствие redirect Client ID, callback и разрешённых origins не проверено. Подробности в [live-public-config.json](../google-acceptance-2026-10-21/evidence/live-public-config.json). Доступ к приватной настройке не следует из наличия публичного One Tap ID.
+
+Для владельца остаётся точная сверка:
+
+1. **Clerk Dashboard → существующее приложение Menorah → Production → SSO connections → Google**: сверить включение sign-in/sign-up, custom credentials, **Client ID** и **Authorized Redirect URI**. Не раскрывать Client Secret.
+2. **Google Cloud → существующий проект этого Client ID → Google Auth Platform → Clients → соответствующий Web client**: сравнить полный Client ID и точный Authorized redirect URI из Clerk. В Authorized JavaScript origins должны быть фактические origins используемого сайта (`https://www.menorah-rishon.com`; корневой `https://menorah-rishon.com` — если он также используется для входа). Ни frontend Clerk, ни `/sso-callback` приложения не подставлять вместо значения, выданного SSO connection. Текущие разрешённые адреса из Google Cloud пока не прочитаны.
+3. **Google Auth Platform → Branding** в том же проекте: загрузить [PNG512×512](branding/menorah-google-oauth-512.png), проверить `Menorah Center`, support email, homepage `https://www.menorah-rishon.com`, privacy `/privacy`, terms `/terms` и authorized domain `menorah-rishon.com`. PNG повторно проверен, SHA256 в [branding-file.json](../google-acceptance-2026-10-21/evidence/branding-file.json).
+4. Проверить **Audience / Verification Center**, выполнить требуемую проверку. По [документации Google](https://developers.google.com/identity/protocols/oauth2/production-readiness/brand-verification) изменения могут остаться **Draft Branding**; для внешнего экрана требуется **Publish branding** после необходимых проверок. Сохранение PNG в Git или черновике кабинета не подтверждает публикацию. После публикации проверить свежий **LIVE redirect**-вход: фактический логотип и возврат в приложение.
+
+Настройки, загрузка и публикация брендинга агентом не выполнялись. LIVE Client ID нельзя считать установленным по TEST client или One Tap ID.
