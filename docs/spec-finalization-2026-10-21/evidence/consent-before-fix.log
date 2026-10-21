@@ -1,0 +1,29 @@
+PASS initial questionnaire contains complete welcome and exactly three affiliation answers
+PASS initial questionnaire hides full fields and does not turn gender into affiliation
+PASS maternal expands existing fields, explanation and separate gender without duplicate status
+PASS giyur expands existing fields, explanation and separate gender without duplicate status
+PASS old version does not preselect religious answers even when old answers are populated
+node:internal/assert/utils:273
+    throw err;
+    ^
+
+AssertionError [ERR_ASSERTION]: Stored consent must be checked after reopening the permanent profile
+    at <PROJECT_ROOT>/tests/community/render.cjs:41:9
+    at check (<PROJECT_ROOT>/tests/community/render.cjs:28:25)
+    at Object.<anonymous> (<PROJECT_ROOT>/tests/community/render.cjs:38:1)
+    at Module._compile (node:internal/modules/cjs/loader:1706:14)
+    at Object..js (node:internal/modules/cjs/loader:1839:10)
+    at Module.load (node:internal/modules/cjs/loader:1441:32)
+    at Function._load (node:internal/modules/cjs/loader:1263:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v22.20.0

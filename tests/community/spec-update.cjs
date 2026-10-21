@@ -12,7 +12,7 @@ const { migrate } = require('drizzle-orm/pglite/migrator');
 const { generateDrizzleJson, generateMigration } = require('drizzle-kit/api');
 const { eq, and } = require('drizzle-orm');
 const root = path.resolve(__dirname, '../..');
-const output = path.join(root, 'docs/spec-update-2026-10-21/evidence');
+const output = process.env.COMMUNITY_TEST_OUTPUT || path.join(root, 'docs/spec-update-2026-10-21/evidence');
 fs.mkdirSync(output, { recursive: true });
 let db, actor = null, browser = 'a', currentHeaders = new Headers();
 const jars = new Map(), cookieOptions = [], cache = new Map(), afterCallbacks = [];
@@ -153,6 +153,17 @@ async function location(query) { try { await source('app/auth/complete/page.tsx'
     const u=await row(actor);assert.equal(u.childrenData[0].gender,'female');assert.equal(u.childrenData[0].affiliation,undefined);assert.equal(u.childrenData[0].parentId,actor);assert.ok(u.childrenData[0].id);assert.equal(u.cityId,'8300');
     assert.equal((await db.select().from(schema.users).where(eq(schema.users.id,actor))).length,1);
     actor='different-account';assert.equal((await drafts.completeRegistrationDraft(attempt)).success,false);
+  });
+  await test('a draft bound during OAuth cannot be rewritten anonymously or rebound to a different account',async()=>{
+    browser='bound-attempt';actor=null;const id=crypto.randomUUID();
+    assert.equal((await drafts.prepareRegistrationDraft(payload({hasChildren:true,childrenData:[child()]}),id,'/events/event-a')).success,true);
+    actor='bound-owner';assert.equal(await source('lib/community/drafts.ts').bindRegistrationAttempt(id,actor),true);
+    const before=(await db.select().from(schema.communityRegistrationDrafts).where(eq(schema.communityRegistrationDrafts.id,id)))[0];
+    actor=null;assert.equal((await drafts.prepareRegistrationDraft(payload(),id,'/events/event-b')).success,false);
+    const after=(await db.select().from(schema.communityRegistrationDrafts).where(eq(schema.communityRegistrationDrafts.id,id)))[0];
+    assert.deepEqual(after.payload,before.payload);
+    actor='other-owner';assert.equal((await drafts.completeRegistrationDraft(id)).success,false);
+    actor='bound-owner';const saved=await drafts.completeRegistrationDraft(id);assert.equal(saved.success,true);assert.equal(saved.redirectTo,'/events/event-a');assert.equal((await row(actor)).childrenData.length,1);
   });
   await test('editing and deleting existing child preserves ID, paid ticket and immutable historical snapshot',async()=>{
     actor='legacy';const old=(await row(actor)).childrenData[0];

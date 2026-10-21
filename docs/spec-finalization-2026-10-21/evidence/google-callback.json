@@ -1,0 +1,17 @@
+{
+  "environment": "http://localhost:3334",
+  "mode": "TEST",
+  "database": "isolated local PGlite",
+  "identityMocked": false,
+  "genuineGoogleScreenReached": true,
+  "genuineGoogleCallbackVerified": false,
+  "persistedProfileAfterGenuineGoogle": "NOT VERIFIED",
+  "threeReturnRoutesWithGenuineGoogle": "NOT VERIFIED",
+  "observedPhase": "Initial Google identifier screen, empty account field, no return observed",
+  "ownerResponse": "Prepared window unavailable or cannot sign in now",
+  "productionGoogleCallbackVerified": false,
+  "productionRedirectOAuthClientConfirmed": false,
+  "externalGoogleBrandingApplied": false,
+  "personalDataOrCredentialsIncluded": false,
+  "nextAction": "Owner completes Google sign-in in a fresh event-linked TEST attempt; agent then verifies callback, persisted profile and reload"
+}

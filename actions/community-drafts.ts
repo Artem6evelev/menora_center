@@ -2,7 +2,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { cookies } from "next/headers";
 import { randomBytes } from "node:crypto";
-import { and, eq, lt, isNull } from "drizzle-orm";
+import { and, eq, gt, lt, isNull } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { communityRegistrationDrafts as drafts, users } from "@/lib/db/schema";
 import { fullProfileInput } from "@/lib/community/validation";
@@ -26,8 +26,14 @@ export async function prepareRegistrationDraft(raw: unknown, attemptId: string, 
     const existingHash = await registrationAttemptToken(attemptId);
     const [existing] = await db.select().from(drafts).where(eq(drafts.id, attemptId));
     if (existing) {
-      if (existingHash !== existing.tokenHash || existing.consumedAt || existing.expiresAt <= new Date() || existing.filterVersion !== FILTER_VERSION || existing.ownerId) throw new CommunityError("Создайте новую попытку отправки анкеты");
-      await db.update(drafts).set({ payload: { form: payload, returnTo: (existing.payload as any)?.returnTo || eventReturnTo(returnTo ?? payload.returnTo), ready: true } }).where(and(eq(drafts.id, attemptId), eq(drafts.tokenHash, existingHash)));
+      if (existingHash !== existing.tokenHash || existing.consumedAt || existing.expiresAt <= new Date() || existing.filterVersion !== FILTER_VERSION || existing.ownerId || (existing.payload as any)?.identityId) throw new CommunityError("Создайте новую попытку отправки анкеты");
+      // A callback may bind or consume this draft after the read above. Update only
+      // the same unclaimed payload, so final preparation cannot remove that binding.
+      const updated = await db.update(drafts).set({ payload: { form: payload, returnTo: (existing.payload as any)?.returnTo || eventReturnTo(returnTo ?? payload.returnTo), ready: true } })
+        .where(and(eq(drafts.id, attemptId), eq(drafts.tokenHash, existingHash), isNull(drafts.ownerId), isNull(drafts.consumedAt),
+          eq(drafts.filterVersion, FILTER_VERSION), gt(drafts.expiresAt, new Date()), eq(drafts.payload, existing.payload)))
+        .returning({ id: drafts.id });
+      if (!updated.length) throw new CommunityError("Черновик уже изменён. Проверьте анкету и повторите сохранение.");
       return { success: true as const, draftId: existing.id };
     }
     // Expired temporary payloads are not participant/family history.

@@ -35,6 +35,12 @@ for(const affiliation of ['maternal','giyur']){
  check(affiliation+' expands existing fields, explanation and separate gender without duplicate status',()=>{assert.ok(expanded.includes('profile-firstName'));assert.ok(expanded.includes('profile-marital'));assert.equal((expanded.match(/name="gender"/g)||[]).length,2);for(const text of copy.FORM_EXPLANATION)assert.ok(expanded.includes(text));assert.ok(!expanded.includes('name="jewishStatus"'));});
 }
 check('old version does not preselect religious answers even when old answers are populated',()=>{const old=html(Form,{userId:'old',initialProfile:{filterVersion:1,affiliation:'maternal',gender:'female',firstName:'Existing name'}});assert.ok(!old.includes('checked=""'));assert.ok(!old.includes('profile-firstName'));});
+check('reopened permanent profile restores privacy consent, while explicit draft false remains false',()=>{
+ const profile={filterVersion:2,filterCompletedAt:'2026-10-20T00:00:00Z',affiliation:'maternal',gender:'female',agreedToPrivacy:true};
+ const consent=markup=>markup.match(/<input(?=[^>]*type="checkbox")(?=[^>]*required="")[^>]*>/)?.[0]||'';
+ assert.ok(consent(html(Form,{userId:'persisted',initialProfile:profile})).includes('checked=""'),'Stored consent must be checked after reopening the permanent profile');
+ assert.ok(!consent(html(Form,{userId:'persisted',initialProfile:profile,initialDraft:{...profile,agreedToPrivacy:false}})).includes('checked=""'),'An explicit draft refusal must not be overwritten by previous consent');
+});
 const none=html(Form,{userId:'synthetic',initialProfile:{filterVersion:2,filterCompletedAt:'2026-10-20T00:00:00Z',affiliation:'none',gender:'male',filterRevision:0,childrenData:[]}});fs.writeFileSync(path.join(output,'register-none.html'),none);
 check('third branch contains all gratitude text/resources and no full-profile submit fields',()=>{for(const text of copy.RESOURCE_PARAGRAPHS)assert.ok(none.includes(text));for(const resource of copy.COMMUNITY_RESOURCES)assert.ok(none.includes(resource.href));assert.ok(!none.includes('profile-firstName'));assert.ok(!none.includes('Продолжить с Google'));});
 const father=html(Form,{userId:'father',initialProfile:{filterVersion:2,filterCompletedAt:'2026-10-20T00:00:00Z',affiliation:'maternal',gender:'male',hasChildren:true,childrenData:[]}});

@@ -1,0 +1,12 @@
+{
+  "fixture": "/tmp/menora-spec-http",
+  "differingProductFiles": [],
+  "expectedFixtureOverrides": [
+    "actions/telegram.ts",
+    "app/layout.tsx",
+    "lib/community/welcome.ts",
+    "lib/db/index.ts"
+  ],
+  "ClerkImportsSubstituted": true,
+  "genuineOAuth": false
+}

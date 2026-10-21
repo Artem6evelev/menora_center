@@ -1,0 +1,12 @@
+{
+  "environment": "http://localhost:3334",
+  "mode": "TEST",
+  "genuineGoogleScreenReached": true,
+  "observedGoogleClientIds": [
+    "787459168867-0v2orf3qo56uocsi84iroseoahhuovdm.apps.googleusercontent.com"
+  ],
+  "identityMocked": false,
+  "callbackVerified": false,
+  "productionCallbackVerified": false,
+  "credentialsEnteredByAgent": false
+}

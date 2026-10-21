@@ -1,0 +1,36 @@
+PASS video author projection works on baseline without any filtering columns
+PASS additive migration preserves legacy fields and child entries
+PASS migration is idempotent; database rejects unknown affiliation/gender
+PASS policy separates current completion, personal admission and staff authority
+PASS female maternal/null: form persists, admits self and enforces child rights
+PASS female giyur/null: form persists, admits self and enforces child rights
+PASS female giyur/advanced: form persists, admits self and enforces child rights
+PASS female giyur/completed: form persists, admits self and enforces child rights
+PASS male maternal/null: form persists, admits self and enforces child rights
+PASS male giyur/null: form persists, admits self and enforces child rights
+PASS male giyur/advanced: form persists, admits self and enforces child rights
+PASS male giyur/completed: form persists, admits self and enforces child rights
+PASS return paths reject external, protocol-relative, encoded slash and OAuth loops
+PASS guest receives no event list, details, categories or foreign family
+PASS new Google account cannot skip questionnaire using the login branch
+PASS missing/unknown fields, foreign user ID and forged role do not complete a profile
+PASS maternal questionnaire persists separate fields and survives a fresh read
+PASS combined giyur saves full form without inferring completion or child rights
+PASS advanced giyur woman registers herself but no child through every existing entry point
+PASS one-field completion clarification grants eligible mother child rights, without replacing profile/history
+PASS third branch accepts only minimal choice, preserves family and revokes fresh actions
+PASS father cannot create child via profile, either legacy action, family update or event
+PASS father cannot enroll an already existing child or use anonymous child counts
+PASS mother cannot read/update foreign parent or inject foreign child IDs/parentId/gender
+PASS mother saves a new child and enrolls only linked children in a program
+PASS Shutafim uses server prices and ignores client amount; changed selection reprices one pending record
+PASS closed event fails before child creation; legacy registration delegates to policy
+PASS ordinary account cannot elevate role or invoke manual/admin event operations
+PASS admin manual exception records actor/reason and never changes father's status
+PASS admin free child exception preserves unknown father status and is idempotent
+PASS admin paid child exception opens priced iframe link, preserves father status and audit on replay
+PASS historical positional child identity is snapshotted before profile edit
+PASS database failure after family update rolls back child and registration together
+PASS repeat/concurrent transaction entry creates one logical free registration
+PASS fresh profile changes revoke old prepared registration requests
+35/35 regression scenarios passed. External side effects disabled.

@@ -1,0 +1,17 @@
+{
+  "baseHead": "1eb248cd402cdd1427cc4c303142229a8ccef6f3",
+  "branch": "main",
+  "verifiedWorkingTreeDiffersFromHead": true,
+  "sourceSha256": {
+    "actions/community-drafts.ts": "b8a9c4f7687fcbc51d5e53a5f2c9b092dda5466b1fc13ecfdd5c40aaf3be8809",
+    "components/dashboard/main/onboarding-form.tsx": "a6ceb398c129ff4c9914d3338e8a9054c815dff562da8b21e7f2a743b236ead9",
+    "tests/community/render.cjs": "143834f83052ee4725c522ec6d5ca72415f3bf1ced57301d6bac429e914d29c5",
+    "tests/community/spec-browser.cjs": "c1b18dbcb266546af5433d73470a43092fc92a2fa52f96d82c31bde078bd1a0d",
+    "tests/community/spec-update.cjs": "84ee2d6eb3b7eda080e9815842ee2c03e476db8ae6e71d5d12b469e8ca9a247b"
+  },
+  "databaseWrites": "isolated local PGlite only",
+  "schemaChanged": false,
+  "remoteDatabaseMutations": false,
+  "genuineGoogleCallback": "NOT VERIFIED",
+  "pushOrDeploy": false
+}

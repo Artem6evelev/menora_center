@@ -21,3 +21,9 @@
 5. После настройки пройти вход разрешённым тестовым Google-аккаунтом и проверить callback в приложение. Для уже подготовленного локального TEST-стенда используется `http://localhost:3334/sign-in`; исходный event-контекст можно открыть через `/events/fixture-event`. Данные стенда — изолированная PGlite, не удалённая БД. Если процесс остановлен, команда восстановления приведена в REPORT.md.
 
 **Статус: PARTIAL.** Локальная связь TEST→Google и файл подтверждены. Изменения Google Branding/Clerk production и успешный настоящий Google callback не подтверждены и не выполнялись. Для настоящего callback недостающее действие — вход владельца разрешённого тестового аккаунта в подготовленном Google-сценарии; тестовая identity не заменяет эту проверку.
+
+## Уточнение по опубликованному сайту, 21.10.2026
+
+Чтением публичного HTML `https://www.menorah-rishon.com` подтверждён **LIVE** frontend `clerk.menorah-rishon.com`; это другая конфигурация относительно локального TEST. Публичный `GET https://clerk.menorah-rishon.com/v1/environment` содержит `display_config.google_one_tap_client_id = 666442068619-v9dlmortolk1p71pnsb6munrgv57lr64.apps.googleusercontent.com`. Это подтверждает объявленный клиент **Google One Tap**. Его совпадение с redirect OAuth client в SSO connections не предполагается. [Отдельные доказательства](../spec-finalization-2026-10-21/evidence/public-clerk-config.json).
+
+Перед изменением Branding владелец сверяет именно **Google SSO Client ID** существующей LIVE instance с клиентом в существующем Google Cloud-проекте. Найденный One Tap ID — ориентир для сверки, не доказательство, что он обслуживает redirect OAuth. Production callback, принадлежность проекта и опубликованный Google-логотип по этим GET-запросам не подтверждены. На опубликованном сайте login/actions не запускались, данные в удалённую БД не записывались.

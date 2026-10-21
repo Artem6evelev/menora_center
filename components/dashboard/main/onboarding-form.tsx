@@ -43,7 +43,7 @@ export default function OnboardingForm({ userId = null, initialProfile = null, i
   const pendingChildren = useRef<Child[] | null>(null);
   const [childrenPending, setChildrenPending] = useState(false);
   useEffect(() => { if (pendingChildren.current && JSON.stringify(pendingChildren.current) === JSON.stringify(children)) pendingChildren.current = null; }, [children]);
-  const [agreed, setAgreed] = useState(initialDraft?.agreedToPrivacy === true);
+  const [agreed, setAgreed] = useState((initialDraft?.agreedToPrivacy ?? initialProfile?.agreedToPrivacy) === true);
   const [pending, setPending] = useState(false); const [error, setError] = useState("");
   const [saved, setSaved] = useState(current && initialProfile?.affiliation === "none");
   const resumed = useRef(false);

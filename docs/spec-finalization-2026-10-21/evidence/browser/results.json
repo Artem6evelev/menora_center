@@ -1,0 +1,129 @@
+{
+  "environment": "http://127.0.0.1:3331",
+  "identity": "mock Clerk, including SSO callback component; not genuine OAuth",
+  "database": "isolated PGlite",
+  "payments": "external request intercepted; no real payment",
+  "checks": [
+    {
+      "name": "desktop guest event header shows DB title, no home link; hidden title is not exposed",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop questionnaire header, resource branch, gender hiding, removed giyur block, cards and links",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop city search keyboard, empty/error/retry and clearing stale selection",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop anonymous child save/edit/delete persists protected draft across reload without duplication",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop new registration retries cancelled mock OAuth, saves proper profile and returns to source event",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop permanent profile and two children survive reload, logout and a fresh login without resetting the filter",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop sign-in without an event and an unsupported external return target use the safe event-list fallback",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop existing filtered member login returns to same event",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop old member login requires current filter then returns to same event",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop separate tabs preserve independent event targets through questionnaire/login header",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop giyur stage question lives only in child action; advanced denies, completed allows saved existing child",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop Shutafim retains calculated amount, selected child and pending status on iframe close",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop unavailable original event gives clear safe fallback after login",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop none result persists without gender UI, preserves old profile and has no redirect loop/admission",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop administrative person card reads saved child gender and canonical city after resource choice",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile guest event header shows DB title, no home link; hidden title is not exposed",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile questionnaire header, resource branch, gender hiding, removed giyur block, cards and links",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile city search keyboard, empty/error/retry and clearing stale selection",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile anonymous child save/edit/delete persists protected draft across reload without duplication",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile new registration retries cancelled mock OAuth, saves proper profile and returns to source event",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile permanent profile and two children survive reload, logout and a fresh login without resetting the filter",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile sign-in without an event and an unsupported external return target use the safe event-list fallback",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile existing filtered member login returns to same event",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile old member login requires current filter then returns to same event",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile separate tabs preserve independent event targets through questionnaire/login header",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile giyur stage question lives only in child action; advanced denies, completed allows saved existing child",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile Shutafim retains calculated amount, selected child and pending status on iframe close",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile unavailable original event gives clear safe fallback after login",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile none result persists without gender UI, preserves old profile and has no redirect loop/admission",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile administrative person card reads saved child gender and canonical city after resource choice",
+      "status": "PASS"
+    }
+  ],
+  "errors": []
+}

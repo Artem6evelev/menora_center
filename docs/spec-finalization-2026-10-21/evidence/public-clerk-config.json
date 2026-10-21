@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-10-21T11:59:27.214Z",
+  "source": "https://www.menorah-rishon.com",
+  "method": "Unauthenticated GET only, no scripts/actions/login executed",
+  "httpStatus": 200,
+  "publicClerkConfig": [
+    {
+      "mode": "LIVE",
+      "frontendApi": "clerk.menorah-rishon.com"
+    }
+  ],
+  "googleOAuthClientEstablished": false,
+  "productionGoogleCallbackVerified": false,
+  "publicEnvironmentGet": {
+    "url": "https://clerk.menorah-rishon.com/v1/environment",
+    "status": 200,
+    "googleClientIds": [
+      "666442068619-v9dlmortolk1p71pnsb6munrgv57lr64.apps.googleusercontent.com"
+    ],
+    "googleClientSourcePaths": [
+      "environment.display_config.google_one_tap_client_id"
+    ]
+  },
+  "productionConnectionConfiguration": "LIVE frontend and Google One Tap client are public. Redirect OAuth client equivalence, dashboard ownership, branding and successful callback are not verified.",
+  "googleOneTapClientAdvertised": true
+}

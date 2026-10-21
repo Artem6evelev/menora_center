@@ -1,0 +1,46 @@
+{
+  "commands": {
+    "lint": {
+      "exitCode": 0,
+      "errors": 0,
+      "warnings": 30
+    },
+    "typecheck": {
+      "exitCode": 0
+    },
+    "build": {
+      "command": "npm run build",
+      "exitCode": 0,
+      "copy": "/tmp/menora-production-build",
+      "currentWorkingTree": true,
+      "realEnvCopied": false,
+      "database": "unavailable synthetic 127.0.0.1:1, no remote writes",
+      "log": "build.log"
+    }
+  },
+  "suites": {
+    "regression-results.json": {
+      "passed": 35,
+      "total": 35
+    },
+    "production-results.json": {
+      "passed": 28,
+      "total": 28
+    },
+    "spec-results.json": {
+      "passed": 17,
+      "total": 17
+    },
+    "render-results.json": {
+      "passed": 21,
+      "total": 21
+    },
+    "browser/results.json": {
+      "passed": 30,
+      "total": 30
+    }
+  },
+  "database": "isolated PGlite; no remote mutations",
+  "browserIdentity": "mock Clerk; genuine Google separately recorded",
+  "sourceCheckpoint": "source-checkpoint.json"
+}
