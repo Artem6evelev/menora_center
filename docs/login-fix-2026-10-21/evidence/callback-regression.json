@@ -1,0 +1,37 @@
+{
+  "checkedAt": "2026-10-21T13:16:59.089005+00:00",
+  "baseHead": "35add07f32bf114a056b6173b9f1e1221fab2108",
+  "before": {
+    "command": "node tests/community/sso-callback.cjs",
+    "exitCode": 1,
+    "test": "cold SDK load starts callback once after a stable Clerk instance becomes ready",
+    "assertion": "Cold loaded=false to true must start the callback",
+    "actual": 0,
+    "expected": 1
+  },
+  "after": {
+    "command": "node tests/community/sso-callback.cjs",
+    "exitCode": 0,
+    "passed": 10,
+    "total": 10,
+    "method": "Real React lifecycle and installed Clerk callback component; injected resource and URL hook, no genuine Google OAuth"
+  },
+  "files": [
+    {
+      "file": "app/sso-callback/page.tsx",
+      "sha256": "02d7f08e5f5cc4888e081ccd7978440f5601f903ffd6d52f0cd015c8f6ccf9ca"
+    },
+    {
+      "file": "tests/community/sso-callback.cjs",
+      "sha256": "20d84007191e255949d70df94e86bf89b9392d37fb5d93c3e0e3550cc3ecf109"
+    },
+    {
+      "file": "tests/community/http-fixture.cjs",
+      "sha256": "a4c449ee1cc66ea3340e1f474ad0d205ddf42f69b272766ae57ca4ce10ac2bfd"
+    },
+    {
+      "file": "tests/community/callback-browser.cjs",
+      "sha256": "11bbc1ad2897708073261b80ae6e13edcaf141728732ec3297f93aeeb9d1bb50"
+    }
+  ]
+}

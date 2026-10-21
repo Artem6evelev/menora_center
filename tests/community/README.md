@@ -47,4 +47,15 @@ node tests/community/build.cjs
 
 `node tests/community/oauth-fixture.cjs` готовит `/tmp/menora-acceptance-oauth` и launcher `/tmp/menora-acceptance-oauth-launcher.cjs`: только реальные **TEST** Clerk keys из локального окружения в памяти, native PGlite, отключённые notifications/analytics. Не выводит ключи, не копирует env и не использует внешнюю БД. Запуск launcher поднимает **localhost:3330**, а не 127.0.0.1; для Clerk важен совпадающий origin. Реальный вход выполняется только разрешённым тестовым аккаунтом, секреты не передаются в чат. Это отдельный стенд от HTTP mock fixture3327.
 
+Проверки страницы callback после `MENORAH_LOGIN_FIX.patch`:
+
+```sh
+npm install --prefix /tmp/menora-callback-test-runtime --ignore-scripts --no-audit --no-fund react@19.1.0 react-test-renderer@19.1.0
+node tests/community/sso-callback.cjs
+```
+
+Версии временного renderer и React приложения должны совпадать; зависимости проекта не меняются. Набор исполняет установленный SDK и React lifecycle с подставленными ресурсом Clerk/URL, без настоящего OAuth. На старой странице воспроизводится незапуск callback при холодной загрузке SDK.
+
+`callback-browser.cjs` проверяет только затронутые переходы на desktop/mobile: актуальный, старый и новый профили, повтор callback/reload, отсутствие исходного события и третью категорию. Подготовить отдельный стенд через `COMMUNITY_HTTP_FIXTURE=/tmp/menora-login-fix-http node tests/community/http-fixture.cjs`, запустить его на `http://127.0.0.1:3341` с синтетическими env из примера выше и выполнить `node tests/community/callback-browser.cjs`. Состояние фикстуры должно быть свежим; повторный запуск требует её перезапуска с новой локальной БД. `CALLBACK_BROWSER_BASE` позволяет выбрать другой локальный порт. Подставленная identity не доказывает настоящий Google callback.
+
 `node tests/community/browser.cjs` — настоящий локальный Chromium/Playwright (runtime вне product dependencies: `/tmp/menora-browser-runtime/node_modules/playwright` или `COMMUNITY_BROWSER_RUNTIME`). Публичные сценарии на3330 используют реальный Clerk TEST; приватные на3327 явно используют mock identity и настоящие actions/SQL. Это не доказательство завершённого Google OAuth. Требуются оба изолированных стенда; они никогда не публикуются. Viewports1440/390/320 — эмуляция размеров, не физические устройства. `api/test-state` создаётся только в mock /tmp-копии и отсутствует в приложении.
