@@ -17,7 +17,7 @@ export default function Subscription({ language }: { language: MiniAppLanguage }
   }, []);
   return <aside className="miniapp-announcements" data-announcement-status aria-busy={!status && !error}>
     <span className="miniapp-icon"><Bell size={19} aria-hidden="true" /></span>
-    <p>{error ? miniAppUiCopy[language].announcementsUnavailable : status ? eventCopy[language][status] : miniAppUiCopy[language].loading}
+    <p>{error ? miniAppUiCopy.ru.announcementsUnavailable : status ? eventCopy.ru[status] : miniAppUiCopy.ru.loading}
       {status === "subscribed" && <span className="miniapp-helper block"><bdi dir="ltr">/unsubscribe</bdi></span>}
     </p>
   </aside>;

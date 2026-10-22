@@ -7,13 +7,13 @@ import type { MiniAppLaunch } from "@/lib/telegram/event-launch";
 import { EventMedia, EventMeta } from "./event-card";
 
 export function EventEntry({ event, language, gate, onRegister, onContinue }: { event: NonNullable<MiniAppLaunch["event"]>; language: MiniAppLanguage; gate: boolean; onRegister: () => void; onContinue: () => void }) {
-  const u = miniAppUiCopy[language];
+  const u = miniAppUiCopy.ru;
   return <article className="miniapp-event-detail miniapp-enter" data-event-entry={event.id}>
     <EventMedia event={event} language={language} priority />
     <div className="miniapp-detail-summary"><p className="miniapp-eyebrow">{u.preview}</p><h1>{event.title}</h1><EventMeta event={event} language={language} />
       {event.lead && <p className="miniapp-muted miniapp-event-lead">{event.lead}</p>}
-      {gate ? <section className="miniapp-note miniapp-gate" data-onboarding-gate><h2>{u.gateTitle}</h2><p>{u.gateBody}</p><button className="miniapp-primary w-full" onClick={onContinue}>{miniAppDictionaries[language].next}</button></section>
-        : <button data-entry-register className="miniapp-primary w-full" disabled={!!event.isRegistrationClosed} onClick={onRegister}>{event.isRegistrationClosed ? eventCopy[language].closed : u.join}</button>}
+      {gate ? <section className="miniapp-note miniapp-gate" data-onboarding-gate><h2>{u.gateTitle}</h2><p>{u.gateBody}</p><button className="miniapp-primary w-full" onClick={onContinue}>{miniAppDictionaries.ru.next}</button></section>
+        : <button data-entry-register className="miniapp-primary w-full" disabled={!!event.isRegistrationClosed} onClick={onRegister}>{event.isRegistrationClosed ? eventCopy.ru.closed : u.join}</button>}
     </div>
   </article>;
 }

@@ -28,7 +28,7 @@ type Registration = {
   amountAgorot: number;
 };
 const money = (amount: number, language: MiniAppLanguage) =>
-  new Intl.NumberFormat(language === "he" ? "he-IL" : language, {
+  new Intl.NumberFormat("ru", {
     style: "currency",
     currency: "ILS",
   }).format(amount / 100);
@@ -47,7 +47,7 @@ export default function MiniAppEvents({
   initialEvent?: string;
   onProfileChanged: () => Promise<void>;
 }) {
-  const c = eventCopy[language], u = miniAppUiCopy[language];
+  const c = eventCopy.ru, u = miniAppUiCopy.ru;
   const [list, setList] = useState<Event[]>([]),
     [registrations, setRegistrations] = useState<Registration[]>([]),
     [detail, setDetail] = useState<Detail | null>(null);

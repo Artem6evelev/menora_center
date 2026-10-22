@@ -89,14 +89,7 @@ body:has(.miniapp) {
   inline-size: 90px;
   object-fit: contain;
 }
-.miniapp-language select {
-  min-block-size: 44px;
-  padding: 8px 12px;
-  border: 1px solid #dededb;
-  border-radius: 14px;
-  background: white;
-  font-size: 16px;
-}
+
 .miniapp-content {
   display: flex;
   flex-direction: column;
@@ -475,3 +468,5 @@ body:has(.miniapp) {
 .miniapp-share-dialog p { font-size: 14px; color: #606677; margin-block-end: 16px; }
 .miniapp-share-dialog input { display: block; inline-size: 100%; padding: 12px; border: 1px solid #d9d8d2; border-radius: 12px; font-size: 16px; }
 .miniapp-share-dialog-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-block-start: 20px; }
+.miniapp-contact-help { margin-block-start: 12px; padding: 12px; border: 1px solid var(--miniapp-border); border-radius: 14px; font-size: 14px; color: var(--miniapp-navy); }
+.miniapp-contact-help input { inline-size: 100%; margin-block-start: 8px; padding: 10px; border: 1px solid var(--miniapp-border); border-radius: 10px; font-size: 16px; background: #fff; }

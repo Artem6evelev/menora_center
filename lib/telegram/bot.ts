@@ -131,7 +131,7 @@ export async function handleTelegramUpdate(raw: unknown) {
   if (!result) return { duplicate: true };
   // A persisted block is never cleared by /start/bootstrap or a welcome retry.
   if (result.status === "blocked") return { processed: true };
-  const language = botLanguage(tg.language_code), c = botWelcomeCopy[language];
+  const language = botLanguage(), c = botWelcomeCopy.ru;
   const welcome = botWelcome({ firstName: tg.first_name, language, campaign: startParam, event: result.event, status: result.status });
   const response = action === "subscribed" ? c.subscribed : action === "unsubscribed" ? c.unsubscribed : welcome.caption;
   try {

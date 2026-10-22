@@ -32,7 +32,7 @@ export function EventMeta({ event, language }: { event: EventPreview; language: 
   return <div className="miniapp-event-meta">
     <p><CalendarDays size={16} aria-hidden="true" /><span><bdi>{event.date || "—"}</bdi>{event.time && <> · <bdi>{event.time}</bdi></>}</span></p>
     {event.location && <p><MapPin size={16} aria-hidden="true" /><span>{event.location}</span></p>}
-    <span className="miniapp-price">{event.isRegistrationClosed ? eventCopy[language].closed : event.isFree ? eventCopy[language].free : `${event.price || 0} ₪`}</span>
+    <span className="miniapp-price">{event.isRegistrationClosed ? eventCopy.ru.closed : event.isFree ? eventCopy.ru.free : `${event.price || 0} ₪`}</span>
   </div>;
 }
 export function EventCard({ event, language, onSelect, priority }: { event: MiniAppEvent; language: MiniAppLanguage; onSelect: (id: string) => void; priority?: boolean }) {
@@ -40,7 +40,7 @@ export function EventCard({ event, language, onSelect, priority }: { event: Mini
     <EventMedia event={event} language={language} priority={priority} />
     <button className="miniapp-event-open" type="button" onClick={() => onSelect(event.id)}>
       <div className="miniapp-poster-content"><h2>{event.title}</h2><EventMeta event={event} language={language} />
-        <span className="miniapp-card-cta">{miniAppUiCopy[language].openEvent}<ArrowRight size={17} className="miniapp-arrow" aria-hidden="true" /></span></div>
+        <span className="miniapp-card-cta">{miniAppUiCopy.ru.openEvent}<ArrowRight size={17} className="miniapp-arrow" aria-hidden="true" /></span></div>
     </button>
   </article>;
 }

@@ -31,7 +31,7 @@ async function finishProfile(page){
    const{context,page,subject}=await setup({language,start:'event_fixture-event'});
    try{
     await page.locator('[data-event-entry=fixture-event]').waitFor();assert.equal(await page.locator('[data-screen=home]').count(),0);
-    assert.equal(await page.locator('.miniapp').getAttribute('dir'),language==='he'?'rtl':'ltr');
+    assert.equal(await page.locator('.miniapp').getAttribute('dir'),'ltr');
     assert.equal(await page.locator('[data-miniapp-form]').count(),0);await fit(page);await shot(page,language+'-ad-preview');
     await page.locator('[data-entry-register]').click();await page.locator('[data-onboarding-gate]').waitFor();await shot(page,language+'-ad-gate');
     await page.locator('[data-onboarding-gate] button').click();await page.locator('[data-screen=filter]').waitFor();
@@ -42,7 +42,7 @@ async function finishProfile(page){
     await finishProfile(page);await page.locator('[data-event-detail=fixture-event]').waitFor();await page.locator('[data-onboarding-complete]').waitFor();
     const profile=await(await context.request.get(base+'/api/telegram/miniapp/profile')).json();assert.equal(profile.summary.nextStep,'home');assert.equal(profile.profile.agreedToPrivacy,true);assert.equal(profile.profile.cityId,'8300');assert.equal(profile.profile.gender,'male');
     assert.equal(await page.locator('#miniapp-participants input[type=checkbox]').count(),1);
-    await page.locator('[data-event-detail] button').filter({hasText:language==='ru'?'Рассчитать стоимость':language==='he'?'חישוב מחיר':'Calculate total'}).click();
+    await page.locator('[data-event-detail] button').filter({hasText:'Рассчитать стоимость'}).click();
     await page.locator('[data-calculated-total] button').click();await page.locator('[data-payment-handoff]').waitFor();await shot(page,language+'-ad-registered');
     await page.reload();await page.locator('[data-event-detail=fixture-event]').waitFor();await page.locator('[data-payment-handoff]').waitFor();
     const state=await(await context.request.get(base+'/api/test-miniapp-state')).json(),contact=state.contacts.find(c=>c.telegram_user_id===String(subject));
@@ -52,7 +52,7 @@ async function finishProfile(page){
   });
   await test(language+' returning ad entrant opens detail directly and retains registered state',async()=>{
    const{context,page}=await setup({language,kind:'home',start:'event_fixture-event'});
-   try{await page.locator('[data-event-detail=fixture-event]').waitFor();assert.equal(await page.locator('[data-onboarding-gate],[data-miniapp-form],[data-upcoming-events]').count(),0);await page.locator('button').filter({hasText:language==='ru'?'Рассчитать стоимость':language==='he'?'חישוב מחיר':'Calculate total'}).click();await page.locator('[data-calculated-total] button').click();await page.locator('[data-payment-handoff]').waitFor();await page.reload();await page.locator('[data-payment-handoff]').waitFor();assert.equal(await page.locator('a[href="#miniapp-receipt"]').count(),1);await fit(page);}finally{await context.close();}
+   try{await page.locator('[data-event-detail=fixture-event]').waitFor();assert.equal(await page.locator('[data-onboarding-gate],[data-miniapp-form],[data-upcoming-events]').count(),0);await page.locator('button').filter({hasText:'Рассчитать стоимость'}).click();await page.locator('[data-calculated-total] button').click();await page.locator('[data-payment-handoff]').waitFor();await page.reload();await page.locator('[data-payment-handoff]').waitFor();assert.equal(await page.locator('a[href="#miniapp-receipt"]').count(),1);await fit(page);}finally{await context.close();}
   });
  }
  await test('legacy completed profile from an ad requires only the new filter and returns with confirmation',async()=>{const{context,page}=await setup({kind:'legacy',start:'event_fixture-event'});try{await page.locator('[data-entry-register]').click();await page.locator('[data-onboarding-gate] button').click();await page.locator('[data-screen=filter]').waitFor();await page.locator('[name=affiliation][value=giyur]').check();await page.locator('[name=gender][value=male]').check();await page.locator('[data-miniapp-form=filter] button[type=submit]').click();await page.locator('[data-event-detail=fixture-event]').waitFor();await page.locator('[data-onboarding-complete]').waitFor();assert.equal(await page.locator('[data-miniapp-form]').count(),0);const data=await(await context.request.get(base+'/api/telegram/miniapp/profile')).json();assert.equal(data.summary.nextStep,'home');assert.equal(data.profile.cityId,'8300');assert.equal(data.profile.agreedToPrivacy,true);}finally{await context.close();}});

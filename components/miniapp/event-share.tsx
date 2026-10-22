@@ -6,7 +6,7 @@ import { eventShareCopy, type EventShareTarget } from "@/lib/telegram/event-shar
 import type { MiniAppLanguage } from "@/lib/telegram/miniapp-i18n";
 
 export function EventShareButton({ event, language, overlay = false }: { event: EventShareTarget; language: MiniAppLanguage; overlay?: boolean }) {
-  const c = eventShareCopy[language], url = event.shareUrl, titleId = useId();
+  const c = eventShareCopy.ru, url = event.shareUrl, titleId = useId();
   const dialog = useRef<HTMLDialogElement>(null), input = useRef<HTMLInputElement>(null);
   const alive = useRef(true), locked = useRef(false), timer = useRef<ReturnType<typeof setTimeout>>();
   const [pending, setPending] = useState(false), [copied, setCopied] = useState(false);
@@ -43,7 +43,7 @@ export function EventShareButton({ event, language, overlay = false }: { event: 
     <button type="button" className="miniapp-share-button" aria-label={c.share} title={c.share} disabled={pending} onClick={() => void share()} data-event-share={event.id}>
       <Share2 size={19} aria-hidden="true" />{!overlay && <span>{c.share}</span>}
     </button>
-    {copied && createPortal(<div className="miniapp-share-toast" role="status" lang={language} dir={language === "he" ? "rtl" : "ltr"}>{c.copied}</div>, document.body)}
+    {copied && createPortal(<div className="miniapp-share-toast" role="status" lang="ru" dir={"ltr"}>{c.copied}</div>, document.body)}
     <dialog ref={dialog} className="miniapp-share-dialog" aria-labelledby={titleId}>
       <h2 id={titleId}>{c.manual}</h2><p>{c.hint}</p>
       <label><span className="sr-only">{c.manual}</span><input ref={input} type="text" dir="ltr" value={url} readOnly onFocus={e => e.currentTarget.select()} /></label>

@@ -45,7 +45,7 @@ export default function MiniAppProfileForm({ data, copy, onSave, onDirty }: {
         <ChildEditor items={children} copy={copy.children} disabled={pending} onEditingChange={setChildEditing}
           onSave={async next => { setChildren(next); setChildrenChanged(true); if (!next.length) setFields(previous => ({ ...previous, hasChildren: false })); }} />
         <p className="miniapp-muted text-sm">{copy.childHint}</p>
-      </> : fields.hasChildren ? <p className="miniapp-note">{copy.childRestricted}</p> : null}
+      </> : null}
       <label className="flex gap-3 items-start min-h-11"><input type="checkbox" required checked={agreed} onChange={event => setAgreed(event.target.checked)} className="mt-1 accent-[#FFB800]" />
         <span>{copy.privacy} <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">{copy.privacyLink}<span className="sr-only">{copy.external}</span></a>.</span>
       </label>

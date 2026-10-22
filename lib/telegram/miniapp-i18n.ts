@@ -5,9 +5,9 @@ import { cityPickerCopy } from "@/components/community/city-picker";
 import { RESOURCE_PARAGRAPHS, COMMUNITY_RESOURCES } from "@/lib/community/copy";
 
 export type MiniAppLanguage = "ru" | "he" | "en";
-export function miniAppLanguage(value?: string | null): MiniAppLanguage {
-  const language = value?.toLowerCase().split(/[-_]/)[0];
-  return language === "he" || language === "en" ? language : "ru";
+export function miniAppLanguage(): MiniAppLanguage {
+  // Telegram/Mini App is a Russian-only product; metadata is not a preference.
+  return "ru";
 }
 const ru = {
   language: "Язык", loading: "Загружаем ваш кабинет…", retry: "Попробовать ещё раз", brand: "Еврейский дом в Ришон-ле-Ционе",
@@ -15,7 +15,7 @@ const ru = {
   errorTitle: "Не удалось открыть кабинет", errorBody: "Проверьте соединение и попробуйте ещё раз. Ваши сохранённые данные остаются на месте.",
   preview: "Локальный тест · синтетический аккаунт", filterTitle: "Добро пожаловать домой", filterIntro: "Давайте познакомимся. Укажите вашу связь с еврейством, чтобы мы могли предложить подходящие программы общины.",
   stepFilter: "Знакомство", stepProfile: "Ваша анкета", next: "Продолжить", profileTitle: "Расскажите о себе", profileIntro: "Несколько слов о вас и вашей семье помогут нам быть ближе. Сохраните основные сведения для профиля общины.",
-  editTitle: "Мой профиль", save: "Сохранить анкету", saveEdit: "Сохранить изменения", saving: "Сохраняем…", back: "Назад", changeFilter: "Изменить ответы фильтра",
+  editTitle: "Мой профиль", save: "Сохранить анкету", saveEdit: "Сохранить изменения", saving: "Сохраняем…", back: "Назад", changeFilter: "Изменить ответы",
   privacy: "Я соглашаюсь с", privacyLink: "Политикой конфиденциальности", external: " (откроется в новой вкладке)",
   childHint: "Изменения детей сохранятся вместе с анкетой.", childRestricted: "Здесь можно сохранить сведения о себе. Данные детей доступны для самостоятельного добавления только при выполнении правил общины.",
   greeting: "Шалом", homeTitle: "Вы дома", homeBody: "Добро пожаловать в Menorah Center — место для тёплого общения, традиций и добрых дел. Мы рады, что вы с нами.",
@@ -26,7 +26,7 @@ const ru = {
   unsaved: "В анкете есть несохранённые изменения. Покинуть её?", saved: "Ваши данные сохранены.",
   errors: { generic: "Не удалось сохранить. Проверьте соединение и попробуйте снова — введённые данные сохранены на экране.",
     invalid_profile: "Проверьте обязательные поля, город и данные детей.", profile_changed: "Профиль изменился в другом окне. Ваши записи остаются на экране. Откройте профиль заново перед сохранением.",
-    gender_required: "Укажите пол, чтобы продолжить.", filter_required: "Сначала заполните фильтр общины.", unauthenticated: "Не удалось восстановить вход. Откройте приложение заново через Telegram.",
+    gender_required: "Укажите пол, чтобы продолжить.", filter_required: "Сначала заполните короткую анкету.", unauthenticated: "Не удалось восстановить вход. Откройте приложение заново через Telegram.",
     expired_init_data: "Время входа истекло. Откройте приложение заново через Telegram.", childUnsaved: "Сначала сохраните или отмените изменения в карточке ребёнка.", cityRequired: "Выберите город из справочника." },
 };
 export type MiniAppCopy = typeof ru;
@@ -52,7 +52,7 @@ const en: MiniAppCopy = {
   children: { section: "Children", title: "Children's details", edit: "Edit", remove: "Delete", add: "Add a child", newChild: "New child", editChild: "Edit child", name: "Child's name", birthDate: "Child's date of birth", gender: "Child's gender", male: "Boy", female: "Girl", unknown: "Gender not specified", saving: "Saving…", save: "Save", cancel: "Cancel", invalid: "Enter the child's name, date of birth and gender", error: "Couldn't save the child" },
   city: { error: "Couldn't load the directory. Try again.", loading: "Loading cities…", retry: "Retry", empty: "No matches. Check the spelling.", prompt: "Start typing a city name.", list: "Localities" },
   unsaved: "You have unsaved changes. Leave this questionnaire?", saved: "Your information has been saved.",
-  errors: { generic: "Couldn't save. Check your connection and try again — your entries remain on this screen.", invalid_profile: "Check the required fields, city and children's details.", profile_changed: "Your profile changed in another window. Your entries remain here. Reopen the profile before saving.", gender_required: "Choose your gender to continue.", filter_required: "Complete the community filter first.", unauthenticated: "Couldn't restore your login. Reopen the app in Telegram.", expired_init_data: "Your login attempt expired. Reopen the app in Telegram.", childUnsaved: "Save or cancel the changes in the child's card first.", cityRequired: "Select a city from the directory." },
+  errors: { generic: "Couldn't save. Check your connection and try again — your entries remain on this screen.", invalid_profile: "Check the required fields, city and children's details.", profile_changed: "Your profile changed in another window. Your entries remain here. Reopen the profile before saving.", gender_required: "Choose your gender to continue.", filter_required: "Complete the short questionnaire first.", unauthenticated: "Couldn't restore your login. Reopen the app in Telegram.", expired_init_data: "Your login attempt expired. Reopen the app in Telegram.", childUnsaved: "Save or cancel the changes in the child's card first.", cityRequired: "Select a city from the directory." },
 };
 const he: MiniAppCopy = {
   language: "שפה", loading: "טוענים את האזור האישי שלך…", retry: "לנסות שוב", brand: "הבית היהודי שלך בראשון לציון",

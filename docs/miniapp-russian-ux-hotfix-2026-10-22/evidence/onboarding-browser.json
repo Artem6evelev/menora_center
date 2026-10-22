@@ -1,0 +1,21 @@
+{
+  "environment": "Local Chromium + real HTTP/API/SQL, synthetic Telegram HMAC/SDK; cache-header transformations explicit",
+  "checks": [
+    {
+      "name": "ru/missing: first giyur male saves advance filter -> profile -> home and survive reload",
+      "status": "PASS"
+    },
+    {
+      "name": "he/weak: first giyur male saves advance filter -> profile -> home and survive reload",
+      "status": "PASS"
+    },
+    {
+      "name": "en/replaced: first giyur male saves advance filter -> profile -> home and survive reload",
+      "status": "PASS"
+    },
+    {
+      "name": "a real competing request remains a conflict and preserves both the winning profile and unsaved UI input",
+      "status": "PASS"
+    }
+  ]
+}

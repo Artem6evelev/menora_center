@@ -1,0 +1,37 @@
+{
+  "environment": "Isolated PGlite 0.5.10; native drizzle-orm/pglite/migrator, same PgDialect and drizzle/ files as postgres-js runner",
+  "checks": [
+    {
+      "name": "Empty database: complete native chain matches ORM columns/types/defaults/FKs/checks/indexes/RLS",
+      "status": "PASS"
+    },
+    {
+      "name": "Every migration, including 0004/0005/0006, registered by native Drizzle",
+      "status": "PASS"
+    },
+    {
+      "name": "Second native run on fresh database: no migration statements reapplied, journal/schema unchanged",
+      "status": "PASS"
+    },
+    {
+      "name": "Equivalent pre-existing child FK with a different name is retained without a duplicate",
+      "status": "PASS"
+    },
+    {
+      "name": "Old synthetic schema: native upgrade preserves children/families/paid registrations/content and unknown giyur",
+      "status": "PASS"
+    },
+    {
+      "name": "Second native run after upgrade: no migrations reapplied, business rows preserved",
+      "status": "PASS"
+    },
+    {
+      "name": "Migration preflight rejects existing untracked schema, foreign chain and changed checksums",
+      "status": "PASS"
+    },
+    {
+      "name": "Already registered 0004 v1 remains compatible with statement-boundary-only v2",
+      "status": "PASS"
+    }
+  ]
+}

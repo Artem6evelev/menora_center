@@ -5,7 +5,7 @@ export const miniAppUiCopy = {
     join: "Записаться", already: "Вы уже записаны ✓", myRegistration: "Моя запись", about: "О мероприятии", details: "Дата, место и программа",
     gateTitle: "Ещё один небольшой шаг", gateBody: "Чтобы зарегистрироваться на мероприятия Menorah Center, ответьте на несколько коротких вопросов. Это займёт меньше минуты.",
     ready: "Анкета готова ✓ Теперь можно завершить регистрацию.", selfOnly: "Вы можете записать себя. Самостоятельная запись детей пока недоступна.",
-    family: "Можно записывать себя и своих детей.", emptyHint: "Новые встречи появятся здесь. Анонсы можно включить ниже.",
+    family: "Можно записывать себя и своих детей.", emptyHint: "Новые встречи появятся здесь. Следите за событиями Menorah Center.",
     announcementsUnavailable: "Не удалось узнать статус анонсов. Откройте приложение ещё раз.", loading: "Загружаем…", preview: "Вы пришли на это мероприятие", step1: "Шаг 1 из 2 · Знакомство", step2: "Шаг 2 из 2 · Профиль", unavailable: "Мероприятие по ссылке недоступно. Проверьте ссылку или свяжитесь с Menorah.", home: "В Menorah Center" },
   en: { identity: "Jewish community center in Rishon LeZion", official: "Official community Mini App · events and registration",
     local: "Menorah Center · Rishon LeZion", upcoming: "Upcoming events", allEvents: "All events", openEvent: "Details & registration",

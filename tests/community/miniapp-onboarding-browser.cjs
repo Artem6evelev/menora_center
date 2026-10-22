@@ -51,8 +51,8 @@ async function filter(page) {
       const { context, page } = await setup(785100 + index, language, mode);
       try {
         const bootstraps = []; page.on('request', r => { if (r.url().endsWith('/bootstrap')) bootstraps.push(r.url()); });
-        await filter(page); assert.equal(await page.locator('.miniapp').getAttribute('lang'), language);
-        assert.equal(await page.locator('.miniapp').getAttribute('dir'), language === 'he' ? 'rtl' : 'ltr');
+        await filter(page); assert.equal(await page.locator('.miniapp').getAttribute('lang'), 'ru');
+        assert.equal(await page.locator('.miniapp').getAttribute('dir'), 'ltr');
         assert.equal(await page.locator('[name=giyurStage]').count(), 0);
         await fill(page); await page.locator('[data-screen=profile] button[type=submit]').click();
         await page.locator('[data-screen=home]').waitFor();

@@ -2,7 +2,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   LogOut,
-  MessageCircle,
   UserRound,
   ArrowRight,
   HeartHandshake,
@@ -35,10 +34,9 @@ import {
 import MiniAppEvents from "./events";
 import { eventCopy } from "@/lib/telegram/event-copy";
 import Subscription from "./subscription";
+import { MiniAppContact } from "./contact";
 import MiniAppProfileForm, { requestMessage } from "./profile-form";
 
-// Existing Menorah contact destination from the website contact page.
-const contactUrl = "https://t.me/menorah_center";
 type ProfileResponse = MiniAppProfileData & { ok: true };
 
 export function MiniAppSplash({
@@ -131,10 +129,9 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
   const [launchEvent, setLaunchEvent] = useState<MiniAppLaunch["event"]>(null);
   const [entryGate, setEntryGate] = useState(false), [onboardingStarted, setOnboardingStarted] = useState(false);
   const [initialEvent, setInitialEvent] = useState<string>();
-  const languageChosen = useRef(false),
-    bootSequence = useRef(0);
-  const [language, setLanguage] = useState<MiniAppLanguage>("ru"),
-    [status, setStatus] = useState<
+  const bootSequence = useRef(0);
+  const language: MiniAppLanguage = miniAppLanguage();
+  const [status, setStatus] = useState<
       "loading" | "ready" | "outside" | "error" | "logout"
     >("loading");
   const [data, setData] = useState<MiniAppProfileData | null>(null),
@@ -147,15 +144,13 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
   const [actionError, setActionError] = useState(""),
     [busy, setBusy] = useState(false),
     [saved, setSaved] = useState(false);
-  const copy = miniAppDictionaries[language],
+  const copy = miniAppDictionaries.ru,
     screen = launchEvent && !onboardingStarted && data?.summary.nextStep !== "home" && data?.summary.nextStep !== "resources" ? "entry" : view ?? data?.summary.nextStep;
-  const uiCopy = miniAppUiCopy[language];
+  const uiCopy = miniAppUiCopy.ru;
   const accept = useCallback(
     (result: { data: ProfileResponse; tag?: string }) => {
       tag.current = result.tag;
       setData(result.data);
-      if (!languageChosen.current && result.data.languageCode)
-        setLanguage(miniAppLanguage(result.data.languageCode));
     },
     [],
   );
@@ -166,7 +161,7 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
     const previousLang = document.documentElement.lang,
       previousDir = document.documentElement.dir;
     document.documentElement.lang = language;
-    document.documentElement.dir = language === "he" ? "rtl" : "ltr";
+    document.documentElement.dir = "ltr";
     return () => {
       document.documentElement.lang = previousLang;
       document.documentElement.dir = previousDir;
@@ -183,11 +178,6 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
         setInitialEvent(undefined);
         setStatus("loading");
         setActionError("");
-        setLanguage((previous) =>
-          languageChosen.current
-            ? previous
-            : miniAppLanguage(navigator.language),
-        );
         const app = await loadTelegramWebApp(controller.signal);
         if (controller.signal.aborted) return;
         if (!app?.initData) {
@@ -359,11 +349,11 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
       className="miniapp"
       data-menorah-surface="miniapp"
       data-screen={status === "ready" ? screen : status}
-      lang={language}
-      dir={language === "he" ? "rtl" : "ltr"}
+      lang="ru"
+      dir="ltr"
     >
       <div className="miniapp-frame">
-        <MiniAppHeader language={language} onLanguage={value => { languageChosen.current = true; setLanguage(value); }} />
+        <MiniAppHeader />
         {preview && <p className="miniapp-preview">{copy.preview}</p>}
         <main className="miniapp-content miniapp-enter" key={status === "ready" ? screen : status}>
           {status === "loading" ? (
@@ -397,15 +387,7 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
               >
                 {status === "logout" ? copy.loginAgain : copy.retry}
               </button>
-              <a
-                href={contactUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="miniapp-text-action"
-              >
-                {copy.contact}
-                <span className="sr-only">{copy.external}</span>
-              </a>
+              <MiniAppContact />
             </section>
           ) : data && screen === "entry" && launchEvent ? (
             <><WelcomeCard language={language} /><EventEntry event={launchEvent} language={language} gate={entryGate} onRegister={() => setEntryGate(true)} onContinue={() => { setOnboardingStarted(true); window.scrollTo({ top: 0, behavior: "instant" }); }} /></>
@@ -417,10 +399,10 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
               <ProfileStatusCard language={language} childrenAllowed={data.permissions.canEditChildren} />
               <div className="miniapp-actions">
                 <ActionCard icon={UserRound} onClick={() => navigate("profile")}>{copy.profile}</ActionCard>
-                <ActionCard icon={Ticket} onClick={() => navigate("registrations")}>{eventCopy[language].registrations}</ActionCard>
+                <ActionCard icon={Ticket} onClick={() => navigate("registrations")}>{eventCopy.ru.registrations}</ActionCard>
               </div>
               <Subscription language={language} />
-              <ActionCard icon={MessageCircle} href={contactUrl}>{copy.contact}<span className="sr-only">{copy.external}</span></ActionCard>
+              <MiniAppContact card />
               <button className="miniapp-text-action self-start" disabled={busy} onClick={() => void logout()}><LogOut size={17} aria-hidden="true" />{copy.logout}</button>
             </>
           ) : data && (screen === "events" || screen === "registrations") ? (
@@ -498,15 +480,7 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
                     title={copy.resourcesLabel}
                     external={copy.external}
                   />
-                  <a
-                    href={contactUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="miniapp-primary mt-6"
-                  >
-                    {copy.contact}
-                    <span className="sr-only">{copy.external}</span>
-                  </a>
+                  <MiniAppContact className="miniapp-primary mt-6" />
                   <div className="flex flex-wrap gap-4 mt-5">
                     <button
                       className="miniapp-text-action"

@@ -1,9 +1,10 @@
 import "server-only";
 import { escapeTelegramHtml, telegramAppUrl } from "./safety";
 import type { MiniAppLanguage } from "./miniapp-i18n";
+import { communityContact } from "./contact";
 
 export const botWelcomeCopy = {
-  ru: { greeting: "Шалом", identity: "Еврейский общинный центр в Ришон-ле-Ционе.", intro: "Рады, что вы с нами! Здесь можно смотреть мероприятия, записываться и управлять профилем.",
+  ru: { greeting: "Шалом", identity: "Еврейский общинный центр в Ришон-ле-Ционе.", intro: "Наша миссия — объединять еврейские семьи, укреплять связь с Торой, традицией и общиной. Вместе мы создаём пространство для еврейской жизни, учёбы, праздников и добрых дел.\n\nЧасть программ предназначена для галахических евреев и участников соответствующих программ гиюра. Поэтому при первом входе мы попросим заполнить короткую анкету.\n\n✅ Анкету нужно заполнить только один раз.\n\nДальше вы сможете быстро записываться на мероприятия и получать анонсы новых событий Menorah Center.",
     event: "Вы перешли к нам, чтобы узнать подробнее о мероприятии. Нажмите кнопку ниже — откроется страница события с датой, местом, программой и записью.",
     note: "Здесь вы также будете получать анонсы ближайших мероприятий Menorah Center. Отключить их можно в любой момент командой /unsubscribe.",
     offNote: "Анонсы отключены. Включить их снова можно командой /subscribe.", open: "Открыть Menorah Center", openEvent: "🎟 Открыть мероприятие", events: "Мероприятия", home: "🏠 Menorah Center", contact: "Связаться с нами", subscribed: "Анонсы Menorah Center включены. Отключить: /unsubscribe.", unsubscribed: "Анонсы отключены. Включить снова: /subscribe." },
@@ -17,12 +18,11 @@ export const botWelcomeCopy = {
     offNote: "הודעות כבויות. להפעלה מחדש השתמשו בפקודה /subscribe.", open: "פתיחת Menorah Center", openEvent: "🎟 פתיחת האירוע", events: "אירועים", home: "🏠 Menorah Center", contact: "יצירת קשר", subscribed: "הודעות Menorah Center הופעלו. לביטול: /unsubscribe.", unsubscribed: "ההודעות בוטלו. להפעלה מחדש: /subscribe." },
 } satisfies Record<MiniAppLanguage, Record<string, string>>;
 
-export function botLanguage(value?: string): MiniAppLanguage {
-  const language = value?.toLowerCase().split(/[-_]/)[0];
-  return language === "he" || language === "en" ? language : "ru";
+export function botLanguage(): MiniAppLanguage {
+  return "ru";
 }
 export function botWelcome({ firstName, language, campaign, event, status }: { firstName: string; language: MiniAppLanguage; campaign: string | null; event: { id: string; imageUrl: string | null } | null; status: string }) {
-  const c = botWelcomeCopy[language], home = telegramAppUrl(), launch = new URL(home);
+  const c = botWelcomeCopy.ru, home = telegramAppUrl(), launch = new URL(home);
   if (campaign) launch.searchParams.set("campaign", campaign);
   if (event) launch.searchParams.set("event", event.id);
   const eventsUrl = new URL(home); eventsUrl.searchParams.set("view", "events");
@@ -35,10 +35,10 @@ export function botWelcome({ firstName, language, campaign, event, status }: { f
     } catch { /* Use the bundled branded banner. */ }
   }
   return { photo, brandedPhoto,
-    caption: `👋 ${c.greeting}, ${escapeTelegramHtml(Array.from(firstName).slice(0, 80).join(""))}!\n<b>Menorah Center</b>\n${c.identity}\n\n${event ? c.event : c.intro}\n\n${status === "unsubscribed" ? c.offNote : c.note}`,
+    caption: `👋 ${c.greeting}, ${escapeTelegramHtml(Array.from(firstName).slice(0, 80).join(""))}!\n\n<b>Добро пожаловать в Menorah Center</b> —\n${c.identity}\n\n${event ? c.event : c.intro}\n\n${status === "unsubscribed" ? c.offNote : c.note}`,
     keyboard: { inline_keyboard: [
       [{ text: event ? c.openEvent : c.open, web_app: { url: launch.toString() } }],
       [{ text: event ? c.home : c.events, web_app: { url: event ? home : eventsUrl.toString() } }],
-      [{ text: c.contact, url: "https://t.me/menorah_center" }],
+      [{ text: c.contact, url: communityContact.url }],
     ] } };
 }
