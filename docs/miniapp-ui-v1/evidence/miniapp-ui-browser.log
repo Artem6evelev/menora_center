@@ -1,0 +1,40 @@
+PASS 390 splash uses brand and loading before API response
+PASS 390 new subject filter: three choices, initially no gender or stage, no website navigation/footer
+PASS 390 maternal/giyur reveal gender; none hides it; changing choices retains correct state
+PASS 390 questionnaire has canonical CityPicker and no email; consent is required
+PASS 390 maternal female child editor validates gender and supports local save/edit/delete
+PASS 390 save failure preserves entered fields/child and allows retry
+PASS 390 home persists profile, child, city and consent after reload without repeated bootstrap
+PASS 390 own profile edit and native BackButton are functional
+PASS 390 controls remain touch accessible and logout clears only the session
+PASS 390 resources show exact approved links, no event/profile booking actions and fit viewport
+PASS 320 splash uses brand and loading before API response
+PASS 320 new subject filter: three choices, initially no gender or stage, no website navigation/footer
+PASS 320 maternal/giyur reveal gender; none hides it; changing choices retains correct state
+PASS 320 questionnaire has canonical CityPicker and no email; consent is required
+PASS 320 maternal female child editor validates gender and supports local save/edit/delete
+PASS 320 save failure preserves entered fields/child and allows retry
+PASS 320 home persists profile, child, city and consent after reload without repeated bootstrap
+PASS 320 own profile edit and native BackButton are functional
+PASS 320 controls remain touch accessible and logout clears only the session
+PASS 320 resources show exact approved links, no event/profile booking actions and fit viewport
+PASS desktop splash uses brand and loading before API response
+PASS desktop new subject filter: three choices, initially no gender or stage, no website navigation/footer
+PASS desktop maternal/giyur reveal gender; none hides it; changing choices retains correct state
+PASS desktop questionnaire has canonical CityPicker and no email; consent is required
+PASS desktop maternal female child editor validates gender and supports local save/edit/delete
+PASS desktop save failure preserves entered fields/child and allows retry
+PASS desktop home persists profile, child, city and consent after reload without repeated bootstrap
+PASS desktop own profile edit and native BackButton are functional
+PASS desktop controls remain touch accessible and logout clears only the session
+PASS desktop resources show exact approved links, no event/profile booking actions and fit viewport
+PASS bootstrap error has branded recovery and retry completes the same synthetic identity
+PASS male existing profile enforces child editor visibility and retains stored children
+PASS giyur-unknown existing profile enforces child editor visibility and retains stored children
+PASS giyur-advanced existing profile enforces child editor visibility and retains stored children
+PASS giyur-male existing profile enforces child editor visibility and retains stored children
+PASS giyur-completed existing profile enforces child editor visibility and retains stored children
+PASS Hebrew uses validated language, RTL logical safe areas, preserves brand through theme/viewport events
+PASS a cookie from another Telegram account never exposes its profile on a new launch
+PASS ordinary browser has no synthetic login and shows Telegram entry screen
+39/39 Mini App browser checks passed

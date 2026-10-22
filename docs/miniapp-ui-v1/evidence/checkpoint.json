@@ -1,0 +1,497 @@
+{
+  "branch": "feat/miniapp-auth-v1",
+  "HEAD": "cd2493ead3043250bd3c90fa7b673a0bbb798eed",
+  "step3Checkpoint": "cd2493ead3043250bd3c90fa7b673a0bbb798eed",
+  "step3Initial": {
+    "HEAD": "39ef782cceeefb3a7767ac61c9590a9f3b09fd25",
+    "expectedFiles": 38,
+    "changed": 0,
+    "missing": 0,
+    "unexpected": 0
+  },
+  "step4Committed": false,
+  "stagedFiles": 0,
+  "schemaAndSqlChanged": false,
+  "remoteDatabaseTouched": false,
+  "push": false,
+  "deploy": false,
+  "botFatherChanged": false,
+  "legacyBotChanged": false,
+  "shutafimChanged": false,
+  "realTelegramWebView": "NOT VERIFIED",
+  "buildSourceParity": {
+    "comparedChangedProductFiles": 27,
+    "mismatches": []
+  },
+  "manifestExcludesItself": true,
+  "files": [
+    {
+      "path": "app/api/telegram/miniapp/filter/route.ts",
+      "sha256": "afe1305166b3c78681575d7d24c6710a7972374d6b2b0823360be78aae25f08f"
+    },
+    {
+      "path": "app/api/telegram/miniapp/profile/route.ts",
+      "sha256": "23130b78be4c372f9754d85157b9ae2ed0ffe7b15698f1d3d526996c23ff961e"
+    },
+    {
+      "path": "app/api/telegram/miniapp/session/route.ts",
+      "sha256": "00be8791417587d8beae65e5d97786e86c017cc1ba036e0b2b2ee78ac9466942"
+    },
+    {
+      "path": "app/layout.tsx",
+      "sha256": "df60d81c67796b447a9690eb2dad1dde8bd9facae50bbe1fc23a8142f310e8d6"
+    },
+    {
+      "path": "app/miniapp/error.tsx",
+      "sha256": "0d6398bca6408357c3c2149f293237d7077a72be6f04b4a8b5a43b5771f7ac3c"
+    },
+    {
+      "path": "app/miniapp/layout.tsx",
+      "sha256": "bdb4f6c55046f766cd64201eaecac3d1ea02c59b0e1c641cb23ded8a335b30c1"
+    },
+    {
+      "path": "app/miniapp/loading.tsx",
+      "sha256": "1476e1f11f9004e351daa9fab6e2142b6457ddbbf6f1430f5b4d56cb5127ebf7"
+    },
+    {
+      "path": "app/miniapp/miniapp.css",
+      "sha256": "c34eaee376a034d74fe0199ae5320b3073482709aa2f8c3647974a4ae00e27ff"
+    },
+    {
+      "path": "app/miniapp/page.tsx",
+      "sha256": "6d30b24945b5a48292efe4e5b9b224ee8bf0c8314ad173c14ba5946ca9715176"
+    },
+    {
+      "path": "components/Logo.tsx",
+      "sha256": "ddee1eee5a40dacaeab695502197defdc885ac83671d9b7aa7c83de30f1c72d5"
+    },
+    {
+      "path": "components/community/child-editor.tsx",
+      "sha256": "5475fbe6fc0d97ba502476f51333aa03f266531c7a7704d2a5a1d1cff73b5a1c"
+    },
+    {
+      "path": "components/community/city-picker.tsx",
+      "sha256": "971c6649e924c324677cd34c2028c86f7c73cebc30276677765d0a5916d2a3a3"
+    },
+    {
+      "path": "components/community/filter-fields.tsx",
+      "sha256": "45484bec436881a9842f9c3e09ab41f8876cc2849ca3f85093a130c66c774a7b"
+    },
+    {
+      "path": "components/community/profile-fields.tsx",
+      "sha256": "7153b96c426ff560ba3389a63a1851ebd0e47bf4d1473acb107255a2802ce4e1"
+    },
+    {
+      "path": "components/community/resource-message.tsx",
+      "sha256": "331276dda12d4fdab5609186a2f9dca32c66e6ea74348b88a8a9e02a33bf05b5"
+    },
+    {
+      "path": "components/dashboard/main/onboarding-form.tsx",
+      "sha256": "a60dfe4b1c36516b476f82441d43f4fc64da93f549d139f3755ce4b6511f6e61"
+    },
+    {
+      "path": "components/miniapp/app.tsx",
+      "sha256": "2c3c0fabf3b4ae04b87587039988f323a5b51d3768470fb93a55b642717b8ecf"
+    },
+    {
+      "path": "components/miniapp/profile-form.tsx",
+      "sha256": "4a8033efbd52a3254d00b48409a445deb456943e6d3880b84a08c78cc688d7f2"
+    },
+    {
+      "path": "components/site-providers.tsx",
+      "sha256": "85319ebee38979bc82c1744c1f53d84538e1e6d98a0c0effbcf768fab1808dcb"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/REPORT.md",
+      "sha256": "62f716bc8e134ecea9afa3aca1f992b3b3fa4816e61bcc7bb415611cb1e8de5b"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/320-child-editor.png",
+      "sha256": "9799c92225110306a7187ef7f0aea74098200aa2b06ec0003296a57e1e3dd9fb"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/320-filter.png",
+      "sha256": "44e6aae214d97f38e93b6a4dd9109bc5184242f7cce1f404fc7b34ccded79642"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/320-home.png",
+      "sha256": "7f9a48a7497b66559d3aa93e84ed8bca9189d934cfa56523f95d70ed54ca17cd"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/320-profile-edit.png",
+      "sha256": "5cb46dc7c8a8769dbb65a990744b74ff50af17ee2a6c041a33750c1952062674"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/320-profile.png",
+      "sha256": "bd9c46659ec12d94663910f3c4df9af6222fa8325aba69bbc071fd14de9f2cc3"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/320-resources.png",
+      "sha256": "b15ec9eed6e44a061504e7fff1fdb68b07f83f1e7522e0d753c8b3ec20ca98de"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/320-splash.png",
+      "sha256": "1cabe2dc854316f8107c65038b4b77e2e985696c2e5e4a243906032d6496a7c0"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-bootstrap-error.png",
+      "sha256": "4fa83055d528c0a243c1cf2c2c72c51c8c7273bb96ef552cdb1509dd396371ba"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-browser-outside.png",
+      "sha256": "740de20a4c07af3000a72a72019fba0888aec35f4903315895ccf960e4034f49"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-child-editor.png",
+      "sha256": "6230de3c868e86e1c635d415a0493a47ede564040d27f5f663cec6eb5582ecb0"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-english-profile.png",
+      "sha256": "7e25f6b226a2c9253979ca182961b1953ac0f232560fb7867685d26ca8418263"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-filter.png",
+      "sha256": "87fec6d8370e3d599a6335f1035aec2e6cc785c28ff8e3e0776a76792328fa0f"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-giyur-advanced.png",
+      "sha256": "889eecb633d1ca3b6e6e6ce3f6b0c838c7fba8e236a1b543be48e8f45a869596"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-giyur-completed.png",
+      "sha256": "ac3735f9f1a3bfc856e593c298866f453d51ec99647ca949a8e1a45890d163b9"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-giyur-male.png",
+      "sha256": "889eecb633d1ca3b6e6e6ce3f6b0c838c7fba8e236a1b543be48e8f45a869596"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-giyur-unknown.png",
+      "sha256": "889eecb633d1ca3b6e6e6ce3f6b0c838c7fba8e236a1b543be48e8f45a869596"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-hebrew-home.png",
+      "sha256": "1a804b645e08d81dc3f10c3b5cabdc69f29da22204f7475a98c20dc0680ffb23"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-hebrew-profile.png",
+      "sha256": "8228b02138e7a4fca205f8fde3a6d60988c5cb1f0a922ceab314b2f947199a84"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-home.png",
+      "sha256": "bfe0c9bbc0249436a6515fbb82914f98b0b9019d29fe171a7b5170b27861c69d"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-male.png",
+      "sha256": "889eecb633d1ca3b6e6e6ce3f6b0c838c7fba8e236a1b543be48e8f45a869596"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-profile-edit.png",
+      "sha256": "16cb54c1ec1d467e32fef1a77a589ea1115d679123a65484da0940a7cbca9195"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-profile.png",
+      "sha256": "fc1ca6b6ff9b9de53b468d548e26d980a58bdb0c0adb458a94f72540c6f54c9c"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-resources.png",
+      "sha256": "fbdb3f951d69b630c15cac3fa94d3bb1f6af7d877e3ffcf61bbc306a13b19b37"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-splash.png",
+      "sha256": "c4e7536b829009e685316db6e13c2ec825d836573952dfe2af4054056ae49523"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/build-result.json",
+      "sha256": "ab36f2147c83429c6cbd3deeeeed9789276b9c6e9308d11ecd04419d766207a7"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/build.log",
+      "sha256": "f2af89985c6a365f3bf08cb820d40bf37f1b42b5ec767c9fcbc3d8a519b6e6a7"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/callback-browser.json",
+      "sha256": "6063ccd383c4cf909eabd90356c3704bc02a1d479ee2737d1f35550a70945b87"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/checks.json",
+      "sha256": "3cda2fa44187bfa3140d5ee2058076dff48a155b5c4013afbda4d7f1e965157a"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/client-boundary.json",
+      "sha256": "cd7fe1c3ad8363d006efaa1f69dde87099f14ff93c4604a5e431013addd6e3cd"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/desktop-child-editor.png",
+      "sha256": "e20272e1fc9c9dcf1f97c48688b43ceed15ff6a0ee66f7a4ed49a7bc1e9302f8"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/desktop-filter.png",
+      "sha256": "ec6a046c81365b5779fb6e9f1b3571de988bedc16bc2d0fc92792563c99e4e0b"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/desktop-home.png",
+      "sha256": "44993f8a044c3d67aa9ca8027b3e74a54261b6be2a2c5ea3e9d67cf976444306"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/desktop-profile-edit.png",
+      "sha256": "1d6b4587183f57c8f34a92f776e9950a15db5dc56e04bedb96d98a795ecb04e2"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/desktop-profile.png",
+      "sha256": "e09b0dce0f842727eda96f72acdc7dff1239f4e913038cf655e0018f5de9134d"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/desktop-resources.png",
+      "sha256": "aa67d826d80053276c7b2b413baf222600bc560d24cebdeee2e5a6d58aa5c2c1"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/desktop-splash.png",
+      "sha256": "1f71ae3f4662a060b8a68ab0ea8f8fbbfa5697df79de5b082fb23e9a137dd97c"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/identity-results.json",
+      "sha256": "62c5b758768dbd311c09e34ff33d94e2254b083a7c8f2267f7518923395fb7a9"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/identity.log",
+      "sha256": "888ac71affb60c778a0b2dc78c450408e86ace4579d71c931543241054541e18"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/lint.log",
+      "sha256": "321382e4e7fe9d0d3b0eec7469dc1632789f52d75b794eb49caff350926221a8"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/migration-results.json",
+      "sha256": "7215e79725138fa9c5d37936db5e25976ef6a3dacdf837c93bb7e662b32bb278"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/migrations.log",
+      "sha256": "5f2c29e9b2d7741228ccdb714b4844e0142d8ce6854d252ee5bcb52e8942cc39"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/miniapp-auth-results.json",
+      "sha256": "abc3da3a17b73d2dd6661522283d5ce5feeb982b4be84f13f31f545f243b9ff0"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/miniapp-auth.log",
+      "sha256": "dcb88cb7d2af964b3be9ae837039bb2803e816531b1a3d8f31710a660c061306"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/miniapp-ui-bridge-results.json",
+      "sha256": "93ae3eb249024181c972e1e2b7d2ba192c82ebfe3ffcf85b74854b83ae11f596"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/miniapp-ui-bridge.log",
+      "sha256": "b6ecd39ff85d4ec9cc8278e44f9deecd11b1e530640ad66426d51ff5d35fa55b"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/miniapp-ui-browser-results.json",
+      "sha256": "8fd5ead224cbce97dbab4888ce19940eb91410deed799a5a97f56b69e14e4eeb"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/miniapp-ui-browser.log",
+      "sha256": "024092a8bb7af2dcb5a515d8844e9335cd30259e4837c384bf4e1d304da5b22e"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/miniapp-ui-production-results.json",
+      "sha256": "69b46e905c1ca0db48c5d259daff688e8b62d06bda434605dbdba4164c044d18"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/miniapp-ui-production.log",
+      "sha256": "6c8ae975cbdf418ace9129c17a5a96e35d07c57fd07a62319aacbeb2ecab679f"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/miniapp-ui-server-results.json",
+      "sha256": "bcef89b2e7189e2a4c929a3077d29aa6809a9e385aa652bf3d1d628c43cba8ab"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/miniapp-ui-server.log",
+      "sha256": "fbcce172b803bf14ab37b1615464cca9115218088bd65a10b0fd6cc1d1124e3b"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/production-browser-outside.png",
+      "sha256": "f668e0af0bf068b1bfdc2302241cb8a56a785ebe72f4af1cbcd0bd0e7ef1644d"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/regression-results.json",
+      "sha256": "8618b92b891dcf95e16bbf770e385b40f1b330b9a345a4567b6ab34be9dd6eee"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/regression.log",
+      "sha256": "03a07a290521eb9fac8284d5c146b73616b40ad88abc909acb590bf8f5d543c0"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/render-results.json",
+      "sha256": "6261990277428d14acf4c44038987aac8b9fb7ffc2063d40e3c002830cb9067f"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/render.log",
+      "sha256": "33075bd0036baf23dff7e5b59015b709dfc956704fbcfd8e9740ea63bece1c54"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/render/event-guest.html",
+      "sha256": "2b31777c4501db00f7180d9e87b2553d8d81d2092cdc1d4cb7ab57a4ad8bbe3f"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/render/event-header-guest.html",
+      "sha256": "2ee98b88750705313f23511a22114933ea849d2d9443bea391bc561a7ec370ac"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/render/home-header-guest.html",
+      "sha256": "bab22dfcb5b301df22d9b56d87ec42da38b8a781f4af41b9badbfa99f02caea3"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/render/register-giyur.html",
+      "sha256": "4d8a69150cc98ecc9de9a68d4024b359007d518cf201ab19d83761cafd1c9f35"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/render/register-initial.html",
+      "sha256": "e516da64b59e289daa670321e81c155c8d744b75e0e25217ea81f3013bb5e981"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/render/register-maternal.html",
+      "sha256": "3d6cb1c2bb18c3b916a18b32c8ce1657ce096ea7ea9da26424fcd0cc22e50aed"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/render/register-none.html",
+      "sha256": "27349366547462ee5ecfa044a82f080ad54772411c0626e6c246007d11fbfaac"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/screenshots.json",
+      "sha256": "b8882c6af40f3863b80fccabab696a2763733c6768e1e99e506e271a2e9a1f99"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/spec-results.json",
+      "sha256": "affb8b8ae0f413308e9150d0196dc664a5483ec54be20c2bdaac8bfe4b083c6e"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/spec-update.log",
+      "sha256": "8ddedcbf92a673cbaefbcea8a6caf51c6dab30dcc1ebfeb00ca28d284f07c81d"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/sso-callback.log",
+      "sha256": "c19d222f9319c3301381395aa9349982bfad2a46312158c14399a15ba6396f03"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/typecheck.log",
+      "sha256": "cb1f07e22b5eb32160d3ec1bb7a6c10365bb9eac5c62b73b775cd9eed8898f93"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/website-callback-browser.log",
+      "sha256": "329195f831d67992cdc99bdc83d54d688cff5485f866af3ec05acebb55d86d35"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/website-spec-browser.log",
+      "sha256": "f1a8b969d1ebcc063beacfaee132cda270fb24ce75ecff8d040549a25b619f0b"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/website-spec-browser/desktop-cards.png",
+      "sha256": "0540c6082297b630097a6ca29ae239dd99745b896a19f7089f052effdfd6a21c"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/website-spec-browser/desktop-iframe.png",
+      "sha256": "04eb0d89573e5792c0db8482d35d55b03765a64441b18997d5945bff07f441ca"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/website-spec-browser/desktop-person-card.png",
+      "sha256": "132a10ee198584bc52d6224870227dc705bcbda86710a2c632486d165b60c3fc"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/website-spec-browser/mobile-cards.png",
+      "sha256": "1c4828117b42630649d614e4b7f757a013e73af73d52b26e2fa35e18dfbe19ea"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/website-spec-browser/mobile-iframe.png",
+      "sha256": "8efdea76e5444f8bab9cc28e25ee8285998e58bb669a02c5ceb1e31ca42f79ef"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/website-spec-browser/mobile-person-card.png",
+      "sha256": "db7752302f095ee305e0434f1beaa4b2104e79957c536726614383bf6f72de64"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/website-spec-browser/results.json",
+      "sha256": "39aecb4817c882ac8575a86c64c429b2d3a9a90e957e65b7020f82ef39871373"
+    },
+    {
+      "path": "lib/community/profile-write.ts",
+      "sha256": "9cb587764be662b2ddf0d510f97f7a8e36d034a7cdff0707d6a85eb04ba6a8fd"
+    },
+    {
+      "path": "lib/telegram/miniapp-client.ts",
+      "sha256": "1facf9e8c6132f8adc0e93467207a8ac32cb1f09f3eeba55fd5616e2ccfb0b3a"
+    },
+    {
+      "path": "lib/telegram/miniapp-http.ts",
+      "sha256": "8e621165c1aad36187a96e17f70680b83dd3c236cef71f508ff33b1c75c02ee9"
+    },
+    {
+      "path": "lib/telegram/miniapp-i18n.ts",
+      "sha256": "5b19ec8228679621ca824090311b67bcd836fb4c0cbff18297a6e2ae122f87d5"
+    },
+    {
+      "path": "lib/telegram/miniapp-init-data.ts",
+      "sha256": "6ed74c2713998958a3c8b5edc0f6378014a459a1b072293bb41b287943e30310"
+    },
+    {
+      "path": "lib/telegram/miniapp-profile.ts",
+      "sha256": "4051deba22639c9af20d9f7ae4a360a1bd111f77ac75673b295e2e0c62d7455d"
+    },
+    {
+      "path": "lib/telegram/miniapp-session.ts",
+      "sha256": "fa6360d5e2b3410c858fe983aca638300d3cb6559297f2155a469ea2823fc985"
+    },
+    {
+      "path": "middleware.ts",
+      "sha256": "5d7f35bb30014ff4a1ccc003591d39cb9739d8af6b4f71a2aacdefcbdbc4975c"
+    },
+    {
+      "path": "tests/community/README.md",
+      "sha256": "35148071c03246231b8708bc24ae795bab28f33e82a2fd8f46535bc37d250f9e"
+    },
+    {
+      "path": "tests/community/http-fixture.cjs",
+      "sha256": "bc2f355c2c4b7fac80759a82c06dcc2ba55df6826f723801c9837e2100d7cd73"
+    },
+    {
+      "path": "tests/community/miniapp-ui-bridge.cjs",
+      "sha256": "66cd62fb186ac8c7c2db83487ad18395894eaafbb2eacf971a026441d341fd78"
+    },
+    {
+      "path": "tests/community/miniapp-ui-browser.cjs",
+      "sha256": "a49c273cfb18ae4adeacfb3d04969ffb9de75032a486eedc7ba678b79aa36333"
+    },
+    {
+      "path": "tests/community/miniapp-ui-fixture.cjs",
+      "sha256": "a0084cab9f85338c4ae6f1d271322e4dde4a6fc1e673107c992d8d668e8854d5"
+    },
+    {
+      "path": "tests/community/miniapp-ui-preview.cjs",
+      "sha256": "590fca8ee0b1ff3e320dfc8a9037705402a4d05b3593c99018a004119271d9e4"
+    },
+    {
+      "path": "tests/community/miniapp-ui-production.cjs",
+      "sha256": "87b54b4e10ebd5685729a346eb8b5cd358009fc96ca4534bd5affbb45e38750c"
+    },
+    {
+      "path": "tests/community/miniapp-ui-sdk.cjs",
+      "sha256": "41f409583fa6ec666145bc3e4a77d3c4f2cbaa82138afae550185ce8ce7acda1"
+    },
+    {
+      "path": "tests/community/miniapp-ui-server.cjs",
+      "sha256": "ad2f455c618d96e3a096cfc7491066195ceeb1b25e84c504e3313399d8c05ae9"
+    },
+    {
+      "path": "tests/community/production.cjs",
+      "sha256": "4dd558122a422bb9605d1e2f393e49df1de1b0f4be431a15004e88fef7054762"
+    },
+    {
+      "path": "tests/community/spec-browser.cjs",
+      "sha256": "daa6f8c9f54883ebe179e3cdcb3007cf45a4c1045694c74f168289220489082a"
+    },
+    {
+      "path": "tests/community/spec-update.cjs",
+      "sha256": "30b24ad569543e7aa85eb559228b5899c9058deed0e7f3665cc17c2bba4b47ca"
+    }
+  ]
+}

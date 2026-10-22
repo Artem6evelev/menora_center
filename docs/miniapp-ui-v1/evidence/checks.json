@@ -1,0 +1,104 @@
+{
+  "date": "2026-10-22",
+  "totalChecks": 320,
+  "realTelegramWebView": "NOT VERIFIED",
+  "remoteDatabaseTouched": false,
+  "commands": [
+    {
+      "command": "node tests/community/miniapp-ui-browser.cjs",
+      "exitCode": 0,
+      "checks": 39,
+      "result": "miniapp-ui-browser-results.json"
+    },
+    {
+      "command": "node tests/community/miniapp-ui-server.cjs",
+      "exitCode": 0,
+      "checks": 31,
+      "result": "miniapp-ui-server-results.json"
+    },
+    {
+      "command": "node tests/community/miniapp-ui-bridge.cjs",
+      "exitCode": 0,
+      "checks": 6,
+      "result": "miniapp-ui-bridge-results.json"
+    },
+    {
+      "command": "node tests/community/miniapp-ui-production.cjs",
+      "exitCode": 0,
+      "checks": 2,
+      "result": "miniapp-ui-production-results.json"
+    },
+    {
+      "command": "node tests/community/miniapp-auth.cjs",
+      "exitCode": 0,
+      "checks": 87,
+      "result": "miniapp-auth-results.json"
+    },
+    {
+      "command": "node tests/community/identity-schema.cjs",
+      "exitCode": 0,
+      "checks": 23,
+      "result": "identity-results.json"
+    },
+    {
+      "command": "npm run db:test",
+      "exitCode": 0,
+      "checks": 8,
+      "result": "migration-results.json"
+    },
+    {
+      "command": "node tests/community/regression.cjs",
+      "exitCode": 0,
+      "checks": 36,
+      "result": "regression-results.json"
+    },
+    {
+      "command": "node tests/community/render.cjs",
+      "exitCode": 0,
+      "checks": 21,
+      "result": "render-results.json"
+    },
+    {
+      "command": "node tests/community/spec-update.cjs",
+      "exitCode": 0,
+      "checks": 17,
+      "result": "spec-results.json"
+    },
+    {
+      "command": "node tests/community/callback-browser.cjs",
+      "exitCode": 0,
+      "checks": 10,
+      "result": "callback-browser.json"
+    },
+    {
+      "command": "node tests/community/spec-browser.cjs",
+      "exitCode": 0,
+      "checks": 30,
+      "result": "website-spec-browser/results.json"
+    },
+    {
+      "command": "node tests/community/sso-callback.cjs",
+      "exitCode": 0,
+      "checks": 10,
+      "log": "sso-callback.log"
+    },
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "log": "typecheck.log"
+    },
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "errors": 0,
+      "warnings": 30,
+      "log": "lint.log"
+    },
+    {
+      "command": "npm run build",
+      "exitCode": 0,
+      "result": "build-result.json",
+      "environment": "isolated current-code copy, no real env, loopback unavailable DB"
+    }
+  ]
+}

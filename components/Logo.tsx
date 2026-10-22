@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 
-export const Logo = ({ linked = true }: { linked?: boolean }) => {
+export const Logo = ({ linked = true, appearance = "auto" }: { linked?: boolean; appearance?: "auto" | "light" }) => {
   const Wrapper = linked ? Link : "div";
   return (
     <Wrapper
@@ -18,11 +18,11 @@ export const Logo = ({ linked = true }: { linked?: boolean }) => {
         height={60}
         priority
         // h-10 на мобилках, h-12 на планшетах, h-14 на десктопе
-        className="h-10 md:h-12 lg:h-14 w-auto object-contain block dark:hidden"
+        className={`h-10 md:h-12 lg:h-14 w-auto object-contain ${appearance === "light" ? "block" : "block dark:hidden"}`}
       />
 
       {/* Логотип для ТЕМНОЙ темы (скрывается в светлой) */}
-      <Image
+      {appearance === "auto" && <Image
         // Убедись, что у тебя есть версия логотипа со светлым текстом в папке public/logos/
         src="/logos/menora-logo-dark.svg"
         alt="Menorah Center"
@@ -30,7 +30,7 @@ export const Logo = ({ linked = true }: { linked?: boolean }) => {
         height={60}
         priority
         className="h-10 md:h-12 lg:h-14 w-auto object-contain hidden dark:block"
-      />
+      />}
     </Wrapper>
   );
 };

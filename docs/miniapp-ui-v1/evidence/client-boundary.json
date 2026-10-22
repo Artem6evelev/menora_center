@@ -1,0 +1,26 @@
+{
+  "scope": "targeted Mini App client/security/component review, not general production audit",
+  "productionBuild": true,
+  "serverOnlyMarkers": [
+    {
+      "marker": "TELEGRAM_BOT_TOKEN",
+      "files": []
+    },
+    {
+      "marker": "telegram_miniapp_sessions",
+      "files": []
+    },
+    {
+      "marker": "synthetic-miniapp-ui-key",
+      "files": []
+    }
+  ],
+  "rawSecretsRead": false,
+  "review": {
+    "hooks": "top-level, stable boot callback, cleanup SDK/BackButton/fetch/timer/beforeunload/document attributes",
+    "accessibility": "labels/legends, aria status/alerts/current navigation, keyboard CityPicker, focus styles, decorative icons hidden",
+    "privacy": "no Clerk/Analytics mount on Mini App, own-profile DTO, no raw session/initData browser storage or logs",
+    "sharedRules": "presentation components use dictionaries; writes use existing validation/policy/cities/children/history",
+    "rendering": "local font and existing sized SVG, scoped branded light CSS, responsive logical spacing"
+  }
+}

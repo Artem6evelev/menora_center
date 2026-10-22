@@ -26,7 +26,7 @@ export function requireMiniAppSameOrigin(request: Request) {
   }
 }
 
-export async function readMiniAppInitData(request: Request) {
+export async function readMiniAppJson(request: Request): Promise<unknown> {
   if (!/^application\/json(?:\s*;|$)/i.test(request.headers.get("content-type") ?? "")) {
     throw new MiniAppAuthError(415, "json_required");
   }
@@ -50,6 +50,11 @@ export async function readMiniAppInitData(request: Request) {
   let value: unknown;
   try { value = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(Buffer.concat(chunks))); }
   catch { throw new MiniAppAuthError(400, "malformed_request"); }
+  return value;
+}
+
+export async function readMiniAppInitData(request: Request) {
+  const value = await readMiniAppJson(request);
   if (!value || typeof value !== "object" || Array.isArray(value) || Object.keys(value).length !== 1 ||
     !("initData" in value) || typeof value.initData !== "string") throw new MiniAppAuthError(400, "malformed_request");
   return value.initData;

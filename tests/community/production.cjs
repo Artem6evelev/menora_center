@@ -70,7 +70,7 @@ async function legacyDatabase() {
   for (const col of ['gender','affiliation','giyur_stage','filter_version','filter_revision','filter_completed_at','identity_disabled_at']) delete baseline.tables['public.users'].columns[col];
   baseline.tables['public.users'].checkConstraints = {};
   const empty = { ...baseline, tables: {}, schemas: {}, enums: {}, sequences: {}, roles: {}, policies: {}, views: {} };
-  await pg.exec((await generateMigration(empty, baseline)).join('\n'));
+  await pg.exec(require('./schema-ddl.cjs').orderSchemaDdl(await generateMigration(empty, baseline)).join('\n'));
   await pg.exec(`INSERT INTO users(id,email,first_name,has_children,children_data,jewish_status) VALUES ('legacy','legacy@example.invalid','Unchanged legacy',false,'[{"name":"Preserved child","dateOfBirth":"2020-01-01"}]','Unchanged historical answer');
     INSERT INTO events(id,title,is_free,price) VALUES ('history','Synthetic history',false,'100');
     INSERT INTO event_participants(id,event_id,user_id,status,extra_data) VALUES ('history-ticket','history','legacy','paid','{"family":{"child_0":true}}');

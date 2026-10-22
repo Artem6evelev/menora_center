@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 import { telegramMiniappSessions as sessions, userIdentities, users } from "@/lib/db/schema";
 import { miniAppCookieName, miniAppSessionTtlSeconds, TELEGRAM_PROVIDER_INSTANCE } from "./miniapp-config";
 import { MiniAppAuthError } from "./miniapp-errors";
-import { withTelegramMiniAppUser } from "./miniapp-user";
+import { withTelegramMiniAppUser, type MiniAppTransaction, type MiniAppUser } from "./miniapp-user";
 import type { ValidatedTelegramInitData } from "./miniapp-init-data";
 
 function tokenHash(token: string | undefined) {
@@ -23,24 +23,31 @@ export async function openMiniAppSession(data: ValidatedTelegramInitData) {
   });
 }
 
-export async function currentMiniAppUser() {
+/** Mutations can authorize and write under the same identity/user/session locks. */
+export async function withMiniAppSession<T>(finish: (tx: MiniAppTransaction, user: MiniAppUser) => Promise<T>) {
+  const unauthenticated = () => new MiniAppAuthError(401, "unauthenticated");
   const hash = tokenHash((await cookies()).get(miniAppCookieName())?.value);
-  if (!hash) return null;
+  if (!hash) throw unauthenticated();
   return db.transaction(async tx => {
     const [initial] = await tx.select().from(sessions).where(eq(sessions.tokenHash, hash));
-    if (!initial || initial.revokedAt || initial.expiresAt <= new Date()) return null;
+    if (!initial || initial.revokedAt || initial.expiresAt <= new Date()) throw unauthenticated();
     // Same identity -> user lock order as bootstrap; recheck session after taking locks.
     const [identity] = await tx.select().from(userIdentities).where(eq(userIdentities.id, initial.identityId)).for("update");
     if (!identity || identity.disabledAt || identity.provider !== "telegram" ||
-      identity.providerInstance !== TELEGRAM_PROVIDER_INSTANCE || identity.userId !== initial.userId) return null;
+      identity.providerInstance !== TELEGRAM_PROVIDER_INSTANCE || identity.userId !== initial.userId) throw unauthenticated();
     const [user] = await tx.select().from(users).where(eq(users.id, identity.userId)).for("update");
-    if (!user || user.identityDisabledAt) return null;
+    if (!user || user.identityDisabledAt) throw unauthenticated();
     const [session] = await tx.select().from(sessions).where(eq(sessions.id, initial.id)).for("update");
     const now = new Date();
-    if (!session || session.revokedAt || session.expiresAt <= now || session.identityId !== identity.id || session.userId !== user.id) return null;
+    if (!session || session.revokedAt || session.expiresAt <= now || session.identityId !== identity.id || session.userId !== user.id) throw unauthenticated();
     await tx.update(sessions).set({ lastSeenAt: now }).where(eq(sessions.id, session.id));
-    return user;
+    return finish(tx, user);
   });
+}
+
+export async function currentMiniAppUser() {
+  try { return await withMiniAppSession(async (_tx, user) => user); }
+  catch (error) { if (error instanceof MiniAppAuthError && error.status === 401) return null; throw error; }
 }
 
 export async function requireMiniAppUser() {

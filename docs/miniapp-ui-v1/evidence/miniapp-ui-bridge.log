@@ -1,0 +1,7 @@
+PASS ready/expand, seven SDK listeners, platform/version/theme and both safe areas initialize
+PASS viewport/theme/safe-area/activation events refresh snapshot without changing Menorah chrome colors
+PASS unsupported older Telegram version does not receive new chrome or BackButton calls
+PASS 6.1 header uses allowed theme keyword and avoids bottomBar API
+PASS BackButton replaces callbacks and dispose removes all SDK/native listeners and owned CSS variables
+PASS invalid viewport/inset values cannot inject CSS values
+6/6 bridge checks passed

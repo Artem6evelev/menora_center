@@ -65,7 +65,7 @@ async function location(query) { try { await source('app/auth/complete/page.tsx'
   const pg=new PGlite(); db=drizzle(pg,{schema});
   const current=generateDrizzleJson(schema),baseline=structuredClone(current); delete baseline.tables['public.users'].columns.city_id;
   const empty={...baseline,tables:{},schemas:{},enums:{},sequences:{},roles:{},policies:{},views:{}};
-  await pg.exec((await generateMigration(empty,baseline)).join('\n'));
+  await pg.exec(require('./schema-ddl.cjs').orderSchemaDdl(await generateMigration(empty,baseline)).join('\n'));
   await pg.exec(`INSERT INTO users(id,email,city,filter_version,filter_completed_at,affiliation,gender,is_profile_complete,children_data) VALUES ('legacy','legacy@example.invalid','Historical free value',2,'2026-10-20','maternal','female',true,'[{"id":"old-child","name":"Historical child","dateOfBirth":"2020-01-01"}]');
     INSERT INTO events(id,title,is_free,status) VALUES ('event-a','Approved real database title',true,'planned'),('event-b','Second real title',true,'planned'),('event-hidden','Hidden title',true,'cancelled');
     INSERT INTO event_participants(id,event_id,user_id,status,extra_data) VALUES ('old-ticket','event-a','legacy','paid','{"family":{"child_0":true}}');`);
@@ -78,7 +78,7 @@ async function location(query) { try { await source('app/auth/complete/page.tsx'
     assert.equal((await db.select().from(schema.eventParticipants))[0].status,'paid');
   });
   for(const defect of ['wrong-city-type','missing-base-column']) await test('owner SQL refuses '+defect+' and preserves incompatible schema for inspection',async()=>{
-    const other=new PGlite();await other.exec((await generateMigration(empty,baseline)).join('\n'));
+    const other=new PGlite();await other.exec(require('./schema-ddl.cjs').orderSchemaDdl(await generateMigration(empty,baseline)).join('\n'));
     if(defect==='wrong-city-type')await other.exec('ALTER TABLE users ADD COLUMN city_id integer');
     else await other.exec('ALTER TABLE users DROP COLUMN filter_revision');
     await assert.rejects(other.exec(sql));await other.exec('ROLLBACK');

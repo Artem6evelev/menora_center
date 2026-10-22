@@ -55,7 +55,7 @@ function telegramUser(raw: string | undefined): ValidatedTelegramUser {
  * https://core.telegram.org/bots/webapps#validating-data-received-via-the-mini-app
  * Keep the original decoded values. In particular, never reserialize user JSON.
  */
-export function validateTelegramMiniAppInitData(raw: unknown): ValidatedTelegramInitData {
+function signedTelegramData(raw: unknown, requireFresh: boolean) {
   if (typeof raw !== "string" || !raw || Buffer.byteLength(raw, "utf8") > MINIAPP_BODY_LIMIT) throw malformed();
   const fields = new Map<string, string>();
   for (const pair of raw.split("&")) {
@@ -81,15 +81,27 @@ export function validateTelegramMiniAppInitData(raw: unknown): ValidatedTelegram
   const expected = createHmac("sha256", secret).update(checkString).digest();
   if (!timingSafeEqual(expected, Buffer.from(hash, "hex"))) throw new MiniAppAuthError(401, "invalid_init_data");
   const authDate = Number(date), now = Math.floor(Date.now() / 1000);
-  if (authDate > now + MINIAPP_CLOCK_SKEW_SECONDS || now - authDate > initDataMaxAgeSeconds()) {
+  if (authDate > now + MINIAPP_CLOCK_SKEW_SECONDS || (requireFresh && now - authDate > initDataMaxAgeSeconds())) {
     throw new MiniAppAuthError(401, "expired_init_data");
   }
   const start = fields.get("start_param");
+  return { user: Object.freeze(telegramUser(fields.get("user"))), authDate,
+    startParam: start && /^[A-Za-z0-9_-]{1,64}$/.test(start) ? start : null };
+}
+
+export function validateTelegramMiniAppInitData(raw: unknown): ValidatedTelegramInitData {
+  const data = signedTelegramData(raw, true);
   const result: ValidatedTelegramInitData = Object.freeze({ [proof]: true as const,
-    user: Object.freeze(telegramUser(fields.get("user"))), authDate,
-    startParam: start && /^[A-Za-z0-9_-]{1,64}$/.test(start) ? start : null });
+    ...data });
   verified.add(result);
   return result;
+}
+
+/** Only binds an already-valid cookie to the current Telegram launch. This is NOT
+ * a bootstrap proof: old signed data cannot create/renew a session or a person.
+ * Reloading an older WebView may reuse its still-valid 24h session. */
+export function telegramMiniAppSessionSubject(raw: unknown): string {
+  return signedTelegramData(raw, false).user.id;
 }
 
 export function assertValidatedTelegramInitData(value: ValidatedTelegramInitData) {

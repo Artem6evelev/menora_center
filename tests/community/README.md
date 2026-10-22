@@ -75,3 +75,46 @@ transaction rollback and retry. This does not replace a race test on independent
 
 To regenerate the unified Step 2+3 owner SQL without connecting to a database:
 `node scripts/build-miniapp-manual-sql.cjs`. Historical `0009` is unchanged.
+
+## Telegram Mini App UI (Step 4)
+
+Только изолированная локальная копия, без `.env` проекта, реальной БД, Google и Bot API:
+
+```sh
+node tests/community/miniapp-ui-fixture.cjs
+cd /tmp/menora-miniapp-ui
+NODE_PATH=/tmp/menora-filter-test-runtime/node_modules npm run dev -- --hostname 127.0.0.1 --port 3342
+```
+
+Из корня исходного проекта:
+
+```sh
+node tests/community/miniapp-ui-browser.cjs
+node tests/community/miniapp-ui-server.cjs
+node tests/community/miniapp-ui-bridge.cjs
+```
+
+Browser suite сначала доказывает `isolated-pglite`, затем сбрасывает только эту синтетическую БД.
+Она использует настоящие product routes/services, HMAC с отдельным синтетическим ключом,
+HttpOnly sessions и SQL; Telegram JS/native API подставлены только через Playwright.
+Это не real Telegram WebView. Обычная вкладка без adapter остаётся на экране открытия через Telegram.
+Для ручной визуальной разработки: `node tests/community/miniapp-ui-preview.cjs` открывает headed Chromium
+с синтетическим аккаунтом. Оба fixture/preview генератора отклоняют `NODE_ENV=production`;
+preview дополнительно проверяет изолированную БД. Эти файлы не импортируются приложением и не попадают в release behavior.
+`MENORAH_MINIAPP_PREVIEW=1` в development включает только заметную тестовую подпись, не identity или обход подписи.
+Production игнорирует этот флаг и query params для входа.
+
+После `node tests/community/build.cjs` production-копию можно запустить на loopback:3343 с синтетическими
+или пустыми runtime Clerk keys; `node tests/community/miniapp-ui-production.cjs` проверяет обычный браузер,
+отсутствие dev-входа и доступность общего публичного city directory без Clerk. Никакой remote DB там нет.
+
+Существующие website browser suites используют ту же fixture с mock Clerk. Запускайте отдельной
+когортой после завершения Mini App browser suite, без параллельного reset. Для чистой когорты перезапустите
+только временный dev server, прогрейте нужные routes и выполните:
+
+```sh
+CALLBACK_BROWSER_BASE=http://127.0.0.1:3342 COMMUNITY_TEST_OUTPUT=docs/miniapp-ui-v1/evidence node tests/community/callback-browser.cjs
+COMMUNITY_BROWSER_BASE=http://127.0.0.1:3342 COMMUNITY_HEADLESS=1 COMMUNITY_BROWSER_OUTPUT=docs/miniapp-ui-v1/evidence/website-spec-browser node tests/community/spec-browser.cjs
+```
+
+Evidence и границы: [REPORT](../../docs/miniapp-ui-v1/REPORT.md). Схема и SQL Шага 3 не изменялись.

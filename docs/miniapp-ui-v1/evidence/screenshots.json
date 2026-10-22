@@ -1,0 +1,211 @@
+{
+  "miniappPng": 32,
+  "websitePng": 6,
+  "viewports": [
+    [
+      390,
+      844
+    ],
+    [
+      320,
+      700
+    ],
+    [
+      1280,
+      1000
+    ]
+  ],
+  "method": "Chromium; explicit synthetic Telegram SDK/native context; no real-device verification",
+  "files": [
+    {
+      "path": "320-child-editor.png",
+      "bytes": 107660,
+      "sha256": "9799c92225110306a7187ef7f0aea74098200aa2b06ec0003296a57e1e3dd9fb"
+    },
+    {
+      "path": "320-filter.png",
+      "bytes": 66093,
+      "sha256": "44e6aae214d97f38e93b6a4dd9109bc5184242f7cce1f404fc7b34ccded79642"
+    },
+    {
+      "path": "320-home.png",
+      "bytes": 64231,
+      "sha256": "7f9a48a7497b66559d3aa93e84ed8bca9189d934cfa56523f95d70ed54ca17cd"
+    },
+    {
+      "path": "320-profile-edit.png",
+      "bytes": 100469,
+      "sha256": "5cb46dc7c8a8769dbb65a990744b74ff50af17ee2a6c041a33750c1952062674"
+    },
+    {
+      "path": "320-profile.png",
+      "bytes": 76481,
+      "sha256": "bd9c46659ec12d94663910f3c4df9af6222fa8325aba69bbc071fd14de9f2cc3"
+    },
+    {
+      "path": "320-resources.png",
+      "bytes": 112319,
+      "sha256": "b15ec9eed6e44a061504e7fff1fdb68b07f83f1e7522e0d753c8b3ec20ca98de"
+    },
+    {
+      "path": "320-splash.png",
+      "bytes": 26163,
+      "sha256": "1cabe2dc854316f8107c65038b4b77e2e985696c2e5e4a243906032d6496a7c0"
+    },
+    {
+      "path": "390-bootstrap-error.png",
+      "bytes": 43242,
+      "sha256": "4fa83055d528c0a243c1cf2c2c72c51c8c7273bb96ef552cdb1509dd396371ba"
+    },
+    {
+      "path": "390-browser-outside.png",
+      "bytes": 45891,
+      "sha256": "740de20a4c07af3000a72a72019fba0888aec35f4903315895ccf960e4034f49"
+    },
+    {
+      "path": "390-child-editor.png",
+      "bytes": 110024,
+      "sha256": "6230de3c868e86e1c635d415a0493a47ede564040d27f5f663cec6eb5582ecb0"
+    },
+    {
+      "path": "390-english-profile.png",
+      "bytes": 96282,
+      "sha256": "7e25f6b226a2c9253979ca182961b1953ac0f232560fb7867685d26ca8418263"
+    },
+    {
+      "path": "390-filter.png",
+      "bytes": 66111,
+      "sha256": "87fec6d8370e3d599a6335f1035aec2e6cc785c28ff8e3e0776a76792328fa0f"
+    },
+    {
+      "path": "390-giyur-advanced.png",
+      "bytes": 95180,
+      "sha256": "889eecb633d1ca3b6e6e6ce3f6b0c838c7fba8e236a1b543be48e8f45a869596"
+    },
+    {
+      "path": "390-giyur-completed.png",
+      "bytes": 102179,
+      "sha256": "ac3735f9f1a3bfc856e593c298866f453d51ec99647ca949a8e1a45890d163b9"
+    },
+    {
+      "path": "390-giyur-male.png",
+      "bytes": 95180,
+      "sha256": "889eecb633d1ca3b6e6e6ce3f6b0c838c7fba8e236a1b543be48e8f45a869596"
+    },
+    {
+      "path": "390-giyur-unknown.png",
+      "bytes": 95180,
+      "sha256": "889eecb633d1ca3b6e6e6ce3f6b0c838c7fba8e236a1b543be48e8f45a869596"
+    },
+    {
+      "path": "390-hebrew-home.png",
+      "bytes": 54937,
+      "sha256": "1a804b645e08d81dc3f10c3b5cabdc69f29da22204f7475a98c20dc0680ffb23"
+    },
+    {
+      "path": "390-hebrew-profile.png",
+      "bytes": 81882,
+      "sha256": "8228b02138e7a4fca205f8fde3a6d60988c5cb1f0a922ceab314b2f947199a84"
+    },
+    {
+      "path": "390-home.png",
+      "bytes": 64958,
+      "sha256": "bfe0c9bbc0249436a6515fbb82914f98b0b9019d29fe171a7b5170b27861c69d"
+    },
+    {
+      "path": "390-male.png",
+      "bytes": 95180,
+      "sha256": "889eecb633d1ca3b6e6e6ce3f6b0c838c7fba8e236a1b543be48e8f45a869596"
+    },
+    {
+      "path": "390-profile-edit.png",
+      "bytes": 102790,
+      "sha256": "16cb54c1ec1d467e32fef1a77a589ea1115d679123a65484da0940a7cbca9195"
+    },
+    {
+      "path": "390-profile.png",
+      "bytes": 77929,
+      "sha256": "fc1ca6b6ff9b9de53b468d548e26d980a58bdb0c0adb458a94f72540c6f54c9c"
+    },
+    {
+      "path": "390-resources.png",
+      "bytes": 109786,
+      "sha256": "fbdb3f951d69b630c15cac3fa94d3bb1f6af7d877e3ffcf61bbc306a13b19b37"
+    },
+    {
+      "path": "390-splash.png",
+      "bytes": 27766,
+      "sha256": "c4e7536b829009e685316db6e13c2ec825d836573952dfe2af4054056ae49523"
+    },
+    {
+      "path": "desktop-child-editor.png",
+      "bytes": 117747,
+      "sha256": "e20272e1fc9c9dcf1f97c48688b43ceed15ff6a0ee66f7a4ed49a7bc1e9302f8"
+    },
+    {
+      "path": "desktop-filter.png",
+      "bytes": 75661,
+      "sha256": "ec6a046c81365b5779fb6e9f1b3571de988bedc16bc2d0fc92792563c99e4e0b"
+    },
+    {
+      "path": "desktop-home.png",
+      "bytes": 75941,
+      "sha256": "44993f8a044c3d67aa9ca8027b3e74a54261b6be2a2c5ea3e9d67cf976444306"
+    },
+    {
+      "path": "desktop-profile-edit.png",
+      "bytes": 110878,
+      "sha256": "1d6b4587183f57c8f34a92f776e9950a15db5dc56e04bedb96d98a795ecb04e2"
+    },
+    {
+      "path": "desktop-profile.png",
+      "bytes": 82992,
+      "sha256": "e09b0dce0f842727eda96f72acdc7dff1239f4e913038cf655e0018f5de9134d"
+    },
+    {
+      "path": "desktop-resources.png",
+      "bytes": 124120,
+      "sha256": "aa67d826d80053276c7b2b413baf222600bc560d24cebdeee2e5a6d58aa5c2c1"
+    },
+    {
+      "path": "desktop-splash.png",
+      "bytes": 34276,
+      "sha256": "1f71ae3f4662a060b8a68ab0ea8f8fbbfa5697df79de5b082fb23e9a137dd97c"
+    },
+    {
+      "path": "production-browser-outside.png",
+      "bytes": 33784,
+      "sha256": "f668e0af0bf068b1bfdc2302241cb8a56a785ebe72f4af1cbcd0bd0e7ef1644d"
+    },
+    {
+      "path": "website-spec-browser/desktop-cards.png",
+      "bytes": 255507,
+      "sha256": "0540c6082297b630097a6ca29ae239dd99745b896a19f7089f052effdfd6a21c"
+    },
+    {
+      "path": "website-spec-browser/desktop-iframe.png",
+      "bytes": 93244,
+      "sha256": "04eb0d89573e5792c0db8482d35d55b03765a64441b18997d5945bff07f441ca"
+    },
+    {
+      "path": "website-spec-browser/desktop-person-card.png",
+      "bytes": 157023,
+      "sha256": "132a10ee198584bc52d6224870227dc705bcbda86710a2c632486d165b60c3fc"
+    },
+    {
+      "path": "website-spec-browser/mobile-cards.png",
+      "bytes": 211353,
+      "sha256": "1c4828117b42630649d614e4b7f757a013e73af73d52b26e2fa35e18dfbe19ea"
+    },
+    {
+      "path": "website-spec-browser/mobile-iframe.png",
+      "bytes": 76894,
+      "sha256": "8efdea76e5444f8bab9cc28e25ee8285998e58bb669a02c5ceb1e31ca42f79ef"
+    },
+    {
+      "path": "website-spec-browser/mobile-person-card.png",
+      "bytes": 51588,
+      "sha256": "db7752302f095ee305e0434f1beaa4b2104e79957c536726614383bf6f72de64"
+    }
+  ]
+}

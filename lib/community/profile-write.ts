@@ -19,7 +19,17 @@ export async function writeCommunityProfile(tx: any, identity: any, raw: unknown
   // Stable Clerk ID and database PK serialize first saves too; a webhook need not arrive first.
   await tx.insert(users).values({ id: userId, email, imageUrl: identity.imageUrl,
     firstName: identity.firstName, lastName: identity.lastName, role: "client" }).onConflictDoNothing();
+  return writeCanonicalCommunityProfile(tx, userId, raw, resourceOnly, submittedAt, email);
+}
+
+/** Shared profile writer; authentication belongs to the website/Mini App adapter.
+ * An absent email leaves the canonical nullable address untouched. No messages are sent here. */
+export async function writeCanonicalCommunityProfile(tx: any, userId: string, raw: unknown,
+  resourceOnly = false, submittedAt?: Date, email?: string) {
+  const parsed = resourceOnly ? filterInput.parse(raw) : fullProfileInput.parse(raw);
+  if (resourceOnly && parsed.affiliation !== "none") throw new CommunityError("Выберите подходящую ветку анкеты");
   const [previous] = await tx.select().from(users).where(eq(users.id, userId)).for("update");
+  if (!previous) throw new CommunityError("Профиль не найден");
   if (previous.identityDisabledAt) throw new CommunityError("Идентификация аккаунта отключена. Обратитесь к администратору.");
   if (submittedAt) {
     if (previous.filterVersion === FILTER_VERSION && previous.filterCompletedAt) throw new CommunityError("Этот аккаунт уже прошёл актуальный фильтр. Проверьте восстановленные ответы перед явным сохранением.");
@@ -30,7 +40,7 @@ export async function writeCommunityProfile(tx: any, identity: any, raw: unknown
     giyurStage: previous.giyurStage,
     filterVersion: FILTER_VERSION, filterCompletedAt: new Date(), filterRevision: previous.filterRevision + 1,
     isProfileComplete: resourceOnly ? previous.isProfileComplete : true };
-  let fields: Record<string, unknown> = { ...filterFields, email };
+  let fields: Record<string, unknown> = { ...filterFields, ...(email !== undefined ? { email } : {}) };
   if (!resourceOnly) {
     const data = fullProfileInput.parse(raw);
     const city = data.cityId ? localityById(data.cityId) : null;
@@ -49,6 +59,6 @@ export async function writeCommunityProfile(tx: any, identity: any, raw: unknown
   }
   await tx.update(users).set(fields).where(eq(users.id, userId));
   const access = communityAccess({ ...previous, ...filterFields });
-  return { revision: filterFields.filterRevision, access, welcome: !resourceOnly && !previous.agreedToPrivacy, email,
+  return { revision: filterFields.filterRevision, access, welcome: !resourceOnly && !previous.agreedToPrivacy, email: email ?? previous.email,
     redirectTo: access.canViewEvents ? await eventDestination(parsed.returnTo, tx) : `/register?result=${parsed.affiliation === "none" ? "resources" : "restricted"}` };
 }

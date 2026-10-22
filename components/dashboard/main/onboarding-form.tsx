@@ -4,21 +4,20 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useClerk } from "@clerk/nextjs";
 import ChildEditor, { ChildValue } from "@/components/community/child-editor";
-import CityPicker from "@/components/community/city-picker";
+import FilterFields from "@/components/community/filter-fields";
+import ProfileFields, { type CommunityFields } from "@/components/community/profile-fields";
 import { saveRegistrationProgress, canResumeRegistrationAttempt } from "@/actions/community-progress";
 import { useAttempt } from "@/components/community/attempt-context";
 import { eventReturnTo } from "@/lib/community/policy";
 import { saveCommunityProfile, saveResourceChoice } from "@/actions/community";
 import { prepareRegistrationDraft, completeRegistrationDraft } from "@/actions/community-drafts";
-import { AFFILIATIONS, AFFILIATION_LABELS, Affiliation, communityAccess, Gender, FILTER_VERSION, hasFilterProfile } from "@/lib/community/policy";
+import { Affiliation, communityAccess, Gender, FILTER_VERSION, hasFilterProfile } from "@/lib/community/policy";
 import { WELCOME_PARAGRAPHS, FORM_EXPLANATION } from "@/lib/community/copy";
 import { fullProfileInput } from "@/lib/community/validation";
 import ResourceMessage from "@/components/community/resource-message";
 
 type Child = ChildValue;
-type Fields = { firstName: string; lastName: string; phone: string; dateOfBirth: string; city: string;
-  maritalStatus: "" | "single" | "married" | "divorced" | "widowed"; spouseName: string; hasChildren: boolean };
-const inputClass = "w-full rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-950 px-4 py-3 outline-none focus:ring-2 focus:ring-[#FFB800] min-w-0";
+type Fields = CommunityFields;
 const dateValue = (value: unknown) => { const date = new Date(String(value)); return value && Number.isFinite(date.getTime()) ? date.toISOString().slice(0, 10) : ""; };
 export default function OnboardingForm({ userId = null, initialProfile = null, initialDraft = null, draftId, returnTo = "/dashboard/events", resumeReady = false, onSaved }: {
   userId?: string | null; initialProfile?: any; initialDraft?: any; draftId?: string;
@@ -162,31 +161,13 @@ export default function OnboardingForm({ userId = null, initialProfile = null, i
     <div className="rounded-3xl bg-sky-100 text-slate-900 p-5 sm:p-6 flex gap-4 mb-4"><p className="leading-relaxed min-w-0"><strong>Наша миссия</strong>{WELCOME_PARAGRAPHS[3].slice('Наша миссия'.length)}</p><span aria-hidden="true" className="text-blue-700 text-4xl shrink-0 self-center">✡</span></div>
     <div className="rounded-3xl bg-blue-700 text-white font-bold p-5 sm:p-6 leading-relaxed mb-8">{WELCOME_PARAGRAPHS[4]}</div>
     <form onSubmit={submit} className="space-y-6">
-      <fieldset disabled={pending || childrenPending || !hydrated} className="space-y-4">
-        <legend className="font-bold text-lg mb-4">Пожалуйста, укажите Вашу связь с еврейством:</legend>
-        {AFFILIATIONS.map(value => <label key={value} className={`flex items-start gap-3 p-4 rounded-2xl border cursor-pointer ${affiliation === value ? "border-[#FFB800] bg-amber-50 dark:bg-amber-950/20" : "border-neutral-200 dark:border-neutral-700"}`}>
-          <input type="radio" required name="affiliation" value={value} checked={affiliation === value} onChange={() => { setAffiliation(value); setSaved(false); setError(""); }} className="mt-1 accent-[#FFB800]" />
-          <span>{AFFILIATION_LABELS[value]}</span>
-        </label>)}
-      </fieldset>
-      {expanded && <fieldset disabled={pending || childrenPending || !hydrated}><legend className="font-bold mb-3">Пол</legend><div className="flex flex-wrap gap-5">
-        {([['male', 'Мужской'], ['female', 'Женский']] as const).map(([value, label]) => <label key={value} className="flex items-center gap-2"><input type="radio" required name="gender" checked={gender === value} onChange={() => { setGender(value); setSaved(false); }} value={value} className="accent-[#FFB800]" />{label}</label>)}
-      </div></fieldset>}
+      <FilterFields affiliation={affiliation} gender={gender} disabled={pending || childrenPending || !hydrated}
+        onAffiliation={value => { setAffiliation(value); setSaved(false); setError(""); }}
+        onGender={value => { setGender(value); setSaved(false); }} />
       {expanded && <fieldset disabled={pending || childrenPending || !hydrated} className="space-y-6 min-w-0">
         <div className="space-y-3 rounded-2xl bg-amber-50 dark:bg-amber-950/20 p-5">{FORM_EXPLANATION.map(text => <p key={text} className="leading-relaxed">{text}</p>)}</div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">{([
-          ["firstName", "Имя", "text"], ["lastName", "Фамилия", "text"], ["phone", "Номер телефона", "tel"],
-          ["dateOfBirth", "Дата рождения", "date"],
-        ] as const).map(([name, label, type]) => <div key={name}><label htmlFor={`profile-${name}`} className="block font-bold text-sm mb-2">{label} *</label>
-          <input id={`profile-${name}`} name={name} type={type} required value={fields[name]} onChange={event => setFields(previous => ({ ...previous, [name]: event.target.value }))} className={inputClass} />
-        </div>)}
-          <div><label htmlFor="profile-city" className="block font-bold text-sm mb-2">Город проживания *</label><CityPicker value={fields.city} cityId={cityId} onChange={(city, id) => { setFields(previous => ({ ...previous, city })); setCityId(id); }} /></div>
-          <div><label htmlFor="profile-marital" className="block font-bold text-sm mb-2">Семейное положение *</label><select id="profile-marital" required value={fields.maritalStatus} onChange={event => setFields(previous => ({ ...previous, maritalStatus: event.target.value as Fields['maritalStatus'] }))} className={inputClass}>
-            <option value="" disabled>Выберите…</option><option value="single">Холост / Не замужем</option><option value="married">В браке</option><option value="divorced">В разводе</option><option value="widowed">Вдовец / Вдова</option>
-          </select></div>
-        </div>
-        {fields.maritalStatus === "married" && <div><label htmlFor="profile-spouse" className="block font-bold text-sm mb-2">Имя супруга/и *</label><input id="profile-spouse" required value={fields.spouseName} onChange={event => setFields(previous => ({ ...previous, spouseName: event.target.value }))} className={inputClass} /></div>}
-        <label className="flex gap-3 items-center"><input type="checkbox" checked={fields.hasChildren} onChange={event => setFields(previous => ({ ...previous, hasChildren: event.target.checked }))} className="accent-[#FFB800]" />Есть дети</label>
+        <ProfileFields fields={fields} onChange={setFields} cityId={cityId}
+          onCityChange={(city, id) => { setFields(previous => ({ ...previous, city })); setCityId(id); }} />
         {canEditChildren && fields.hasChildren && <ChildEditor items={children} disabled={pending || childrenPending} onSave={async next => { setChildrenPending(true); try { await flushProgress(next); setChildren(next); setChildrenChanged(true); if (!next.length) setFields(previous => ({ ...previous, hasChildren: false })); } finally { setChildrenPending(false); } }} />}
         {affiliation === "giyur" && gender === "female" && !canEditChildren && current && initialProfile?.isProfileComplete && initialProfile.affiliation === "giyur" && userId && <a className="block font-bold underline" href="/dashboard/kids">Добавить или записать ребёнка — перейти в детский раздел</a>}
         <label className="flex gap-3 items-start"><input type="checkbox" required checked={agreed} onChange={event => setAgreed(event.target.checked)} className="mt-1 accent-[#FFB800]" /><span>Я соглашаюсь с <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline">Политикой конфиденциальности</a>.</span></label>

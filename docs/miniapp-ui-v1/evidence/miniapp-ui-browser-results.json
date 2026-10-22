@@ -1,0 +1,197 @@
+{
+  "environment": "Chromium + local Next HTTP + real API/services/SQL; synthetic Telegram SDK/HMAC and isolated PGlite",
+  "realTelegramWebView": "NOT VERIFIED",
+  "checks": [
+    {
+      "name": "390 splash uses brand and loading before API response",
+      "status": "PASS"
+    },
+    {
+      "name": "390 new subject filter: three choices, initially no gender or stage, no website navigation/footer",
+      "status": "PASS"
+    },
+    {
+      "name": "390 maternal/giyur reveal gender; none hides it; changing choices retains correct state",
+      "status": "PASS"
+    },
+    {
+      "name": "390 questionnaire has canonical CityPicker and no email; consent is required",
+      "status": "PASS"
+    },
+    {
+      "name": "390 maternal female child editor validates gender and supports local save/edit/delete",
+      "status": "PASS"
+    },
+    {
+      "name": "390 save failure preserves entered fields/child and allows retry",
+      "status": "PASS"
+    },
+    {
+      "name": "390 home persists profile, child, city and consent after reload without repeated bootstrap",
+      "status": "PASS"
+    },
+    {
+      "name": "390 own profile edit and native BackButton are functional",
+      "status": "PASS"
+    },
+    {
+      "name": "390 controls remain touch accessible and logout clears only the session",
+      "status": "PASS"
+    },
+    {
+      "name": "390 resources show exact approved links, no event/profile booking actions and fit viewport",
+      "status": "PASS"
+    },
+    {
+      "name": "320 splash uses brand and loading before API response",
+      "status": "PASS"
+    },
+    {
+      "name": "320 new subject filter: three choices, initially no gender or stage, no website navigation/footer",
+      "status": "PASS"
+    },
+    {
+      "name": "320 maternal/giyur reveal gender; none hides it; changing choices retains correct state",
+      "status": "PASS"
+    },
+    {
+      "name": "320 questionnaire has canonical CityPicker and no email; consent is required",
+      "status": "PASS"
+    },
+    {
+      "name": "320 maternal female child editor validates gender and supports local save/edit/delete",
+      "status": "PASS"
+    },
+    {
+      "name": "320 save failure preserves entered fields/child and allows retry",
+      "status": "PASS"
+    },
+    {
+      "name": "320 home persists profile, child, city and consent after reload without repeated bootstrap",
+      "status": "PASS"
+    },
+    {
+      "name": "320 own profile edit and native BackButton are functional",
+      "status": "PASS"
+    },
+    {
+      "name": "320 controls remain touch accessible and logout clears only the session",
+      "status": "PASS"
+    },
+    {
+      "name": "320 resources show exact approved links, no event/profile booking actions and fit viewport",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop splash uses brand and loading before API response",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop new subject filter: three choices, initially no gender or stage, no website navigation/footer",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop maternal/giyur reveal gender; none hides it; changing choices retains correct state",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop questionnaire has canonical CityPicker and no email; consent is required",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop maternal female child editor validates gender and supports local save/edit/delete",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop save failure preserves entered fields/child and allows retry",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop home persists profile, child, city and consent after reload without repeated bootstrap",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop own profile edit and native BackButton are functional",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop controls remain touch accessible and logout clears only the session",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop resources show exact approved links, no event/profile booking actions and fit viewport",
+      "status": "PASS"
+    },
+    {
+      "name": "bootstrap error has branded recovery and retry completes the same synthetic identity",
+      "status": "PASS"
+    },
+    {
+      "name": "male existing profile enforces child editor visibility and retains stored children",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur-unknown existing profile enforces child editor visibility and retains stored children",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur-advanced existing profile enforces child editor visibility and retains stored children",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur-male existing profile enforces child editor visibility and retains stored children",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur-completed existing profile enforces child editor visibility and retains stored children",
+      "status": "PASS"
+    },
+    {
+      "name": "Hebrew uses validated language, RTL logical safe areas, preserves brand through theme/viewport events",
+      "status": "PASS"
+    },
+    {
+      "name": "a cookie from another Telegram account never exposes its profile on a new launch",
+      "status": "PASS"
+    },
+    {
+      "name": "ordinary browser has no synthetic login and shows Telegram entry screen",
+      "status": "PASS"
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "390-splash.png",
+    "390-filter.png",
+    "390-profile.png",
+    "390-child-editor.png",
+    "390-home.png",
+    "390-profile-edit.png",
+    "390-resources.png",
+    "320-splash.png",
+    "320-filter.png",
+    "320-profile.png",
+    "320-child-editor.png",
+    "320-home.png",
+    "320-profile-edit.png",
+    "320-resources.png",
+    "desktop-splash.png",
+    "desktop-filter.png",
+    "desktop-profile.png",
+    "desktop-child-editor.png",
+    "desktop-home.png",
+    "desktop-profile-edit.png",
+    "desktop-resources.png",
+    "390-bootstrap-error.png",
+    "390-male.png",
+    "390-giyur-unknown.png",
+    "390-giyur-advanced.png",
+    "390-giyur-male.png",
+    "390-giyur-completed.png",
+    "390-hebrew-home.png",
+    "390-hebrew-profile.png",
+    "390-english-profile.png",
+    "390-browser-outside.png"
+  ],
+  "exitCode": 0
+}
