@@ -38,7 +38,7 @@ export function EventSkeleton({ label, detail = false }: { label: string; detail
     <div className="miniapp-event-image miniapp-skeleton" /><div className="miniapp-skeleton-lines" aria-hidden="true"><span /><span /><span /></div>
   </div>;
 }
-export type MiniAppTab = "profile" | "filter" | "events" | "registrations" | null;
+export type MiniAppTab = "profile" | "filter" | "events" | "registrations" | "kids" | null;
 export function BottomNav({ language, view, navigate }: { language: MiniAppLanguage; view: MiniAppTab; navigate: (tab: MiniAppTab) => void }) {
   const c = miniAppDictionaries.ru, e = eventCopy.ru;
   const tabs = [{ id: null, label: c.home, Icon: Home }, { id: "events", label: e.events, Icon: CalendarDays },

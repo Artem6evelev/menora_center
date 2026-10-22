@@ -470,3 +470,23 @@ body:has(.miniapp) {
 .miniapp-share-dialog-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-block-start: 20px; }
 .miniapp-contact-help { margin-block-start: 12px; padding: 12px; border: 1px solid var(--miniapp-border); border-radius: 14px; font-size: 14px; color: var(--miniapp-navy); }
 .miniapp-contact-help input { inline-size: 100%; margin-block-start: 8px; padding: 10px; border: 1px solid var(--miniapp-border); border-radius: 10px; font-size: 16px; background: #fff; }
+.miniapp-kids-entry { display: flex; gap: 16px; text-align: start; align-items: flex-start; border-radius: var(--miniapp-radius); border: 1px solid #f0dce0; padding: 20px; background: linear-gradient(135deg, #fff6f1, #fff0f6); }
+.miniapp-kids-entry > span:last-child { display: flex; flex-direction: column; gap: 8px; min-inline-size: 0; }
+.miniapp-kids-entry strong { font-size: 24px; color: var(--miniapp-navy); }
+.miniapp-kids-entry span span, .miniapp-kids-hero p { font-size: 14px; line-height: 1.6; }
+.miniapp-kids-entry em { font-size: 14px; font-style: normal; font-weight: 700; color: #8f3b54; }
+.miniapp-kids { display: flex; flex-direction: column; gap: 20px; min-inline-size: 0; }
+.miniapp-kids h2, .miniapp-kids h3 { font-weight: 700; overflow-wrap: anywhere; }
+.miniapp-kids-hero { overflow: hidden; background: #fff4f1; border: 1px solid #f0dce0; border-radius: var(--miniapp-radius); }
+.miniapp-kids-hero > div:first-child { padding: 20px; }
+.miniapp-kids-photo { position: relative; aspect-ratio: 16 / 7; background: #f5e8de; }
+.miniapp-kids-photo img { object-fit: cover; }
+.miniapp-kids-tabs { display: flex; gap: 8px; padding: 6px; background: #fff; border: 1px solid var(--miniapp-border); border-radius: 18px; }
+.miniapp-kids-tabs button { flex: 1; min-block-size: 44px; border-radius: 12px; font-weight: 700; }
+.miniapp-kids-tabs button[aria-selected=true] { background: #fff0f4; color: #8f3b54; }
+.miniapp-kids-programs { display: grid; gap: 16px; }
+.miniapp-kids-program { display: flex; flex-direction: column; gap: 14px; }
+.miniapp-kids-program h2 { font-size: 19px; }
+.miniapp-kids-program > .miniapp-primary { margin-block-start: auto; }
+.miniapp-kids-dialog { max-block-size: calc(100dvh - 64px); overflow-y: auto; }
+@media (min-width: 600px) { .miniapp-kids-programs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

@@ -1,0 +1,374 @@
+[
+  {
+    "stage": "home",
+    "poster": "portrait",
+    "before": {
+      "x": 17,
+      "y": 292.578125,
+      "width": 356,
+      "height": 200.25
+    },
+    "foreground": {
+      "fit": "contain",
+      "natural": [
+        600,
+        900
+      ],
+      "paddingRight": 62,
+      "paddingLeft": 10,
+      "box": {
+        "x": 17,
+        "y": 292.578125,
+        "width": 356,
+        "height": 200.25
+      }
+    },
+    "share": {
+      "x": 319,
+      "y": 302.578125,
+      "width": 44,
+      "height": 44
+    }
+  },
+  {
+    "stage": "list",
+    "poster": "wide",
+    "before": {
+      "x": 17,
+      "y": 270.0625,
+      "width": 356,
+      "height": 200.25
+    },
+    "foreground": {
+      "fit": "contain",
+      "natural": [
+        1200,
+        500
+      ],
+      "paddingRight": 62,
+      "paddingLeft": 10,
+      "box": {
+        "x": 17,
+        "y": 270.0625,
+        "width": 356,
+        "height": 200.25
+      }
+    },
+    "share": {
+      "x": 319,
+      "y": 280.0625,
+      "width": 44,
+      "height": 44
+    }
+  },
+  {
+    "stage": "detail",
+    "poster": "portrait",
+    "before": {
+      "x": 17,
+      "y": 255.6875,
+      "width": 356,
+      "height": 200.25
+    },
+    "foreground": {
+      "fit": "contain",
+      "natural": [
+        600,
+        900
+      ],
+      "paddingRight": 62,
+      "paddingLeft": 10,
+      "box": {
+        "x": 17,
+        "y": 255.6875,
+        "width": 356,
+        "height": 200.25
+      }
+    },
+    "share": {
+      "x": 319,
+      "y": 265.6875,
+      "width": 44,
+      "height": 44
+    }
+  },
+  {
+    "stage": "ad",
+    "poster": "portrait",
+    "before": {
+      "x": 17,
+      "y": 279.671875,
+      "width": 356,
+      "height": 200.25
+    },
+    "foreground": {
+      "fit": "contain",
+      "natural": [
+        600,
+        900
+      ],
+      "paddingRight": 62,
+      "paddingLeft": 10,
+      "box": {
+        "x": 17,
+        "y": 279.671875,
+        "width": 356,
+        "height": 200.25
+      }
+    },
+    "share": {
+      "x": 319,
+      "y": 289.671875,
+      "width": 44,
+      "height": 44
+    }
+  },
+  {
+    "stage": "home",
+    "poster": "portrait",
+    "before": {
+      "x": 17,
+      "y": 292.578125,
+      "width": 356,
+      "height": 200.25
+    },
+    "foreground": {
+      "fit": "contain",
+      "natural": [
+        600,
+        900
+      ],
+      "paddingRight": 62,
+      "paddingLeft": 10,
+      "box": {
+        "x": 17,
+        "y": 292.578125,
+        "width": 356,
+        "height": 200.25
+      }
+    },
+    "share": {
+      "x": 319,
+      "y": 302.578125,
+      "width": 44,
+      "height": 44
+    }
+  },
+  {
+    "stage": "list",
+    "poster": "wide",
+    "before": {
+      "x": 17,
+      "y": 270.0625,
+      "width": 356,
+      "height": 200.25
+    },
+    "foreground": {
+      "fit": "contain",
+      "natural": [
+        1200,
+        500
+      ],
+      "paddingRight": 62,
+      "paddingLeft": 10,
+      "box": {
+        "x": 17,
+        "y": 270.0625,
+        "width": 356,
+        "height": 200.25
+      }
+    },
+    "share": {
+      "x": 319,
+      "y": 280.0625,
+      "width": 44,
+      "height": 44
+    }
+  },
+  {
+    "stage": "detail",
+    "poster": "portrait",
+    "before": {
+      "x": 17,
+      "y": 255.6875,
+      "width": 356,
+      "height": 200.25
+    },
+    "foreground": {
+      "fit": "contain",
+      "natural": [
+        600,
+        900
+      ],
+      "paddingRight": 62,
+      "paddingLeft": 10,
+      "box": {
+        "x": 17,
+        "y": 255.6875,
+        "width": 356,
+        "height": 200.25
+      }
+    },
+    "share": {
+      "x": 319,
+      "y": 265.6875,
+      "width": 44,
+      "height": 44
+    }
+  },
+  {
+    "stage": "ad",
+    "poster": "portrait",
+    "before": {
+      "x": 17,
+      "y": 279.671875,
+      "width": 356,
+      "height": 200.25
+    },
+    "foreground": {
+      "fit": "contain",
+      "natural": [
+        600,
+        900
+      ],
+      "paddingRight": 62,
+      "paddingLeft": 10,
+      "box": {
+        "x": 17,
+        "y": 279.671875,
+        "width": 356,
+        "height": 200.25
+      }
+    },
+    "share": {
+      "x": 319,
+      "y": 289.671875,
+      "width": 44,
+      "height": 44
+    }
+  },
+  {
+    "stage": "home",
+    "poster": "portrait",
+    "before": {
+      "x": 17,
+      "y": 292.578125,
+      "width": 356,
+      "height": 200.25
+    },
+    "foreground": {
+      "fit": "contain",
+      "natural": [
+        600,
+        900
+      ],
+      "paddingRight": 62,
+      "paddingLeft": 10,
+      "box": {
+        "x": 17,
+        "y": 292.578125,
+        "width": 356,
+        "height": 200.25
+      }
+    },
+    "share": {
+      "x": 319,
+      "y": 302.578125,
+      "width": 44,
+      "height": 44
+    }
+  },
+  {
+    "stage": "list",
+    "poster": "wide",
+    "before": {
+      "x": 17,
+      "y": 270.0625,
+      "width": 356,
+      "height": 200.25
+    },
+    "foreground": {
+      "fit": "contain",
+      "natural": [
+        1200,
+        500
+      ],
+      "paddingRight": 62,
+      "paddingLeft": 10,
+      "box": {
+        "x": 17,
+        "y": 270.0625,
+        "width": 356,
+        "height": 200.25
+      }
+    },
+    "share": {
+      "x": 319,
+      "y": 280.0625,
+      "width": 44,
+      "height": 44
+    }
+  },
+  {
+    "stage": "detail",
+    "poster": "portrait",
+    "before": {
+      "x": 17,
+      "y": 255.6875,
+      "width": 356,
+      "height": 200.25
+    },
+    "foreground": {
+      "fit": "contain",
+      "natural": [
+        600,
+        900
+      ],
+      "paddingRight": 62,
+      "paddingLeft": 10,
+      "box": {
+        "x": 17,
+        "y": 255.6875,
+        "width": 356,
+        "height": 200.25
+      }
+    },
+    "share": {
+      "x": 319,
+      "y": 265.6875,
+      "width": 44,
+      "height": 44
+    }
+  },
+  {
+    "stage": "ad",
+    "poster": "portrait",
+    "before": {
+      "x": 17,
+      "y": 279.671875,
+      "width": 356,
+      "height": 200.25
+    },
+    "foreground": {
+      "fit": "contain",
+      "natural": [
+        600,
+        900
+      ],
+      "paddingRight": 62,
+      "paddingLeft": 10,
+      "box": {
+        "x": 17,
+        "y": 279.671875,
+        "width": 356,
+        "height": 200.25
+      }
+    },
+    "share": {
+      "x": 319,
+      "y": 289.671875,
+      "width": 44,
+      "height": 44
+    }
+  }
+]

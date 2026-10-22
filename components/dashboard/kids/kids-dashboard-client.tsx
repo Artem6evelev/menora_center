@@ -28,57 +28,8 @@ import { submitKidsApplication } from "@/actions/kids.actions";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
-const programs = [
-  {
-    title: "Занятия по еврейской традиции и изучению Торы",
-    age: "4-12 лет",
-    icon: Star,
-    color: "text-amber-500",
-    bg: "bg-amber-500/10",
-  },
-  {
-    title: "Творческие мастерские",
-    age: "4-12 лет",
-    icon: Palette,
-    color: "text-pink-500",
-    bg: "bg-pink-500/10",
-  },
-  {
-    title: "Программы для детей с нейроотличиями",
-    age: "3-12 лет",
-    icon: Brain,
-    color: "text-emerald-500",
-    bg: "bg-emerald-500/10",
-  },
-  {
-    title: "Коммуникативные навыки и лидерство",
-    age: "6-12 лет",
-    icon: UsersIcon,
-    color: "text-blue-500",
-    bg: "bg-blue-500/10",
-  },
-  {
-    title: "Разговорный клуб иврита",
-    age: "4-12 лет",
-    icon: MessageCircleQuestion,
-    color: "text-teal-500",
-    bg: "bg-teal-500/10",
-  },
-  {
-    title: "Разговорный клуб русского языка",
-    age: "4-12 лет",
-    icon: MessageSquare,
-    color: "text-indigo-500",
-    bg: "bg-indigo-500/10",
-  },
-  {
-    title: "Подростковые клубы «Я и мой путь»",
-    age: "12-17 лет",
-    icon: Compass,
-    color: "text-red-500",
-    bg: "bg-red-500/10",
-  },
-];
+import { kidsProgramCards as programs } from "@/lib/kids/program-cards";
+
 
 export default function KidsDashboardClient({
   user,

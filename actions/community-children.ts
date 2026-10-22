@@ -15,7 +15,7 @@ export async function saveOwnChildren(input: unknown, targetId?: string, spouseN
       requireChildPermission(profile);
       const normalized = prepareChildren(profile.id, input, profile.childrenData);
       await preserveChildHistory(tx, profile.id, profile.childrenData);
-      await tx.update(users).set({ childrenData: normalized, hasChildren: normalized.length > 0,
+      await tx.update(users).set({ childrenData: normalized, hasChildren: normalized.length > 0, filterRevision: profile.filterRevision + 1,
         ...(spouseName !== undefined ? { spouseName: spouseName?.trim().slice(0, 150) || null } : {}) }).where(eq(users.id, profile.id));
       return normalized;
     });

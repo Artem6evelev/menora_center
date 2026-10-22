@@ -5,33 +5,18 @@ import { db } from "@/lib/db";
 import { kidsApplications, users } from "@/lib/db/schema";
 import { desc, eq } from "drizzle-orm";
 import { saveOwnChildren } from "./community-children";
-import { requireCommunityUser, requireChildPermission, requireStaff } from "@/lib/community/server";
-import { profileChildren } from "@/lib/community/children";
+import { requireCommunityUser, requireStaff } from "@/lib/community/server";
+import { createKidsApplicationForUser } from "@/lib/kids/applications";
 import { revalidatePath } from "next/cache";
 
 // 1. СОЗДАНИЕ ЗАЯВКИ (с лендинга или из кабинета)
 export async function submitKidsApplication(data: any) {
   try {
     const actor = await requireCommunityUser();
-    requireChildPermission(actor);
-    if (data.userId || data.parentId || data.gender || data.affiliation) throw new CommunityError("Недопустимые поля запроса");
-    const children = profileChildren(actor.id, actor.childrenData);
-    const ids: string[] = data.childIds || (Array.isArray(data.children) ? data.children.map((child: any) => child.id) : []);
-    if (!Array.isArray(ids) || !ids.length || ids.length > 20 || new Set(ids).size !== ids.length) throw new CommunityError("Выберите сохранённых детей из своего профиля");
-    const selected = ids.map(id => {
-      const child = children.find(item => item.id === id && item.parentId === actor.id);
-      if (!child) throw new CommunityError("Ребёнок не связан с Вашим профилем");
-      return child;
-    });
-    if (typeof data.programTitle !== "string" || !data.programTitle.trim() || data.programTitle.length > 200) throw new CommunityError("Выберите программу");
-    await db.transaction(async tx => {
-      const [fresh] = await tx.select().from(users).where(eq(users.id, actor.id)).for("update");
-      requireChildPermission(fresh);
-      const actual = profileChildren(actor.id, fresh.childrenData);
-      if (ids.some(id => !actual.some(child => child.id === id))) throw new CommunityError("Данные детей изменились. Обновите страницу.");
-      await tx.insert(kidsApplications).values({ programTitle: data.programTitle, parentFirstName: fresh.firstName || "",
-        parentLastName: fresh.lastName || "", email: fresh.email ?? "", phone: fresh.phone || "", children: ids.map(id => actual.find(child => child.id === id)!), userId: actor.id });
-    });
+    if (!data || typeof data !== "object" || Array.isArray(data) || Object.keys(data).some(key => !["programTitle", "childIds", "children", "parentFirstName", "parentLastName", "email", "phone"].includes(key))) throw new CommunityError("Недопустимые поля запроса");
+    // Legacy website contact fields are ignored; the shared writer uses DB data.
+    const childIds = data.childIds ?? (Array.isArray(data.children) ? data.children.map((child: any) => child?.id) : undefined);
+    await db.transaction(tx => createKidsApplicationForUser(tx, actor, { programTitle: data.programTitle, childIds }));
     revalidatePath("/dashboard/kids"); revalidatePath("/dashboard/kids-applications");
     return { success: true as const };
   } catch (error) { return { success: false as const, error: communityErrorMessage(error, "Не удалось отправить заявку") }; }

@@ -1,0 +1,25 @@
+{
+  "environment": "Local isolated synthetic fixtures",
+  "checks": [
+    {
+      "name": "production env checker accepts required valid format and exposes names/booleans only",
+      "status": "PASS"
+    },
+    {
+      "name": "missing secrets, insecure app origin and TEST Clerk keys fail production contract",
+      "status": "PASS"
+    },
+    {
+      "name": "configure check calls only read-only methods and reports secret is not readable",
+      "status": "PASS"
+    },
+    {
+      "name": "future apply configures matching webhook secret/menu/commands without dropping updates",
+      "status": "PASS"
+    },
+    {
+      "name": "wrong bot or invalid URL fails before mutation and errors do not expose token",
+      "status": "PASS"
+    }
+  ]
+}

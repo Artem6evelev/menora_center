@@ -35,6 +35,8 @@ import MiniAppEvents from "./events";
 import { eventCopy } from "@/lib/telegram/event-copy";
 import Subscription from "./subscription";
 import { MiniAppContact } from "./contact";
+import MiniAppKids, { MenorahKidsEntry } from "./kids";
+import type { ChildValue } from "@/components/community/child-editor";
 import MiniAppProfileForm, { requestMessage } from "./profile-form";
 
 type ProfileResponse = MiniAppProfileData & { ok: true };
@@ -136,7 +138,7 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
     >("loading");
   const [data, setData] = useState<MiniAppProfileData | null>(null),
     [view, setView] = useState<
-      "profile" | "filter" | "events" | "registrations" | null
+      "profile" | "filter" | "events" | "registrations" | "kids" | null
     >(null);
   const [retry, setRetry] = useState(0),
     [bridgeVersion, setBridgeVersion] = useState(0),
@@ -154,8 +156,9 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
     },
     [],
   );
-  const refreshProfile = useCallback(async () => {
-    accept(await miniAppRequest<ProfileResponse>("profile"));
+  const refreshProfile = useCallback(async (signal?: AbortSignal) => {
+    const result = await miniAppRequest<ProfileResponse>("profile", { signal });
+    if (!signal?.aborted) accept(result);
   }, [accept]);
   useEffect(() => {
     const previousLang = document.documentElement.lang,
@@ -248,7 +251,7 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
     };
   }, [retry, accept]);
   const navigate = useCallback(
-    (next: "profile" | "filter" | "events" | "registrations" | null) => {
+    (next: "profile" | "filter" | "events" | "registrations" | "kids" | null) => {
       if (busy || (dirty && !window.confirm(copy.unsaved))) return;
       // Editing/backtracking inside onboarding must retain the ad destination.
       if (!launchEvent || data?.summary.nextStep === "home" ||
@@ -335,6 +338,15 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
       setBusy(false);
     }
   }
+  async function saveKidsChildren(children: ChildValue[], expectedVersion: string) {
+    if (!data || data.profileVersion !== expectedVersion) throw new MiniAppRequestError(409, "profile_changed");
+    const { affiliation: _affiliation, gender: _gender, ...fields } = data.profile;
+    setBusy(true);
+    try {
+      const result = await miniAppRequest<ProfileResponse>("profile", { body: { ...fields, hasChildren: children.length > 0, childrenData: children }, tag: expectedVersion });
+      accept(result); setDirty(false); return result.data;
+    } finally { setBusy(false); }
+  }
   const title =
     screen === "filter"
       ? copy.filterTitle
@@ -395,6 +407,7 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
             <>
               <WelcomeCard language={language} firstName={data.profile.firstName} />
               <EventListSection language={language} onSelect={id => { setInitialEvent(id); setView("events"); window.scrollTo({ top: 0, behavior: "instant" }); }} onAll={() => navigate("events")} />
+              <MenorahKidsEntry onOpen={() => navigate("kids")} />
               {saved && <p role="status" className="miniapp-success">{copy.saved}</p>}
               <ProfileStatusCard language={language} childrenAllowed={data.permissions.canEditChildren} />
               <div className="miniapp-actions">
@@ -405,6 +418,8 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
               <MiniAppContact card />
               <button className="miniapp-text-action self-start" disabled={busy} onClick={() => void logout()}><LogOut size={17} aria-hidden="true" />{copy.logout}</button>
             </>
+          ) : data && screen === "kids" ? (
+            <><button type="button" className="miniapp-text-action" onClick={() => navigate(null)}>На главную</button><MiniAppKids profile={data} onSaveChildren={saveKidsChildren} onRefreshProfile={refreshProfile} onDirty={setDirty} onNested={onNested} /></>
           ) : data && (screen === "events" || screen === "registrations") ? (
             <>
             <p className="miniapp-helper">{uiCopy.identity}</p>
@@ -507,7 +522,7 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
           )}
         </main>
         {status === "ready" && data?.summary.nextStep === "home" && (
-          <BottomNav language={language} view={view} navigate={navigate} />
+          <BottomNav language={language} view={view === "kids" ? null : view} navigate={navigate} />
         )}
       </div>
     </div>

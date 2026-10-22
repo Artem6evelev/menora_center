@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowRight, MessageCircle } from "lucide-react";
 import { communityContact } from "@/lib/telegram/contact";
 
-export function MiniAppContact({ card = false, className = "miniapp-text-action" }: { card?: boolean; className?: string }) {
+export function MiniAppContact({ card = false, className = "miniapp-text-action", label = "Связаться с нами · WhatsApp" }: { card?: boolean; className?: string; label?: string }) {
   const [help, setHelp] = useState(false), [copied, setCopied] = useState(false);
   const number = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -29,7 +29,7 @@ export function MiniAppContact({ card = false, className = "miniapp-text-action"
   return <div data-miniapp-contact>
     <a href={communityContact.url} target="_blank" rel="noopener noreferrer" onClick={open} className={card ? "miniapp-action-card" : className}>
       {card && <span className="miniapp-icon"><MessageCircle size={21} aria-hidden="true" /></span>}
-      <span>Связаться с нами · WhatsApp</span>
+      <span>{label}</span>
       {card && <ArrowRight className="miniapp-arrow" size={18} aria-hidden="true" />}
     </a>
     {help && <div className="miniapp-contact-help">

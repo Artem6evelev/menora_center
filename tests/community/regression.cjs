@@ -189,7 +189,10 @@ const profilePayload = (override = {}) => ({ affiliation: 'maternal', gender: 'f
     assert.equal(after.firstName,before.firstName);assert.deepEqual(after.childrenData,before.childrenData);assert.equal(after.giyurStage,'completed');
     assert.equal((await event.registerForEvent('event-child-complete',actor,undefined,{childIds:['giyur-old-child']})).success,true);
     assert.equal((await childrenAction.saveOwnChildren([{id:'giyur-old-child',name:'Existing child',gender:'female',dateOfBirth:'2020-01-01'},{name:'New allowed child',gender:'female',dateOfBirth:'2021-01-01'}])).success,true);
-    assert.equal((await filter.saveGiyurStage({stage:'advanced',expectedRevision:3})).success,true);
+    assert.equal((await filter.saveGiyurStage({stage:'advanced',expectedRevision:3})).success,false);
+    const familySaved=(await db.select().from(users).where(eq(users.id,actor)))[0];
+    assert.equal(familySaved.filterRevision,4);
+    assert.equal((await filter.saveGiyurStage({stage:'advanced',expectedRevision:familySaved.filterRevision})).success,true);
     assert.equal((await event.registerForEvent('event-child-complete',actor,undefined,{childIds:['giyur-old-child']})).success,false);
   });
   await test('third branch accepts only minimal choice, preserves family and revokes fresh actions', async () => {
@@ -225,7 +228,7 @@ const profilePayload = (override = {}) => ({ affiliation: 'maternal', gender: 'f
   });
   await test('mother saves a new child and enrolls only linked children in a program', async () => {
     actor='mom'; const result=await kids.updateUserChildren([{id:'child-mom',name:'Own child',gender:'female',dateOfBirth:'2020-02-01'},{name:'New child',gender:'female',dateOfBirth:'2022-01-01'}]); assert.equal(result.success,true); assert.ok(result.children[1].id);
-    assert.equal((await kids.submitKidsApplication({programTitle:'Synthetic program',childIds:[result.children[1].id],parentFirstName:'Forged name'})).success,true);
+    assert.equal((await kids.submitKidsApplication({programTitle:'Творческие мастерские',childIds:[result.children[1].id],parentFirstName:'Forged name'})).success,true);
     assert.equal((await kids.submitKidsApplication({programTitle:'Synthetic',childIds:['child-other']})).success,false);
     const application=(await db.select().from(kidsApplications).where(eq(kidsApplications.userId,actor)))[0]; assert.equal(application.children[0].parentId,'mom'); assert.notEqual(application.parentFirstName,'Forged name');
   });
@@ -318,7 +321,7 @@ const profilePayload = (override = {}) => ({ affiliation: 'maternal', gender: 'f
     const mom='null-email-mom',father='null-email-father';
     await db.insert(users).values([{id:mom,email:null,firstName:'Synthetic',gender:'female',affiliation:'maternal',filterVersion:2,filterCompletedAt:new Date(),isProfileComplete:true,childrenData:[{id:'null-email-child',parentId:mom,name:'Synthetic child',gender:'female',dateOfBirth:'2020-01-01'}]},
       {id:father,email:null,firstName:'Synthetic',gender:'male',affiliation:'none',filterVersion:2,filterCompletedAt:new Date(),isProfileComplete:true}]);
-    actor=mom;assert.equal((await kids.submitKidsApplication({programTitle:'Nullable contact program',childIds:['null-email-child']})).success,true);
+    actor=mom;assert.equal((await kids.submitKidsApplication({programTitle:'Творческие мастерские',childIds:['null-email-child']})).success,true);
     assert.equal((await db.select().from(kidsApplications).where(eq(kidsApplications.userId,mom)))[0].email,'');
     assert.equal((await event.registerForEvent('event-free',mom)).success,true);
     assert.equal(notifications[notifications.length-1][1].email,'');

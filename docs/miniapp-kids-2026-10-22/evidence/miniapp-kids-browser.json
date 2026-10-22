@@ -1,0 +1,89 @@
+{
+  "environment": "Local Chromium mobile/desktop + actual Mini App/website HTTP/actions/SQL, synthetic Telegram/Clerk adapters, blocked external navigation",
+  "checks": [
+    {
+      "name": "320 Home Kids card follows upcoming events, opens internally, keeps four nav tabs and native Back",
+      "status": "PASS"
+    },
+    {
+      "name": "320 Kids has eight canonical program cards with reserved hero and no Russian UI overflow",
+      "status": "PASS"
+    },
+    {
+      "name": "320 single-child confirmation, cancel/back and rapid submit update requests without reloading",
+      "status": "PASS"
+    },
+    {
+      "name": "390 Home Kids card follows upcoming events, opens internally, keeps four nav tabs and native Back",
+      "status": "PASS"
+    },
+    {
+      "name": "390 Kids has eight canonical program cards with reserved hero and no Russian UI overflow",
+      "status": "PASS"
+    },
+    {
+      "name": "390 single-child confirmation, cancel/back and rapid submit update requests without reloading",
+      "status": "PASS"
+    },
+    {
+      "name": "1280 Home Kids card follows upcoming events, opens internally, keeps four nav tabs and native Back",
+      "status": "PASS"
+    },
+    {
+      "name": "1280 Kids has eight canonical program cards with reserved hero and no Russian UI overflow",
+      "status": "PASS"
+    },
+    {
+      "name": "1280 single-child confirmation, cancel/back and rapid submit update requests without reloading",
+      "status": "PASS"
+    },
+    {
+      "name": "mother reuses ChildEditor for add/edit/delete and can select multiple saved children",
+      "status": "PASS"
+    },
+    {
+      "name": "Kids child editing retains unsaved values on a real concurrent profile conflict",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur-unknown asks giyur only after Kids action, denies advanced, resumes family/program after completed",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur-advanced asks giyur only after Kids action, denies advanced, resumes family/program after completed",
+      "status": "PASS"
+    },
+    {
+      "name": "male sees a mother-profile gate and WhatsApp, without self-service or giyur prompts",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur-male sees a mother-profile gate and WhatsApp, without self-service or giyur prompts",
+      "status": "PASS"
+    },
+    {
+      "name": "third category stays on resources and cannot navigate or request Kids",
+      "status": "PASS"
+    },
+    {
+      "name": "application network failure retains selection and safely retries",
+      "status": "PASS"
+    },
+    {
+      "name": "Telegram account switch and logout never expose the previous Kids family",
+      "status": "PASS"
+    },
+    {
+      "name": "public website Kids exposes exactly the same eight canonical programs",
+      "status": "PASS"
+    },
+    {
+      "name": "website Clerk dashboard Kids still submits through the shared writer",
+      "status": "PASS"
+    },
+    {
+      "name": "existing admin page sees Mini App requests and pending/approved/rejected remain visible in Kids",
+      "status": "PASS"
+    }
+  ]
+}
