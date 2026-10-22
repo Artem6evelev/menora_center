@@ -6,16 +6,18 @@ import {
   events,
   eventCategories,
   eventParticipants,
+  eventPaymentAttempts,
   users,
 } from "@/lib/db/schema";
 import { eq, desc, and, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { sendEventRegistrationNotification } from "@/actions/telegram";
+import { sendEventRegistrationNotification } from "@/lib/telegram/notifications";
 import { randomUUID } from "node:crypto";
 import { canReadEvents, canManageEvents, currentCommunityUser, requireCommunityUser, requirePrivateScope, requireStaff } from "@/lib/community/server";
 import { communityAccess, isStaff } from "@/lib/community/policy";
 import { requirePaymentConfirmationReady } from "@/lib/community/payments";
 import { profileChildren } from "@/lib/community/children";
+import { checkoutEvent } from "@/lib/community/event-checkout";
 import { prepareEventRegistration } from "@/lib/community/registration";
 import { preserveChildHistory } from "@/lib/community/history";
 import { auth } from "@clerk/nextjs/server";
@@ -379,6 +381,13 @@ export async function registerForEvent(
       const existing = await tx.select().from(eventParticipants).where(and(eq(eventParticipants.eventId, eventId), eq(eventParticipants.userId, userId)));
       if (existing.some(item => item.status === "paid" || item.status === "confirmed")) return { paymentUrl: null, alreadyRegistered: true, notify: null };
       const pending = existing.find(item => item.status === "pending");
+      if (pending) {
+        const [attempt] = await tx.select().from(eventPaymentAttempts).where(eq(eventPaymentAttempts.registrationId,pending.id));
+        if (attempt) {
+          const checkout = await checkoutEvent(tx,profile,eventId,extraData);
+          return { paymentUrl:checkout.paymentUrl,alreadyRegistered:checkout.alreadyRegistered,notify:null };
+        }
+      }
       const id = pending?.id || `part_${randomUUID()}`;
       let paymentUrl: string | null = null;
       // Keep Shutafim and the existing iframe flow; only validate/price before entering it.

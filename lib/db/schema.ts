@@ -269,7 +269,7 @@ export const events = pgTable("events", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
-}).enableRLS();
+}, t => ({ listIdx: index("events_status_created_idx").on(t.status, t.createdAt, t.id) })).enableRLS();
 
 export const eventParticipants = pgTable("event_participants", {
   id: text("id")
@@ -291,7 +291,7 @@ export const eventParticipants = pgTable("event_participants", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
-}).enableRLS();
+}, t => ({ ownerEventIdx: index("event_participants_owner_event_idx").on(t.userId, t.eventId, t.createdAt) })).enableRLS();
 
 // ==========================================
 // 3. УСЛУГИ (SERVICES)
@@ -602,3 +602,131 @@ export const communityRegistrationDrafts = pgTable("community_registration_draft
   expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 }).enableRLS();
+
+// Telegram release: server-only operational state. No public Data API policies.
+export const telegramUpdates = pgTable("telegram_updates", {
+  updateId: text("update_id").primaryKey(),
+  processedAt: timestamp("processed_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+}).enableRLS();
+
+export const telegramCampaigns = pgTable(
+  "telegram_campaigns",
+  {
+    key: text("key").primaryKey(),
+    eventId: text("event_id").references(() => events.id, {
+      onDelete: "set null",
+    }),
+    active: boolean("active").default(true).notNull(),
+  },
+  (t) => ({
+    keyCheck: check(
+      "telegram_campaigns_key_check",
+      sql`${t.key} ~ '^[A-Za-z0-9_-]{1,64}$'`,
+    ),
+  }),
+).enableRLS();
+
+export const eventPaymentAttempts = pgTable(
+  "event_payment_attempts",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    registrationId: text("registration_id")
+      .references(() => eventParticipants.id, { onDelete: "restrict" })
+      .notNull()
+      .unique(),
+    userId: text("user_id")
+      .references(() => users.id, { onDelete: "restrict" })
+      .notNull(),
+    eventId: text("event_id")
+      .references(() => events.id, { onDelete: "restrict" })
+      .notNull(),
+    amountAgorot: integer("amount_agorot").notNull(),
+    currency: text("currency").default("ILS").notNull(),
+    provider: text("provider").default("shutafim").notNull(),
+    selectionHash: text("selection_hash").notNull(),
+    paymentUrl: text("payment_url").notNull(),
+    status: text("status").default("pending").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    confirmedAt: timestamp("confirmed_at", { withTimezone: true }),
+  },
+  (t) => ({
+    amountCheck: check(
+      "event_payment_attempts_amount_check",
+      sql`${t.amountAgorot}>0 AND ${t.currency}='ILS' AND ${t.provider}='shutafim'`,
+    ),
+    statusCheck: check(
+      "event_payment_attempts_status_check",
+      sql`${t.status} IN ('pending','paid','cancelled') AND ${t.selectionHash} ~ '^[0-9a-f]{64}$'`,
+    ),
+    ownerIdx: index("event_payment_attempts_owner_idx").on(t.userId, t.eventId),
+  }),
+).enableRLS();
+
+export const telegramBroadcasts = pgTable(
+  "telegram_broadcasts",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    requestKey: uuid("request_key").notNull().unique(),
+    createdBy: text("created_by")
+      .references(() => users.id, { onDelete: "restrict" })
+      .notNull(),
+    message: text("message").notNull(),
+    eventId: text("event_id").references(() => events.id, {
+      onDelete: "set null",
+    }),
+    buttonLabel: text("button_label"),
+    audience: jsonb("audience").notNull(),
+    recipientCount: integer("recipient_count").notNull(),
+    status: text("status").default("queued").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => ({
+    statusCheck: check(
+      "telegram_broadcasts_status_check",
+      sql`${t.status} IN ('queued','completed','cancelled') AND ${t.recipientCount}>=0 AND length(${t.message}) BETWEEN 1 AND 3500`,
+    ),
+    createdIdx: index("telegram_broadcasts_created_idx").on(t.createdAt),
+  }),
+).enableRLS();
+
+export const telegramBroadcastDeliveries = pgTable(
+  "telegram_broadcast_deliveries",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    broadcastId: uuid("broadcast_id")
+      .references(() => telegramBroadcasts.id, { onDelete: "cascade" })
+      .notNull(),
+    contactId: uuid("contact_id")
+      .references(() => telegramContacts.id, { onDelete: "restrict" })
+      .notNull(),
+    status: text("status").default("queued").notNull(),
+    attempts: integer("attempts").default(0).notNull(),
+    nextAttemptAt: timestamp("next_attempt_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    claimedAt: timestamp("claimed_at", { withTimezone: true }),
+    errorClass: text("error_class"),
+    deliveredAt: timestamp("delivered_at", { withTimezone: true }),
+  },
+  (t) => ({
+    recipientIdx: uniqueIndex("telegram_delivery_recipient_idx").on(
+      t.broadcastId,
+      t.contactId,
+    ),
+    dueIdx: index("telegram_delivery_due_idx").on(
+      t.status,
+      t.nextAttemptAt,
+      t.id,
+    ),
+    statusCheck: check(
+      "telegram_delivery_status_check",
+      sql`${t.status} IN ('queued','sending','delivered','skipped','failed','unknown') AND ${t.attempts} BETWEEN 0 AND 5`,
+    ),
+  }),
+).enableRLS();

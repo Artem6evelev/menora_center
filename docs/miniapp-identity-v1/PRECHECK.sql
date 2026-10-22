@@ -39,8 +39,24 @@ ORDER BY created_at,id;
 -- Existing partial rollout/schema or policies need review; MANUAL_SQL validates definitions.
 SELECT c.relname,c.relrowsecurity,(SELECT count(*) FROM pg_policy p WHERE p.polrelid=c.oid) AS policies
 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
-WHERE n.nspname='public' AND c.relname IN('user_identities','telegram_contacts','user_identity_link_attempts','user_identity_merge_log');
+WHERE n.nspname='public' AND c.relname IN('user_identities','telegram_contacts','user_identity_link_attempts','user_identity_merge_log','telegram_miniapp_sessions','telegram_updates','telegram_campaigns','telegram_broadcasts','telegram_broadcast_deliveries','event_payment_attempts');
 SELECT table_name,grantee,privilege_type FROM information_schema.table_privileges
-WHERE table_schema='public' AND table_name IN('user_identities','telegram_contacts','user_identity_link_attempts','user_identity_merge_log')
+WHERE table_schema='public' AND table_name IN('user_identities','telegram_contacts','user_identity_link_attempts','user_identity_merge_log','telegram_miniapp_sessions','telegram_updates','telegram_campaigns','telegram_broadcasts','telegram_broadcast_deliveries','event_payment_attempts')
  AND grantee IN('PUBLIC','anon','authenticated') ORDER BY table_name,grantee,privilege_type;
+-- Release-candidate baseline, retained privately for POSTCHECK comparison.
+SELECT current_setting('server_version_num') AS postgres_version;
+SELECT count(*) AS registrations,md5(coalesce(string_agg(to_jsonb(p)::text,'' ORDER BY id),'')) AS registration_fingerprint FROM public.event_participants p;
+SELECT name,to_regclass('public.'||name) IS NOT NULL AS already_present FROM unnest(ARRAY['user_identities','telegram_contacts','telegram_miniapp_sessions','telegram_updates','telegram_campaigns','telegram_broadcasts','telegram_broadcast_deliveries','event_payment_attempts']) name;
+SELECT t.relname,c.conname,pg_get_constraintdef(c.oid) AS definition,c.convalidated
+FROM pg_constraint c JOIN pg_class t ON t.oid=c.conrelid JOIN pg_namespace n ON n.oid=t.relnamespace
+WHERE n.nspname='public' AND t.relname IN('telegram_updates','telegram_campaigns','telegram_broadcasts','telegram_broadcast_deliveries','event_payment_attempts') ORDER BY t.relname,c.conname;
+SELECT indexname,indexdef FROM pg_indexes WHERE schemaname='public' AND indexname IN('events_status_created_idx','event_participants_owner_event_idx') ORDER BY indexname;
+-- Migration ledgers are inspected, never adopted, inserted or rewritten by this script.
+SELECT to_regclass('drizzle.__drizzle_migrations') AS drizzle_ledger,to_regclass('supabase_migrations.schema_migrations') AS supabase_ledger;
+DO $ledger_inventory$ DECLARE inventory jsonb; BEGIN
+ IF to_regclass('drizzle.__drizzle_migrations') IS NOT NULL THEN
+  EXECUTE 'SELECT jsonb_agg(jsonb_build_object(''hash'',hash,''created_at'',created_at) ORDER BY created_at) FROM drizzle.__drizzle_migrations' INTO inventory;
+  RAISE NOTICE 'Drizzle ledger inventory (compare privately to release hashes): %',inventory;
+ END IF;
+END $ledger_inventory$;
 COMMIT;

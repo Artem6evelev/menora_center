@@ -59,4 +59,28 @@ WHERE i.id IS NULL OR u.id IS NULL OR i.user_id<>s.user_id OR i.provider<>'teleg
  OR s.token_hash !~ '^[0-9a-f]{64}$' OR s.expires_at<=s.created_at OR s.last_seen_at<s.created_at OR s.revoked_at<s.created_at;
 SELECT conname,pg_get_constraintdef(oid) AS definition,convalidated FROM pg_constraint
 WHERE conrelid='public.telegram_miniapp_sessions'::regclass AND contype='f' ORDER BY conname;
+-- Release-candidate operational tables: all counts below must be zero unless labelled inventory.
+SELECT count(*) AS registrations,md5(coalesce(string_agg(to_jsonb(p)::text,'' ORDER BY id),'')) AS registration_fingerprint FROM public.event_participants p;
+SELECT count(*) AS invalid_attempt_owner FROM public.event_payment_attempts a
+LEFT JOIN public.event_participants p ON p.id=a.registration_id
+WHERE p.id IS NULL OR p.user_id<>a.user_id OR p.event_id<>a.event_id;
+SELECT count(*) AS orphan_deliveries FROM public.telegram_broadcast_deliveries d
+LEFT JOIN public.telegram_contacts c ON c.id=d.contact_id LEFT JOIN public.telegram_broadcasts b ON b.id=d.broadcast_id
+WHERE c.id IS NULL OR b.id IS NULL;
+SELECT broadcast_id,contact_id,count(*) FROM public.telegram_broadcast_deliveries GROUP BY broadcast_id,contact_id HAVING count(*)>1;
+SELECT t.relname AS table_name,t.relrowsecurity,t.relforcerowsecurity,
+ (SELECT count(*) FROM pg_policy p WHERE p.polrelid=t.oid) AS public_policies
+FROM pg_class t JOIN pg_namespace n ON n.oid=t.relnamespace WHERE n.nspname='public'
+AND t.relname IN('telegram_updates','telegram_campaigns','telegram_broadcasts','telegram_broadcast_deliveries','event_payment_attempts') ORDER BY t.relname;
+SELECT table_name,grantee,privilege_type FROM information_schema.role_table_grants
+WHERE table_schema='public' AND table_name IN('telegram_updates','telegram_campaigns','telegram_broadcasts','telegram_broadcast_deliveries','event_payment_attempts') AND grantee IN('PUBLIC','anon','authenticated');
+SELECT table_name,column_name,grantee,privilege_type FROM information_schema.column_privileges
+WHERE table_schema='public' AND table_name IN('telegram_updates','telegram_campaigns','telegram_broadcasts','telegram_broadcast_deliveries','event_payment_attempts') AND grantee IN('PUBLIC','anon','authenticated');
+SELECT r.rolname,t.relname FROM pg_roles r CROSS JOIN pg_class t JOIN pg_namespace n ON n.oid=t.relnamespace
+WHERE r.rolname IN('anon','authenticated') AND n.nspname='public' AND t.relname IN('telegram_updates','telegram_campaigns','telegram_broadcasts','telegram_broadcast_deliveries','event_payment_attempts')
+AND (has_table_privilege(r.oid,t.oid,'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER') OR EXISTS(SELECT 1 FROM pg_attribute a WHERE a.attrelid=t.oid AND a.attnum>0 AND NOT a.attisdropped AND has_column_privilege(r.oid,t.oid,a.attnum,'SELECT,INSERT,UPDATE,REFERENCES')));
+SELECT c.conname,pg_get_constraintdef(c.oid),c.convalidated FROM pg_constraint c JOIN pg_class t ON t.oid=c.conrelid JOIN pg_namespace n ON n.oid=t.relnamespace
+WHERE n.nspname='public' AND t.relname IN('telegram_updates','telegram_campaigns','telegram_broadcasts','telegram_broadcast_deliveries','event_payment_attempts') AND c.contype='f' ORDER BY c.conname;
+SELECT 'inventory' AS kind,(SELECT count(*) FROM telegram_updates) AS update_count,(SELECT count(*) FROM telegram_broadcasts) AS broadcasts,(SELECT count(*) FROM telegram_broadcast_deliveries) AS deliveries,(SELECT count(*) FROM event_payment_attempts) AS payment_attempts;
+SELECT indexname,indexdef FROM pg_indexes WHERE schemaname='public' AND indexname IN('events_status_created_idx','event_participants_owner_event_idx') ORDER BY indexname;
 COMMIT;

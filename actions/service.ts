@@ -13,7 +13,7 @@ import { eq, desc, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 // 🔥 ИМПОРТ ФУНКЦИИ TELEGRAM
-import { sendServiceRegistrationNotification } from "@/actions/telegram";
+import { sendServiceRegistrationNotification } from "@/lib/telegram/notifications";
 
 // --- Категории услуг ---
 export async function getServiceCategories() {

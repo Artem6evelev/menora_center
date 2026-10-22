@@ -3,6 +3,7 @@
 type Insets = { top: number; bottom: number; left: number; right: number };
 type TelegramEvent = "themeChanged" | "viewportChanged" | "safeAreaChanged" | "contentSafeAreaChanged" | "activated" | "deactivated" | "fullscreenChanged";
 interface TelegramWebApp {
+  openLink?: (url: string) => void;
   initData: string; platform: string; version: string; colorScheme: string; themeParams: Record<string, string>;
   viewportStableHeight?: number; safeAreaInset?: Insets; contentSafeAreaInset?: Insets; isActive?: boolean;
   ready(): void; expand(): void; isVersionAtLeast?(version: string): boolean;
@@ -66,6 +67,12 @@ export function connectMiniAppBridge(app: TelegramWebApp, element: HTMLElement, 
   try { app.ready(); app.expand(); } catch { /* Browser/old SDK fallback. */ }
   update();
   return { rawInitData: () => app.initData,
+    openLink(url: string) {
+      const target = new URL(url);
+      if (target.protocol !== "https:") throw new Error("Invalid link");
+      if (app.openLink) app.openLink(target.toString());
+      else window.open(target.toString(), "_blank", "noopener,noreferrer");
+    },
     back(handler: (() => void) | null) {
       backCleanup?.();
       const button = app.BackButton;

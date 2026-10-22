@@ -34,12 +34,17 @@ export function prepareEventRegistration(profile: any, event: any, raw: unknown,
   if (input.family.spouse && !spouseName) throw new CommunityError("Укажите супруга или супругу");
   const family: Record<string, boolean> = { self: true, ...(input.family.spouse ? { spouse: true } : {}) };
   selectedChildren.forEach(child => { family[`child_${child.id}`] = true; });
-  const adultPrice = Number.parseFloat(event.price || "0");
-  const childPrice = Number.parseFloat(event.childPrice || "0");
+  const money = (value: unknown) => {
+    const text = String(value ?? "0").trim();
+    if (!/^\d{1,7}(?:\.\d{1,2})?$/.test(text)) throw new CommunityError("Стоимость мероприятия уточняется. Обратитесь к администратору.");
+    return Math.round(Number(text) * 100);
+  };
+  const adultPrice = event.isFree ? 0 : money(event.price);
+  const childPrice = event.isFree ? 0 : money(event.childPrice);
   const totalAmount = event.isFree ? 0 : (1 + Number(!!family.spouse) + input.extraAdults) * adultPrice + selectedChildren.length * childPrice;
   if (!Number.isFinite(totalAmount) || totalAmount < 0) throw new CommunityError("Стоимость мероприятия уточняется. Обратитесь к администратору.");
   return { children, spouseName, profileUpdate,
-    totalAmount: Math.round(totalAmount * 100) / 100,
+    totalAmount: totalAmount / 100,
     extraData: { family, childIds: selectedChildren.map(child => child.id), childrenSnapshot: selectedChildren, extraAdults: input.extraAdults, extraKids: 0 },
   };
 }

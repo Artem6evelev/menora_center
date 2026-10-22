@@ -144,6 +144,12 @@ BEGIN
  'constraints',(SELECT jsonb_agg(jsonb_build_object('name',c.conname,'type',c.contype,'definition',pg_get_constraintdef(c.oid),'validated',c.convalidated) ORDER BY c.conname) FROM pg_constraint c WHERE c.conrelid=to_regclass('public.' || table_name)),
  'indexes',(SELECT jsonb_agg(jsonb_build_object('name',i.indexname,'definition',i.indexdef,'valid',x.indisvalid) ORDER BY i.indexname) FROM pg_indexes i JOIN pg_class c ON c.relname=i.indexname JOIN pg_namespace n ON n.oid=c.relnamespace AND n.nspname='public' JOIN pg_index x ON x.indexrelid=c.oid WHERE i.schemaname='public' AND i.tablename=table_name)
  ) AS definition INTO actual;
+  -- PostgreSQL 17 stores relation NOT NULL in pg_attribute; 18 also emits contype=n.
+  -- Column attnotnull is already compared above, so normalize this redundant catalog representation.
+  actual := jsonb_set(actual,'{constraints}',(SELECT coalesce(jsonb_agg(item ORDER BY item->>'name'),'[]'::jsonb)
+    FROM jsonb_array_elements(actual->'constraints') item WHERE item->>'type'<>'n'));
+  expected := jsonb_set(expected,ARRAY[table_name,'constraints'],(SELECT coalesce(jsonb_agg(item ORDER BY item->>'name'),'[]'::jsonb)
+    FROM jsonb_array_elements(expected->table_name->'constraints') item WHERE item->>'type'<>'n'));
   IF actual IS DISTINCT FROM expected->table_name THEN
    RAISE EXCEPTION 'Identity v1 incompatible table: %. Run PRECHECK and inspect schema; no automatic repair.',table_name;
   END IF;
