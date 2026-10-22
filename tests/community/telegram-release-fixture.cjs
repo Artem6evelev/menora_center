@@ -13,3 +13,24 @@ const options=await request.json().catch(()=>({}));if(options.shareFixture===tru
 for(let i=0;i<25;i++){const id='release-audience-'+i,tg=String(860000+i);await pg.query("insert into users(id,first_name,last_name,city,city_id,gender,affiliation,is_profile_complete,filter_version,filter_completed_at)values($1,'Synthetic','Audience','Ришон ле-Цион','8300','female','maternal',true,2,now()) on conflict do nothing",[id]);await pg.query("insert into user_identities(user_id,provider,provider_user_id)values($1,'telegram',$2) on conflict do nothing",[id,tg]);await pg.query("insert into telegram_contacts(user_id,telegram_user_id,telegram_chat_id,username,marketing_status)values($1,$2,$2,$3,'subscribed') on conflict do nothing",[id,tg,'synthetic_'+i]);}return Response.json({testDatabase:'isolated-pglite',ok:true});}
 `);
 console.log('Release fixture: synthetic CRM, hard-disabled Bot API, no production writes.');
+write('app/api/test-payment-state/route.ts', `import {db} from '@/lib/db';
+export const dynamic='force-dynamic';
+export async function POST(request:Request){
+ if(process.env.NODE_ENV!=='development'||!['127.0.0.1','localhost'].includes(new URL(request.url).hostname)||typeof(db as any).$client?.exec!=='function')return new Response('Local synthetic only',{status:403});
+ const {id,mode}=await request.json();
+ if(!Number.isSafeInteger(id)||id<760000||id>790000||!['inspect','paid','confirmed','missing','unsafe','price-change'].includes(mode))return new Response('Invalid fixture',{status:400});
+ const pg=(db as any).$client,rows=(await pg.query("select user_id from user_identities where provider='telegram' and provider_user_id=$1",[String(id)])).rows;
+ if(rows.length!==1)return new Response('Missing synthetic identity',{status:404});const owner=rows[0].user_id;
+ if(['paid','confirmed'].includes(mode)){
+  await pg.query("update event_participants set status=$1 where user_id=$2 and event_id='fixture-paid'",[mode,owner]);
+  await pg.query("update event_payment_attempts set status='paid',confirmed_at=now() where user_id=$1 and event_id='fixture-paid'",[owner]);
+ }
+ if(mode==='missing'){
+  await pg.exec("insert into events(id,title,status,is_free,price,payment_url)values('fixture-no-link','SYNTHETIC_MISSING_PAYMENT','planned',false,'77.00',null)on conflict do nothing");
+  await pg.query("insert into event_participants(id,user_id,event_id,phone,status,extra_data)values($1,$2,'fixture-no-link','synthetic','pending',$3)on conflict do nothing",['synthetic-missing-'+id,owner,{amountAgorot:7700}]);
+ }
+ if(mode==='unsafe')await pg.query("update event_payment_attempts set payment_url='http://example.invalid/unsafe' where user_id=$1 and event_id='fixture-paid'",[owner]);
+ if(mode==='price-change')await pg.exec("update events set price='999.00',child_price='999.00' where id='fixture-paid'");
+ return Response.json({testDatabase:'isolated-pglite',registrations:(await pg.query('select id,event_id,status,extra_data from event_participants where user_id=$1',[owner])).rows,attempts:(await pg.query('select registration_id,amount_agorot,status,confirmed_at from event_payment_attempts where user_id=$1',[owner])).rows});
+}
+`);

@@ -181,3 +181,14 @@ COMMUNITY_TEST_OUTPUT=docs/production-candidate-telegram/evidence/adoption node 
 This starts disposable native PostgreSQL on loopback35433, accepts no external DATABASE_URL, uses independent connections, copies the ordinary project runner into a temporary folder, and generates the synthetic next migration only in that copy. Tests cover both histories, concurrent adoption, one-time future execution, ledger corruption, schema mismatch/rollback,111 synthetic legacy profiles,43 registrations, family/filter preservation, and repeat after modeled ownership merge. It stops/removes its cluster. The production fingerprint is an owner-provided anchor; a synthetic fingerprint is substituted only in memory to exercise the POSTCHECK PASS branch. The real POSTCHECK keeps the production anchor unchanged.
 
 The historical identity and17/18 SQL suites now attach an explicitly synthetic legacy ledger to their already-generated baseline fixture. Their PRECHECK/POSTCHECK assertions use the anonymized JSON contract. No real account data is used.
+
+## Welcome Kids destination and payment UX hotfix
+
+After preparing `telegram-release-fixture.cjs` and starting the isolated dev server on3342, run sequentially:
+
+```sh
+node tests/community/miniapp-kids-entry-browser.cjs
+node tests/community/miniapp-payment-ux-browser.cjs
+```
+
+The first covers `/miniapp?section=kids`, onboarding/reload/Back and existing permission gates. The second covers free/pending/confirmed receipts, immutable server totals, payment resumption, WhatsApp recovery and safe external-link fallback. Its `test-payment-state` endpoint exists only in the disposable fixture, requires development/loopback/PGlite, and changes synthetic rows only. External payment navigation is intercepted; no real payment or Telegram send is performed. Server cases also run in `telegram-release.cjs` and the disposable native PostgreSQL runner.

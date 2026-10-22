@@ -1,0 +1,281 @@
+{
+  "baseHead": "1da1f2c1855f1fd87c997ec44b155657f1e7e54a",
+  "environment": "Local isolated PGlite17/18, disposable native PostgreSQL18, Chromium dev/production; synthetic Telegram HMAC/SDK/BotAPI and Clerk fixtures",
+  "groups": [
+    {
+      "name": "miniapp-auth",
+      "passed": 87,
+      "failed": 0,
+      "evidence": "miniapp-auth.json"
+    },
+    {
+      "name": "miniapp-ui-server",
+      "passed": 43,
+      "failed": 0,
+      "evidence": "miniapp-ui-server.json"
+    },
+    {
+      "name": "miniapp-ui-bridge",
+      "passed": 8,
+      "failed": 0,
+      "evidence": "miniapp-ui-bridge.json"
+    },
+    {
+      "name": "miniapp-ui-browser",
+      "passed": 39,
+      "failed": 0,
+      "evidence": "miniapp-ui-browser.json"
+    },
+    {
+      "name": "production-browser",
+      "passed": 2,
+      "failed": 0,
+      "evidence": "production-browser.json"
+    },
+    {
+      "name": "identity-schema",
+      "passed": 23,
+      "failed": 0,
+      "evidence": "identity-schema.json"
+    },
+    {
+      "name": "migrations",
+      "passed": 8,
+      "failed": 0,
+      "evidence": "migrations.json"
+    },
+    {
+      "name": "regression",
+      "passed": 36,
+      "failed": 0,
+      "evidence": "regression.json"
+    },
+    {
+      "name": "render",
+      "passed": 21,
+      "failed": 0,
+      "evidence": "render.json"
+    },
+    {
+      "name": "spec-update",
+      "passed": 17,
+      "failed": 0,
+      "evidence": "spec-update.json"
+    },
+    {
+      "name": "production",
+      "passed": 28,
+      "failed": 0,
+      "evidence": "production.json"
+    },
+    {
+      "name": "http",
+      "passed": 11,
+      "failed": 0,
+      "evidence": "http.json"
+    },
+    {
+      "name": "callback-browser",
+      "passed": 10,
+      "failed": 0,
+      "evidence": "callback-browser.json"
+    },
+    {
+      "name": "spec-browser",
+      "passed": 32,
+      "failed": 0,
+      "evidence": "spec-browser.json"
+    },
+    {
+      "name": "telegram-release",
+      "passed": 126,
+      "failed": 0,
+      "evidence": "telegram-release.json"
+    },
+    {
+      "name": "telegram-native",
+      "passed": 127,
+      "failed": 0,
+      "evidence": "telegram-native.json"
+    },
+    {
+      "name": "telegram-release-browser",
+      "passed": 32,
+      "failed": 0,
+      "evidence": "telegram-release-browser.json"
+    },
+    {
+      "name": "telegram-migrations",
+      "passed": 10,
+      "failed": 0,
+      "evidence": "telegram-migrations.json"
+    },
+    {
+      "name": "telegram-tools",
+      "passed": 5,
+      "failed": 0,
+      "evidence": "telegram-tools.json"
+    },
+    {
+      "name": "bundle",
+      "passed": 1,
+      "failed": 0,
+      "evidence": "bundle.json"
+    },
+    {
+      "name": "adoption-native",
+      "passed": 28,
+      "failed": 0,
+      "evidence": "adoption-native.json"
+    },
+    {
+      "name": "onboarding-browser",
+      "passed": 4,
+      "failed": 0,
+      "evidence": "onboarding-browser.json"
+    },
+    {
+      "name": "sso-callback",
+      "passed": 10,
+      "failed": 0,
+      "evidence": "sso-callback.json"
+    },
+    {
+      "name": "miniapp-polish-browser",
+      "passed": 14,
+      "failed": 0,
+      "evidence": "miniapp-polish-browser.json"
+    },
+    {
+      "name": "miniapp-kids-browser",
+      "passed": 21,
+      "failed": 0,
+      "evidence": "miniapp-kids-browser.json"
+    },
+    {
+      "name": "miniapp-russian-ux-browser",
+      "passed": 10,
+      "failed": 0,
+      "evidence": "miniapp-russian-ux-browser.json"
+    },
+    {
+      "name": "kids-entry-browser",
+      "passed": 16,
+      "failed": 0,
+      "evidence": "kids-entry-browser.json"
+    },
+    {
+      "name": "payment-ux-browser",
+      "passed": 15,
+      "failed": 0,
+      "evidence": "payment-ux-browser.json"
+    },
+    {
+      "name": "event-share",
+      "passed": 3,
+      "failed": 0,
+      "evidence": "event-share.json"
+    },
+    {
+      "name": "miniapp-image-share-browser",
+      "passed": 21,
+      "failed": 0,
+      "evidence": "miniapp-image-share-browser.json"
+    }
+  ],
+  "passed": 808,
+  "failed": 0,
+  "lint": {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "errors": 0,
+    "warnings": 30,
+    "changedFileWarnings": 0
+  },
+  "typecheck": {
+    "command": "npm run typecheck",
+    "exitCode": 0
+  },
+  "build": {
+    "command": "npm run build",
+    "exitCode": 0,
+    "copy": "/tmp/menora-production-build",
+    "currentWorkingTree": true,
+    "realEnvCopied": false,
+    "database": "unavailable synthetic 127.0.0.1:1, no remote writes",
+    "log": "build.log"
+  },
+  "initialJavaScript": {
+    "totalBytes": 534502,
+    "estimatedGzipBytes": 165573,
+    "clerkRuntimeMarkers": 0
+  },
+  "checkedSourceFiles": [
+    {
+      "file": "app/miniapp/miniapp.css",
+      "sha256": "6c6704e69cf6b219fe0fa5213026dce08d095c68a5101b30e92abad06a56d778"
+    },
+    {
+      "file": "components/miniapp/app.tsx",
+      "sha256": "4dd236ffd0dc1d42762458cca6f5a5b089383065be6cf6ef16dc5ba9bfb1476b"
+    },
+    {
+      "file": "components/miniapp/events.tsx",
+      "sha256": "68acf411966d281818c1a612f54c815403667d8748df9512d624c1ef3bfbf3d0"
+    },
+    {
+      "file": "lib/telegram/bot-welcome.ts",
+      "sha256": "024091eee970fd28522cb76559c1d28d5ac8691ec1967b7f540a671e05c55e81"
+    },
+    {
+      "file": "lib/telegram/event-copy.ts",
+      "sha256": "559e061b1147c0b627c3b28d7b6068e9e66ec78880a9462c80ceefa901e20453"
+    },
+    {
+      "file": "lib/telegram/miniapp-client.ts",
+      "sha256": "d8facfa08b53a842fdd254b6ef4dbf2b499659981c92b5afc054812e61e4c14f"
+    },
+    {
+      "file": "lib/telegram/miniapp-events.ts",
+      "sha256": "746c3f7d50518d97da8f154f3a51ca1caa5923bd4e18ce45d4c382817aa81f5e"
+    },
+    {
+      "file": "tests/community/README.md",
+      "sha256": "c11ffd85aed4d2c2220a7fad6cf779a7bb2e33892f6d26f1ce5c824ed8429b25"
+    },
+    {
+      "file": "tests/community/miniapp-kids-entry-browser.cjs",
+      "sha256": "32ffc22e54d6b0765c9c92678aaa21cb73627d3874833d74a4c12e9d5eff1f4c"
+    },
+    {
+      "file": "tests/community/miniapp-payment-ux-browser.cjs",
+      "sha256": "ebb2b4242816c6d42406796b0c162b88b64f6685a0f6572adf1e30d9176a3ce5"
+    },
+    {
+      "file": "tests/community/miniapp-ui-bridge.cjs",
+      "sha256": "5b78455ff950d442cec4f1c3a836af473b3eb28687049e640cda9b1580653cf4"
+    },
+    {
+      "file": "tests/community/telegram-native.cjs",
+      "sha256": "9f0e7b7cdd829f5a5f7bb304010b58c73004b962798cd93aaadeb3e424e19280"
+    },
+    {
+      "file": "tests/community/telegram-release-browser.cjs",
+      "sha256": "5a0e00106a91cae47b46fc9132a1496c6731cf36ded7d5181a101cb7a4bbe6c7"
+    },
+    {
+      "file": "tests/community/telegram-release-fixture.cjs",
+      "sha256": "f249b2632184c79811212dcb30cd3f1230c5f7815cc5606209eb8d42568434a2"
+    },
+    {
+      "file": "tests/community/telegram-release.cjs",
+      "sha256": "de25e138e7af33b016aa9b4ff9731a18cd7f9523e3615681a36b2be7c75036a7"
+    }
+  ],
+  "productionChanged": false,
+  "realTelegramMessages": 0,
+  "realPayments": 0,
+  "realTelegramWebViewVerified": false,
+  "nativeOSShareSheetVerified": false,
+  "realGoogleOAuthVerified": false
+}

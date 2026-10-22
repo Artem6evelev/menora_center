@@ -1,5 +1,5 @@
 import "server-only";
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 import {
   events,
@@ -49,6 +49,26 @@ function admitted(user: MiniAppUser) {
   if (!communityAccess(user).canViewEvents)
     throw new MiniAppAuthError(403, "event_access_denied");
 }
+function paymentLink(value: string | null) {
+  if (!value) return null;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && !url.username && !url.password ? url.toString() : null;
+  } catch { return null; }
+}
+function storedRegistration(
+  row: typeof eventParticipants.$inferSelect,
+  attempt: typeof eventPaymentAttempts.$inferSelect | null,
+) {
+  const extra = row.extraData as { amountAgorot?: unknown } | null;
+  const amount = attempt?.amountAgorot ?? extra?.amountAgorot;
+  return {
+    status: row.status,
+    amountAgorot: typeof amount === "number" && Number.isSafeInteger(amount) && amount >= 0 ? amount : null,
+    // Resume only an existing immutable handoff, never invent a legacy price/URL.
+    paymentUrl: row.status === "pending" && attempt?.status === "pending" ? paymentLink(attempt.paymentUrl) : null,
+  };
+}
 export async function listMiniAppEvents(
   tx: MiniAppTransaction,
   user: MiniAppUser,
@@ -84,7 +104,11 @@ export async function miniAppEventDetail(
     .from(eventParticipants)
     .leftJoin(
       eventPaymentAttempts,
-      eq(eventPaymentAttempts.registrationId, eventParticipants.id),
+      and(
+        eq(eventPaymentAttempts.registrationId, eventParticipants.id),
+        eq(eventPaymentAttempts.userId, eventParticipants.userId),
+        eq(eventPaymentAttempts.eventId, eventParticipants.eventId),
+      ),
     )
     .where(
       and(
@@ -96,14 +120,7 @@ export async function miniAppEventDetail(
     .limit(1);
   const registration =
     existing && ["pending", "paid", "confirmed"].includes(existing.row.status)
-      ? {
-          status: existing.row.status,
-          amountAgorot: existing.attempt?.amountAgorot ?? 0,
-          paymentUrl:
-            existing.row.status === "pending"
-              ? (existing.attempt?.paymentUrl ?? null)
-              : null,
-        }
+      ? storedRegistration(existing.row, existing.attempt)
       : null;
 
   return {
@@ -146,7 +163,7 @@ export async function miniAppEventAction(
       telegramLog("payment_handoff", {
         amountAgorot: registration.amountAgorot,
       });
-    return { registration };
+    return { registration: { ...registration, paymentUrl: paymentLink(registration.paymentUrl) } };
   } catch (error) {
     if (error instanceof CommunityError)
       throw new MiniAppAuthError(409, "registration_unavailable");
@@ -163,10 +180,15 @@ export async function miniAppRegistrations(
     .select({
       registration: eventParticipants,
       event: events,
-      amount: sql<number>`CASE WHEN ${eventParticipants.extraData}->>'amountAgorot' ~ '^[0-9]{1,9}$' THEN (${eventParticipants.extraData}->>'amountAgorot')::integer ELSE 0 END`,
+      attempt: eventPaymentAttempts,
     })
     .from(eventParticipants)
     .innerJoin(events, eq(events.id, eventParticipants.eventId))
+    .leftJoin(eventPaymentAttempts, and(
+      eq(eventPaymentAttempts.registrationId, eventParticipants.id),
+      eq(eventPaymentAttempts.userId, eventParticipants.userId),
+      eq(eventPaymentAttempts.eventId, eventParticipants.eventId),
+    ))
     .where(eq(eventParticipants.userId, user.id))
     .orderBy(desc(eventParticipants.createdAt), eventParticipants.id)
     .limit(21)
@@ -178,8 +200,7 @@ export async function miniAppRegistrations(
       .map((row) => ({
         id: row.registration.id,
         event: eventDto(row.event),
-        status: row.registration.status,
-        amountAgorot: row.amount,
+        ...storedRegistration(row.registration, row.attempt),
       })),
     hasMore: rows.length > 20,
     page,

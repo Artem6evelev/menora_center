@@ -69,9 +69,11 @@ export function connectMiniAppBridge(app: TelegramWebApp, element: HTMLElement, 
   return { rawInitData: () => app.initData,
     openLink(url: string) {
       const target = new URL(url);
-      if (target.protocol !== "https:") throw new Error("Invalid link");
-      if (app.openLink) app.openLink(target.toString());
-      else window.open(target.toString(), "_blank", "noopener,noreferrer");
+      if (target.protocol !== "https:" || target.username || target.password) throw new Error("Invalid link");
+      try {
+        if (app.openLink) { app.openLink(target.toString()); return; }
+      } catch { /* Unsupported SDK method: use the same validated HTTPS URL. */ }
+      window.open(target.toString(), "_blank", "noopener,noreferrer");
     },
     back(handler: (() => void) | null) {
       backCleanup?.();

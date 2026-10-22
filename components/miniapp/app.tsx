@@ -131,6 +131,8 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
   const [launchEvent, setLaunchEvent] = useState<MiniAppLaunch["event"]>(null);
   const [entryGate, setEntryGate] = useState(false), [onboardingStarted, setOnboardingStarted] = useState(false);
   const [initialEvent, setInitialEvent] = useState<string>();
+  // Navigation hint only: profile completion and Kids permissions still apply.
+  const intendedSection = useRef<"kids" | null>(null);
   const bootSequence = useRef(0);
   const language: MiniAppLanguage = miniAppLanguage();
   const [status, setStatus] = useState<
@@ -179,6 +181,7 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
         setEntryGate(false);
         setOnboardingStarted(false);
         setInitialEvent(undefined);
+        intendedSection.current = null;
         setStatus("loading");
         setActionError("");
         const app = await loadTelegramWebApp(controller.signal);
@@ -213,7 +216,10 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
         });
         if (!controller.signal.aborted && sequence === bootSequence.current) {
           const params = new URL(window.location.href).searchParams;
-          const hasLaunch = params.has("event") || params.has("campaign") || new URLSearchParams(bridge.current?.rawInitData()).has("start_param");
+          const kidsRequested = params.get("section") === "kids";
+          // An explicit Kids button must not inherit a previous Telegram ad hint.
+          const hasLaunch = params.has("event") || params.has("campaign") ||
+            (!kidsRequested && new URLSearchParams(bridge.current?.rawInitData()).has("start_param"));
           let launch: MiniAppLaunch["event"] = null;
           if (hasLaunch && result.data.summary.nextStep !== "resources") {
             const query = new URLSearchParams();
@@ -230,8 +236,11 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
           accept(result);
           setLaunchEvent(launch);
           setInitialEvent(launch?.id);
-          setView(result.data.summary.nextStep === "home" ? (launch || params.get("view") === "events" ? "events" : null) : null);
-          if (!launch && (params.has("event") || (params.get("campaign") ?? new URLSearchParams(bridge.current?.rawInitData()).get("start_param") ?? "").startsWith("event_")) && result.data.summary.nextStep !== "resources") setActionError("event_unavailable");
+          intendedSection.current = !launch && kidsRequested ? "kids" : null;
+          setView(result.data.summary.nextStep === "home"
+            ? launch ? "events" : intendedSection.current ?? (params.get("view") === "events" ? "events" : null)
+            : null);
+          if (hasLaunch && !launch && (params.has("event") || (params.get("campaign") ?? new URLSearchParams(bridge.current?.rawInitData()).get("start_param") ?? "").startsWith("event_")) && result.data.summary.nextStep !== "resources") setActionError("event_unavailable");
           setStatus("ready");
         }
       })().catch((error) => {
@@ -253,6 +262,15 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
   const navigate = useCallback(
     (next: "profile" | "filter" | "events" | "registrations" | "kids" | null) => {
       if (busy || (dirty && !window.confirm(copy.unsaved))) return;
+      if (data?.summary.nextStep === "home" ||
+        (next !== "filter" && next !== "profile" && next !== null)) {
+        intendedSection.current = null;
+        const url = new URL(window.location.href);
+        if (url.searchParams.has("section")) {
+          url.searchParams.delete("section");
+          window.history.replaceState(window.history.state, "", url);
+        }
+      }
       // Editing/backtracking inside onboarding must retain the ad destination.
       if (!launchEvent || data?.summary.nextStep === "home" ||
         (next !== "filter" && next !== "profile" && next !== null)) {
@@ -314,7 +332,7 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
       accept(result);
       setDirty(false);
       if (launchEvent && result.data.summary.nextStep === "home") { setInitialEvent(launchEvent.id); setView("events"); }
-      else setView(null);
+      else setView(result.data.summary.nextStep === "home" ? intendedSection.current : null);
       setSaved(!filterOnly || !!launchEvent && result.data.summary.nextStep === "home");
       window.scrollTo({ top: 0, behavior: "instant" });
     } finally {
@@ -330,6 +348,7 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
       setData(null);
       tag.current = undefined;
       setView(null);
+      intendedSection.current = null;
       setDirty(false);
       setStatus("logout");
     } catch {

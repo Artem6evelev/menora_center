@@ -295,6 +295,10 @@ body:has(.miniapp) {
   background: #edf7f1;
   border-radius: 99px;
 }
+.miniapp-status-pending {
+  color: #73571e;
+  background: #fff6dc;
+}
 .miniapp-actions {
   display: grid;
   gap: 12px;

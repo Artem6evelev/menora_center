@@ -26,6 +26,7 @@ export function botWelcome({ firstName, language, campaign, event, status }: { f
   if (campaign) launch.searchParams.set("campaign", campaign);
   if (event) launch.searchParams.set("event", event.id);
   const eventsUrl = new URL(home); eventsUrl.searchParams.set("view", "events");
+  const kidsUrl = new URL(home); kidsUrl.searchParams.set("section", "kids");
   const brandedPhoto = new URL("/telegram/welcome.png", home).toString();
   let photo = brandedPhoto;
   if (event?.imageUrl) {
@@ -39,6 +40,7 @@ export function botWelcome({ firstName, language, campaign, event, status }: { f
     keyboard: { inline_keyboard: [
       [{ text: event ? c.openEvent : c.open, web_app: { url: launch.toString() } }],
       [{ text: event ? c.home : c.events, web_app: { url: event ? home : eventsUrl.toString() } }],
+      [{ text: "Детские программы", web_app: { url: kidsUrl.toString() } }],
       [{ text: c.contact, url: communityContact.url }],
     ] } };
 }
