@@ -192,3 +192,5 @@ node tests/community/miniapp-payment-ux-browser.cjs
 ```
 
 The first covers `/miniapp?section=kids`, onboarding/reload/Back and existing permission gates. The second covers free/pending/confirmed receipts, immutable server totals, payment resumption, WhatsApp recovery and safe external-link fallback. Its `test-payment-state` endpoint exists only in the disposable fixture, requires development/loopback/PGlite, and changes synthetic rows only. External payment navigation is intercepted; no real payment or Telegram send is performed. Server cases also run in `telegram-release.cjs` and the disposable native PostgreSQL runner.
+
+`node tests/community/miniapp-bottom-nav-browser.cjs` uses the same isolated3342 fixture. It verifies five equal tabs, Baby/active styles, single-line labels and hit targets at320/390/1280, safe-area updates, internal navigation/Back, all permission categories and Kids destination through onboarding. SDK/native callbacks are synthetic; no real Telegram WebView or production account is used.

@@ -1,0 +1,224 @@
+[
+  {
+    "width": 320,
+    "overflow": false,
+    "navWidth": 320,
+    "columns": [
+      62.7969,
+      62.7969,
+      62.7969,
+      62.7969,
+      62.7969
+    ],
+    "tabs": [
+      {
+        "width": 62.796875,
+        "height": 68,
+        "left": 3,
+        "right": 65.796875,
+        "whiteSpace": "nowrap",
+        "fontSize": "9px",
+        "textWidth": 35.90625,
+        "labelWidth": 35.90625,
+        "lineHeight": 11.7,
+        "heightLabel": 11.6875
+      },
+      {
+        "width": 62.796875,
+        "height": 68,
+        "left": 65.796875,
+        "right": 128.59375,
+        "whiteSpace": "nowrap",
+        "fontSize": "9px",
+        "textWidth": 60.296875,
+        "labelWidth": 60.296875,
+        "lineHeight": 11.7,
+        "heightLabel": 11.6875
+      },
+      {
+        "width": 62.796875,
+        "height": 68,
+        "left": 128.59375,
+        "right": 191.390625,
+        "whiteSpace": "nowrap",
+        "fontSize": "9px",
+        "textWidth": 51.109375,
+        "labelWidth": 51.109375,
+        "lineHeight": 11.7,
+        "heightLabel": 11.6875
+      },
+      {
+        "width": 62.796875,
+        "height": 68,
+        "left": 191.390625,
+        "right": 254.1875,
+        "whiteSpace": "nowrap",
+        "fontSize": "9px",
+        "textWidth": 57.734375,
+        "labelWidth": 57.734375,
+        "lineHeight": 11.7,
+        "heightLabel": 11.6875
+      },
+      {
+        "width": 62.796875,
+        "height": 68,
+        "left": 254.1875,
+        "right": 316.984375,
+        "whiteSpace": "nowrap",
+        "fontSize": "9px",
+        "textWidth": 39.90625,
+        "labelWidth": 39.90625,
+        "lineHeight": 11.7,
+        "heightLabel": 11.6875
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "overflow": false,
+    "navWidth": 390,
+    "columns": [
+      76.7969,
+      76.7969,
+      76.7969,
+      76.7969,
+      76.8125
+    ],
+    "tabs": [
+      {
+        "width": 76.796875,
+        "height": 68,
+        "left": 3,
+        "right": 79.796875,
+        "whiteSpace": "nowrap",
+        "fontSize": "9.75px",
+        "textWidth": 38.90625,
+        "labelWidth": 38.90625,
+        "lineHeight": 12.675,
+        "heightLabel": 12.671875
+      },
+      {
+        "width": 76.796875,
+        "height": 68,
+        "left": 79.796875,
+        "right": 156.59375,
+        "whiteSpace": "nowrap",
+        "fontSize": "9.75px",
+        "textWidth": 65.3125,
+        "labelWidth": 65.3125,
+        "lineHeight": 12.675,
+        "heightLabel": 12.671875
+      },
+      {
+        "width": 76.796875,
+        "height": 68,
+        "left": 156.59375,
+        "right": 233.390625,
+        "whiteSpace": "nowrap",
+        "fontSize": "9.75px",
+        "textWidth": 55.375,
+        "labelWidth": 55.375,
+        "lineHeight": 12.675,
+        "heightLabel": 12.671875
+      },
+      {
+        "width": 76.796875,
+        "height": 68,
+        "left": 233.390625,
+        "right": 310.1875,
+        "whiteSpace": "nowrap",
+        "fontSize": "9.75px",
+        "textWidth": 62.546875,
+        "labelWidth": 62.546875,
+        "lineHeight": 12.675,
+        "heightLabel": 12.671875
+      },
+      {
+        "width": 76.8125,
+        "height": 68,
+        "left": 310.1875,
+        "right": 387,
+        "whiteSpace": "nowrap",
+        "fontSize": "9.75px",
+        "textWidth": 43.234375,
+        "labelWidth": 43.234375,
+        "lineHeight": 12.675,
+        "heightLabel": 12.671875
+      }
+    ]
+  },
+  {
+    "width": 1280,
+    "overflow": false,
+    "navWidth": 712,
+    "columns": [
+      141.188,
+      141.203,
+      141.203,
+      141.203,
+      141.188
+    ],
+    "tabs": [
+      {
+        "width": 141.1875,
+        "height": 68,
+        "left": 287,
+        "right": 428.1875,
+        "whiteSpace": "nowrap",
+        "fontSize": "10px",
+        "textWidth": 39.90625,
+        "labelWidth": 39.90625,
+        "lineHeight": 13,
+        "heightLabel": 13
+      },
+      {
+        "width": 141.203125,
+        "height": 68,
+        "left": 428.1875,
+        "right": 569.390625,
+        "whiteSpace": "nowrap",
+        "fontSize": "10px",
+        "textWidth": 66.984375,
+        "labelWidth": 66.984375,
+        "lineHeight": 13,
+        "heightLabel": 13
+      },
+      {
+        "width": 141.203125,
+        "height": 68,
+        "left": 569.390625,
+        "right": 710.59375,
+        "whiteSpace": "nowrap",
+        "fontSize": "10px",
+        "textWidth": 56.78125,
+        "labelWidth": 56.78125,
+        "lineHeight": 13,
+        "heightLabel": 13
+      },
+      {
+        "width": 141.203125,
+        "height": 68,
+        "left": 710.59375,
+        "right": 851.796875,
+        "whiteSpace": "nowrap",
+        "fontSize": "10px",
+        "textWidth": 64.140625,
+        "labelWidth": 64.140625,
+        "lineHeight": 13,
+        "heightLabel": 13
+      },
+      {
+        "width": 141.1875,
+        "height": 68,
+        "left": 851.796875,
+        "right": 992.984375,
+        "whiteSpace": "nowrap",
+        "fontSize": "10px",
+        "textWidth": 44.34375,
+        "labelWidth": 44.34375,
+        "lineHeight": 13,
+        "heightLabel": 13
+      }
+    ]
+  }
+]

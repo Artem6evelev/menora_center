@@ -1,6 +1,6 @@
 "use client";
 import type { ReactNode } from "react";
-import { ArrowRight, CalendarDays, Check, Home, Ticket, UserRound, type LucideIcon } from "lucide-react";
+import { ArrowRight, Baby, CalendarDays, Check, Home, Ticket, UserRound, type LucideIcon } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { miniAppDictionaries, type MiniAppLanguage } from "@/lib/telegram/miniapp-i18n";
 import { eventCopy } from "@/lib/telegram/event-copy";
@@ -42,6 +42,7 @@ export type MiniAppTab = "profile" | "filter" | "events" | "registrations" | "ki
 export function BottomNav({ language, view, navigate }: { language: MiniAppLanguage; view: MiniAppTab; navigate: (tab: MiniAppTab) => void }) {
   const c = miniAppDictionaries.ru, e = eventCopy.ru;
   const tabs = [{ id: null, label: c.home, Icon: Home }, { id: "events", label: e.events, Icon: CalendarDays },
-    { id: "registrations", label: e.registrations, Icon: Ticket }, { id: "profile", label: c.profile, Icon: UserRound }] as const;
+    { id: "registrations", label: e.registrations, Icon: Ticket }, { id: "kids", label: "Menorah Kids", Icon: Baby },
+    { id: "profile", label: "Профиль", Icon: UserRound }] as const;
   return <nav className="miniapp-nav" aria-label={c.account}>{tabs.map(({ id, label, Icon }) => <button key={id ?? "home"} type="button" aria-current={view === id ? "page" : undefined} onClick={() => navigate(id)}><span className="miniapp-nav-icon"><Icon size={21} aria-hidden="true" /></span><span>{label}</span></button>)}</nav>;
 }

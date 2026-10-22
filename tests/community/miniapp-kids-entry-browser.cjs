@@ -76,7 +76,7 @@ async function complete(page) {
   });
   await test('none category section hint stays resources and cannot call Kids API', async () => {
     const { context, page } = await setup({ kind: 'resources' }); try {
-      await page.locator('[data-screen=resources]').waitFor(); assert.equal(await page.locator('[data-miniapp-kids],.miniapp-nav').count(), 0);
+      await page.locator('[data-screen=resources]').waitFor(); assert.equal(await page.locator('[data-miniapp-kids]').count(), 0);
       assert.equal((await context.request.get(base + '/api/telegram/miniapp/kids')).status(), 403);
     } finally { await context.close(); }
   });

@@ -1,0 +1,9 @@
+{
+  "environment": "Local production build, Chromium ordinary browser; external requests blocked",
+  "checks": [
+    {
+      "name": "Mini App initial JS excludes website Clerk runtime",
+      "status": "PASS"
+    }
+  ]
+}

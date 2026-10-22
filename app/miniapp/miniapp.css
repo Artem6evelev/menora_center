@@ -432,10 +432,11 @@ body:has(.miniapp) {
 .miniapp-announcements .miniapp-icon { background: #eeede8; color: #606677; }
 .miniapp-form-actions { position: sticky; bottom: calc(12px + var(--tg-safe-bottom) + var(--tg-content-safe-bottom)); z-index: 5; background: #fff; padding-block: 10px; border-radius: 16px; box-shadow: 0 -8px 16px #ffffffc9; }
 .miniapp:has(.miniapp-nav) .miniapp-form-actions { bottom: calc(94px + var(--tg-safe-bottom) + var(--tg-content-safe-bottom)); }
-.miniapp-nav { position: sticky; bottom: calc(8px + var(--tg-safe-bottom) + var(--tg-content-safe-bottom)); z-index: 10; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; margin-block-start: 24px; padding: 6px; border: 1px solid var(--miniapp-border); border-radius: 22px; background: #fffffffa; box-shadow: 0 6px 30px #02002213; }
-.miniapp-nav button { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 5px; min-block-size: 68px; min-inline-size: 0; padding: 8px 2px; border-radius: 16px; font-size: 11px; line-height: 1.3; text-align: center; color: #606677; }
+.miniapp-nav { position: sticky; bottom: calc(8px + var(--tg-safe-bottom) + var(--tg-content-safe-bottom)); z-index: 10; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; margin-block-start: 24px; margin-inline: -16px; padding: 4px 2px; border: 1px solid var(--miniapp-border); border-radius: 22px; background: #fffffffa; box-shadow: 0 6px 30px #02002213; }
+.miniapp-nav button { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 5px; min-block-size: 68px; min-inline-size: 0; padding: 8px 1px; border-radius: 16px; font-size: clamp(9px, 2.5vw, 10px); font-weight: 650; letter-spacing: -0.015em; line-height: 1.3; text-align: center; color: #606677; }
+.miniapp-nav button > span:last-child { white-space: nowrap; }
 .miniapp-nav-icon { display: grid; place-items: center; inline-size: 24px; block-size: 24px; flex: 0 0 24px; }
-.miniapp-nav [aria-current="page"] { background: #fff3d1; color: var(--miniapp-navy); font-weight: 750; }
+.miniapp-nav [aria-current="page"] { background: #fff3d1; color: var(--miniapp-navy); }
 .miniapp button, .miniapp a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 .miniapp :is(.miniapp-primary, .miniapp-secondary, .miniapp-action-card, .miniapp-event-poster, .miniapp-nav button) { transition: transform 140ms ease, background-color 140ms ease, box-shadow 140ms ease; }
 .miniapp :is(.miniapp-primary, .miniapp-secondary, .miniapp-action-card, .miniapp-event-poster, .miniapp-nav button):active:not(:disabled) { transform: scale(.985); }

@@ -1,0 +1,69 @@
+{
+  "environment": "Local Chromium mobile/desktop + actual HTTP/session/SQL; synthetic Telegram HMAC/SDK, blocked external requests",
+  "checks": [
+    {
+      "name": "320 section=kids opens internally after auth; native Back returns Home and consumes hint",
+      "status": "PASS"
+    },
+    {
+      "name": "390 section=kids opens internally after auth; native Back returns Home and consumes hint",
+      "status": "PASS"
+    },
+    {
+      "name": "1280 section=kids opens internally after auth; native Back returns Home and consumes hint",
+      "status": "PASS"
+    },
+    {
+      "name": "male direct Kids opens mother-profile gate and retains WhatsApp",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur-male direct Kids opens mother-profile gate and retains WhatsApp",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur-unknown direct Kids shows existing child-action stage gate; completed resumes family",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur-advanced direct Kids shows existing child-action stage gate; completed resumes family",
+      "status": "PASS"
+    },
+    {
+      "name": "none category section hint stays resources and cannot call Kids API",
+      "status": "PASS"
+    },
+    {
+      "name": "new maternal/female retains Kids through filter, backtracking, reload and profile completion",
+      "status": "PASS"
+    },
+    {
+      "name": "new giyur/female retains Kids through filter, backtracking, reload and profile completion",
+      "status": "PASS"
+    },
+    {
+      "name": "new giyur/male retains Kids through filter, backtracking, reload and profile completion",
+      "status": "PASS"
+    },
+    {
+      "name": "legacy completed profile keeps Kids destination through mandatory new filter",
+      "status": "PASS"
+    },
+    {
+      "name": "new none answer stays resources; changing to eligible category resumes intended Kids",
+      "status": "PASS"
+    },
+    {
+      "name": "event hint remains primary when combined with section=kids",
+      "status": "PASS"
+    },
+    {
+      "name": "explicit Kids button does not inherit a previous signed Telegram event start hint",
+      "status": "PASS"
+    },
+    {
+      "name": "unsupported section cannot select a screen or bypass onboarding",
+      "status": "PASS"
+    }
+  ]
+}

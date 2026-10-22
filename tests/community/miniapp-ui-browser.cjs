@@ -33,7 +33,7 @@ async function fields(page){
   await test(name+' splash uses brand and loading before API response',async()=>{await page.getByRole('status').filter({hasText:'Загружаем ваш кабинет'}).waitFor();await shot(page,name+'-splash');});
   await page.locator('[data-screen=filter]').waitFor();
   await test(name+' new subject filter: three choices, initially no gender or stage, no website navigation/footer',async()=>{
-   assert.equal(await page.locator('[name=affiliation]').count(),3);assert.equal(await page.locator('[name=gender]').count(),0);assert.equal(await page.locator('[name=giyurStage]').count(),0);assert.equal(await page.locator('footer').count(),0);assert.equal(await page.locator('nav').count(),0);await noOverflow(page);await shot(page,name+'-filter');
+   assert.equal(await page.locator('[name=affiliation]').count(),3);assert.equal(await page.locator('[name=gender]').count(),0);assert.equal(await page.locator('[name=giyurStage]').count(),0);assert.equal(await page.locator('footer').count(),0);assert.equal(await page.locator('.miniapp-nav button').count(),5);await noOverflow(page);await shot(page,name+'-filter');
   });
   await test(name+' maternal/giyur reveal gender; none hides it; changing choices retains correct state',async()=>{
    for(const affiliation of ['maternal','giyur']){await page.locator(`[name=affiliation][value=${affiliation}]`).check();assert.equal(await page.locator('[name=gender]').count(),2);assert.equal(await page.locator('[name=giyurStage]').count(),0);}

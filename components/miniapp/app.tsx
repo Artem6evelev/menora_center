@@ -148,8 +148,10 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
   const [actionError, setActionError] = useState(""),
     [busy, setBusy] = useState(false),
     [saved, setSaved] = useState(false);
-  const copy = miniAppDictionaries.ru,
-    screen = launchEvent && !onboardingStarted && data?.summary.nextStep !== "home" && data?.summary.nextStep !== "resources" ? "entry" : view ?? data?.summary.nextStep;
+  const copy = miniAppDictionaries.ru, nextStep = data?.summary.nextStep;
+  // Visible navigation is not admission: incomplete/none profiles keep their gate.
+  const admittedScreen = nextStep !== "home" && view !== "filter" ? nextStep : view ?? nextStep;
+  const screen = launchEvent && !onboardingStarted && nextStep !== "home" && nextStep !== "resources" ? "entry" : admittedScreen;
   const uiCopy = miniAppUiCopy.ru;
   const accept = useCallback(
     (result: { data: ProfileResponse; tag?: string }) => {
@@ -239,7 +241,7 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
           intendedSection.current = !launch && kidsRequested ? "kids" : null;
           setView(result.data.summary.nextStep === "home"
             ? launch ? "events" : intendedSection.current ?? (params.get("view") === "events" ? "events" : null)
-            : null);
+            : intendedSection.current);
           if (hasLaunch && !launch && (params.has("event") || (params.get("campaign") ?? new URLSearchParams(bridge.current?.rawInitData()).get("start_param") ?? "").startsWith("event_")) && result.data.summary.nextStep !== "resources") setActionError("event_unavailable");
           setStatus("ready");
         }
@@ -262,7 +264,14 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
   const navigate = useCallback(
     (next: "profile" | "filter" | "events" | "registrations" | "kids" | null) => {
       if (busy || (dirty && !window.confirm(copy.unsaved))) return;
-      if (data?.summary.nextStep === "home" ||
+      if (next === "kids") {
+        intendedSection.current = "kids";
+        const url = new URL(window.location.href);
+        url.searchParams.set("section", "kids");
+        url.searchParams.delete("event");
+        url.searchParams.delete("campaign");
+        window.history.replaceState(window.history.state, "", url);
+      } else if (next === null || data?.summary.nextStep === "home" ||
         (next !== "filter" && next !== "profile" && next !== null)) {
         intendedSection.current = null;
         const url = new URL(window.location.href);
@@ -540,8 +549,8 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
             </p>
           )}
         </main>
-        {status === "ready" && data?.summary.nextStep === "home" && (
-          <BottomNav language={language} view={view === "kids" ? null : view} navigate={navigate} />
+        {status === "ready" && data && (
+          <BottomNav language={language} view={view === "filter" ? "profile" : view ?? intendedSection.current ?? (nextStep === "filter" || nextStep === "profile" ? "profile" : null)} navigate={navigate} />
         )}
       </div>
     </div>
