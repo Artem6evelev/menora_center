@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { eq, isNotNull } from "drizzle-orm";
-import TelegramClient from "@/components/dashboard/telegram/telegram-client";
+import TelegramAudience from "@/components/dashboard/telegram/audience-client";
 
 export default async function TelegramDashboardPage() {
   await requireDashboardFilter();
@@ -17,19 +17,15 @@ export default async function TelegramDashboardPage() {
     redirect("/dashboard");
   }
 
-  const subscribers = await db
-    .select()
-    .from(users)
-    .where(isNotNull(users.telegramChatId));
-
   const settings = await db.query.botSettings.findFirst();
 
   return (
-    <TelegramClient
-      totalSubscribers={subscribers.length}
-      initialGroupId={settings?.notificationGroupId || ""}
-      initialEventsTopicId={settings?.eventsTopicId || ""}
-      initialServicesTopicId={settings?.servicesTopicId || ""}
+    <TelegramAudience
+      settings={{
+        notificationGroupId: settings?.notificationGroupId || "",
+        eventsTopicId: settings?.eventsTopicId || "",
+        servicesTopicId: settings?.servicesTopicId || "",
+      }}
     />
   );
 }

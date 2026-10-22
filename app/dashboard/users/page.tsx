@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { getUsersPaginated } from "@/actions/user";
+import Link from "next/link";
 import CrmTableClient from "@/components/dashboard/users/crm-table.client";
 
 export default async function CrmPage() {
@@ -21,6 +22,14 @@ export default async function CrmPage() {
   const initialData = await getUsersPaginated(1, 20, "");
 
   return (
-    <CrmTableClient initialData={initialData} currentUserRole={dbUser.role} />
+    <div className="space-y-4">
+      <Link
+        href="/dashboard/telegram"
+        className="inline-block border rounded-xl px-4 py-3"
+      >
+        Telegram-аудитория и рассылки
+      </Link>
+      <CrmTableClient initialData={initialData} currentUserRole={dbUser.role} />
+    </div>
   );
 }

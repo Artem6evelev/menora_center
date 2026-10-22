@@ -10,7 +10,10 @@
     "typecheck": "tsc --noEmit --incremental false",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node scripts/migrate.cjs",
-    "db:test": "node tests/community/migrations.cjs"
+    "db:test": "node tests/community/migrations.cjs",
+    "check-production-env": "node scripts/check-production-env.cjs",
+    "telegram:check": "node scripts/configure-telegram.cjs check",
+    "telegram:configure": "node scripts/configure-telegram.cjs apply"
   },
   "dependencies": {
     "@clerk/localizations": "^4.2.1",
