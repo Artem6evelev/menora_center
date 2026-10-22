@@ -1,5 +1,6 @@
 "use client";
-import { EventCard, EventImage, EventMeta } from "./event-card";
+import { EventCard, EventMedia, EventMeta } from "./event-card";
+import { EventShareButton } from "./event-share";
 import { EmptyState, EventSkeleton } from "./ui";
 import { miniAppUiCopy } from "@/lib/telegram/miniapp-ui-copy";
 import { useCallback, useEffect, useState } from "react";
@@ -215,10 +216,11 @@ export default function MiniAppEvents({
       )}
       {eventId && detail ? (
         <article className="miniapp-event-detail miniapp-enter" data-event-detail={detail.event.id}>
-          <EventImage event={detail.event} priority />
+          <EventMedia event={detail.event} language={language} priority />
           <div className="miniapp-detail-summary space-y-4">
             <h1>{detail.event.title}</h1>
             <EventMeta event={detail.event} language={language} />
+            <EventShareButton key={detail.event.id} event={detail.event} language={language} />
             {!detail.event.isRegistrationClosed && <a className="miniapp-primary w-full" href={receipt ? "#miniapp-receipt" : "#miniapp-participants"}>{receipt ? u.myRegistration : u.join}</a>}
             {receipt && <p className="miniapp-status">{u.already}</p>}
             {detail.event.description && <details className="miniapp-description" open>

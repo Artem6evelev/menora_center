@@ -2,6 +2,7 @@ import "server-only";
 import { and, eq } from "drizzle-orm";
 import { events, telegramCampaigns, telegramContacts } from "@/lib/db/schema";
 import { miniAppProfile, type MiniAppTransaction, type MiniAppUser } from "./miniapp-user";
+import { canonicalTelegramEventShareLink } from "./event-share-server";
 
 /** A navigation hint only. Campaigns take precedence, including disabled mappings.
  * The event_ fallback accepts a public planned event ID, never an identity/permission. */
@@ -28,6 +29,7 @@ export async function miniAppLaunch(tx: MiniAppTransaction, user: MiniAppUser, h
   // Deliberately bounded public preview: no full description, children, payments,
   // registration or contact data. Full detail/checkout keep their existing guards.
   return { event: event ? { id: event.id, title: event.title, imageUrl: event.imageUrl,
+    shareUrl: await canonicalTelegramEventShareLink(tx, event.id),
     date: event.date, time: event.time, location: event.location, isFree: event.isFree,
     price: event.price, isRegistrationClosed: event.isRegistrationClosed || event.status !== "planned",
     lead: event.description?.replace(/<[^>]*>/g, "").slice(0, 280) ?? "" } : null };

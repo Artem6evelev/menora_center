@@ -1,0 +1,17 @@
+{
+  "environment": "Pure TypeScript module, no external dependencies or side effects",
+  "checks": [
+    {
+      "name": "ru share text and copied/manual feedback are localized",
+      "status": "PASS"
+    },
+    {
+      "name": "he share text and copied/manual feedback are localized",
+      "status": "PASS"
+    },
+    {
+      "name": "en share text and copied/manual feedback are localized",
+      "status": "PASS"
+    }
+  ]
+}

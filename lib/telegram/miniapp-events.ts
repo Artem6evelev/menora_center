@@ -20,6 +20,7 @@ import { CommunityError } from "@/lib/community/errors";
 import { telegramLog } from "./safety";
 import { MiniAppAuthError } from "./miniapp-errors";
 import type { MiniAppTransaction, MiniAppUser } from "./miniapp-user";
+import { canonicalTelegramEventShareLink, canonicalTelegramEventShareLinks } from "./event-share-server";
 
 const input = z
   .object({
@@ -28,7 +29,7 @@ const input = z
     childIds: z.array(z.string().max(150)).max(30).default([]),
   })
   .strict();
-export const eventDto = (event: typeof events.$inferSelect) => ({
+export const eventDto = (event: typeof events.$inferSelect, shareUrl: string | null = null) => ({
   id: event.id,
   title: event.title,
   description: event.description,
@@ -42,6 +43,7 @@ export const eventDto = (event: typeof events.$inferSelect) => ({
   isRegistrationClosed:
     event.isRegistrationClosed || event.status !== "planned",
   status: event.status,
+  shareUrl,
 });
 function admitted(user: MiniAppUser) {
   if (!communityAccess(user).canViewEvents)
@@ -60,8 +62,9 @@ export async function listMiniAppEvents(
     .orderBy(desc(events.createdAt), events.id)
     .limit(21)
     .offset((page - 1) * 20);
+  const shareLinks = await canonicalTelegramEventShareLinks(tx, rows.slice(0, 20).map(event => event.id));
   return {
-    events: rows.slice(0, 20).map(eventDto),
+    events: rows.slice(0, 20).map(event => eventDto(event, shareLinks.get(event.id) ?? null)),
     hasMore: rows.length > 20,
     page,
   };
@@ -104,7 +107,7 @@ export async function miniAppEventDetail(
       : null;
 
   return {
-    event: eventDto(event),
+    event: eventDto(event, await canonicalTelegramEventShareLink(tx, event.id)),
     registration,
     children: access.canRegisterChildren
       ? profileChildren(user.id, user.childrenData).map((c) => ({

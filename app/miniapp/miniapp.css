@@ -325,8 +325,16 @@ body:has(.miniapp) {
   background: #ecebea;
   width: 100%;
 }
-.miniapp-event-image img {
+.miniapp-event-image .miniapp-event-backdrop {
   object-fit: cover;
+  filter: blur(16px) brightness(.72);
+  opacity: .55;
+  transform: scale(1.12);
+}
+.miniapp-event-image .miniapp-event-foreground {
+  object-fit: contain;
+  /* Leave a control lane for the 44px share button: never cover poster text. */
+  padding: 10px 62px 10px 10px;
 }
 .miniapp-event-card {
   text-align: start;
@@ -400,7 +408,7 @@ body:has(.miniapp) {
 .miniapp-event-section { min-inline-size: 0; }
 .miniapp-event-grid { display: grid; gap: 16px; }
 .miniapp-event-poster, .miniapp-event-skeleton { display: block; text-align: start; width: 100%; overflow: hidden; border: 1px solid var(--miniapp-border); border-radius: var(--miniapp-radius); background: #fff; color: var(--miniapp-navy); box-shadow: var(--miniapp-shadow); }
-.miniapp-event-poster .miniapp-event-image, .miniapp-event-skeleton .miniapp-event-image, .miniapp-event-detail > .miniapp-event-image { border-radius: 0; }
+.miniapp-event-poster .miniapp-event-image, .miniapp-event-skeleton .miniapp-event-image, .miniapp-event-detail > .miniapp-event-media .miniapp-event-image { border-radius: 0; }
 .miniapp-poster-content { min-block-size: 244px; display: flex; flex-direction: column; gap: 10px; padding: 16px; }
 .miniapp-event-poster h2 { font-size: 20px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-block-size: 2.6em; }
 .miniapp-event-meta { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #475067; }
@@ -449,3 +457,21 @@ body:has(.miniapp) {
 @media (hover: hover) { .miniapp-event-poster:hover, .miniapp-action-card:hover { box-shadow: 0 8px 24px #02002212; border-color: #cfb675; } }
 @media (min-width: 600px) { .miniapp-event-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .miniapp-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (prefers-reduced-motion: reduce) { .miniapp *, .miniapp *::before, .miniapp *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+
+/* A stretched sibling button opens the card; sharing never nests a button. */
+.miniapp-event-poster { position: relative; isolation: isolate; }
+.miniapp-event-media { position: relative; }
+.miniapp-event-open { display: block; inline-size: 100%; text-align: start; }
+.miniapp-event-open::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+.miniapp-event-open:focus-visible { outline: none; }
+.miniapp-event-poster:has(.miniapp-event-open:focus-visible) { outline: 3px solid #c18a00; outline-offset: 3px; }
+.miniapp-share-overlay { position: absolute; top: 10px; right: 10px; z-index: 2; }
+.miniapp-share-button { display: inline-flex; justify-content: center; align-items: center; gap: 8px; min-inline-size: 44px; min-block-size: 44px; padding: 10px; border: 1px solid #d9d8d2; border-radius: 14px; background: #fffffff2; color: #020022; box-shadow: 0 2px 12px #02002215; font-weight: 650; font-size: 14px; }
+.miniapp-share-button:active { transform: scale(.96); }
+.miniapp-share-toast { position: fixed; z-index: 100; bottom: max(112px, calc(env(safe-area-inset-bottom, 0px) + 96px)); left: 50%; transform: translateX(-50%); inline-size: max-content; max-inline-size: calc(100vw - 32px); border-radius: 14px; padding: 12px 16px; background: #020022; color: #fff; box-shadow: 0 4px 24px #02002225; font-size: 14px; line-height: 1.5; text-align: center; pointer-events: none; }
+.miniapp-share-dialog { inline-size: min(440px, calc(100vw - 32px)); border: 1px solid #e6e5df; border-radius: 22px; padding: 24px; color: #020022; background: #fff; box-shadow: 0 12px 50px #02002230; }
+.miniapp-share-dialog::backdrop { background: #02002280; }
+.miniapp-share-dialog h2 { font-size: 20px; margin-block-end: 12px; }
+.miniapp-share-dialog p { font-size: 14px; color: #606677; margin-block-end: 16px; }
+.miniapp-share-dialog input { display: block; inline-size: 100%; padding: 12px; border: 1px solid #d9d8d2; border-radius: 12px; font-size: 16px; }
+.miniapp-share-dialog-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-block-start: 20px; }

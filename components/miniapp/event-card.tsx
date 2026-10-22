@@ -6,8 +6,10 @@ import type { eventDto } from "@/lib/telegram/miniapp-events";
 import type { MiniAppLanguage } from "@/lib/telegram/miniapp-i18n";
 import { eventCopy } from "@/lib/telegram/event-copy";
 import { miniAppUiCopy } from "@/lib/telegram/miniapp-ui-copy";
+import { EventShareButton } from "./event-share";
+import type { EventShareTarget } from "@/lib/telegram/event-share";
 export type MiniAppEvent = ReturnType<typeof eventDto>;
-export type EventPreview = Pick<MiniAppEvent, "id" | "title" | "imageUrl" | "date" | "time" | "location" | "isFree" | "price" | "isRegistrationClosed">;
+export type EventPreview = Pick<MiniAppEvent, "id" | "title" | "imageUrl" | "date" | "time" | "location" | "isFree" | "price" | "isRegistrationClosed" | "shareUrl">;
 
 export function EventImage({ event, priority = false }: { event: Pick<EventPreview, "imageUrl">; priority?: boolean }) {
   const [failedSrc, setFailedSrc] = useState<string>();
@@ -17,8 +19,14 @@ export function EventImage({ event, priority = false }: { event: Pick<EventPrevi
   const valid = src && (src.startsWith("/") && !src.startsWith("//") || /^https:\/\//.test(src));
   return <div className="miniapp-event-image" data-image-fallback={!valid || failedSrc === src ? "true" : undefined}>
     {(!valid || failedSrc === src) && <div className="miniapp-image-fallback" aria-hidden="true"><CalendarDays size={32} /><span>Menorah Center</span></div>}
-    {valid && failedSrc !== src && <Image src={src} alt="" fill sizes="(max-width: 600px) 100vw, 640px" unoptimized priority={priority} onError={() => setFailedSrc(src)} />}
+    {valid && failedSrc !== src && <>
+      <Image className="miniapp-event-backdrop" src={src} alt="" aria-hidden="true" fill sizes="(max-width: 600px) 100vw, 640px" unoptimized priority={priority} onError={() => setFailedSrc(src)} />
+      <Image className="miniapp-event-foreground" src={src} alt="" fill sizes="(max-width: 600px) 100vw, 640px" unoptimized priority={priority} onError={() => setFailedSrc(src)} />
+    </>}
   </div>;
+}
+export function EventMedia({ event, language, priority }: { event: Pick<EventPreview, "imageUrl"> & EventShareTarget; language: MiniAppLanguage; priority?: boolean }) {
+  return <div className="miniapp-event-media"><EventImage event={event} priority={priority} /><EventShareButton key={event.id} event={event} language={language} overlay /></div>;
 }
 export function EventMeta({ event, language }: { event: EventPreview; language: MiniAppLanguage }) {
   return <div className="miniapp-event-meta">
@@ -28,9 +36,11 @@ export function EventMeta({ event, language }: { event: EventPreview; language: 
   </div>;
 }
 export function EventCard({ event, language, onSelect, priority }: { event: MiniAppEvent; language: MiniAppLanguage; onSelect: (id: string) => void; priority?: boolean }) {
-  return <button className="miniapp-event-poster" type="button" onClick={() => onSelect(event.id)} data-event-card={event.id}>
-    <EventImage event={event} priority={priority} />
-    <div className="miniapp-poster-content"><h2>{event.title}</h2><EventMeta event={event} language={language} />
-      <span className="miniapp-card-cta">{miniAppUiCopy[language].openEvent}<ArrowRight size={17} className="miniapp-arrow" aria-hidden="true" /></span></div>
-  </button>;
+  return <article className="miniapp-event-poster" data-event-card={event.id}>
+    <EventMedia event={event} language={language} priority={priority} />
+    <button className="miniapp-event-open" type="button" onClick={() => onSelect(event.id)}>
+      <div className="miniapp-poster-content"><h2>{event.title}</h2><EventMeta event={event} language={language} />
+        <span className="miniapp-card-cta">{miniAppUiCopy[language].openEvent}<ArrowRight size={17} className="miniapp-arrow" aria-hidden="true" /></span></div>
+    </button>
+  </article>;
 }

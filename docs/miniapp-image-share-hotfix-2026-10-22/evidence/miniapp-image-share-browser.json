@@ -1,0 +1,89 @@
+{
+  "environment": "Local Chromium + real HTTP/HMAC/session/SQL; synthetic media and platform Share/Clipboard adapters only",
+  "checks": [
+    {
+      "name": "ru/home: full poster, right-side Share, canonical link and native flow",
+      "status": "PASS"
+    },
+    {
+      "name": "ru/list: full poster, right-side Share, canonical link and native flow",
+      "status": "PASS"
+    },
+    {
+      "name": "ru/detail: full poster, right-side Share, canonical link and native flow",
+      "status": "PASS"
+    },
+    {
+      "name": "ru/ad: full poster, right-side Share, canonical link and native flow",
+      "status": "PASS"
+    },
+    {
+      "name": "he/home: full poster, right-side Share, canonical link and cancel flow",
+      "status": "PASS"
+    },
+    {
+      "name": "he/list: full poster, right-side Share, canonical link and cancel flow",
+      "status": "PASS"
+    },
+    {
+      "name": "he/detail: full poster, right-side Share, canonical link and cancel flow",
+      "status": "PASS"
+    },
+    {
+      "name": "he/ad: full poster, right-side Share, canonical link and cancel flow",
+      "status": "PASS"
+    },
+    {
+      "name": "en/home: full poster, right-side Share, canonical link and missing flow",
+      "status": "PASS"
+    },
+    {
+      "name": "en/list: full poster, right-side Share, canonical link and missing flow",
+      "status": "PASS"
+    },
+    {
+      "name": "en/detail: full poster, right-side Share, canonical link and missing flow",
+      "status": "PASS"
+    },
+    {
+      "name": "en/ad: full poster, right-side Share, canonical link and missing flow",
+      "status": "PASS"
+    },
+    {
+      "name": "unsupported native sharing falls back to successful Clipboard and RU toast",
+      "status": "PASS"
+    },
+    {
+      "name": "reject native sharing falls back to successful Clipboard and RU toast",
+      "status": "PASS"
+    },
+    {
+      "name": "cancel native sharing falls back to successful Clipboard and RU toast",
+      "status": "PASS"
+    },
+    {
+      "name": "clipboardMissing gives selectable URL without false success or alert",
+      "status": "PASS"
+    },
+    {
+      "name": "clipboardDenied gives selectable URL without false success or alert",
+      "status": "PASS"
+    },
+    {
+      "name": "pending native share rejects double activation and restores the button",
+      "status": "PASS"
+    },
+    {
+      "name": "missing media preserves frame/fallback and usable Share",
+      "status": "PASS"
+    },
+    {
+      "name": "broken media preserves frame/fallback and usable Share",
+      "status": "PASS"
+    },
+    {
+      "name": "long ID Share reuses its server alias through bot-style entry, mandatory onboarding, registration and reload",
+      "status": "PASS"
+    }
+  ]
+}
