@@ -1,0 +1,40 @@
+{
+  "node": "v22.20.0",
+  "versions": {
+    "next": {
+      "declared": "^16.1.7",
+      "locked": "16.1.7",
+      "installed": "16.1.7"
+    },
+    "react": {
+      "declared": "^19.0.0",
+      "locked": "19.1.0",
+      "installed": "19.1.0"
+    },
+    "@clerk/nextjs": {
+      "declared": "^7.0.4",
+      "locked": "7.0.4",
+      "installed": "7.0.4"
+    },
+    "drizzle-orm": {
+      "declared": "^0.45.1",
+      "locked": "0.45.1",
+      "installed": "0.45.1"
+    },
+    "zod": {
+      "declared": "^3.23.8",
+      "locked": "3.25.76",
+      "installed": "3.25.76"
+    },
+    "typescript": {
+      "declared": "^5",
+      "locked": "5.8.3",
+      "installed": "5.8.3"
+    },
+    "lucide-react": {
+      "declared": "^0.381.0",
+      "locked": "0.381.0",
+      "installed": "0.381.0"
+    }
+  }
+}

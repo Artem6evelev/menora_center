@@ -50,7 +50,7 @@ async function filter(page) {
     await test(`${language}/${mode}: first giyur male saves advance filter -> profile -> home and survive reload`, async () => {
       const { context, page } = await setup(785100 + index, language, mode);
       try {
-        const bootstraps = []; page.on('request', r => { if (r.url().endsWith('/bootstrap')) bootstraps.push(r.url()); });
+        const bootstraps = []; page.on('request', r => { if (r.url().endsWith('/start')) bootstraps.push(r.url()); });
         await filter(page); assert.equal(await page.locator('.miniapp').getAttribute('lang'), 'ru');
         assert.equal(await page.locator('.miniapp').getAttribute('dir'), 'ltr');
         assert.equal(await page.locator('[name=giyurStage]').count(), 0);
@@ -61,8 +61,9 @@ async function filter(page) {
         assert.equal(saved.profile.affiliation, 'giyur'); assert.equal(saved.profile.gender, 'male');
         assert.equal(saved.profile.cityId, '8300'); assert.equal(saved.profile.agreedToPrivacy, true);
         assert.equal(saved.permissions.canEditChildren, false); assert.equal(saved.profile.firstName, 'Synthetic Mini App');
+        assert.equal(bootstraps.length, 1, 'StrictMode must issue one unified startup before reload');
         await page.reload(); await page.locator('[data-screen=home]').waitFor();
-        assert.equal(bootstraps.length, 1, 'StrictMode/resume must not issue a second bootstrap');
+        assert.equal(bootstraps.length, 2, 'reload performs one additional startup');
         assert.equal(await page.locator('.miniapp [role=alert]').count(), 0);
       } finally { await context.close(); }
     });

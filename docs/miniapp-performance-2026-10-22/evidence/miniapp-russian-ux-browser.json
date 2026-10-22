@@ -1,0 +1,45 @@
+{
+  "environment": "Local Chromium Android-sized viewport + actual HTTP/API/isolated SQL; synthetic SDK/identity, mocked external navigation and clipboard; no WhatsApp messages",
+  "checks": [
+    {
+      "name": "en Telegram/device and legacy browser locale cannot change new onboarding from Russian",
+      "status": "PASS"
+    },
+    {
+      "name": "en stored Telegram metadata keeps returning profile/events/share toast Russian",
+      "status": "PASS"
+    },
+    {
+      "name": "he Telegram/device and legacy browser locale cannot change new onboarding from Russian",
+      "status": "PASS"
+    },
+    {
+      "name": "he stored Telegram metadata keeps returning profile/events/share toast Russian",
+      "status": "PASS"
+    },
+    {
+      "name": "sdk contact opens canonical WhatsApp safely and offers copyable public phone",
+      "status": "PASS"
+    },
+    {
+      "name": "browser contact opens canonical WhatsApp safely and offers copyable public phone",
+      "status": "PASS"
+    },
+    {
+      "name": "throws contact opens canonical WhatsApp safely and offers copyable public phone",
+      "status": "PASS"
+    },
+    {
+      "name": "denied clipboard keeps the phone selectable without claiming successful copying",
+      "status": "PASS"
+    },
+    {
+      "name": "resources recovery contact also uses WhatsApp and Russian copy",
+      "status": "PASS"
+    },
+    {
+      "name": "outside recovery contact also uses WhatsApp and Russian copy",
+      "status": "PASS"
+    }
+  ]
+}

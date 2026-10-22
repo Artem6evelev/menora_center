@@ -1,0 +1,530 @@
+{
+  "environment": "Warm local development Chromium/isolated PGlite, synthetic signed Telegram SDK; loopback counts, not production latency",
+  "results": [
+    {
+      "name": "returning-home",
+      "readyMs": 561,
+      "readyRequests": 6,
+      "startupRequests": [
+        {
+          "path": "session",
+          "method": "POST",
+          "startedMs": 490
+        },
+        {
+          "path": "profile",
+          "method": "GET",
+          "startedMs": 505
+        },
+        {
+          "path": "events",
+          "method": "GET",
+          "startedMs": 532
+        },
+        {
+          "path": "subscription",
+          "method": "GET",
+          "startedMs": 533
+        },
+        {
+          "path": "events",
+          "method": "GET",
+          "startedMs": 533
+        },
+        {
+          "path": "subscription",
+          "method": "GET",
+          "startedMs": 533
+        }
+      ],
+      "startupDb": {
+        "testDatabase": "isolated-pglite",
+        "operations": 27,
+        "kinds": {
+          "SELECT": 23,
+          "UPDATE": 4
+        },
+        "locked": 14
+      },
+      "transitions": [
+        {
+          "action": "Мероприятия",
+          "requests": [
+            {
+              "path": "events",
+              "method": "GET",
+              "startedMs": 1129
+            },
+            {
+              "path": "events",
+              "method": "GET",
+              "startedMs": 1130
+            }
+          ],
+          "db": {
+            "testDatabase": "isolated-pglite",
+            "operations": 18,
+            "kinds": {
+              "SELECT": 16,
+              "UPDATE": 2
+            },
+            "locked": 8
+          }
+        },
+        {
+          "action": "detail",
+          "requests": [
+            {
+              "path": "events",
+              "method": "GET",
+              "startedMs": 1426
+            }
+          ],
+          "db": {
+            "testDatabase": "isolated-pglite",
+            "operations": 9,
+            "kinds": {
+              "SELECT": 8,
+              "UPDATE": 1
+            },
+            "locked": 4
+          }
+        },
+        {
+          "action": "back",
+          "requests": [
+            {
+              "path": "events",
+              "method": "GET",
+              "startedMs": 1487
+            }
+          ],
+          "db": {
+            "testDatabase": "isolated-pglite",
+            "operations": 0,
+            "kinds": {},
+            "locked": 0
+          }
+        },
+        {
+          "action": "Мои записи",
+          "requests": [
+            {
+              "path": "registrations",
+              "method": "GET",
+              "startedMs": 1556
+            },
+            {
+              "path": "registrations",
+              "method": "GET",
+              "startedMs": 1556
+            }
+          ],
+          "db": {
+            "testDatabase": "isolated-pglite",
+            "operations": 12,
+            "kinds": {
+              "SELECT": 10,
+              "UPDATE": 2
+            },
+            "locked": 6
+          }
+        },
+        {
+          "action": "Menorah Kids",
+          "requests": [
+            {
+              "path": "kids",
+              "method": "GET",
+              "startedMs": 1626
+            },
+            {
+              "path": "kids",
+              "method": "GET",
+              "startedMs": 1627
+            },
+            {
+              "path": "profile",
+              "method": "GET",
+              "startedMs": 1650
+            }
+          ],
+          "db": {
+            "testDatabase": "isolated-pglite",
+            "operations": 20,
+            "kinds": {
+              "SELECT": 17,
+              "UPDATE": 3
+            },
+            "locked": 9
+          }
+        },
+        {
+          "action": "Главная",
+          "requests": [
+            {
+              "path": "events",
+              "method": "GET",
+              "startedMs": 1759
+            },
+            {
+              "path": "subscription",
+              "method": "GET",
+              "startedMs": 1760
+            },
+            {
+              "path": "events",
+              "method": "GET",
+              "startedMs": 1760
+            },
+            {
+              "path": "subscription",
+              "method": "GET",
+              "startedMs": 1760
+            }
+          ],
+          "db": {
+            "testDatabase": "isolated-pglite",
+            "operations": 15,
+            "kinds": {
+              "SELECT": 13,
+              "UPDATE": 2
+            },
+            "locked": 8
+          }
+        },
+        {
+          "action": "Мероприятия",
+          "requests": [
+            {
+              "path": "events",
+              "method": "GET",
+              "startedMs": 1824
+            },
+            {
+              "path": "events",
+              "method": "GET",
+              "startedMs": 1824
+            }
+          ],
+          "db": {
+            "testDatabase": "isolated-pglite",
+            "operations": 9,
+            "kinds": {
+              "SELECT": 8,
+              "UPDATE": 1
+            },
+            "locked": 4
+          }
+        }
+      ],
+      "entries": {
+        "ready": 527.3000000119209,
+        "network": [
+          {
+            "path": "/api/telegram/miniapp/session",
+            "startTime": 488.80000001192093,
+            "responseEnd": 503.1000000089407
+          },
+          {
+            "path": "/api/telegram/miniapp/profile",
+            "startTime": 503.70000000298023,
+            "responseEnd": 518.3000000119209
+          },
+          {
+            "path": "/api/telegram/miniapp/events",
+            "startTime": 528.4000000059605,
+            "responseEnd": 530.7000000029802
+          },
+          {
+            "path": "/api/telegram/miniapp/subscription",
+            "startTime": 529.3000000119209,
+            "responseEnd": 530.7000000029802
+          },
+          {
+            "path": "/api/telegram/miniapp/events",
+            "startTime": 530.1000000089407,
+            "responseEnd": 549.4000000059605
+          },
+          {
+            "path": "/api/telegram/miniapp/subscription",
+            "startTime": 530.3000000119209,
+            "responseEnd": 554.3000000119209
+          },
+          {
+            "path": "/api/telegram/miniapp/events",
+            "startTime": 1125.2000000029802,
+            "responseEnd": 1160.1000000089407
+          },
+          {
+            "path": "/api/telegram/miniapp/events",
+            "startTime": 1125.800000011921,
+            "responseEnd": 1152.7000000029802
+          },
+          {
+            "path": "/api/telegram/miniapp/events",
+            "startTime": 1424,
+            "responseEnd": 1446.6000000089407
+          },
+          {
+            "path": "/api/telegram/miniapp/events",
+            "startTime": 1485,
+            "responseEnd": 1502
+          },
+          {
+            "path": "/api/telegram/miniapp/registrations",
+            "startTime": 1553.300000011921,
+            "responseEnd": 1564.6000000089407
+          },
+          {
+            "path": "/api/telegram/miniapp/registrations",
+            "startTime": 1553.7000000029802,
+            "responseEnd": 1582.800000011921
+          },
+          {
+            "path": "/api/telegram/miniapp/kids",
+            "startTime": 1622.9000000059605,
+            "responseEnd": 1631.6000000089407
+          },
+          {
+            "path": "/api/telegram/miniapp/kids",
+            "startTime": 1623.2000000029802,
+            "responseEnd": 1647.1000000089407
+          },
+          {
+            "path": "/api/telegram/miniapp/profile",
+            "startTime": 1647.9000000059605,
+            "responseEnd": 1661.9000000059605
+          },
+          {
+            "path": "/api/telegram/miniapp/events",
+            "startTime": 1755.7000000029802,
+            "responseEnd": 1765.6000000089407
+          },
+          {
+            "path": "/api/telegram/miniapp/subscription",
+            "startTime": 1756,
+            "responseEnd": 1765.6000000089407
+          },
+          {
+            "path": "/api/telegram/miniapp/events",
+            "startTime": 1756.4000000059605,
+            "responseEnd": 1777.4000000059605
+          },
+          {
+            "path": "/api/telegram/miniapp/subscription",
+            "startTime": 1756.6000000089407,
+            "responseEnd": 1781.1000000089407
+          },
+          {
+            "path": "/api/telegram/miniapp/events",
+            "startTime": 1821.2000000029802,
+            "responseEnd": 1831.300000011921
+          },
+          {
+            "path": "/api/telegram/miniapp/events",
+            "startTime": 1821.5,
+            "responseEnd": 1841.4000000059605
+          }
+        ]
+      }
+    },
+    {
+      "name": "new-user",
+      "readyMs": 525,
+      "readyRequests": 3,
+      "startupRequests": [
+        {
+          "path": "session",
+          "method": "POST",
+          "startedMs": 462
+        },
+        {
+          "path": "bootstrap",
+          "method": "POST",
+          "startedMs": 472
+        },
+        {
+          "path": "profile",
+          "method": "GET",
+          "startedMs": 488
+        }
+      ],
+      "startupDb": {
+        "testDatabase": "isolated-pglite",
+        "operations": 15,
+        "kinds": {
+          "SELECT": 10,
+          "INSERT": 4,
+          "UPDATE": 1
+        },
+        "locked": 6
+      },
+      "transitions": [],
+      "entries": {
+        "ready": 505.09999999403954,
+        "network": [
+          {
+            "path": "/api/telegram/miniapp/session",
+            "startTime": 459.8999999910593,
+            "responseEnd": 469.79999999701977
+          },
+          {
+            "path": "/api/telegram/miniapp/bootstrap",
+            "startTime": 470.79999999701977,
+            "responseEnd": 485.59999999403954
+          },
+          {
+            "path": "/api/telegram/miniapp/profile",
+            "startTime": 486.09999999403954,
+            "responseEnd": 498.79999999701977
+          }
+        ]
+      }
+    },
+    {
+      "name": "event-ad",
+      "readyMs": 553,
+      "readyRequests": 5,
+      "startupRequests": [
+        {
+          "path": "session",
+          "method": "POST",
+          "startedMs": 487
+        },
+        {
+          "path": "profile",
+          "method": "GET",
+          "startedMs": 503
+        },
+        {
+          "path": "launch",
+          "method": "GET",
+          "startedMs": 518
+        },
+        {
+          "path": "events",
+          "method": "GET",
+          "startedMs": 542
+        },
+        {
+          "path": "events",
+          "method": "GET",
+          "startedMs": 543
+        }
+      ],
+      "startupDb": {
+        "testDatabase": "isolated-pglite",
+        "operations": 29,
+        "kinds": {
+          "SELECT": 25,
+          "UPDATE": 4
+        },
+        "locked": 14
+      },
+      "transitions": [],
+      "entries": {
+        "ready": 539,
+        "network": [
+          {
+            "path": "/api/telegram/miniapp/session",
+            "startTime": 485.40000000596046,
+            "responseEnd": 499.70000000298023
+          },
+          {
+            "path": "/api/telegram/miniapp/profile",
+            "startTime": 501.20000000298023,
+            "responseEnd": 515.7000000029802
+          },
+          {
+            "path": "/api/telegram/miniapp/launch",
+            "startTime": 516.4000000059605,
+            "responseEnd": 533.1000000089407
+          },
+          {
+            "path": "/api/telegram/miniapp/events",
+            "startTime": 540.2000000029802,
+            "responseEnd": 541
+          },
+          {
+            "path": "/api/telegram/miniapp/events",
+            "startTime": 540.7000000029802,
+            "responseEnd": 557.3000000119209
+          }
+        ]
+      }
+    },
+    {
+      "name": "kids",
+      "readyMs": 532,
+      "readyRequests": 5,
+      "startupRequests": [
+        {
+          "path": "session",
+          "method": "POST",
+          "startedMs": 471
+        },
+        {
+          "path": "profile",
+          "method": "GET",
+          "startedMs": 488
+        },
+        {
+          "path": "kids",
+          "method": "GET",
+          "startedMs": 510
+        },
+        {
+          "path": "kids",
+          "method": "GET",
+          "startedMs": 511
+        },
+        {
+          "path": "profile",
+          "method": "GET",
+          "startedMs": 524
+        }
+      ],
+      "startupDb": {
+        "testDatabase": "isolated-pglite",
+        "operations": 25,
+        "kinds": {
+          "SELECT": 21,
+          "UPDATE": 4
+        },
+        "locked": 12
+      },
+      "transitions": [],
+      "entries": {
+        "ready": 506.09999999403954,
+        "network": [
+          {
+            "path": "/api/telegram/miniapp/session",
+            "startTime": 469.19999998807907,
+            "responseEnd": 485.5
+          },
+          {
+            "path": "/api/telegram/miniapp/profile",
+            "startTime": 486.09999999403954,
+            "responseEnd": 497.69999998807907
+          },
+          {
+            "path": "/api/telegram/miniapp/kids",
+            "startTime": 507.29999999701977,
+            "responseEnd": 508.29999999701977
+          },
+          {
+            "path": "/api/telegram/miniapp/kids",
+            "startTime": 508,
+            "responseEnd": 521.5999999940395
+          },
+          {
+            "path": "/api/telegram/miniapp/profile",
+            "startTime": 522.1999999880791,
+            "responseEnd": 536.1999999880791
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -9,7 +9,7 @@ export async function miniAppSubscription(
   user: MiniAppUser,
   raw?: unknown,
 ) {
-  const [contact] = await tx
+  const query = tx
     .select()
     .from(telegramContacts)
     .where(
@@ -17,8 +17,8 @@ export async function miniAppSubscription(
         eq(telegramContacts.userId, user.id),
         eq(telegramContacts.isPrimary, true),
       ),
-    )
-    .for("update");
+    );
+  const [contact] = await (raw === undefined ? query : query.for("update"));
   if (!contact) throw new MiniAppAuthError(409, "account_unavailable");
   if (raw !== undefined) {
     const input = z.object({ subscribed: z.boolean() }).strict().safeParse(raw);

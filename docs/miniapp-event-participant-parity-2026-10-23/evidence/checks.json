@@ -1,0 +1,270 @@
+{
+  "groups": 36,
+  "checks": 923,
+  "results": [
+    {
+      "suite": "regression",
+      "exit": 0,
+      "checks": 36,
+      "command": "node tests/community/regression.cjs"
+    },
+    {
+      "suite": "render",
+      "exit": 0,
+      "checks": 21,
+      "command": "node tests/community/render.cjs"
+    },
+    {
+      "suite": "migrations",
+      "exit": 0,
+      "checks": 8,
+      "command": "node tests/community/migrations.cjs"
+    },
+    {
+      "suite": "production",
+      "exit": 0,
+      "checks": 28,
+      "command": "node tests/community/production.cjs"
+    },
+    {
+      "suite": "sso-callback",
+      "exit": 0,
+      "checks": 10,
+      "command": "node tests/community/sso-callback.cjs"
+    },
+    {
+      "suite": "identity-schema",
+      "exit": 0,
+      "checks": 23,
+      "command": "node tests/community/identity-schema.cjs"
+    },
+    {
+      "suite": "miniapp-auth",
+      "exit": 0,
+      "checks": 87,
+      "command": "node tests/community/miniapp-auth.cjs"
+    },
+    {
+      "suite": "miniapp-ui-server",
+      "exit": 0,
+      "checks": 57,
+      "command": "node tests/community/miniapp-ui-server.cjs"
+    },
+    {
+      "suite": "miniapp-ui-bridge",
+      "exit": 0,
+      "checks": 8,
+      "command": "node tests/community/miniapp-ui-bridge.cjs"
+    },
+    {
+      "suite": "miniapp-cache",
+      "exit": 0,
+      "checks": 6,
+      "command": "node tests/community/miniapp-cache.cjs"
+    },
+    {
+      "suite": "miniapp-query-plans",
+      "exit": 0,
+      "checks": 2,
+      "command": "node tests/community/miniapp-query-plans.cjs"
+    },
+    {
+      "suite": "event-share",
+      "exit": 0,
+      "checks": 3,
+      "command": "node tests/community/event-share.cjs"
+    },
+    {
+      "suite": "telegram-migrations",
+      "exit": 0,
+      "checks": 10,
+      "command": "node tests/community/telegram-migrations.cjs"
+    },
+    {
+      "suite": "telegram-tools",
+      "exit": 0,
+      "checks": 5,
+      "command": "node tests/community/telegram-tools.cjs"
+    },
+    {
+      "suite": "spec-update",
+      "exit": 0,
+      "checks": 17,
+      "command": "node tests/community/spec-update.cjs"
+    },
+    {
+      "suite": "telegram-release",
+      "exit": 0,
+      "log": "server",
+      "checks": 153,
+      "command": "node tests/community/telegram-release.cjs"
+    },
+    {
+      "suite": "telegram-native",
+      "exit": 0,
+      "log": "native",
+      "checks": 154,
+      "command": "node tests/community/telegram-native.cjs"
+    },
+    {
+      "suite": "adoption-native",
+      "exit": 0,
+      "checks": 28,
+      "command": "node tests/community/adoption-native.cjs"
+    },
+    {
+      "suite": "telegram-release-browser",
+      "exit": 0,
+      "checks": 32,
+      "command": "node tests/community/telegram-release-browser.cjs",
+      "actualExecution": "node /tmp/menora-event-parity-browser-runner-20261023.cjs telegram-release-browser",
+      "runtimeAdjustment": "Only loopback ports and temporary fixture/build paths; source assertions unchanged"
+    },
+    {
+      "suite": "miniapp-payment-ux-browser",
+      "exit": 0,
+      "checks": 15,
+      "command": "node tests/community/miniapp-payment-ux-browser.cjs",
+      "actualExecution": "node /tmp/menora-event-parity-browser-runner-20261023.cjs miniapp-payment-ux-browser",
+      "runtimeAdjustment": "Only loopback ports and temporary fixture/build paths; source assertions unchanged"
+    },
+    {
+      "suite": "miniapp-performance-browser",
+      "exit": 0,
+      "checks": 14,
+      "command": "node tests/community/miniapp-performance-browser.cjs",
+      "actualExecution": "node /tmp/menora-event-parity-browser-runner-20261023.cjs miniapp-performance-browser",
+      "runtimeAdjustment": "Only loopback ports and temporary fixture/build paths; source assertions unchanged"
+    },
+    {
+      "suite": "miniapp-ui-browser",
+      "exit": 0,
+      "checks": 39,
+      "command": "node tests/community/miniapp-ui-browser.cjs",
+      "actualExecution": "node /tmp/menora-event-parity-browser-runner-20261023.cjs miniapp-ui-browser",
+      "runtimeAdjustment": "Only loopback ports and temporary fixture/build paths; source assertions unchanged"
+    },
+    {
+      "suite": "miniapp-polish-browser",
+      "exit": 0,
+      "checks": 14,
+      "command": "node tests/community/miniapp-polish-browser.cjs",
+      "actualExecution": "node /tmp/menora-event-parity-browser-runner-20261023.cjs miniapp-polish-browser",
+      "runtimeAdjustment": "Only loopback ports and temporary fixture/build paths; source assertions unchanged"
+    },
+    {
+      "suite": "miniapp-image-share-browser",
+      "exit": 0,
+      "checks": 21,
+      "command": "node tests/community/miniapp-image-share-browser.cjs",
+      "actualExecution": "node /tmp/menora-event-parity-browser-runner-20261023.cjs miniapp-image-share-browser",
+      "runtimeAdjustment": "Only loopback ports and temporary fixture/build paths; source assertions unchanged"
+    },
+    {
+      "suite": "miniapp-russian-ux-browser",
+      "exit": 0,
+      "checks": 10,
+      "command": "node tests/community/miniapp-russian-ux-browser.cjs",
+      "actualExecution": "node /tmp/menora-event-parity-browser-runner-20261023.cjs miniapp-russian-ux-browser",
+      "runtimeAdjustment": "Only loopback ports and temporary fixture/build paths; source assertions unchanged"
+    },
+    {
+      "suite": "miniapp-onboarding-browser",
+      "exit": 0,
+      "checks": 4,
+      "command": "node tests/community/miniapp-onboarding-browser.cjs",
+      "actualExecution": "node /tmp/menora-event-parity-browser-runner-20261023.cjs miniapp-onboarding-browser",
+      "runtimeAdjustment": "Only loopback ports and temporary fixture/build paths; source assertions unchanged"
+    },
+    {
+      "suite": "miniapp-kids-browser",
+      "exit": 0,
+      "checks": 21,
+      "command": "node tests/community/miniapp-kids-browser.cjs",
+      "actualExecution": "node /tmp/menora-event-parity-browser-runner-20261023.cjs miniapp-kids-browser",
+      "runtimeAdjustment": "Only loopback ports and temporary fixture/build paths; source assertions unchanged"
+    },
+    {
+      "suite": "miniapp-kids-entry-browser",
+      "exit": 0,
+      "checks": 16,
+      "command": "node tests/community/miniapp-kids-entry-browser.cjs",
+      "actualExecution": "node /tmp/menora-event-parity-browser-runner-20261023.cjs miniapp-kids-entry-browser",
+      "runtimeAdjustment": "Only loopback ports and temporary fixture/build paths; source assertions unchanged"
+    },
+    {
+      "suite": "miniapp-bottom-nav-browser",
+      "exit": 0,
+      "checks": 15,
+      "command": "node tests/community/miniapp-bottom-nav-browser.cjs",
+      "actualExecution": "node /tmp/menora-event-parity-browser-runner-20261023.cjs miniapp-bottom-nav-browser",
+      "runtimeAdjustment": "Only loopback ports and temporary fixture/build paths; source assertions unchanged"
+    },
+    {
+      "suite": "miniapp-images-browser",
+      "exit": 0,
+      "checks": 4,
+      "command": "node tests/community/miniapp-images-browser.cjs",
+      "actualExecution": "node /tmp/menora-event-parity-browser-runner-20261023.cjs miniapp-images-browser",
+      "runtimeAdjustment": "Only loopback ports and temporary fixture/build paths; source assertions unchanged"
+    },
+    {
+      "suite": "callback-browser",
+      "exit": 0,
+      "checks": 10,
+      "command": "node tests/community/callback-browser.cjs",
+      "actualExecution": "node /tmp/menora-event-parity-browser-runner-20261023.cjs callback-browser",
+      "runtimeAdjustment": "Only loopback ports and temporary fixture/build paths; source assertions unchanged"
+    },
+    {
+      "suite": "spec-browser",
+      "exit": 0,
+      "checks": 32,
+      "command": "node tests/community/spec-browser.cjs",
+      "actualExecution": "node /tmp/menora-event-parity-browser-runner-20261023.cjs spec-browser",
+      "runtimeAdjustment": "Only loopback ports and temporary fixture/build paths; source assertions unchanged"
+    },
+    {
+      "suite": "miniapp-participant-parity-browser",
+      "exit": 0,
+      "log": "participants-browser",
+      "checks": 11,
+      "command": "node tests/community/miniapp-participant-parity-browser.cjs"
+    },
+    {
+      "suite": "miniapp-ui-production",
+      "exit": 0,
+      "syntheticRuntimeOnly": true,
+      "checks": 2,
+      "command": "node tests/community/miniapp-ui-production.cjs",
+      "actualExecution": "node /tmp/menora-event-parity-browser-runner-20261023.cjs miniapp-ui-production",
+      "runtimeAdjustment": "Only loopback ports and temporary fixture/build paths; source assertions unchanged"
+    },
+    {
+      "suite": "telegram-bundle",
+      "exit": 0,
+      "syntheticRuntimeOnly": true,
+      "checks": 1,
+      "command": "node tests/community/telegram-bundle.cjs",
+      "actualExecution": "node /tmp/menora-event-parity-browser-runner-20261023.cjs telegram-bundle",
+      "runtimeAdjustment": "Only loopback ports and temporary fixture/build paths; source assertions unchanged"
+    },
+    {
+      "suite": "miniapp-performance-bundle",
+      "exit": 0,
+      "syntheticRuntimeOnly": true,
+      "checks": 6,
+      "command": "node tests/community/miniapp-performance-bundle.cjs",
+      "actualExecution": "node /tmp/menora-event-parity-browser-runner-20261023.cjs miniapp-performance-bundle",
+      "runtimeAdjustment": "Only loopback ports and temporary fixture/build paths; source assertions unchanged"
+    }
+  ],
+  "counting": "Final runs only; native PostgreSQL and PGlite are separate executions of the shared cases; no failed/repeated attempts added",
+  "historicalDiagnostic": {
+    "suite": "targeted-browser",
+    "exit": 1,
+    "classification": "Unsupported historical diagnostic, excluded by existing tests/community/README.md; not reported as PASS",
+    "reason": "Expects superseded free-form city/giyur questionnaire and dashboard redirect",
+    "current_replacement": "spec-browser 32/32 PASS"
+  }
+}

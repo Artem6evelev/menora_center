@@ -46,7 +46,7 @@ export async function createKidsApplicationForUser(tx: KidsTransaction, actor: {
   return { created: additions.length > 0 };
 }
 
-export async function ownKidsApplications(tx: KidsTransaction, userId: string) {
+export async function ownKidsApplications(tx: Pick<KidsTransaction, "select">, userId: string) {
   const rows = await tx.select().from(kidsApplications).where(eq(kidsApplications.userId, userId)).orderBy(desc(kidsApplications.createdAt), kidsApplications.id);
   return rows.map(row => ({ id: row.id, programTitle: row.programTitle, status: row.status, createdAt: row.createdAt,
     children: (Array.isArray(row.children) ? row.children : []).map(child => ({ id: typeof child?.id === "string" ? child.id : null,

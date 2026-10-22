@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import {
   LogOut,
   UserRound,
@@ -9,13 +9,13 @@ import {
 import { Logo } from "@/components/Logo";
 import { MiniAppHeader, WelcomeCard, ProfileStatusCard, ActionCard, BottomNav, EventSkeleton } from "./ui";
 import { EventListSection } from "./event-list-section";
-import { EventEntry } from "./event-entry";
+import { EventEntry, EventLaunchPreview } from "./event-entry";
 import { useMiniAppFocus } from "./use-miniapp-focus";
 import type { MiniAppLaunch } from "@/lib/telegram/event-launch";
 import { miniAppUiCopy } from "@/lib/telegram/miniapp-ui-copy";
 import { Ticket } from "lucide-react";
 import FilterFields from "@/components/community/filter-fields";
-import ResourceMessage from "@/components/community/resource-message";
+const ResourceMessage = dynamic(() => import("@/components/community/resource-message"), { loading: () => <EventSkeleton label="Загружаем ресурсы…" /> });
 import type { Affiliation, Gender } from "@/lib/community/policy";
 import type { MiniAppProfileData } from "@/lib/telegram/miniapp-profile";
 import {
@@ -31,13 +31,20 @@ import {
   MiniAppRequestError,
   type MiniAppBridge,
 } from "@/lib/telegram/miniapp-client";
-import MiniAppEvents from "./events";
+import dynamic from "next/dynamic";
+import { createMiniAppCache } from "@/lib/telegram/miniapp-cache";
+import { markMiniApp } from "@/lib/telegram/miniapp-performance";
+import type { MiniAppEvent } from "./event-card";
+import type { MiniAppKidsData } from "@/lib/telegram/miniapp-kids";
+const MiniAppEvents = dynamic(() => import("./events"));
+const MiniAppKids = dynamic(() => import("./kids"), { loading: () => <EventSkeleton label="Загружаем Menorah Kids…" /> });
+const MiniAppProfileForm = dynamic(() => import("./profile-form"), { loading: () => <EventSkeleton label="Загружаем профиль…" /> });
 import { eventCopy } from "@/lib/telegram/event-copy";
 import Subscription from "./subscription";
 import { MiniAppContact } from "./contact";
-import MiniAppKids, { MenorahKidsEntry } from "./kids";
+import { MenorahKidsEntry } from "./kids-entry";
 import type { ChildValue } from "@/components/community/child-editor";
-import MiniAppProfileForm, { requestMessage } from "./profile-form";
+import { requestMessage } from "./request-message";
 
 type ProfileResponse = MiniAppProfileData & { ok: true };
 
@@ -134,6 +141,13 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
   // Navigation hint only: profile completion and Kids permissions still apply.
   const intendedSection = useRef<"kids" | null>(null);
   const bootSequence = useRef(0);
+  const mutations = useRef(new Set<AbortController>());
+  const cancelMutations = useCallback(() => {
+    for (const controller of mutations.current) controller.abort();
+    mutations.current.clear();
+  }, []);
+  const activeSequence = bootSequence.current;
+  const [instanceCache] = useState(() => createMiniAppCache());
   const language: MiniAppLanguage = miniAppLanguage();
   const [status, setStatus] = useState<
       "loading" | "ready" | "outside" | "error" | "logout"
@@ -160,10 +174,17 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
     },
     [],
   );
-  const refreshProfile = useCallback(async (signal?: AbortSignal) => {
-    const result = await miniAppRequest<ProfileResponse>("profile", { signal });
-    if (!signal?.aborted) accept(result);
-  }, [accept]);
+  const updateProfile = useCallback((snapshot: ProfileResponse) => {
+    if (activeSequence !== bootSequence.current) return false;
+    accept({ data: snapshot, tag: snapshot.profileVersion });
+    instanceCache.invalidate("events", "registrations", "kids");
+    return true;
+  }, [accept, instanceCache, activeSequence]);
+  const kidsSnapshot = useCallback((snapshot: MiniAppKidsData) => {
+    if (activeSequence !== bootSequence.current) return;
+    tag.current = snapshot.profileVersion;
+    setData({ ...snapshot.profileSnapshot, profile: { ...snapshot.profileSnapshot.profile, childrenData: snapshot.children } });
+  }, [activeSequence]);
   useEffect(() => {
     const previousLang = document.documentElement.lang,
       previousDir = document.documentElement.dir;
@@ -179,6 +200,10 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
       sequence = ++bootSequence.current;
     const timer = setTimeout(() => {
       void (async () => {
+        instanceCache.clear();
+        cancelMutations(); tag.current = undefined;
+        setBusy(false); setDirty(false); setSaved(false);
+        setData(null);
         setLaunchEvent(null);
         setEntryGate(false);
         setOnboardingStarted(false);
@@ -193,47 +218,39 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
           return;
         }
         if (!root.current) return;
+        markMiniApp("sdk-ready");
+        const boundInitData = app.initData;
         bridge.current = connectMiniAppBridge(app, root.current, (state) => {
+          if (state.active && app.initData !== boundInitData) {
+            // Invalidate immediately, before React schedules the next effect.
+            controller.abort(); bootSequence.current++; instanceCache.clear(); cancelMutations();
+            setBusy(false); setDirty(false); setSaved(false);
+            tag.current = undefined; setData(null); setStatus("loading"); setRetry(n => n + 1); return;
+          }
           if (root.current) {
             root.current.dataset.platform = state.platform;
             root.current.dataset.active = String(state.active);
           }
         });
         setBridgeVersion((previous) => previous + 1);
-        try {
-          await miniAppRequest("session", {
-            body: { initData: bridge.current.rawInitData() },
-            signal: controller.signal,
-          });
-        } catch (error) {
-          if (!(error instanceof MiniAppRequestError) || error.status !== 401)
-            throw error;
-          await miniAppRequest("bootstrap", {
-            body: { initData: bridge.current.rawInitData() },
-            signal: controller.signal,
-          });
-        }
-        const result = await miniAppRequest<ProfileResponse>("profile", {
-          signal: controller.signal,
+        const params = new URL(window.location.href).searchParams;
+        const hints = Object.fromEntries(["event", "campaign", "section", "view"].flatMap(key => {
+          const value = params.get(key);
+          return value && (key !== "section" || value === "kids") && (key !== "view" || value === "events") ? [[key, value]] : [];
+        }));
+        markMiniApp("start-request");
+        const result = await miniAppRequest<ProfileResponse & {launchEvent: MiniAppLaunch["event"]; homeEvents: MiniAppEvent[]; destination: string; eventUnavailable: boolean}>("start", {
+          body: { initData: bridge.current.rawInitData(), ...hints }, signal: controller.signal,
         });
+        markMiniApp("start-response");
         if (!controller.signal.aborted && sequence === bootSequence.current) {
-          const params = new URL(window.location.href).searchParams;
-          const kidsRequested = params.get("section") === "kids";
-          // An explicit Kids button must not inherit a previous Telegram ad hint.
-          const hasLaunch = params.has("event") || params.has("campaign") ||
-            (!kidsRequested && new URLSearchParams(bridge.current?.rawInitData()).has("start_param"));
-          let launch: MiniAppLaunch["event"] = null;
-          if (hasLaunch && result.data.summary.nextStep !== "resources") {
-            const query = new URLSearchParams();
-            for (const key of ["event", "campaign"]) if (params.get(key)) query.set(key, params.get(key)!);
-            const resolved = await miniAppRequest<MiniAppLaunch>(`launch?${query}`, { signal: controller.signal });
-            launch = resolved.data.event;
-            if (launch) {
-              const url = new URL(window.location.href);
-              url.searchParams.set("event", launch.id);
-              window.history.replaceState(window.history.state, "", url);
-            }
+          const kidsRequested = result.data.destination === "kids";
+          const launch = result.data.launchEvent;
+          if (launch) {
+            const url = new URL(window.location.href); url.searchParams.set("event", launch.id);
+            window.history.replaceState(window.history.state, "", url);
           }
+          if (result.data.destination === "home" && result.data.summary.nextStep === "home") instanceCache.seed("events?preview=home", {events:result.data.homeEvents});
           if (controller.signal.aborted || sequence !== bootSequence.current) return;
           accept(result);
           setLaunchEvent(launch);
@@ -242,7 +259,8 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
           setView(result.data.summary.nextStep === "home"
             ? launch ? "events" : intendedSection.current ?? (params.get("view") === "events" ? "events" : null)
             : intendedSection.current);
-          if (hasLaunch && !launch && (params.has("event") || (params.get("campaign") ?? new URLSearchParams(bridge.current?.rawInitData()).get("start_param") ?? "").startsWith("event_")) && result.data.summary.nextStep !== "resources") setActionError("event_unavailable");
+          if (result.data.eventUnavailable) setActionError("event_unavailable");
+          markMiniApp("ready");
           setStatus("ready");
         }
       })().catch((error) => {
@@ -257,10 +275,18 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
     return () => {
       clearTimeout(timer);
       controller.abort();
+      cancelMutations();
+      instanceCache.clear();
       bridge.current?.dispose();
       bridge.current = null;
     };
-  }, [retry, accept]);
+  }, [retry, accept, instanceCache, cancelMutations]);
+  useEffect(() => {
+    if (status !== "ready" || screen !== "home") return;
+    const preload = () => { void Promise.all([import("./events"), import("./kids")]).catch(() => {}); };
+    if (window.requestIdleCallback) { const id=window.requestIdleCallback(preload,{timeout:1500}); return () => window.cancelIdleCallback(id); }
+    const timer=setTimeout(preload,500); return () => clearTimeout(timer);
+  }, [status, screen]);
   const navigate = useCallback(
     (next: "profile" | "filter" | "events" | "registrations" | "kids" | null) => {
       if (busy || (dirty && !window.confirm(copy.unsaved))) return;
@@ -315,13 +341,22 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
     window.addEventListener("beforeunload", handler);
     return () => window.removeEventListener("beforeunload", handler);
   }, [dirty]);
+  function assertCurrentMutation(controller?: AbortController) {
+    if (activeSequence !== bootSequence.current || controller?.signal.aborted) throw new DOMException("Aborted", "AbortError");
+  }
+  function beginMutation() {
+    assertCurrentMutation();
+    const controller = new AbortController(); mutations.current.add(controller); return controller;
+  }
   async function save(input: unknown, filterOnly: boolean) {
+    const controller = beginMutation();
     setBusy(true);
     try {
       const persist = () =>
         miniAppRequest<ProfileResponse>(filterOnly ? "filter" : "profile", {
           body: input,
           tag: tag.current,
+          signal: controller.signal,
         });
       let result;
       try {
@@ -333,27 +368,38 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
           !bridge.current
         )
           throw error;
-        await miniAppRequest("bootstrap", {
+        instanceCache.clear();
+        assertCurrentMutation(controller);
+        await miniAppRequest("start", {
           body: { initData: bridge.current.rawInitData() },
+          signal: controller.signal,
         });
+        assertCurrentMutation(controller);
         result = await persist();
       }
+      assertCurrentMutation(controller);
       accept(result);
+      instanceCache.invalidate("events", "registrations", "kids");
       setDirty(false);
       if (launchEvent && result.data.summary.nextStep === "home") { setInitialEvent(launchEvent.id); setView("events"); }
       else setView(result.data.summary.nextStep === "home" ? intendedSection.current : null);
       setSaved(!filterOnly || !!launchEvent && result.data.summary.nextStep === "home");
       window.scrollTo({ top: 0, behavior: "instant" });
     } finally {
-      setBusy(false);
+      mutations.current.delete(controller);
+      if (activeSequence === bootSequence.current) setBusy(false);
     }
   }
   async function logout() {
+    if (activeSequence !== bootSequence.current) return;
     if (dirty && !window.confirm(copy.unsaved)) return;
+    const controller = beginMutation();
     setBusy(true);
     setActionError("");
     try {
-      await miniAppRequest("logout", { body: {} });
+      await miniAppRequest("logout", { body: {}, signal: controller.signal });
+      assertCurrentMutation(controller);
+      instanceCache.clear();
       setData(null);
       tag.current = undefined;
       setView(null);
@@ -361,19 +407,22 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
       setDirty(false);
       setStatus("logout");
     } catch {
-      setActionError("generic");
+      if (activeSequence === bootSequence.current) setActionError("generic");
     } finally {
-      setBusy(false);
+      mutations.current.delete(controller);
+      if (activeSequence === bootSequence.current) setBusy(false);
     }
   }
   async function saveKidsChildren(children: ChildValue[], expectedVersion: string) {
     if (!data || data.profileVersion !== expectedVersion) throw new MiniAppRequestError(409, "profile_changed");
+    const controller = beginMutation();
     const { affiliation: _affiliation, gender: _gender, ...fields } = data.profile;
     setBusy(true);
     try {
-      const result = await miniAppRequest<ProfileResponse>("profile", { body: { ...fields, hasChildren: children.length > 0, childrenData: children }, tag: expectedVersion });
-      accept(result); setDirty(false); return result.data;
-    } finally { setBusy(false); }
+      const result = await miniAppRequest<ProfileResponse>("profile", { body: { ...fields, hasChildren: children.length > 0, childrenData: children }, tag: expectedVersion, signal: controller.signal });
+      assertCurrentMutation(controller);
+      accept(result); instanceCache.invalidate("events", "registrations", "kids"); setDirty(false); return result.data;
+    } finally { mutations.current.delete(controller); if (activeSequence === bootSequence.current) setBusy(false); }
   }
   const title =
     screen === "filter"
@@ -434,7 +483,7 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
           ) : data && screen === "home" ? (
             <>
               <WelcomeCard language={language} firstName={data.profile.firstName} />
-              <EventListSection language={language} onSelect={id => { setInitialEvent(id); setView("events"); window.scrollTo({ top: 0, behavior: "instant" }); }} onAll={() => navigate("events")} />
+              <EventListSection initialEvents={instanceCache.peek<{events:MiniAppEvent[]}>("events?preview=home")?.events ?? null} cache={instanceCache} language={language} onSelect={id => { setInitialEvent(id); setView("events"); window.scrollTo({ top: 0, behavior: "instant" }); }} onAll={() => navigate("events")} />
               <MenorahKidsEntry onOpen={() => navigate("kids")} />
               {saved && <p role="status" className="miniapp-success">{copy.saved}</p>}
               <ProfileStatusCard language={language} childrenAllowed={data.permissions.canEditChildren} />
@@ -442,25 +491,27 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
                 <ActionCard icon={UserRound} onClick={() => navigate("profile")}>{copy.profile}</ActionCard>
                 <ActionCard icon={Ticket} onClick={() => navigate("registrations")}>{eventCopy.ru.registrations}</ActionCard>
               </div>
-              <Subscription language={language} />
+              <Subscription language={language} status={data.announcementStatus} />
               <MiniAppContact card />
               <button className="miniapp-text-action self-start" disabled={busy} onClick={() => void logout()}><LogOut size={17} aria-hidden="true" />{copy.logout}</button>
             </>
           ) : data && screen === "kids" ? (
-            <><button type="button" className="miniapp-text-action" onClick={() => navigate(null)}>На главную</button><MiniAppKids profile={data} onSaveChildren={saveKidsChildren} onRefreshProfile={refreshProfile} onDirty={setDirty} onNested={onNested} /></>
+            <><button type="button" className="miniapp-text-action" onClick={() => navigate(null)}>На главную</button><MiniAppKids profile={data} onSaveChildren={saveKidsChildren} cache={instanceCache} onSnapshot={kidsSnapshot} onDirty={setDirty} onNested={onNested} /></>
           ) : data && (screen === "events" || screen === "registrations") ? (
             <>
             <p className="miniapp-helper">{uiCopy.identity}</p>
             {saved && launchEvent && <p role="status" className="miniapp-success" data-onboarding-complete>{uiCopy.ready}</p>}
-            <MiniAppEvents
+            <Suspense fallback={launchEvent ? <EventLaunchPreview event={launchEvent} language={language} /> : <EventSkeleton label="Загружаем…" />}><MiniAppEvents
               key={screen}
               initialEvent={initialEvent}
+              initialPreview={launchEvent}
               language={language}
               mode={screen}
               onNested={onNested}
               openPayment={(url) => bridge.current?.openLink(url)}
-              onProfileChanged={refreshProfile}
-            />
+              cache={instanceCache}
+              onProfileChanged={updateProfile}
+            /></Suspense>
             </>
           ) : data ? (
             <section className="miniapp-panel">

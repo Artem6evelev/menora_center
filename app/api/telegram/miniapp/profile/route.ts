@@ -1,5 +1,5 @@
 import { miniAppErrorResponse, miniAppResponse, readMiniAppJson, requireMiniAppSameOrigin } from "@/lib/telegram/miniapp-http";
-import { withMiniAppSession } from "@/lib/telegram/miniapp-session";
+import { withMiniAppSession, withMiniAppSessionRead } from "@/lib/telegram/miniapp-session";
 import { miniAppProfileData, miniAppProfileTag, saveMiniAppProfile } from "@/lib/telegram/miniapp-profile";
 
 export const runtime = "nodejs";
@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    return await withMiniAppSession(async (tx, user) => {
+    return await withMiniAppSessionRead(async (tx, user) => {
       const response = miniAppResponse({ ok: true, ...await miniAppProfileData(tx, user) });
       response.headers.set("ETag", miniAppProfileTag(user));
       return response;

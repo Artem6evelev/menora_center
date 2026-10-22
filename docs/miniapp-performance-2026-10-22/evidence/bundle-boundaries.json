@@ -1,0 +1,29 @@
+{
+  "environment": "current local production build, actual Chromium initial resource bytes + generated loadable manifest; gzip locally estimated",
+  "checks": [
+    {
+      "name": "./events has a deferred chunk absent from initial production JS",
+      "status": "PASS"
+    },
+    {
+      "name": "./kids has a deferred chunk absent from initial production JS",
+      "status": "PASS"
+    },
+    {
+      "name": "./profile-form has a deferred chunk absent from initial production JS",
+      "status": "PASS"
+    },
+    {
+      "name": "@/components/community/resource-message has a deferred chunk absent from initial production JS",
+      "status": "PASS"
+    },
+    {
+      "name": "official async SDK is in Mini App SSR HTML before effects, not global website layout",
+      "status": "PASS"
+    },
+    {
+      "name": "actual initial JS response bytes are below the recorded b2 baseline",
+      "status": "PASS"
+    }
+  ]
+}

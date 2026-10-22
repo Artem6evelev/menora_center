@@ -11,40 +11,48 @@ import {
 } from "@/lib/db/schema";
 import { communityAccess } from "@/lib/community/policy";
 import { profileChildren } from "@/lib/community/children";
+import { registrationInput } from "@/lib/community/validation";
 import {
   calculateEvent,
   checkoutEvent,
   eventVisible,
+  EventSelectionConflictError,
 } from "@/lib/community/event-checkout";
 import { CommunityError } from "@/lib/community/errors";
 import { telegramLog } from "./safety";
 import { MiniAppAuthError } from "./miniapp-errors";
-import type { MiniAppTransaction, MiniAppUser } from "./miniapp-user";
+import type { MiniAppTransaction, MiniAppUser, LockedTransaction } from "./miniapp-user";
 import { canonicalTelegramEventShareLink, canonicalTelegramEventShareLinks } from "./event-share-server";
 
 const input = z
   .object({
     action: z.enum(["quote", "register"]),
     eventId: z.string().min(1).max(150),
-    childIds: z.array(z.string().max(150)).max(30).default([]),
+    spouse: z.boolean().default(false),
+    childIds: registrationInput.shape.childIds.unwrap().default([])
+      .refine(ids => new Set(ids).size === ids.length),
+    extraAdults: registrationInput.shape.extraAdults,
   })
   .strict();
-export const eventDto = (event: typeof events.$inferSelect, shareUrl: string | null = null) => ({
-  id: event.id,
-  title: event.title,
-  description: event.description,
-  imageUrl: event.imageUrl,
-  date: event.date,
-  time: event.time,
-  location: event.location,
-  isFree: event.isFree,
-  price: event.price,
-  childPrice: event.childPrice,
-  isRegistrationClosed:
-    event.isRegistrationClosed || event.status !== "planned",
-  status: event.status,
-  shareUrl,
+export type MiniAppEventSelection = Pick<z.output<typeof input>, "spouse" | "childIds" | "extraAdults">;
+export type MiniAppEventQuote = Awaited<ReturnType<typeof calculateEvent>>["breakdown"];
+const previewFields = { id: events.id, title: events.title, imageUrl: events.imageUrl, date: events.date, time: events.time, location: events.location, isFree: events.isFree, price: events.price, isRegistrationClosed: events.isRegistrationClosed, status: events.status };
+type PreviewSource = Pick<typeof events.$inferSelect, keyof typeof previewFields>;
+export const eventPreviewDto = (event: PreviewSource, shareUrl: string | null = null) => ({
+  id: event.id, title: event.title, imageUrl: event.imageUrl, date: event.date, time: event.time, location: event.location,
+  isFree: event.isFree, price: event.price, isRegistrationClosed: event.isRegistrationClosed || event.status !== "planned", shareUrl,
 });
+export const eventDetailDto = (event: typeof events.$inferSelect, shareUrl: string | null = null) => ({
+  ...eventPreviewDto(event, shareUrl), description: event.description, childPrice: event.childPrice, status: event.status,
+});
+export const eventDto = eventDetailDto;
+export async function homeMiniAppEvents(tx: MiniAppTransaction, user: MiniAppUser) {
+  admitted(user);
+  const rows = await tx.select(previewFields).from(events).where(eq(events.status, "planned")).orderBy(desc(events.createdAt), events.id).limit(2);
+  const links = await canonicalTelegramEventShareLinks(tx, rows.map(e => e.id));
+  return rows.map(e => eventPreviewDto(e, links.get(e.id) ?? null));
+}
+
 function admitted(user: MiniAppUser) {
   if (!communityAccess(user).canViewEvents)
     throw new MiniAppAuthError(403, "event_access_denied");
@@ -76,7 +84,7 @@ export async function listMiniAppEvents(
 ) {
   admitted(user);
   const rows = await tx
-    .select()
+    .select(previewFields)
     .from(events)
     .where(eq(events.status, "planned"))
     .orderBy(desc(events.createdAt), events.id)
@@ -84,7 +92,7 @@ export async function listMiniAppEvents(
     .offset((page - 1) * 20);
   const shareLinks = await canonicalTelegramEventShareLinks(tx, rows.slice(0, 20).map(event => event.id));
   return {
-    events: rows.slice(0, 20).map(event => eventDto(event, shareLinks.get(event.id) ?? null)),
+    events: rows.slice(0, 20).map(event => eventPreviewDto(event, shareLinks.get(event.id) ?? null)),
     hasMore: rows.length > 20,
     page,
   };
@@ -126,6 +134,9 @@ export async function miniAppEventDetail(
   return {
     event: eventDto(event, await canonicalTelegramEventShareLink(tx, event.id)),
     registration,
+    firstName: user.firstName,
+    spouseName: user.spouseName,
+    extraAdultsLimit: registrationInput.shape.extraAdults.removeDefault().maxValue ?? 0,
     children: access.canRegisterChildren
       ? profileChildren(user.id, user.childrenData).map((c) => ({
           id: c.id,
@@ -140,7 +151,7 @@ export async function miniAppEventDetail(
   };
 }
 export async function miniAppEventAction(
-  tx: MiniAppTransaction,
+  tx: LockedTransaction,
   user: MiniAppUser,
   raw: unknown,
 ) {
@@ -148,9 +159,9 @@ export async function miniAppEventAction(
   if (!parsed.success) throw new MiniAppAuthError(400, "invalid_selection");
   const body = parsed.data,
     selection = {
-      family: { self: true },
+      family: { self: true, ...(body.spouse ? { spouse: true } : {}) },
       childIds: body.childIds,
-      extraAdults: 0,
+      extraAdults: body.extraAdults,
       extraKids: 0,
     };
   try {
@@ -165,6 +176,8 @@ export async function miniAppEventAction(
       });
     return { registration: { ...registration, paymentUrl: paymentLink(registration.paymentUrl) } };
   } catch (error) {
+    if (error instanceof EventSelectionConflictError)
+      throw new MiniAppAuthError(409, "pending_selection_conflict");
     if (error instanceof CommunityError)
       throw new MiniAppAuthError(409, "registration_unavailable");
     throw error;
@@ -199,7 +212,7 @@ export async function miniAppRegistrations(
       .filter((row) => eventVisible(user, row.event))
       .map((row) => ({
         id: row.registration.id,
-        event: eventDto(row.event),
+        event: eventPreviewDto(row.event),
         ...storedRegistration(row.registration, row.attempt),
       })),
     hasMore: rows.length > 20,
@@ -207,7 +220,7 @@ export async function miniAppRegistrations(
   };
 }
 export async function clarifyMiniAppGiyur(
-  tx: MiniAppTransaction,
+  tx: LockedTransaction,
   user: MiniAppUser,
   raw: unknown,
 ) {
@@ -222,13 +235,14 @@ export async function clarifyMiniAppGiyur(
     user.gender !== "female"
   )
     throw new MiniAppAuthError(403, "event_access_denied");
-  await tx
+  const [updated] = await tx
     .update(users)
     .set({
       giyurStage: body.data.stage,
       filterRevision: user.filterRevision + 1,
     })
-    .where(eq(users.id, user.id));
+    .where(eq(users.id, user.id)).returning();
+  return updated;
 }
 export async function campaignEvent(tx: MiniAppTransaction, user: MiniAppUser) {
   if (!communityAccess(user).canViewEvents) return null;

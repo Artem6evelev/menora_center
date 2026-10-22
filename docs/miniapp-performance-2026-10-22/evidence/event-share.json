@@ -1,0 +1,17 @@
+{
+  "environment": "Pure TypeScript module, no external dependencies or side effects",
+  "checks": [
+    {
+      "name": "Russian share text preserves the supplied public title and describes the community event",
+      "status": "PASS"
+    },
+    {
+      "name": "Russian Share label and successful-copy feedback use the approved product wording",
+      "status": "PASS"
+    },
+    {
+      "name": "manual-copy fallback offers Russian selection instructions and a close action",
+      "status": "PASS"
+    }
+  ]
+}

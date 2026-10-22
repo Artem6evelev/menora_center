@@ -1,0 +1,9 @@
+{
+  "command": "npm run build",
+  "exitCode": 0,
+  "copy": "/tmp/menora-event-parity-build-20261023",
+  "currentWorkingTree": true,
+  "realEnvCopied": false,
+  "database": "unavailable synthetic 127.0.0.1:1, no remote writes",
+  "log": "build.log"
+}

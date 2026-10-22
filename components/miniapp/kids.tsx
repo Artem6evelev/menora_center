@@ -2,12 +2,12 @@
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Baby } from "lucide-react";
 import ChildEditor, { type ChildValue } from "@/components/community/child-editor";
 import { kidsProgramIcons } from "@/lib/kids/program-cards";
 import type { MiniAppKidsData } from "@/lib/telegram/miniapp-kids";
 import type { MiniAppProfileData } from "@/lib/telegram/miniapp-profile";
 import { miniAppRequest, MiniAppRequestError } from "@/lib/telegram/miniapp-client";
+import type { MiniAppCache } from "@/lib/telegram/miniapp-cache";
 import { miniAppDictionaries } from "@/lib/telegram/miniapp-i18n";
 import { MiniAppContact } from "./contact";
 
@@ -29,16 +29,11 @@ function age(date: string) {
   const word = new Intl.PluralRules("ru").select(years);
   return `${years} ${word === "one" ? "год" : word === "few" ? "года" : "лет"}`;
 }
-export function MenorahKidsEntry({ onOpen }: { onOpen: () => void }) {
-  return <button type="button" className="miniapp-kids-entry" data-kids-entry onClick={onOpen}>
-    <span className="miniapp-icon"><Baby aria-hidden="true" size={27} /></span>
-    <span><strong>Menorah Kids</strong><b>Детские программы</b><span>Занятия, творчество, традиции и развитие для детей общины</span><em>Открыть Menorah Kids →</em></span>
-  </button>;
-}
-export default function MiniAppKids({ profile, onSaveChildren, onRefreshProfile, onDirty, onNested }: {
+export default function MiniAppKids({ profile, onSaveChildren, onSnapshot, onDirty, onNested, cache }: {
   profile: MiniAppProfileData;
   onSaveChildren: (children: ChildValue[], version: string) => Promise<MiniAppProfileData>;
-  onRefreshProfile: (signal?: AbortSignal) => Promise<void>;
+  onSnapshot: (data: MiniAppKidsData) => void;
+  cache: MiniAppCache;
   onDirty: (value: boolean) => void;
   onNested: (handler: (() => void) | null) => void;
 }) {
@@ -55,12 +50,11 @@ export default function MiniAppKids({ profile, onSaveChildren, onRefreshProfile,
     const controller = new AbortController();
     setData(null); setError("");
     void (async () => {
-      const result = await miniAppRequest<MiniAppKidsData>("kids", { signal: controller.signal });
-      await onRefreshProfile(controller.signal);
-      if (!controller.signal.aborted) setData(result.data);
+      const result = await cache.read<MiniAppKidsData>("kids", controller.signal);
+      if (!controller.signal.aborted) { onSnapshot(result); setData(result); }
     })().catch(failure => { if (!controller.signal.aborted) setError(message(failure)); });
     return () => controller.abort();
-  }, [retry, onRefreshProfile]);
+  }, [retry, onSnapshot, cache]);
   useEffect(() => {
     if (!program) return;
     const modal = dialog.current;
@@ -77,7 +71,7 @@ export default function MiniAppKids({ profile, onSaveChildren, onRefreshProfile,
     locked.current = true; setPending(true); setError("");
     try {
       const result = await miniAppRequest<MiniAppKidsData & { created: boolean }>("kids/applications", { body: { programTitle: program, childIds: selected } });
-      if (alive.current) { setData(result.data); setProgram(null); setSuccess(result.data.created); if (!result.data.created) setNotice("Эта заявка уже сохранена. Её статус показан ниже."); }
+      if (alive.current) { cache.invalidate("kids"); setData(result.data); setProgram(null); setSuccess(result.data.created); if (!result.data.created) setNotice("Эта заявка уже сохранена. Её статус показан ниже."); }
     } catch (failure) { if (alive.current) setError(message(failure)); }
     finally { locked.current = false; if (alive.current) setPending(false); }
   }
@@ -86,7 +80,7 @@ export default function MiniAppKids({ profile, onSaveChildren, onRefreshProfile,
     locked.current = true; setPending(true); setError("");
     try {
       await miniAppRequest("giyur", { body: { stage } });
-      if (alive.current) setRetry(value => value + 1);
+      if (alive.current) { cache.invalidate("kids", "events", "registrations"); setRetry(value => value + 1); }
     } catch (failure) { if (alive.current) setError(message(failure)); }
     finally { locked.current = false; if (alive.current) setPending(false); }
   }
@@ -95,7 +89,7 @@ export default function MiniAppKids({ profile, onSaveChildren, onRefreshProfile,
     <header className="miniapp-kids-hero"><div><p className="miniapp-eyebrow">Детские программы Menorah Center</p><h1>Menorah Kids</h1><p>Тёплое пространство для учёбы, творчества, традиций и общения.</p></div><div className="miniapp-kids-photo"><Image src="/kids/kids1.webp" alt="Занятия в Menorah Kids" fill sizes="(max-width:600px) 100vw, 640px" /></div></header>
     {!data && !error && <div className="miniapp-panel miniapp-skeleton" role="status">Загружаем Menorah Kids…</div>}
     {error && <p className="miniapp-error" role="alert">{error}</p>}
-    {(error || stale) && !editing && <button type="button" className="miniapp-secondary" disabled={pending} onClick={() => setRetry(value => value + 1)}>Обновить данные</button>}
+    {(error || stale) && !editing && <button type="button" className="miniapp-secondary" disabled={pending} onClick={() => { cache.invalidate("kids", "events", "registrations"); setRetry(value => value + 1); }}>Обновить данные</button>}
     {stale && <p role="alert" className="miniapp-error">{miniAppDictionaries.ru.errors.profile_changed}</p>}
     {data && !data.permissions.canManageChildren ? <div className="miniapp-panel space-y-4" data-kids-gate>
       {data.permissions.male ? <h2>Запись детей оформляется через профиль мамы.</h2> : <>
@@ -114,7 +108,7 @@ export default function MiniAppKids({ profile, onSaveChildren, onRefreshProfile,
           <ChildEditor items={data.children} disabled={pending || stale} onEditingChange={edit} onSave={async children => {
             try {
               const result = await onSaveChildren(children, data.profileVersion);
-              if (alive.current) { setData(previous => previous && ({ ...previous, children: result.profile.childrenData, profileVersion: result.profileVersion })); setNotice("Данные ребёнка сохранены"); }
+              if (alive.current) { setData(previous => previous && ({ ...previous, children: result.profile.childrenData, profileVersion: result.profileVersion })); cache.invalidate("kids", "events", "registrations"); setNotice("Данные ребёнка сохранены"); }
             } catch (failure) { if (alive.current) setError(message(failure)); throw new Error(message(failure)); }
           }} />
           {!!data.children.length && <ul className="miniapp-helper mt-4">{data.children.map(child => <li key={child.id}>{child.name}{age(child.dateOfBirth) && ` · ${age(child.dateOfBirth)}`}</li>)}</ul>}

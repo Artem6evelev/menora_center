@@ -41,6 +41,42 @@ body:has(.miniapp) {
   );
   --menorah-safe-end: calc(var(--tg-safe-left) + var(--tg-content-safe-left));
 }
+.miniapp-guest-counter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-block: 12px;
+}
+.miniapp-guest-counter > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.miniapp-guest-counter button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 44px;
+  min-block-size: 44px;
+  padding: 8px;
+}
+.miniapp-guest-counter output {
+  min-inline-size: 2ch;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+.miniapp-quote {
+  border-block-start: 1px solid var(--miniapp-border);
+  padding-block-start: 16px;
+}
+.miniapp-quote-lines > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
 .miniapp *,
 .miniapp *::before,
 .miniapp *::after {

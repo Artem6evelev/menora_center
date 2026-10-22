@@ -18,4 +18,9 @@ async function installSdk(context,{id,language='ru',version='9.0',platform='ios'
   window.Telegram={WebApp:app};window.__miniappFixture={calls,emit(name){handlers.get(name)?.forEach(fn=>fn())},back(){back.forEach(fn=>fn())},listenerCount(){return [...handlers.values()].reduce((n,set)=>n+set.size,0)}};
  },{raw:signedInitData(id,language,start),version,platform,safeArea,contentSafeArea});
 }
-module.exports={signedInitData,installSdk};
+async function openEventRegistration(page) {
+ await page.locator('[data-event-detail]').waitFor();
+ await page.locator('a[href="#miniapp-participants"]').click();
+ await page.locator('#miniapp-participants').waitFor();
+}
+module.exports={signedInitData,installSdk,openEventRegistration};

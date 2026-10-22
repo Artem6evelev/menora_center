@@ -6,6 +6,15 @@ import { eventCopy } from "@/lib/telegram/event-copy";
 import type { MiniAppLaunch } from "@/lib/telegram/event-launch";
 import { EventMedia, EventMeta } from "./event-card";
 
+/** Public launch data only, while the separately authorized detail is loading. */
+export function EventLaunchPreview({ event, language }: { event: NonNullable<MiniAppLaunch["event"]>; language: MiniAppLanguage }) {
+  return <article className="miniapp-event-detail" data-event-launch-preview={event.id}>
+    <EventMedia event={event} language={language} priority />
+    <div className="miniapp-detail-summary"><h1>{event.title}</h1><EventMeta event={event} language={language} />
+      <p role="status" className="miniapp-muted">Загружаем данные для записи…</p></div>
+  </article>;
+}
+
 export function EventEntry({ event, language, gate, onRegister, onContinue }: { event: NonNullable<MiniAppLaunch["event"]>; language: MiniAppLanguage; gate: boolean; onRegister: () => void; onContinue: () => void }) {
   const u = miniAppUiCopy.ru;
   return <article className="miniapp-event-detail miniapp-enter" data-event-entry={event.id}>

@@ -22,13 +22,17 @@ async function fields(page){
  await page.getByRole('checkbox',{name:/Я соглашаюсь/}).check();
 }
 (async()=>{
- fs.mkdirSync(out,{recursive:true});browser=await chromium.launch({headless:true});
+ fs.mkdirSync(out,{recursive:true});
+ // Next dev compiles this shared endpoint on first use; warm compilation apart
+ // from the questionnaire's intentionally bounded user-facing request timeout.
+ const cities=await fetch(base+'/api/community/cities?q='+encodeURIComponent('Ришон'),{signal:AbortSignal.timeout(120000)});assert.equal(cities.status,200);assert.ok((await cities.json()).cities.some(city=>city.id==='8300'));
+ browser=await chromium.launch({headless:true});
  const probe=await (await fetch(base+'/api/test-miniapp-state')).json();assert.equal(probe.testDatabase,'isolated-pglite');
  const reset=await (await fetch(base+'/api/test-state',{method:'POST',headers:{'content-type':'application/json'},body:'{}'})).json();assert.equal(reset.testDatabase,'isolated-pglite');assert.equal(reset.reset,true);
  for(const [name,width,height] of [['390',390,844],['320',320,700],['desktop',1280,1000]]){
   const {context,page,subject}=await setup({width,height});let bootstraps=0;
   page.on('request',request=>{if(request.url().endsWith('/bootstrap'))bootstraps++});
-  await context.route('**/api/telegram/miniapp/session',async route=>{await new Promise(resolve=>setTimeout(resolve,500));await route.continue()});
+  await context.route('**/api/telegram/miniapp/start',async route=>{await new Promise(resolve=>setTimeout(resolve,500));await route.continue()});
   await page.goto(base+'/miniapp');
   await test(name+' splash uses brand and loading before API response',async()=>{await page.getByRole('status').filter({hasText:'Загружаем ваш кабинет'}).waitFor();await shot(page,name+'-splash');});
   await page.locator('[data-screen=filter]').waitFor();
@@ -76,12 +80,13 @@ async function fields(page){
   await context.close();
   const resources=await setup({width,height});await resources.page.goto(base+'/miniapp');await resources.page.locator('[data-screen=filter]').waitFor();await resources.page.locator('[name=affiliation][value=none]').check();await resources.page.getByRole('button',{name:'Продолжить',exact:true}).click();await resources.page.locator('[data-screen=resources]').waitFor();
   await test(name+' resources show exact approved links, no event/profile booking actions and fit viewport',async()=>{
+   await resources.page.locator('a[href="https://noahideworldcenter.org/ru"]').waitFor();
    for(const href of ['https://noahideworldcenter.org/ru','https://www.gov.il/ru/departments/conversion_authority','https://nativhagiur.org.il/ru/'])assert.equal(await resources.page.locator(`a[href="${href}"]`).count(),1);
    assert.equal(await resources.page.locator('a[href^="/events"]').count(),0);assert.equal(await resources.page.locator('[name=gender]').count(),0);await noOverflow(resources.page);await shot(resources.page,name+'-resources');await resources.page.reload();await resources.page.locator('[data-screen=resources]').waitFor();
   });await resources.context.close();
  }
  await test('bootstrap error has branded recovery and retry completes the same synthetic identity',async()=>{
-  const {context,page}=await setup({width:390,height:844});let fail=true;await context.route('**/api/telegram/miniapp/bootstrap',route=>{if(fail){fail=false;return route.fulfill({status:503,contentType:'application/json',body:'{"ok":false,"error":"temporarily_unavailable"}'})}return route.continue()});
+  const {context,page}=await setup({width:390,height:844});let fail=true;await context.route('**/api/telegram/miniapp/start',route=>{if(fail){fail=false;return route.fulfill({status:503,contentType:'application/json',body:'{"ok":false,"error":"temporarily_unavailable"}'})}return route.continue()});
   await page.goto(base+'/miniapp');await page.locator('[data-screen=error]').waitFor();await shot(page,'390-bootstrap-error');await page.getByRole('button',{name:'Попробовать ещё раз',exact:true}).click();await page.locator('[data-screen=filter]').waitFor();await context.close();
  });
  for(const kind of ['male','giyur-unknown','giyur-advanced','giyur-male','giyur-completed'])await test(kind+' existing profile enforces child editor visibility and retains stored children',async()=>{
@@ -99,7 +104,7 @@ async function fields(page){
  await test('a cookie from another Telegram account never exposes its profile on a new launch',async()=>{
   const a=await setup({width:390,height:844},'home');await a.page.goto(base+'/miniapp');await a.page.locator('[data-screen=home]').waitFor();
   const cookies=await a.context.cookies();const b=await setup({width:390,height:844},'resources');await b.context.addCookies(cookies);
-  const responses=[];b.page.on('response',async response=>{if(response.url().endsWith('/profile')&&response.request().method()==='GET'&&response.status()===200)responses.push((await response.json()).summary.nextStep)});
+  const responses=[];b.page.on('response',async response=>{if(response.url().endsWith('/start')&&response.request().method()==='POST'&&response.status()===200)responses.push((await response.json()).summary.nextStep)});
   await b.page.goto(base+'/miniapp');await b.page.locator('[data-screen=resources]').waitFor();assert.deepEqual(responses,['resources']);assert.equal(await b.page.locator('.miniapp-action-card').count(),0);await a.context.close();await b.context.close();
  });
  await test('ordinary browser has no synthetic login and shows Telegram entry screen',async()=>{

@@ -1,0 +1,51 @@
+{
+  "environment": "Local Chromium + production Mini App routes + isolated PGlite, synthetic SDK, external navigation intercepted",
+  "realPayments": 0,
+  "checks": [
+    {
+      "name": "320 website participant model, server line items and immutable Shutafim amount",
+      "status": "PASS"
+    },
+    {
+      "name": "390 website participant model, server line items and immutable Shutafim amount",
+      "status": "PASS"
+    },
+    {
+      "name": "1280 website participant model, server line items and immutable Shutafim amount",
+      "status": "PASS"
+    },
+    {
+      "name": "rapid guest taps coalesce into one quote with no profile/event reload and enforce 0..20",
+      "status": "PASS"
+    },
+    {
+      "name": "late old quote cannot replace the newer participant selection",
+      "status": "PASS"
+    },
+    {
+      "name": "quote error preserves selection and retry sends only a quote",
+      "status": "PASS"
+    },
+    {
+      "name": "pending selection conflict shows exact Russian recovery message and WhatsApp without changing amount",
+      "status": "PASS"
+    },
+    {
+      "name": "free event uses the same selector, displays Free and confirms without a payment URL",
+      "status": "PASS"
+    },
+    {
+      "name": "male retains existing child restrictions and hides an unsaved spouse",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur-unknown retains existing child restrictions and hides an unsaved spouse",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur-advanced retains existing child restrictions and hides an unsaved spouse",
+      "status": "PASS"
+    }
+  ],
+  "errors": []
+}

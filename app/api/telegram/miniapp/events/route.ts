@@ -1,4 +1,4 @@
-import { withMiniAppSession } from "@/lib/telegram/miniapp-session";
+import { withMiniAppSession, withMiniAppSessionRead } from "@/lib/telegram/miniapp-session";
 import {
   miniAppErrorResponse,
   miniAppResponse,
@@ -9,7 +9,7 @@ import {
   listMiniAppEvents,
   miniAppEventDetail,
   miniAppEventAction,
-  campaignEvent,
+  campaignEvent, homeMiniAppEvents,
 } from "@/lib/telegram/miniapp-events";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,10 +17,10 @@ export async function GET(request: Request) {
   try {
     const url = new URL(request.url),
       id = url.searchParams.get("id");
-    return await withMiniAppSession(async (tx, user) =>
+    return await withMiniAppSessionRead(async (tx, user) =>
       miniAppResponse({
         ok: true,
-        ...(id
+        ...(url.searchParams.get("preview") === "home" ? { events: await homeMiniAppEvents(tx, user) } : id
           ? await miniAppEventDetail(tx, user, id)
           : {
               ...(await listMiniAppEvents(

@@ -1,0 +1,24 @@
+{
+  "environment": "b2 baseline fixture, local dev synthetic SDK/PGlite",
+  "logout": [
+    "logout"
+  ],
+  "relogin": [
+    "session",
+    "bootstrap",
+    "profile",
+    "events",
+    "subscription",
+    "events",
+    "subscription"
+  ],
+  "switchWithoutReload": [],
+  "switchWithReload": [
+    "session",
+    "profile",
+    "events",
+    "subscription",
+    "events",
+    "subscription"
+  ]
+}

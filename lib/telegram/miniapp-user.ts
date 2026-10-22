@@ -16,9 +16,11 @@ import {
   type ValidatedTelegramInitData,
 } from "./miniapp-init-data";
 
-export type MiniAppTransaction = Parameters<
+export type LockedTransaction = Parameters<
   Parameters<typeof db.transaction>[0]
 >[0];
+/** Both executors expose the same query API; mutation callers still supply a locked transaction. */
+export type MiniAppTransaction = LockedTransaction | typeof db;
 export type MiniAppUser = typeof users.$inferSelect;
 export interface MiniAppPrincipal {
   user: MiniAppUser;
@@ -59,7 +61,7 @@ type TelegramIdentityData = Pick<
   "user" | "startParam"
 >;
 async function bootstrap(
-  tx: MiniAppTransaction,
+  tx: LockedTransaction,
   data: TelegramIdentityData,
   source = "telegram_miniapp",
   subscribeUnknown = source === "telegram_miniapp",
@@ -225,7 +227,7 @@ async function bootstrap(
 /** finish executes in the same transaction: a failed session insert rolls back the new person too. */
 export async function withTelegramMiniAppUser<T>(
   data: ValidatedTelegramInitData,
-  finish: (tx: MiniAppTransaction, principal: MiniAppPrincipal) => Promise<T>,
+  finish: (tx: LockedTransaction, principal: MiniAppPrincipal) => Promise<T>,
 ): Promise<T> {
   assertValidatedTelegramInitData(data);
   for (let attempt = 0; ; attempt++) {
@@ -242,7 +244,7 @@ export async function withTelegramMiniAppUser<T>(
 /** Only the secret-verified webhook calls this server-only adapter. It grants no Mini App session. */
 export async function withTelegramBotUser<T>(
   data: TelegramIdentityData,
-  finish: (tx: MiniAppTransaction, principal: MiniAppPrincipal) => Promise<T>,
+  finish: (tx: LockedTransaction, principal: MiniAppPrincipal) => Promise<T>,
   updateId: string,
   subscribeUnknown = false,
 ): Promise<T | null> {

@@ -1,0 +1,366 @@
+{
+  "environment": "Local warmed development Chromium with synthetic signed Telegram SDK, isolated PGlite; no production latency/device claim",
+  "checks": [
+    {
+      "name": "320 returning Home: one startup, two previews, no events/subscription waterfall, fixed RU layout and marks",
+      "status": "PASS"
+    },
+    {
+      "name": "390 returning Home: one startup, two previews, no events/subscription waterfall, fixed RU layout and marks",
+      "status": "PASS"
+    },
+    {
+      "name": "resources lazy screen has its own boundary and never restarts startup or exposes events",
+      "status": "PASS"
+    },
+    {
+      "name": "new subject boots to filter with one startup, no session/bootstrap/profile HTTP chain",
+      "status": "PASS"
+    },
+    {
+      "name": "new ad subject receives bounded event preview in its only startup response",
+      "status": "PASS"
+    },
+    {
+      "name": "returning event ad keeps destination; detail authorization stays separate from launch preview",
+      "status": "PASS"
+    },
+    {
+      "name": "returning ad paints the public startup preview while protected detail is pending, without exposing checkout fields",
+      "status": "PASS"
+    },
+    {
+      "name": "direct Kids startup uses one startup plus one Kids GET; never loads profile after Kids",
+      "status": "PASS"
+    },
+    {
+      "name": "register shows returned receipt immediately, no list/detail refetch; registration cache refreshes lazily",
+      "status": "PASS"
+    },
+    {
+      "name": "logout clears cached registrations and relogin creates a fresh startup/session",
+      "status": "PASS"
+    },
+    {
+      "name": "live SDK account switch clears old profile/cache; in-flight private response cannot repaint the next identity",
+      "status": "PASS"
+    },
+    {
+      "name": "account switch during the startup response rejects the old snapshot before React effect cleanup",
+      "status": "PASS"
+    },
+    {
+      "name": "profile late mutation response cannot restore the previous account snapshot or busy/dirty state",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur late mutation response cannot restore the previous account snapshot or busy/dirty state",
+      "status": "PASS"
+    }
+  ],
+  "measurements": [
+    {
+      "scenario": "returning-home-320",
+      "requests": [
+        {
+          "path": "start",
+          "method": "POST"
+        }
+      ],
+      "db": {
+        "testDatabase": "isolated-pglite",
+        "operations": 5,
+        "kinds": {
+          "SELECT": 5
+        },
+        "locked": 0
+      },
+      "marks": [
+        {
+          "name": "miniapp:sdk-ready",
+          "startTime": 489.69999998807907
+        },
+        {
+          "name": "miniapp:start-request",
+          "startTime": 489.8999999910593
+        },
+        {
+          "name": "miniapp:start-response",
+          "startTime": 508.3999999910593
+        },
+        {
+          "name": "miniapp:ready",
+          "startTime": 508.5
+        },
+        {
+          "name": "miniapp:home-content",
+          "startTime": 533.7999999970198
+        },
+        {
+          "name": "miniapp:home-content",
+          "startTime": 534.3999999910593
+        }
+      ]
+    },
+    {
+      "scenario": "returning-home-390",
+      "requests": [
+        {
+          "path": "start",
+          "method": "POST"
+        }
+      ],
+      "db": {
+        "testDatabase": "isolated-pglite",
+        "operations": 5,
+        "kinds": {
+          "SELECT": 5
+        },
+        "locked": 0
+      },
+      "marks": [
+        {
+          "name": "miniapp:sdk-ready",
+          "startTime": 464.5
+        },
+        {
+          "name": "miniapp:start-request",
+          "startTime": 464.8999999910593
+        },
+        {
+          "name": "miniapp:start-response",
+          "startTime": 480.29999999701977
+        },
+        {
+          "name": "miniapp:ready",
+          "startTime": 480.3999999910593
+        },
+        {
+          "name": "miniapp:home-content",
+          "startTime": 505.09999999403954
+        },
+        {
+          "name": "miniapp:home-content",
+          "startTime": 505.70000000298023
+        }
+      ]
+    },
+    {
+      "scenario": "events",
+      "requests": [
+        {
+          "path": "events?page=1",
+          "method": "GET"
+        }
+      ],
+      "db": {
+        "testDatabase": "isolated-pglite",
+        "operations": 5,
+        "kinds": {
+          "SELECT": 5
+        },
+        "locked": 0
+      }
+    },
+    {
+      "scenario": "detail",
+      "requests": [
+        {
+          "path": "events?id=fixture-event",
+          "method": "GET"
+        }
+      ],
+      "db": {
+        "testDatabase": "isolated-pglite",
+        "operations": 5,
+        "kinds": {
+          "SELECT": 5
+        },
+        "locked": 0
+      }
+    },
+    {
+      "scenario": "back",
+      "requests": [],
+      "db": {
+        "testDatabase": "isolated-pglite",
+        "operations": 0,
+        "kinds": {},
+        "locked": 0
+      }
+    },
+    {
+      "scenario": "registrations",
+      "requests": [
+        {
+          "path": "registrations?page=1",
+          "method": "GET"
+        }
+      ],
+      "db": {
+        "testDatabase": "isolated-pglite",
+        "operations": 0,
+        "kinds": {},
+        "locked": 0
+      }
+    },
+    {
+      "scenario": "kids",
+      "requests": [
+        {
+          "path": "kids",
+          "method": "GET"
+        }
+      ],
+      "db": {
+        "testDatabase": "isolated-pglite",
+        "operations": 3,
+        "kinds": {
+          "SELECT": 3
+        },
+        "locked": 0
+      }
+    },
+    {
+      "scenario": "home",
+      "requests": [],
+      "db": {
+        "testDatabase": "isolated-pglite",
+        "operations": 0,
+        "kinds": {},
+        "locked": 0
+      }
+    },
+    {
+      "scenario": "events-cached",
+      "requests": [],
+      "db": {
+        "testDatabase": "isolated-pglite",
+        "operations": 0,
+        "kinds": {},
+        "locked": 0
+      }
+    },
+    {
+      "scenario": "registrations-cached",
+      "requests": [],
+      "db": {
+        "testDatabase": "isolated-pglite",
+        "operations": 0,
+        "kinds": {},
+        "locked": 0
+      }
+    },
+    {
+      "scenario": "new-user",
+      "requests": [
+        {
+          "path": "start",
+          "method": "POST"
+        }
+      ],
+      "db": {
+        "testDatabase": "isolated-pglite",
+        "operations": 10,
+        "kinds": {
+          "SELECT": 6,
+          "INSERT": 4
+        },
+        "locked": 3
+      }
+    },
+    {
+      "scenario": "new-event-ad",
+      "requests": [
+        {
+          "path": "start",
+          "method": "POST"
+        }
+      ],
+      "db": {
+        "testDatabase": "isolated-pglite",
+        "operations": 13,
+        "kinds": {
+          "SELECT": 9,
+          "INSERT": 4
+        },
+        "locked": 3
+      }
+    },
+    {
+      "scenario": "returning-event-ad",
+      "requests": [
+        {
+          "path": "start",
+          "method": "POST"
+        },
+        {
+          "path": "events?id=fixture-event",
+          "method": "GET"
+        }
+      ],
+      "db": {
+        "testDatabase": "isolated-pglite",
+        "operations": 10,
+        "kinds": {
+          "SELECT": 10
+        },
+        "locked": 0
+      }
+    },
+    {
+      "scenario": "direct-kids",
+      "requests": [
+        {
+          "path": "start",
+          "method": "POST"
+        },
+        {
+          "path": "kids",
+          "method": "GET"
+        }
+      ],
+      "db": {
+        "testDatabase": "isolated-pglite",
+        "operations": 5,
+        "kinds": {
+          "SELECT": 5
+        },
+        "locked": 0
+      }
+    },
+    {
+      "scenario": "logout",
+      "requests": [
+        {
+          "path": "logout",
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "scenario": "relogin",
+      "requests": [
+        {
+          "path": "start",
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "scenario": "account-switch",
+      "requests": [
+        {
+          "path": "start",
+          "method": "POST"
+        },
+        {
+          "path": "registrations?page=1",
+          "method": "GET"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "realTelegramWebView": "NOT VERIFIED"
+}

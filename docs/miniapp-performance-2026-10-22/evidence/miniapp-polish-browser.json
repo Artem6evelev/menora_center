@@ -1,0 +1,61 @@
+{
+  "environment": "Local Chromium + actual HTTP/session/SQL, synthetic signed Telegram SDK; no real Telegram sends or payments",
+  "checks": [
+    {
+      "name": "ru new ad entrant: event preview -> gate -> filter -> profile -> edit filter -> same event -> registration -> reload",
+      "status": "PASS"
+    },
+    {
+      "name": "ru returning ad entrant opens detail directly and retains registered state",
+      "status": "PASS"
+    },
+    {
+      "name": "he new ad entrant: event preview -> gate -> filter -> profile -> edit filter -> same event -> registration -> reload",
+      "status": "PASS"
+    },
+    {
+      "name": "he returning ad entrant opens detail directly and retains registered state",
+      "status": "PASS"
+    },
+    {
+      "name": "en new ad entrant: event preview -> gate -> filter -> profile -> edit filter -> same event -> registration -> reload",
+      "status": "PASS"
+    },
+    {
+      "name": "en returning ad entrant opens detail directly and retains registered state",
+      "status": "PASS"
+    },
+    {
+      "name": "legacy completed profile from an ad requires only the new filter and returns with confirmation",
+      "status": "PASS"
+    },
+    {
+      "name": "320 generic home is events-first, fixed icons/ratio, stable fallback, no opt-in card",
+      "status": "PASS"
+    },
+    {
+      "name": "390 generic home is events-first, fixed icons/ratio, stable fallback, no opt-in card",
+      "status": "PASS"
+    },
+    {
+      "name": "1280 generic home is events-first, fixed icons/ratio, stable fallback, no opt-in card",
+      "status": "PASS"
+    },
+    {
+      "name": "reduced viewport preserves focus and separates the form CTA, bottom navigation and safe area",
+      "status": "PASS"
+    },
+    {
+      "name": "announcement status failure is clear, secondary and offers no opt-in control",
+      "status": "PASS"
+    },
+    {
+      "name": "invalid ad link offers a clear error without bypassing filter",
+      "status": "PASS"
+    },
+    {
+      "name": "third category remains resources even with event ad hint",
+      "status": "PASS"
+    }
+  ]
+}

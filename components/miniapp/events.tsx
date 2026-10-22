@@ -6,22 +6,17 @@ import { miniAppUiCopy } from "@/lib/telegram/miniapp-ui-copy";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { MiniAppLanguage } from "@/lib/telegram/miniapp-i18n";
 import { eventCopy } from "@/lib/telegram/event-copy";
-import { miniAppRequest } from "@/lib/telegram/miniapp-client";
-import type { eventDto } from "@/lib/telegram/miniapp-events";
+import { miniAppRequest, MiniAppRequestError } from "@/lib/telegram/miniapp-client";
+import type { eventPreviewDto, miniAppEventDetail, MiniAppEventSelection } from "@/lib/telegram/miniapp-events";
+import { EventRegistrationForm } from "./event-registration-form";
+import type { MiniAppCache } from "@/lib/telegram/miniapp-cache";
+import type { MiniAppProfileData } from "@/lib/telegram/miniapp-profile";
 import { MiniAppContact } from "./contact";
+import { EventLaunchPreview } from "./event-entry";
+import type { MiniAppLaunch } from "@/lib/telegram/event-launch";
 
-type Event = ReturnType<typeof eventDto>;
-type Detail = {
-  registration: {
-    status: string;
-    amountAgorot: number | null;
-    paymentUrl: string | null;
-  } | null;
-  event: Event;
-  children: { id: string; name: string }[];
-  canRegisterChildren: boolean;
-  needsGiyurClarification: boolean;
-};
+type Event = ReturnType<typeof eventPreviewDto>;
+type Detail = Awaited<ReturnType<typeof miniAppEventDetail>>;
 type Registration = {
   id: string;
   event: Event;
@@ -29,78 +24,79 @@ type Registration = {
   amountAgorot: number | null;
   paymentUrl: string | null;
 };
-const money = (amount: number, language: MiniAppLanguage) =>
-  new Intl.NumberFormat("ru", {
-    style: "currency",
-    currency: "ILS",
-  }).format(amount / 100);
+const currency = new Intl.NumberFormat("ru", {style: "currency", currency: "ILS"});
+const money = (amount: number, _language: MiniAppLanguage) => currency.format(amount / 100);
 export default function MiniAppEvents({
   language,
   mode,
   onNested,
   openPayment,
   initialEvent,
-  onProfileChanged,
+  onProfileChanged, cache, initialPreview,
 }: {
   language: MiniAppLanguage;
   mode: "events" | "registrations";
   onNested: (back: (() => void) | null) => void;
   openPayment: (url: string) => void;
   initialEvent?: string;
-  onProfileChanged: () => Promise<void>;
+  initialPreview: MiniAppLaunch["event"];
+  onProfileChanged: (snapshot: MiniAppProfileData & { ok: true }) => boolean;
+  cache: MiniAppCache;
 }) {
   const c = eventCopy.ru, u = miniAppUiCopy.ru;
-  const [list, setList] = useState<Event[]>([]),
-    [registrations, setRegistrations] = useState<Registration[]>([]),
-    [detail, setDetail] = useState<Detail | null>(null);
+  const [list, setList] = useState<Event[]>(cache.peek<{events: Event[]}>("events?page=1")?.events ?? []),
+    [registrations, setRegistrations] = useState<Registration[]>(cache.peek<{registrations:Registration[]}>("registrations?page=1")?.registrations ?? []),
+    [detail, setDetail] = useState<Detail | null>(initialEvent ? cache.peek<Detail>(`events?id=${encodeURIComponent(initialEvent)}`) ?? null : null);
   const [page, setPage] = useState(1),
     [more, setMore] = useState(false),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(false),
-    [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState<string[]>([]),
-    [quote, setQuote] = useState<{
-      amountAgorot: number;
-      adults: number;
-      children: number;
-    } | null>(null);
-  const [receipt, setReceipt] = useState<Detail["registration"]>(null),
+    [loading, setLoading] = useState(() => initialEvent
+      ? !cache.peek(`events?id=${encodeURIComponent(initialEvent)}`)
+      : !cache.peek(`${mode}?page=1`));
+  const [selectionConflict, setSelectionConflict] = useState(false);
+  const [registrationOpen, setRegistrationOpen] = useState(false);
+  const [receipt, setReceipt] = useState<Detail["registration"]>(initialEvent ? cache.peek<Detail>(`events?id=${encodeURIComponent(initialEvent)}`)?.registration ?? null : null),
     [clarify, setClarify] = useState(false),
     [stage, setStage] = useState<"advanced" | "completed" | "">("");
   const [eventId, setEventId] = useState(initialEvent || "");
   const requestPending = useRef(false);
+  const alive = useRef(true);
+  useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
   const back = useCallback(() => {
     if (requestPending.current) return;
     setEventId("");
+    setRegistrationOpen(false);
     setDetail(null);
     setReceipt(null);
-    setQuote(null);
+    setSelectionConflict(false);
     setError(false);
-  }, []);
+    setLoading(!cache.peek(`${mode}?page=1`));
+  }, [cache, mode]);
   useEffect(() => {
     onNested(eventId ? back : null);
     return () => onNested(null);
   }, [eventId, back, onNested]);
   const load = useCallback(
     async (next = 1, signal?: AbortSignal) => {
-      setLoading(true);
+      setLoading(!cache.peek(`${mode}?page=${next}`));
       setError(false);
       try {
         if (mode === "events") {
-          const { data } = await miniAppRequest<{
+          const data = await cache.read<{
             events: Event[];
             hasMore: boolean;
-          }>(`events?page=${next}`, { signal });
+          }>(`events?page=${next}`, signal);
           if (signal?.aborted) return;
           setList((old) =>
             next === 1 ? data.events : [...old, ...data.events],
           );
           setMore(data.hasMore);
         } else {
-          const { data } = await miniAppRequest<{
+          const data = await cache.read<{
             registrations: Registration[];
             hasMore: boolean;
-          }>(`registrations?page=${next}`, { signal });
+          }>(`registrations?page=${next}`, signal);
           if (signal?.aborted) return;
           setRegistrations((old) =>
             next === 1 ? data.registrations : [...old, ...data.registrations],
@@ -114,7 +110,7 @@ export default function MiniAppEvents({
         if (!signal?.aborted) setLoading(false);
       }
     },
-    [mode],
+    [mode, cache],
   );
   useEffect(() => {
     if (eventId) return;
@@ -124,47 +120,46 @@ export default function MiniAppEvents({
   }, [load, eventId]);
   const loadDetail = useCallback(async (signal?: AbortSignal) => {
     if (!eventId) return;
-    setLoading(true);
+    setLoading(!cache.peek(`events?id=${encodeURIComponent(eventId)}`));
     setError(false);
     try {
-      const { data } = await miniAppRequest<Detail>(
-        `events?id=${encodeURIComponent(eventId)}`, { signal },
+      const data = await cache.read<Detail>(
+        `events?id=${encodeURIComponent(eventId)}`, signal,
       );
       if (signal?.aborted) return;
       setDetail(data);
-      setSelected((old) =>
-        old.filter((id) => data.children.some((child) => child.id === id)),
-      );
-      setQuote(null);
+      setSelectionConflict(false);
       setReceipt(data.registration);
     } catch {
       if (!signal?.aborted) setError(true);
     } finally {
       if (!signal?.aborted) setLoading(false);
     }
-  }, [eventId]);
+  }, [eventId, cache]);
   useEffect(() => {
     const controller = new AbortController();
     void loadDetail(controller.signal);
     return () => controller.abort();
   }, [loadDetail]);
-  async function action(kind: "quote" | "register") {
+  async function register(selection: MiniAppEventSelection) {
     if (requestPending.current) return;
     requestPending.current = true;
     setBusy(true);
     setError(false);
+    setSelectionConflict(false);
     try {
       const { data } = await miniAppRequest<{
-        quote?: typeof quote;
         registration?: NonNullable<typeof receipt>;
-      }>("events", { body: { action: kind, eventId, childIds: selected } });
-      if (data.quote) setQuote(data.quote);
+      }>("events", { body: { action: "register", eventId, ...selection } });
+      if (!alive.current) return;
       if (data.registration) {
         setReceipt(data.registration);
-        await load();
+        cache.invalidate("registrations", `events?id=${encodeURIComponent(eventId)}`);
       }
-    } catch {
-      setError(true);
+    } catch (error) {
+      if (!alive.current) return;
+      if (error instanceof MiniAppRequestError && error.code === "pending_selection_conflict") setSelectionConflict(true);
+      else setError(true);
     } finally {
       requestPending.current = false;
       setBusy(false);
@@ -176,8 +171,9 @@ export default function MiniAppEvents({
     setBusy(true);
     setError(false);
     try {
-      await miniAppRequest("giyur", { body: { stage } });
-      await onProfileChanged();
+      const result = await miniAppRequest<MiniAppProfileData & { ok: true }>("giyur", { body: { stage } });
+      if (!alive.current || !onProfileChanged(result.data)) return;
+      cache.invalidate("kids", "events", "registrations");
       setClarify(false);
       await loadDetail();
     } catch {
@@ -193,7 +189,10 @@ export default function MiniAppEvents({
   const pendingPayment = !!receipt && !detail?.event.isFree && receipt.status === "pending";
   const confirmed = !!receipt && ["paid", "confirmed"].includes(receipt.status);
   function pay(url: string) {
-    try { openPayment(url); } catch { setError(true); }
+    try {
+      cache.invalidate("registrations", `events?id=${encodeURIComponent(eventId)}`);
+      openPayment(url);
+    } catch { setError(true); }
   }
   return (
     <div className="space-y-5" data-miniapp-events={mode}>
@@ -221,8 +220,12 @@ export default function MiniAppEvents({
           </button>
         </div>
       )}
+      {selectionConflict && <div role="alert" className="miniapp-error" data-pending-selection-conflict>
+        <p>У вас уже есть регистрация, ожидающая оплаты, с другим составом участников. Для изменения свяжитесь с Menorah Center.</p>
+        <MiniAppContact label="Связаться с Menorah Center · WhatsApp" />
+      </div>}
       {loading && !detail && (
-        <EventSkeleton label={u.loading} detail={!!eventId} />
+        eventId && initialPreview?.id === eventId ? <EventLaunchPreview event={initialPreview} language={language} /> : <EventSkeleton label={u.loading} detail={!!eventId} />
       )}
       {eventId && detail ? (
         <article id="miniapp-event" className="miniapp-event-detail miniapp-enter" data-event-detail={detail.event.id}>
@@ -231,7 +234,7 @@ export default function MiniAppEvents({
             <h1>{detail.event.title}</h1>
             <EventMeta event={detail.event} language={language} />
             <EventShareButton key={detail.event.id} event={detail.event} language={language} />
-            {(receipt || !detail.event.isRegistrationClosed) && <a className="miniapp-primary w-full" href={receipt ? "#miniapp-receipt" : "#miniapp-participants"}>{pendingPayment ? "Осталось оплатить" : receipt ? u.myRegistration : u.join}</a>}
+            {(receipt || !detail.event.isRegistrationClosed) && <a className="miniapp-primary w-full" href={receipt ? "#miniapp-receipt" : "#miniapp-participants"} onClick={() => { if (!receipt) setRegistrationOpen(true); }}>{pendingPayment ? "Осталось оплатить" : receipt ? u.myRegistration : u.join}</a>}
             {pendingPayment && <p className="miniapp-status miniapp-status-pending">🟡 Регистрация создана</p>}
             {detail.event.description && <details className="miniapp-description" open>
               <summary>{u.about}</summary><p>{detail.event.description.replace(/<\/(?:p|div)>|<br\s*\/?>/gi, "\n").replace(/<[^>]*>/g, "")}</p>
@@ -263,30 +266,8 @@ export default function MiniAppEvents({
             </div>
           ) : detail.event.isRegistrationClosed ? <p className="miniapp-error">{c.closed}</p> : (
             <>
-              <fieldset id="miniapp-participants" className="space-y-3" disabled={busy}>
-                <legend className="font-bold mb-3">{c.participants}</legend>
-                <label className="miniapp-selection">
-                  <input type="checkbox" checked disabled />
-                  {c.self}
-                </label>
-                {detail.children.map((child) => (
-                  <label key={child.id} className="miniapp-selection">
-                    <input
-                      type="checkbox"
-                      checked={selected.includes(child.id)}
-                      onChange={(e) => {
-                        setSelected((old) =>
-                          e.target.checked
-                            ? [...old, child.id]
-                            : old.filter((id) => id !== child.id),
-                        );
-                        setQuote(null);
-                      }}
-                    />
-                    {child.name}
-                  </label>
-                ))}
-              </fieldset>
+              {registrationOpen && <>
+              <EventRegistrationForm key={detail.event.id} detail={detail} busy={busy} onRegister={selection => void register(selection)} />
               {detail.needsGiyurClarification && (
                 <button
                   className="miniapp-text-action"
@@ -319,30 +300,7 @@ export default function MiniAppEvents({
                   </button>
                 </fieldset>
               )}
-              <button
-                className="miniapp-primary w-full"
-                disabled={busy}
-                onClick={() => void action("quote")}
-              >
-                {c.calculate}
-              </button>
-              {quote && (
-                <div className="space-y-3 miniapp-form-actions" data-calculated-total>
-                  <p>
-                    {c.adult}: {quote.adults} · {c.child}: {quote.children}
-                  </p>
-                  <p className="miniapp-total">
-                    {c.total}: <bdi>{money(quote.amountAgorot, language)}</bdi>
-                  </p>
-                  <button
-                    className="miniapp-primary w-full"
-                    disabled={busy}
-                    onClick={() => void action("register")}
-                  >
-                    {c.register}
-                  </button>
-                </div>
-              )}
+              </>}
             </>
           )}
           </div>
