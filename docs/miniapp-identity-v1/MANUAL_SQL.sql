@@ -30,12 +30,13 @@ END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS user_identities_provider_subject_idx
   ON public.user_identities(provider, provider_instance, provider_user_id);
-CREATE UNIQUE INDEX IF NOT EXISTS user_identities_user_provider_idx
-  ON public.user_identities(user_id, provider, provider_instance);
+CREATE UNIQUE INDEX IF NOT EXISTS user_identities_active_clerk_per_user_idx
+  ON public.user_identities(user_id)
+  WHERE provider = 'clerk' AND disabled_at IS NULL;
 
 CREATE TABLE IF NOT EXISTS public.telegram_contacts (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id text NOT NULL UNIQUE REFERENCES public.users(id) ON DELETE CASCADE,
+  user_id text NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
   telegram_user_id text NOT NULL UNIQUE,
   telegram_chat_id text UNIQUE,
   username text,
@@ -44,6 +45,7 @@ CREATE TABLE IF NOT EXISTS public.telegram_contacts (
   language_code text,
   photo_url text,
   allows_write_to_pm boolean NOT NULL DEFAULT false,
+  is_primary boolean NOT NULL DEFAULT true,
   marketing_status text NOT NULL DEFAULT 'unknown',
   marketing_opt_in_at timestamptz,
   unsubscribed_at timestamptz,
@@ -58,13 +60,17 @@ CREATE TABLE IF NOT EXISTS public.telegram_contacts (
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 
-DO $$ BEGIN
+DO $ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'telegram_contacts_marketing_status_check') THEN
     ALTER TABLE public.telegram_contacts
       ADD CONSTRAINT telegram_contacts_marketing_status_check
       CHECK (marketing_status IN ('unknown', 'subscribed', 'unsubscribed', 'blocked'));
   END IF;
-END $$;
+END $;
+
+CREATE UNIQUE INDEX IF NOT EXISTS telegram_contacts_one_primary_per_user_idx
+  ON public.telegram_contacts(user_id)
+  WHERE is_primary = true;
 
 CREATE TABLE IF NOT EXISTS public.user_identity_link_attempts (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -118,9 +124,9 @@ FROM public.users u
 WHERE u.id LIKE 'user\_%' ESCAPE '\'
 ON CONFLICT (provider, provider_instance, provider_user_id)
 DO UPDATE SET
-  user_id = EXCLUDED.user_id,
   last_seen_at = GREATEST(public.user_identities.last_seen_at, EXCLUDED.last_seen_at),
-  disabled_at = EXCLUDED.disabled_at;
+  disabled_at = EXCLUDED.disabled_at
+WHERE public.user_identities.user_id = EXCLUDED.user_id;
 
 -- Existing Telegram rows: old /start stored private chat id. Do not infer any new affiliation.
 INSERT INTO public.telegram_contacts (
@@ -158,8 +164,8 @@ SELECT
 FROM public.telegram_contacts tc
 ON CONFLICT (provider, provider_instance, provider_user_id)
 DO UPDATE SET
-  user_id = EXCLUDED.user_id,
-  last_seen_at = GREATEST(public.user_identities.last_seen_at, EXCLUDED.last_seen_at);
+  last_seen_at = GREATEST(public.user_identities.last_seen_at, EXCLUDED.last_seen_at)
+WHERE public.user_identities.user_id = EXCLUDED.user_id;
 
 -- Remove only the exact fake email pattern created by the legacy bot.
 UPDATE public.users
