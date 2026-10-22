@@ -27,15 +27,15 @@
     }
   ],
   "baselineBytes": 534836,
-  "initialBytes": 517334,
+  "initialBytes": 517336,
   "baselineGzip": 165643,
-  "initialGzip": 161743,
+  "initialGzip": 161755,
   "deferredChunks": [
     {
       "screen": "./events",
-      "file": "static/chunks/4723.f965859ac7522317.js",
-      "bytes": 9590,
-      "estimatedGzipBytes": 3197
+      "file": "static/chunks/8588.8463779c9c6de656.js",
+      "bytes": 13542,
+      "estimatedGzipBytes": 4478
     },
     {
       "screen": "./kids",

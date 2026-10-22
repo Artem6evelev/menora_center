@@ -1,7 +1,7 @@
 /* Real local UI/API/SQL; payment links are intercepted, never paid or opened externally. */
 const fs = require('node:fs'), path = require('node:path'), assert = require('node:assert/strict');
 const { chromium } = require('/tmp/menora-browser-runtime/node_modules/playwright');
-const { installSdk } = require('./miniapp-ui-sdk.cjs');
+const { installSdk, openEventRegistration } = require('./miniapp-ui-sdk.cjs');
 const base = 'http://127.0.0.1:3342', out = process.env.COMMUNITY_TEST_OUTPUT || '/tmp/menora-kids-entry-evidence/payment-browser';
 const checks = [], errors = []; let browser, id = 788500;
 async function test(name, run) { await run(); checks.push({ name, status: 'PASS' }); console.log('PASS ' + name); }
@@ -19,9 +19,10 @@ async function state(context, subject, mode = 'inspect') {
   assert.equal(response.status(), 200, await response.text()); const data = await response.json(); assert.equal(data.testDatabase, 'isolated-pglite'); return data;
 }
 async function register(page, child = false) {
+  await openEventRegistration(page);
   if (child) await page.locator('#miniapp-participants input[type=checkbox]').nth(1).check();
-  await page.getByRole('button', { name: 'Рассчитать стоимость', exact: true }).click();
-  await page.locator('[data-calculated-total]').waitFor(); await page.getByRole('button', { name: 'Подтвердить запись', exact: true }).click();
+
+  await page.locator('[data-calculated-total]').waitFor(); await page.locator('[data-calculated-total] button').click();
   await page.locator('[data-payment-handoff]').waitFor();
 }
 async function pending(page) {

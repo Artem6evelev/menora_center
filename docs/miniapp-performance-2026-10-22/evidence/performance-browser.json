@@ -78,27 +78,27 @@
       "marks": [
         {
           "name": "miniapp:sdk-ready",
-          "startTime": 5007.70000000298
+          "startTime": 489.69999998807907
         },
         {
           "name": "miniapp:start-request",
-          "startTime": 5009.399999991059
+          "startTime": 489.8999999910593
         },
         {
           "name": "miniapp:start-response",
-          "startTime": 5315.899999991059
+          "startTime": 508.3999999910593
         },
         {
           "name": "miniapp:ready",
-          "startTime": 5316.0999999940395
+          "startTime": 508.5
         },
         {
           "name": "miniapp:home-content",
-          "startTime": 5557.79999999702
+          "startTime": 533.7999999970198
         },
         {
           "name": "miniapp:home-content",
-          "startTime": 5566.79999999702
+          "startTime": 534.3999999910593
         }
       ]
     },
@@ -121,27 +121,27 @@
       "marks": [
         {
           "name": "miniapp:sdk-ready",
-          "startTime": 3498.7999999970198
+          "startTime": 464.5
         },
         {
           "name": "miniapp:start-request",
-          "startTime": 3499.8999999910593
+          "startTime": 464.8999999910593
         },
         {
           "name": "miniapp:start-response",
-          "startTime": 3796.2999999970198
+          "startTime": 480.29999999701977
         },
         {
           "name": "miniapp:ready",
-          "startTime": 3796.7999999970198
+          "startTime": 480.3999999910593
         },
         {
           "name": "miniapp:home-content",
-          "startTime": 3999.2000000029802
+          "startTime": 505.09999999403954
         },
         {
           "name": "miniapp:home-content",
-          "startTime": 4006.2999999970198
+          "startTime": 505.70000000298023
         }
       ]
     },
@@ -199,10 +199,8 @@
       ],
       "db": {
         "testDatabase": "isolated-pglite",
-        "operations": 2,
-        "kinds": {
-          "SELECT": 2
-        },
+        "operations": 0,
+        "kinds": {},
         "locked": 0
       }
     },

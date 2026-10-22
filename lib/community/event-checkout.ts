@@ -14,6 +14,9 @@ import type {
   MiniAppUser,
 } from "@/lib/telegram/miniapp-user";
 
+/** Same public website message; Mini App can distinguish an immutable pending selection. */
+export class EventSelectionConflictError extends CommunityError {}
+
 export function eventVisible(
   user: MiniAppUser,
   _event: typeof events.$inferSelect,
@@ -131,10 +134,13 @@ export async function checkoutEvent(
       if (
         attempt.userId !== user.id ||
         attempt.eventId !== eventId ||
-        attempt.status !== "pending" ||
-        attempt.selectionHash !== selectionHash
+        attempt.status !== "pending"
       )
         throw new CommunityError(
+          "Уже есть ожидающая оплаты запись с другим составом. Обратитесь к администратору.",
+        );
+      if (attempt.selectionHash !== selectionHash)
+        throw new EventSelectionConflictError(
           "Уже есть ожидающая оплаты запись с другим составом. Обратитесь к администратору.",
         );
       return {

@@ -11,10 +11,12 @@ import {
 } from "@/lib/db/schema";
 import { communityAccess } from "@/lib/community/policy";
 import { profileChildren } from "@/lib/community/children";
+import { registrationInput } from "@/lib/community/validation";
 import {
   calculateEvent,
   checkoutEvent,
   eventVisible,
+  EventSelectionConflictError,
 } from "@/lib/community/event-checkout";
 import { CommunityError } from "@/lib/community/errors";
 import { telegramLog } from "./safety";
@@ -26,9 +28,14 @@ const input = z
   .object({
     action: z.enum(["quote", "register"]),
     eventId: z.string().min(1).max(150),
-    childIds: z.array(z.string().max(150)).max(30).default([]),
+    spouse: z.boolean().default(false),
+    childIds: registrationInput.shape.childIds.unwrap().default([])
+      .refine(ids => new Set(ids).size === ids.length),
+    extraAdults: registrationInput.shape.extraAdults,
   })
   .strict();
+export type MiniAppEventSelection = Pick<z.output<typeof input>, "spouse" | "childIds" | "extraAdults">;
+export type MiniAppEventQuote = Awaited<ReturnType<typeof calculateEvent>>["breakdown"];
 const previewFields = { id: events.id, title: events.title, imageUrl: events.imageUrl, date: events.date, time: events.time, location: events.location, isFree: events.isFree, price: events.price, isRegistrationClosed: events.isRegistrationClosed, status: events.status };
 type PreviewSource = Pick<typeof events.$inferSelect, keyof typeof previewFields>;
 export const eventPreviewDto = (event: PreviewSource, shareUrl: string | null = null) => ({
@@ -127,6 +134,9 @@ export async function miniAppEventDetail(
   return {
     event: eventDto(event, await canonicalTelegramEventShareLink(tx, event.id)),
     registration,
+    firstName: user.firstName,
+    spouseName: user.spouseName,
+    extraAdultsLimit: registrationInput.shape.extraAdults.removeDefault().maxValue ?? 0,
     children: access.canRegisterChildren
       ? profileChildren(user.id, user.childrenData).map((c) => ({
           id: c.id,
@@ -149,9 +159,9 @@ export async function miniAppEventAction(
   if (!parsed.success) throw new MiniAppAuthError(400, "invalid_selection");
   const body = parsed.data,
     selection = {
-      family: { self: true },
+      family: { self: true, ...(body.spouse ? { spouse: true } : {}) },
       childIds: body.childIds,
-      extraAdults: 0,
+      extraAdults: body.extraAdults,
       extraKids: 0,
     };
   try {
@@ -166,6 +176,8 @@ export async function miniAppEventAction(
       });
     return { registration: { ...registration, paymentUrl: paymentLink(registration.paymentUrl) } };
   } catch (error) {
+    if (error instanceof EventSelectionConflictError)
+      throw new MiniAppAuthError(409, "pending_selection_conflict");
     if (error instanceof CommunityError)
       throw new MiniAppAuthError(409, "registration_unavailable");
     throw error;

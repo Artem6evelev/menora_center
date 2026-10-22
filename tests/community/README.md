@@ -225,3 +225,27 @@ Query plans use only the migrated isolated catalogue and explicitly label forced
 plans; they are not production EXPLAIN ANALYZE or production latency measurements.
 
 For long performance cohorts the disposable fixture retains compiled dev routes for one hour (`onDemandEntries`), avoiding inactive-entry recompilation during UI interaction deadlines. This does not change production config or the instance data-cache TTL. UI helpers also consume the actual website SSR response immediately before the shared website integration cases. No permission/interaction assertion is skipped; startup counts and production bundle/image measurements remain separate from dev compilation time.
+
+## Event participant website parity (23 October 2026)
+
+`telegram-release.cjs` and `telegram-native.cjs` now also run
+`event-participant-parity-cases.cjs`: the real Mini App routes, canonical
+`prepareEventRegistration` / `calculateEvent` / `checkoutEvent`, saved payment attempts,
+Shutafim parameters and the unchanged website action. Foreign/duplicate children,
+community restrictions, strict untrusted input, free events and immutable pending selections
+are covered without a real payment or remote database.
+
+After preparing the isolated performance fixture above, run browser cohorts sequentially:
+
+```sh
+COMMUNITY_TEST_OUTPUT=/tmp/menora-participant-parity-evidence node tests/community/miniapp-participant-parity-browser.cjs
+```
+
+`MINIAPP_BROWSER_BASE` may select another loopback fixture URL. The fixture's
+synthetic `NEXT_PUBLIC_APP_URL` and server port must match. The new browser suite
+checks that viewing an event sends no quote before the signup CTA, then exercises
+200ms quote coalescing, stale-response cancellation, retry without profile/detail reload,
+0..20 guests, saved spouse/children, free registration and pending conflict WhatsApp recovery.
+Only the server quote supplies displayed totals; register submits participant selection only.
+The SDK/openLink and Clerk adapters are synthetic; this is not a genuine Telegram WebView,
+OAuth or payment confirmation acceptance.

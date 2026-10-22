@@ -2,9 +2,9 @@
   "environment": "Local production build, Chromium ordinary browser; external requests blocked",
   "files": [
     {
-      "path": "/_next/static/chunks/webpack-6ecd482146a8d272.js",
-      "bytes": 3934,
-      "gzipBytes": 2081,
+      "path": "/_next/static/chunks/webpack-fe24f9d42c15ac0d.js",
+      "bytes": 3935,
+      "gzipBytes": 2082,
       "clerkMarkers": false
     },
     {
@@ -14,27 +14,15 @@
       "clerkMarkers": false
     },
     {
-      "path": "/_next/static/chunks/app/layout-942d0ac7a1934b2e.js",
-      "bytes": 4314,
-      "gzipBytes": 1561,
+      "path": "/_next/static/chunks/app/layout-532a5d50f45543b1.js",
+      "bytes": 4315,
+      "gzipBytes": 1564,
       "clerkMarkers": false
     },
     {
       "path": "/_next/static/chunks/3325-ed2672df2dd4ab8e.js",
       "bytes": 8734,
       "gzipBytes": 3537,
-      "clerkMarkers": false
-    },
-    {
-      "path": "/_next/static/chunks/ede2bfcf-15079e27cafd9025.js",
-      "bytes": 198491,
-      "gzipBytes": 62455,
-      "clerkMarkers": false
-    },
-    {
-      "path": "/_next/static/chunks/7410-7532529b6325e1dc.js",
-      "bytes": 188536,
-      "gzipBytes": 51885,
       "clerkMarkers": false
     },
     {
@@ -50,32 +38,44 @@
       "clerkMarkers": false
     },
     {
-      "path": "/_next/static/chunks/app/miniapp/error-1ac37ead03d950c5.js",
+      "path": "/_next/static/chunks/7410-7532529b6325e1dc.js",
+      "bytes": 188536,
+      "gzipBytes": 51885,
+      "clerkMarkers": false
+    },
+    {
+      "path": "/_next/static/chunks/app/miniapp/error-cc80a2b484a0dcb7.js",
       "bytes": 17098,
-      "gzipBytes": 6630,
+      "gzipBytes": 6632,
       "clerkMarkers": false
     },
     {
-      "path": "/_next/static/chunks/5368-ea8dc8d4c02babf6.js",
+      "path": "/_next/static/chunks/ede2bfcf-15079e27cafd9025.js",
+      "bytes": 198491,
+      "gzipBytes": 62455,
+      "clerkMarkers": false
+    },
+    {
+      "path": "/_next/static/chunks/5368-693dcbac95a1fab2.js",
       "bytes": 7880,
-      "gzipBytes": 3062,
+      "gzipBytes": 3069,
       "clerkMarkers": false
     },
     {
-      "path": "/_next/static/chunks/app/miniapp/page-b37916f7b9fff75a.js",
+      "path": "/_next/static/chunks/app/miniapp/page-fbba6da9f26f5044.js",
       "bytes": 204,
       "gzipBytes": 176,
       "clerkMarkers": false
     },
     {
-      "path": "/_next/static/chunks/2317-b2d468fde835fed0.js",
+      "path": "/_next/static/chunks/2317-3bd582bd180c58f6.js",
       "bytes": 58255,
-      "gzipBytes": 18972,
+      "gzipBytes": 18971,
       "clerkMarkers": false
     }
   ],
-  "totalBytes": 517334,
-  "estimatedGzipBytes": 161743,
+  "totalBytes": 517336,
+  "estimatedGzipBytes": 161755,
   "note": "Includes framework/shared JS; compressed bytes estimated locally, not actual network/device metrics.",
   "checks": [
     {

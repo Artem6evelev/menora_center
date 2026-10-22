@@ -6,8 +6,9 @@ import { miniAppUiCopy } from "@/lib/telegram/miniapp-ui-copy";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { MiniAppLanguage } from "@/lib/telegram/miniapp-i18n";
 import { eventCopy } from "@/lib/telegram/event-copy";
-import { miniAppRequest } from "@/lib/telegram/miniapp-client";
-import type { eventPreviewDto, eventDetailDto } from "@/lib/telegram/miniapp-events";
+import { miniAppRequest, MiniAppRequestError } from "@/lib/telegram/miniapp-client";
+import type { eventPreviewDto, miniAppEventDetail, MiniAppEventSelection } from "@/lib/telegram/miniapp-events";
+import { EventRegistrationForm } from "./event-registration-form";
 import type { MiniAppCache } from "@/lib/telegram/miniapp-cache";
 import type { MiniAppProfileData } from "@/lib/telegram/miniapp-profile";
 import { MiniAppContact } from "./contact";
@@ -15,17 +16,7 @@ import { EventLaunchPreview } from "./event-entry";
 import type { MiniAppLaunch } from "@/lib/telegram/event-launch";
 
 type Event = ReturnType<typeof eventPreviewDto>;
-type Detail = {
-  registration: {
-    status: string;
-    amountAgorot: number | null;
-    paymentUrl: string | null;
-  } | null;
-  event: ReturnType<typeof eventDetailDto>;
-  children: { id: string; name: string }[];
-  canRegisterChildren: boolean;
-  needsGiyurClarification: boolean;
-};
+type Detail = Awaited<ReturnType<typeof miniAppEventDetail>>;
 type Registration = {
   id: string;
   event: Event;
@@ -63,12 +54,8 @@ export default function MiniAppEvents({
     [loading, setLoading] = useState(() => initialEvent
       ? !cache.peek(`events?id=${encodeURIComponent(initialEvent)}`)
       : !cache.peek(`${mode}?page=1`));
-  const [selected, setSelected] = useState<string[]>([]),
-    [quote, setQuote] = useState<{
-      amountAgorot: number;
-      adults: number;
-      children: number;
-    } | null>(null);
+  const [selectionConflict, setSelectionConflict] = useState(false);
+  const [registrationOpen, setRegistrationOpen] = useState(false);
   const [receipt, setReceipt] = useState<Detail["registration"]>(initialEvent ? cache.peek<Detail>(`events?id=${encodeURIComponent(initialEvent)}`)?.registration ?? null : null),
     [clarify, setClarify] = useState(false),
     [stage, setStage] = useState<"advanced" | "completed" | "">("");
@@ -79,9 +66,10 @@ export default function MiniAppEvents({
   const back = useCallback(() => {
     if (requestPending.current) return;
     setEventId("");
+    setRegistrationOpen(false);
     setDetail(null);
     setReceipt(null);
-    setQuote(null);
+    setSelectionConflict(false);
     setError(false);
     setLoading(!cache.peek(`${mode}?page=1`));
   }, [cache, mode]);
@@ -140,10 +128,7 @@ export default function MiniAppEvents({
       );
       if (signal?.aborted) return;
       setDetail(data);
-      setSelected((old) =>
-        old.filter((id) => data.children.some((child) => child.id === id)),
-      );
-      setQuote(null);
+      setSelectionConflict(false);
       setReceipt(data.registration);
     } catch {
       if (!signal?.aborted) setError(true);
@@ -156,24 +141,25 @@ export default function MiniAppEvents({
     void loadDetail(controller.signal);
     return () => controller.abort();
   }, [loadDetail]);
-  async function action(kind: "quote" | "register") {
+  async function register(selection: MiniAppEventSelection) {
     if (requestPending.current) return;
     requestPending.current = true;
     setBusy(true);
     setError(false);
+    setSelectionConflict(false);
     try {
       const { data } = await miniAppRequest<{
-        quote?: typeof quote;
         registration?: NonNullable<typeof receipt>;
-      }>("events", { body: { action: kind, eventId, childIds: selected } });
+      }>("events", { body: { action: "register", eventId, ...selection } });
       if (!alive.current) return;
-      if (data.quote) setQuote(data.quote);
       if (data.registration) {
         setReceipt(data.registration);
         cache.invalidate("registrations", `events?id=${encodeURIComponent(eventId)}`);
       }
-    } catch {
-      setError(true);
+    } catch (error) {
+      if (!alive.current) return;
+      if (error instanceof MiniAppRequestError && error.code === "pending_selection_conflict") setSelectionConflict(true);
+      else setError(true);
     } finally {
       requestPending.current = false;
       setBusy(false);
@@ -234,6 +220,10 @@ export default function MiniAppEvents({
           </button>
         </div>
       )}
+      {selectionConflict && <div role="alert" className="miniapp-error" data-pending-selection-conflict>
+        <p>У вас уже есть регистрация, ожидающая оплаты, с другим составом участников. Для изменения свяжитесь с Menorah Center.</p>
+        <MiniAppContact label="Связаться с Menorah Center · WhatsApp" />
+      </div>}
       {loading && !detail && (
         eventId && initialPreview?.id === eventId ? <EventLaunchPreview event={initialPreview} language={language} /> : <EventSkeleton label={u.loading} detail={!!eventId} />
       )}
@@ -244,7 +234,7 @@ export default function MiniAppEvents({
             <h1>{detail.event.title}</h1>
             <EventMeta event={detail.event} language={language} />
             <EventShareButton key={detail.event.id} event={detail.event} language={language} />
-            {(receipt || !detail.event.isRegistrationClosed) && <a className="miniapp-primary w-full" href={receipt ? "#miniapp-receipt" : "#miniapp-participants"}>{pendingPayment ? "Осталось оплатить" : receipt ? u.myRegistration : u.join}</a>}
+            {(receipt || !detail.event.isRegistrationClosed) && <a className="miniapp-primary w-full" href={receipt ? "#miniapp-receipt" : "#miniapp-participants"} onClick={() => { if (!receipt) setRegistrationOpen(true); }}>{pendingPayment ? "Осталось оплатить" : receipt ? u.myRegistration : u.join}</a>}
             {pendingPayment && <p className="miniapp-status miniapp-status-pending">🟡 Регистрация создана</p>}
             {detail.event.description && <details className="miniapp-description" open>
               <summary>{u.about}</summary><p>{detail.event.description.replace(/<\/(?:p|div)>|<br\s*\/?>/gi, "\n").replace(/<[^>]*>/g, "")}</p>
@@ -276,30 +266,8 @@ export default function MiniAppEvents({
             </div>
           ) : detail.event.isRegistrationClosed ? <p className="miniapp-error">{c.closed}</p> : (
             <>
-              <fieldset id="miniapp-participants" className="space-y-3" disabled={busy}>
-                <legend className="font-bold mb-3">{c.participants}</legend>
-                <label className="miniapp-selection">
-                  <input type="checkbox" checked disabled />
-                  {c.self}
-                </label>
-                {detail.children.map((child) => (
-                  <label key={child.id} className="miniapp-selection">
-                    <input
-                      type="checkbox"
-                      checked={selected.includes(child.id)}
-                      onChange={(e) => {
-                        setSelected((old) =>
-                          e.target.checked
-                            ? [...old, child.id]
-                            : old.filter((id) => id !== child.id),
-                        );
-                        setQuote(null);
-                      }}
-                    />
-                    {child.name}
-                  </label>
-                ))}
-              </fieldset>
+              {registrationOpen && <>
+              <EventRegistrationForm key={detail.event.id} detail={detail} busy={busy} onRegister={selection => void register(selection)} />
               {detail.needsGiyurClarification && (
                 <button
                   className="miniapp-text-action"
@@ -332,30 +300,7 @@ export default function MiniAppEvents({
                   </button>
                 </fieldset>
               )}
-              <button
-                className="miniapp-primary w-full"
-                disabled={busy}
-                onClick={() => void action("quote")}
-              >
-                {c.calculate}
-              </button>
-              {quote && (
-                <div className="space-y-3 miniapp-form-actions" data-calculated-total>
-                  <p>
-                    {c.adult}: {quote.adults} · {c.child}: {quote.children}
-                  </p>
-                  <p className="miniapp-total">
-                    {c.total}: <bdi>{money(quote.amountAgorot, language)}</bdi>
-                  </p>
-                  <button
-                    className="miniapp-primary w-full"
-                    disabled={busy}
-                    onClick={() => void action("register")}
-                  >
-                    {c.register}
-                  </button>
-                </div>
-              )}
+              </>}
             </>
           )}
           </div>

@@ -17,5 +17,6 @@
     "poolerLocationHint": "eu-central-1",
     "poolerHintIsAuthoritativeProjectRegion": false
   },
-  "settingsChanged": false
+  "settingsChanged": false,
+  "evidenceOrigin": "Inherited from performance pass dated 2026-10-22, commit c5fd4026471e524c9c6677aa4888447253698553; observation timestamp not recorded; not re-queried in participant parity work"
 }

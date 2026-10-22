@@ -1,0 +1,8 @@
+{
+  "ownedHTTPPortsStopped": [
+    3352,
+    3353
+  ],
+  "nativeClustersStopped": true,
+  "existing3342and3343Untouched": true
+}

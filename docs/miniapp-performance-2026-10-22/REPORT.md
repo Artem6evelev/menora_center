@@ -2,6 +2,8 @@
 
 Дата ТЗ: 22.10.2026, завершение проверок: 23.10.2026. База: `main`, `b2ebdb37970df29eb6a5614fe0e766b889c81baf`, исходное дерево CLEAN. Один локальный performance-коммит; push/deploy не выполняются. Production остаётся на базе b2ebdb3. [Baseline до правок](BASELINE.md).
 
+Исходная приёмка performance pass сохранена из локального `c5fd4026471e524c9c6677aa4888447253698553`; результаты дополнения регистрации23.10 перечислены отдельно в итоговом отчёте.
+
 ## Изменения и причины
 
 `POST /api/telegram/miniapp/start` заменяет runtime-цепочку session → bootstrap при401 → profile → launch → Home events/subscription. Ответ содержит канонические анкету/opaque profileVersion, статус анонсов, destination, bounded launch preview и максимум две компактные Home-карточки. Существующие endpoints сохранены для совместимости. Порядок карточек сохранён из существующей реализации (`createdAt DESC, id`); новый порядок событий в этом performance pass не вводится.
@@ -42,7 +44,7 @@ Returning Home SQL: **27 statements (23 SELECT/4 UPDATE,14 locked) →5 SELECT/0
 
 Account switch baseline без reload не запускал новый запрос и не подтверждал переход на другой профиль; теперь activation с другим signed proof запускает1 новый start и очищает прежние snapshots/cache. Новый тест дополнительно удерживает старый registrations/start ответ и доказывает, что поздние данные не возвращаются на экран другого аккаунта.
 
-Initial production JS: **534836 →517334 bytes** (−17502,≈3.3%); estimated gzip **165643 →161743 bytes**. Основной изменившийся app/shared chunk:75903→58255 bytes. Framework/shared JS по-прежнему составляет большую часть initial payload, Clerk runtime не загружается. [Actual JS resources](evidence/bundle.json), [deferred chunk boundaries](evidence/deferred-chunks.json). Entry chunks Events/Kids/profile/resources отсутствуют в initial download; idle preload Events/Kids переносит часть JS на время после Home, не устраняет её стоимость целиком. Gzip оценён локально, не взят из CDN transfer size.
+Initial production JS итогового общего checkpoint23.10: **534836 →517336 bytes** (−17500,≈3.3%); estimated gzip **165643 →161755 bytes**. [Actual JS resources](evidence/bundle.json), [deferred chunk boundaries](evidence/deferred-chunks.json). Events, включая participant selector, Kids/profile/resources отсутствуют в initial download; idle preload Events/Kids переносит часть JS на время после Home, не устраняет её стоимость целиком. Gzip оценён локально, не взят из CDN transfer size. Это актуальный повтор после дополнения регистрации; прежние замеры до parity отличались на2 JS bytes и12 gzip bytes.
 
 ## Изображения и share
 
@@ -96,3 +98,17 @@ SQL counts — Drizzle statements без BEGIN/COMMIT, не измеренные
 Production Supabase, Vercel settings/env, Telegram webhook/menu/BotFather не менялись. Реальных сообщений/платежей нет; schema migration не требуется. Website локализация, утверждённые категории/детские права, оплата и share architecture сохранены.
 
 После публикации владельцем нужен smoke/замер на настоящем Telegram WebView и мобильной сети: cold/warm SDK→Home, afisha/Back/tabs, Kids, account switch, pending payment. Локальная эмуляция320/390 и synthetic SDK не засчитывается за такой замер. Production region остаётся отдельной неподтверждённой metadata-проверкой, а Kids owner index — отдельной задачей при подтверждённом объёме/plan. Новый общий production-аудит не проводился.
+
+
+## Общий локальный checkpoint 23 октября
+
+По отдельному дополнению владельца performance pass и website parity регистрации
+подготовлены одним локальным commit в отдельном worktree. Selector self/spouse/saved children/adult guests
+раскрывается по signup CTA; просмотр detail не запускает quote. Дальнейшие изменения отправляют
+только debounced server quote, без reload profile/detail. Суммы считает прежний canonical service;
+правила детей, схема, confirmation и website checkout не заменялись.
+
+[Итоговая приёмка и результаты общего checkpoint](../miniapp-event-participant-parity-2026-10-23/REPORT.md).
+Региональная metadata выше — сохранённое read-only наблюдение исходного performance pass;
+в дополнении23.10 account queries/settings не выполнялись. Новый отчёт отделяет эти сведения
+от выполненных локальных проверок. Реальный Telegram WebView и реальная оплата не подтверждены.
