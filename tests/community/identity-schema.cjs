@@ -14,7 +14,7 @@ const names=['user_identities','telegram_contacts','user_identity_link_attempts'
 const checks=[],evidence={environment:'isolated PGlite; synthetic data only',remoteDatabaseTouched:false,checks};
 let baselineSql;
 async function fresh(seed=true){
- const pg=new PGlite();await pg.exec(baselineSql);
+ const pg=new PGlite();await pg.exec(baselineSql);await require('./adoption-fixtures.cjs').seedHistoricalLedger(pg);
  await pg.exec('CREATE ROLE anon NOLOGIN; CREATE ROLE authenticated NOLOGIN;');
  if(seed)await pg.query(`INSERT INTO users(id,email,first_name,source,telegram_chat_id,children_data,affiliation,gender,filter_version,filter_completed_at)
  VALUES ('tg_101','tg_101@telegram.bot','Synthetic','telegram_bot','101','[{"id":"preserved-child","name":"Synthetic child"}]',NULL,NULL,NULL,NULL),
@@ -51,9 +51,9 @@ async function backendOnly(pg){
  try{
   const before=await users(pg),ticketBefore=(await pg.query('SELECT to_jsonb(p) AS value FROM event_participants p')).rows;
   await test('READ ONLY PRECHECK reports real counts and ambiguous Clerk IDs without modifying profiles',async()=>{
-   const result=await pg.exec(pre);evidence.precheckSynthetic=result[1].rows[0];
-   assert.equal(evidence.precheckSynthetic.total_users,5);assert.equal(evidence.precheckSynthetic.clerk_shaped_users,2);
-   assert.equal(evidence.precheckSynthetic.legacy_tg_users,2);assert.equal(evidence.precheckSynthetic.ambiguous_user_ids,1);
+   const result=await pg.exec(pre);evidence.precheckSynthetic=result[1].rows[0].precheck;
+   assert.equal(evidence.precheckSynthetic.legacy.users,5);assert.equal(evidence.precheckSynthetic.legacy.legacy_telegram_users,2);
+   assert.equal(evidence.precheckSynthetic.lineage,'legacy-ready');assert.equal(typeof evidence.precheckSynthetic.registration_baseline,'object');
    assert.deepEqual(await users(pg),before);
   });
   await test('manual upgrade keeps IDs/family/filter/paid history, clears only the exact fake address and imports no marketing consent or fresh verification',async()=>{
@@ -109,12 +109,13 @@ async function backendOnly(pg){
    await apply(pg);await rejected(pg,'DELETE FROM user_identity_merge_log',/append-only/);
   });
   await test('READ ONLY POSTCHECK confirms contacts/identity owners, unique subjects, RLS and no public effective grants',async()=>{
-   const snapshot=await identityRows(pg),result=await pg.exec(post);evidence.postcheckSynthetic=result[1].rows[0];
-   assert.equal(evidence.postcheckSynthetic.fake_emails_remaining,0);
-   for(const n of [2,3,4,5,6,7,8,9,10]){
-    if([5,6].includes(n))assert.equal(Object.values(result[n].rows[0])[0],0);
-    else assert.deepEqual(result[n].rows,[]);
-   }
+   const snapshot=await identityRows(pg),result=await pg.exec(post);evidence.postcheckSynthetic=result[1].rows[0].postcheck;
+   assert.equal(evidence.postcheckSynthetic.legacy.exact_fake_emails,0);
+   assert.equal(evidence.postcheckSynthetic.security.exposed_grants,0);
+   assert.equal(evidence.postcheckSynthetic.security.policies,0);
+   for(const key of ['wrong_contact_owner','invalid_primary_contacts','invalid_sessions','wrong_attempt_owner','orphan_deliveries','missing_legacy_contacts'])assert.equal(evidence.postcheckSynthetic.identity_integrity[key],0);
+   assert.equal(evidence.postcheckSynthetic.identity_integrity.audit_guard_enabled,true);
+   assert.equal(evidence.postcheckSynthetic.lineage,'legacy-adopted');
    assert.deepEqual(await identityRows(pg),snapshot);await backendOnly(pg);
   });
  }finally{await pg.close();}
@@ -125,7 +126,7 @@ async function backendOnly(pg){
  ])await test('PRECHECK detects '+name+' and manual migration refuses atomically',async()=>{
   const pg=await fresh(false);try{
    await pg.exec(seed);const before=await users(pg);const result=await pg.exec(pre);
-   assert.ok(result[2].rows.length||result[4].rows.length);await assert.rejects(apply(pg),/ambiguous|duplicate legacy/);
+   assert.equal(result[1].rows[0].precheck.assessment,'BLOCKER / UNKNOWN');await assert.rejects(apply(pg),/ambiguous|duplicate legacy/);
    assert.deepEqual(await users(pg),before);assert.equal((await pg.query("SELECT to_regclass('public.user_identities') AS table_name")).rows[0].table_name,null);
    assert.equal((await pg.query("SELECT is_nullable FROM information_schema.columns WHERE table_schema='public' AND table_name='users' AND column_name='email'")).rows[0].is_nullable,'NO');
   }finally{await pg.close();}

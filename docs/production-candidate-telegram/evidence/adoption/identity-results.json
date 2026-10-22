@@ -1,0 +1,328 @@
+{
+  "environment": "isolated PGlite; synthetic data only",
+  "remoteDatabaseTouched": false,
+  "checks": [
+    {
+      "name": "unified manual artifact matches the deterministic 0009 + 0010 builder without changing native history",
+      "status": "PASS"
+    },
+    {
+      "name": "READ ONLY PRECHECK reports real counts and ambiguous Clerk IDs without modifying profiles",
+      "status": "PASS"
+    },
+    {
+      "name": "manual upgrade keeps IDs/family/filter/paid history, clears only the exact fake address and imports no marketing consent or fresh verification",
+      "status": "PASS"
+    },
+    {
+      "name": "backend-only RLS and grants deny anon/authenticated despite inherited PUBLIC defaults",
+      "status": "PASS"
+    },
+    {
+      "name": "Telegram-first canonical users accept NULL email; provider/FK/primary/active Clerk invariants are enforced",
+      "status": "PASS"
+    },
+    {
+      "name": "link attempts store hash-only unique tokens with bounded lifetime and a consumption marker",
+      "status": "PASS"
+    },
+    {
+      "name": "rerun never resubscribes, reactivates, rewrites metadata or timestamps",
+      "status": "PASS"
+    },
+    {
+      "name": "future merged ownership with two Telegram identities/contacts survives rerun and keeps one primary",
+      "status": "PASS"
+    },
+    {
+      "name": "merge audit allows INSERT but rejects UPDATE/DELETE/TRUNCATE without requiring the source profile to survive",
+      "status": "PASS"
+    },
+    {
+      "name": "rerun restores the audit mutation guard if a privileged operator disabled it",
+      "status": "PASS"
+    },
+    {
+      "name": "READ ONLY POSTCHECK confirms contacts/identity owners, unique subjects, RLS and no public effective grants",
+      "status": "PASS"
+    },
+    {
+      "name": "PRECHECK detects negative group chat and manual migration refuses atomically",
+      "status": "PASS"
+    },
+    {
+      "name": "PRECHECK detects tg ID/chat mismatch and manual migration refuses atomically",
+      "status": "PASS"
+    },
+    {
+      "name": "PRECHECK detects duplicate subject without a proven mapping and manual migration refuses atomically",
+      "status": "PASS"
+    },
+    {
+      "name": "import can create multiple missing Telegram contacts for an already proven survivor with exactly one primary",
+      "status": "PASS"
+    },
+    {
+      "name": "incompatible partial rollout fails closed: wrong nullable/default contract",
+      "status": "PASS"
+    },
+    {
+      "name": "incompatible partial rollout fails closed: wrong default",
+      "status": "PASS"
+    },
+    {
+      "name": "incompatible partial rollout fails closed: wrong check with the expected name",
+      "status": "PASS"
+    },
+    {
+      "name": "incompatible partial rollout fails closed: wrong partial unique index",
+      "status": "PASS"
+    },
+    {
+      "name": "incompatible partial rollout fails closed: wrong foreign key",
+      "status": "PASS"
+    },
+    {
+      "name": "incompatible partial rollout fails closed: public policy",
+      "status": "PASS"
+    },
+    {
+      "name": "incompatible partial rollout fails closed: inherited grant",
+      "status": "PASS"
+    },
+    {
+      "name": "repeat removes direct table and column grants without altering existing records",
+      "status": "PASS"
+    }
+  ],
+  "precheckSynthetic": {
+    "ledger": {
+      "rows": 17,
+      "legacy_markers": 0,
+      "legacy_matches": 17,
+      "canonical_matches": 0
+    },
+    "legacy": {
+      "users": 5,
+      "invalid_telegram": 0,
+      "exact_fake_emails": 1,
+      "duplicate_subjects": 0,
+      "legacy_telegram_users": 2
+    },
+    "lineage": "legacy-ready",
+    "security": {
+      "policies": 0,
+      "exposed_grants": 0
+    },
+    "assessment": "SAFE TO ADOPT",
+    "core_schema": [
+      {
+        "table": "community_audit",
+        "compatible": true
+      },
+      {
+        "table": "community_registration_drafts",
+        "compatible": true
+      },
+      {
+        "table": "event_participants",
+        "compatible": true
+      },
+      {
+        "table": "events",
+        "compatible": true
+      },
+      {
+        "table": "kids_applications",
+        "compatible": true
+      },
+      {
+        "table": "users",
+        "compatible": true
+      }
+    ],
+    "release_head": "7bb5ce3b9bec0312661e3116697077eebc6cb0b2",
+    "query_indexes": [
+      {
+        "name": "event_participants_owner_event_idx",
+        "status": "NOT_PRESENT"
+      },
+      {
+        "name": "events_status_created_idx",
+        "status": "NOT_PRESENT"
+      }
+    ],
+    "release_schema": [
+      {
+        "table": "event_payment_attempts",
+        "status": "NOT_PRESENT"
+      },
+      {
+        "table": "telegram_broadcast_deliveries",
+        "status": "NOT_PRESENT"
+      },
+      {
+        "table": "telegram_broadcasts",
+        "status": "NOT_PRESENT"
+      },
+      {
+        "table": "telegram_campaigns",
+        "status": "NOT_PRESENT"
+      },
+      {
+        "table": "telegram_contacts",
+        "status": "NOT_PRESENT"
+      },
+      {
+        "table": "telegram_miniapp_sessions",
+        "status": "NOT_PRESENT"
+      },
+      {
+        "table": "telegram_updates",
+        "status": "NOT_PRESENT"
+      },
+      {
+        "table": "user_identities",
+        "status": "NOT_PRESENT"
+      },
+      {
+        "table": "user_identity_link_attempts",
+        "status": "NOT_PRESENT"
+      },
+      {
+        "table": "user_identity_merge_log",
+        "status": "NOT_PRESENT"
+      }
+    ],
+    "postgres_version": "180006",
+    "adoption_marker_hash": "10192f05e7746ee3a4b31c5c2cf426f1b0ea325300ede6ccc1f6db6c768e0d9e",
+    "registration_baseline": {
+      "fingerprint": "e3fbbb1235c44919df269df352deb80b",
+      "registrations": 1,
+      "orphan_user_references": 0,
+      "orphan_event_references": 0
+    },
+    "transaction_read_only": "on"
+  },
+  "postcheckSynthetic": {
+    "ledger": {
+      "rows": 18,
+      "legacy_markers": 1,
+      "legacy_matches": 17,
+      "canonical_matches": 0
+    },
+    "legacy": {
+      "users": 6,
+      "invalid_telegram": 0,
+      "exact_fake_emails": 0,
+      "duplicate_subjects": 0,
+      "legacy_telegram_users": 2
+    },
+    "lineage": "legacy-adopted",
+    "security": {
+      "policies": 0,
+      "exposed_grants": 0
+    },
+    "assessment": "BLOCKER",
+    "core_schema": [
+      {
+        "table": "community_audit",
+        "compatible": true
+      },
+      {
+        "table": "community_registration_drafts",
+        "compatible": true
+      },
+      {
+        "table": "event_participants",
+        "compatible": true
+      },
+      {
+        "table": "events",
+        "compatible": true
+      },
+      {
+        "table": "kids_applications",
+        "compatible": true
+      },
+      {
+        "table": "users",
+        "compatible": true
+      }
+    ],
+    "release_head": "7bb5ce3b9bec0312661e3116697077eebc6cb0b2",
+    "query_indexes": [
+      {
+        "name": "event_participants_owner_event_idx",
+        "status": "COMPATIBLE"
+      },
+      {
+        "name": "events_status_created_idx",
+        "status": "COMPATIBLE"
+      }
+    ],
+    "release_schema": [
+      {
+        "table": "event_payment_attempts",
+        "status": "COMPATIBLE"
+      },
+      {
+        "table": "telegram_broadcast_deliveries",
+        "status": "COMPATIBLE"
+      },
+      {
+        "table": "telegram_broadcasts",
+        "status": "COMPATIBLE"
+      },
+      {
+        "table": "telegram_campaigns",
+        "status": "COMPATIBLE"
+      },
+      {
+        "table": "telegram_contacts",
+        "status": "COMPATIBLE"
+      },
+      {
+        "table": "telegram_miniapp_sessions",
+        "status": "COMPATIBLE"
+      },
+      {
+        "table": "telegram_updates",
+        "status": "COMPATIBLE"
+      },
+      {
+        "table": "user_identities",
+        "status": "COMPATIBLE"
+      },
+      {
+        "table": "user_identity_link_attempts",
+        "status": "COMPATIBLE"
+      },
+      {
+        "table": "user_identity_merge_log",
+        "status": "COMPATIBLE"
+      }
+    ],
+    "postgres_version": "180006",
+    "identity_integrity": {
+      "contacts": 3,
+      "identities": 5,
+      "invalid_sessions": 0,
+      "orphan_deliveries": 0,
+      "audit_guard_enabled": true,
+      "wrong_attempt_owner": 0,
+      "wrong_contact_owner": 0,
+      "missing_legacy_contacts": 0,
+      "invalid_primary_contacts": 0
+    },
+    "adoption_marker_hash": "10192f05e7746ee3a4b31c5c2cf426f1b0ea325300ede6ccc1f6db6c768e0d9e",
+    "registration_baseline": {
+      "fingerprint": "e3fbbb1235c44919df269df352deb80b",
+      "registrations": 1,
+      "orphan_user_references": 0,
+      "orphan_event_references": 0
+    },
+    "transaction_read_only": "on",
+    "production_registration_baseline_matches": false
+  }
+}

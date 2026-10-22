@@ -1,0 +1,173 @@
+{
+  "environment": "Chromium, isolated PGlite + actual UI/API; synthetic Telegram SDK; blocked external requests",
+  "checks": [
+    {
+      "name": "320 home and four navigation tabs fit and remain touch accessible",
+      "status": "PASS"
+    },
+    {
+      "name": "320 event list follows existing site community access and displays real event data",
+      "status": "PASS"
+    },
+    {
+      "name": "320 event details and family participant selection display correctly",
+      "status": "PASS"
+    },
+    {
+      "name": "320 displayed total changes only after backend calculation, including child price",
+      "status": "PASS"
+    },
+    {
+      "name": "320 payment handoff opens official bridge link with server amount and remains pending",
+      "status": "PASS"
+    },
+    {
+      "name": "320 reload and registrations show pending without paid promotion and support resume",
+      "status": "PASS"
+    },
+    {
+      "name": "390 home and four navigation tabs fit and remain touch accessible",
+      "status": "PASS"
+    },
+    {
+      "name": "390 event list follows existing site community access and displays real event data",
+      "status": "PASS"
+    },
+    {
+      "name": "390 event details and family participant selection display correctly",
+      "status": "PASS"
+    },
+    {
+      "name": "390 displayed total changes only after backend calculation, including child price",
+      "status": "PASS"
+    },
+    {
+      "name": "390 payment handoff opens official bridge link with server amount and remains pending",
+      "status": "PASS"
+    },
+    {
+      "name": "390 reload and registrations show pending without paid promotion and support resume",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop home and four navigation tabs fit and remain touch accessible",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop event list follows existing site community access and displays real event data",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop event details and family participant selection display correctly",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop displayed total changes only after backend calculation, including child price",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop payment handoff opens official bridge link with server amount and remains pending",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop reload and registrations show pending without paid promotion and support resume",
+      "status": "PASS"
+    },
+    {
+      "name": "male participant UI matches server child rights",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur-unknown participant UI matches server child rights",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur-advanced participant UI matches server child rights",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur-completed participant UI matches server child rights",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur-male participant UI matches server child rights",
+      "status": "PASS"
+    },
+    {
+      "name": "he 320 localized events/detail/total fit with correct direction",
+      "status": "PASS"
+    },
+    {
+      "name": "he 390 localized events/detail/total fit with correct direction",
+      "status": "PASS"
+    },
+    {
+      "name": "he 1000 localized events/detail/total fit with correct direction",
+      "status": "PASS"
+    },
+    {
+      "name": "en 320 localized events/detail/total fit with correct direction",
+      "status": "PASS"
+    },
+    {
+      "name": "en 390 localized events/detail/total fit with correct direction",
+      "status": "PASS"
+    },
+    {
+      "name": "en 1000 localized events/detail/total fit with correct direction",
+      "status": "PASS"
+    },
+    {
+      "name": "events network failure has retry and does not lose selected children on registration retry",
+      "status": "PASS"
+    },
+    {
+      "name": "free event confirms directly without payment UI",
+      "status": "PASS"
+    },
+    {
+      "name": "CRM select all filtered includes records past page one and preview/enqueue send nothing",
+      "status": "PASS"
+    }
+  ],
+  "screenshots": [
+    "320-release-home.png",
+    "320-release-events.png",
+    "320-release-detail.png",
+    "320-release-participants.png",
+    "320-release-total.png",
+    "320-release-payment.png",
+    "320-release-registrations.png",
+    "390-release-home.png",
+    "390-release-events.png",
+    "390-release-detail.png",
+    "390-release-participants.png",
+    "390-release-total.png",
+    "390-release-payment.png",
+    "390-release-registrations.png",
+    "desktop-release-home.png",
+    "desktop-release-events.png",
+    "desktop-release-detail.png",
+    "desktop-release-participants.png",
+    "desktop-release-total.png",
+    "desktop-release-payment.png",
+    "desktop-release-registrations.png",
+    "he-320-release-detail.png",
+    "he-320-release-total.png",
+    "he-390-release-detail.png",
+    "he-390-release-total.png",
+    "he-1000-release-detail.png",
+    "he-1000-release-total.png",
+    "en-320-release-detail.png",
+    "en-320-release-total.png",
+    "en-390-release-detail.png",
+    "en-390-release-total.png",
+    "en-1000-release-detail.png",
+    "en-1000-release-total.png",
+    "crm-release-audience.png",
+    "crm-release-composer.png"
+  ],
+  "errors": [],
+  "realTelegramWebView": "NOT VERIFIED",
+  "exitCode": 0
+}

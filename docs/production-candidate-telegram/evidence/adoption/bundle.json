@@ -1,0 +1,86 @@
+{
+  "environment": "Local production build, Chromium ordinary browser; external requests blocked",
+  "files": [
+    {
+      "path": "/_next/static/chunks/webpack-b5809776162ac0a2.js",
+      "bytes": 3838,
+      "gzipBytes": 2007,
+      "clerkMarkers": false
+    },
+    {
+      "path": "/_next/static/chunks/main-app-9ed5301de15648e5.js",
+      "bytes": 528,
+      "gzipBytes": 232,
+      "clerkMarkers": false
+    },
+    {
+      "path": "/_next/static/chunks/app/layout-358d3e342cac40dc.js",
+      "bytes": 4314,
+      "gzipBytes": 1563,
+      "clerkMarkers": false
+    },
+    {
+      "path": "/_next/static/chunks/7410-7532529b6325e1dc.js",
+      "bytes": 188536,
+      "gzipBytes": 51885,
+      "clerkMarkers": false
+    },
+    {
+      "path": "/_next/static/chunks/3325-ed2672df2dd4ab8e.js",
+      "bytes": 8734,
+      "gzipBytes": 3537,
+      "clerkMarkers": false
+    },
+    {
+      "path": "/_next/static/chunks/ede2bfcf-15079e27cafd9025.js",
+      "bytes": 198491,
+      "gzipBytes": 62455,
+      "clerkMarkers": false
+    },
+    {
+      "path": "/_next/static/chunks/1618-f363f6aa61c59210.js",
+      "bytes": 13702,
+      "gzipBytes": 5325,
+      "clerkMarkers": false
+    },
+    {
+      "path": "/_next/static/chunks/1374-5b14d77b8ca4667a.js",
+      "bytes": 15658,
+      "gzipBytes": 5827,
+      "clerkMarkers": false
+    },
+    {
+      "path": "/_next/static/chunks/app/miniapp/page-bc30947ad2ee78bc.js",
+      "bytes": 205,
+      "gzipBytes": 177,
+      "clerkMarkers": false
+    },
+    {
+      "path": "/_next/static/chunks/app/miniapp/error-9113a0533d5f9fec.js",
+      "bytes": 844,
+      "gzipBytes": 531,
+      "clerkMarkers": false
+    },
+    {
+      "path": "/_next/static/chunks/8552-547b055e2d5b8c7f.js",
+      "bytes": 16464,
+      "gzipBytes": 6377,
+      "clerkMarkers": false
+    },
+    {
+      "path": "/_next/static/chunks/7995-22cd60b2ded1c125.js",
+      "bytes": 32099,
+      "gzipBytes": 10785,
+      "clerkMarkers": false
+    }
+  ],
+  "totalBytes": 483413,
+  "estimatedGzipBytes": 150701,
+  "note": "Includes framework/shared JS; compressed bytes estimated locally, not actual network/device metrics.",
+  "checks": [
+    {
+      "name": "Mini App initial JS excludes website Clerk runtime",
+      "status": "PASS"
+    }
+  ]
+}

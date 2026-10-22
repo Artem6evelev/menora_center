@@ -1,0 +1,125 @@
+{
+  "checks": [
+    {
+      "name": "native fresh: ordinary project runner executes canonical chain plus real no-op adoption marker",
+      "status": "PASS"
+    },
+    {
+      "name": "native fresh: synthetic common future migration executes once; second runner is no-op",
+      "status": "PASS"
+    },
+    {
+      "name": "native legacy: permanent PRECHECK recognizes exact 17 rows and returns complete object baseline",
+      "status": "PASS"
+    },
+    {
+      "name": "native runner rejects legacy chain without adoption before DDL",
+      "status": "PASS"
+    },
+    {
+      "name": "negative native ledger: changed legacy hash",
+      "status": "PASS"
+    },
+    {
+      "name": "negative native ledger: changed timestamp",
+      "status": "PASS"
+    },
+    {
+      "name": "negative native ledger: reordered rows",
+      "status": "PASS"
+    },
+    {
+      "name": "negative native ledger: partial 16-row legacy chain",
+      "status": "PASS"
+    },
+    {
+      "name": "negative native ledger: 18 unknown rows",
+      "status": "PASS"
+    },
+    {
+      "name": "negative native ledger: duplicate legacy row",
+      "status": "PASS"
+    },
+    {
+      "name": "negative native ledger: legacy without marker",
+      "status": "PASS"
+    },
+    {
+      "name": "negative native ledger: wrong marker hash",
+      "status": "PASS"
+    },
+    {
+      "name": "negative native ledger: fake appended canonical history",
+      "status": "PASS"
+    },
+    {
+      "name": "negative native baseline: incompatible schema aborts entire adoption without marker or release tables",
+      "status": "PASS"
+    },
+    {
+      "name": "native legacy: atomic concurrent owner adoption on independent connections records one marker",
+      "status": "PASS"
+    },
+    {
+      "name": "negative ordinary runner and owner SQL on native DB: changed legacy hash",
+      "status": "PASS"
+    },
+    {
+      "name": "negative ordinary runner and owner SQL on native DB: changed timestamp",
+      "status": "PASS"
+    },
+    {
+      "name": "negative ordinary runner and owner SQL on native DB: reordered rows",
+      "status": "PASS"
+    },
+    {
+      "name": "negative ordinary runner and owner SQL on native DB: partial 16-row legacy chain",
+      "status": "PASS"
+    },
+    {
+      "name": "negative ordinary runner and owner SQL on native DB: 18 unknown rows",
+      "status": "PASS"
+    },
+    {
+      "name": "negative ordinary runner and owner SQL on native DB: duplicate legacy row",
+      "status": "PASS"
+    },
+    {
+      "name": "negative ordinary runner and owner SQL on native DB: legacy without marker",
+      "status": "PASS"
+    },
+    {
+      "name": "negative ordinary runner and owner SQL on native DB: wrong marker hash",
+      "status": "PASS"
+    },
+    {
+      "name": "negative ordinary runner and owner SQL on native DB: fake appended canonical history",
+      "status": "PASS"
+    },
+    {
+      "name": "native 111-user backfill preserves canonical IDs, family/filter data; creates unknown-consent contacts once",
+      "status": "PASS"
+    },
+    {
+      "name": "native postcheck proves schema/security/identity/marker; rejects a different production fingerprint",
+      "status": "PASS"
+    },
+    {
+      "name": "native repeat after future ownership merge preserves survivor, subscriptions and identity/contact timestamps",
+      "status": "PASS"
+    },
+    {
+      "name": "native adopted legacy: ordinary runner skips canonical 0000-0012, executes common future once on new backend",
+      "status": "PASS"
+    }
+  ],
+  "passed": 28,
+  "failed": 0,
+  "environment": "PostgreSQL 18.4 on x86_64-apple-darwin24.6.0, compiled by Apple clang version 17.0.0 (clang-1700.6.3.2), 64-bit",
+  "independentConnections": true,
+  "productionConnected": false,
+  "productionChanged": false,
+  "syntheticLegacyUsers": 111,
+  "syntheticRegistrations": 43,
+  "productionFingerprintSubstitutedOnlyInLocalTest": true
+}

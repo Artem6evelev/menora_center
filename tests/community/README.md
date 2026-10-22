@@ -160,3 +160,16 @@ uses the real postgres-js pool with max10 connections, runs the release suite, s
 It never accepts `DATABASE_URL`, never creates an OS user/service, and refuses to use an existing database.
 Postinstall of the test-only runtime creates its packaged binary symlinks; no project dependency/lockfile changes.
 The native suite verifies distinct backend PIDs, concurrent bootstrap/bot bootstrap, registration and worker idempotency.
+
+
+## Truthful production adoption (0013)
+
+`node scripts/build-adoption-artifacts.cjs` reproduces the real custom marker and all three self-contained owner SQL artifacts. `scripts/adoption-baseline.json` freezes the proven historical17 tuples, canonical release13 source hashes, schema contract, marker hash/when and owner-reported production baseline. Do not change historical migration bodies or ledger records to satisfy the guard. Canonical installs execute all migration bodies; legacy installs require explicit owner adoption before the ordinary runner is permitted.
+
+```sh
+COMMUNITY_TEST_OUTPUT=docs/production-candidate-telegram/evidence/adoption node tests/community/adoption-native.cjs
+```
+
+This starts disposable native PostgreSQL on loopback35433, accepts no external DATABASE_URL, uses independent connections, copies the ordinary project runner into a temporary folder, and generates the synthetic next migration only in that copy. Tests cover both histories, concurrent adoption, one-time future execution, ledger corruption, schema mismatch/rollback,111 synthetic legacy profiles,43 registrations, family/filter preservation, and repeat after modeled ownership merge. It stops/removes its cluster. The production fingerprint is an owner-provided anchor; a synthetic fingerprint is substituted only in memory to exercise the POSTCHECK PASS branch. The real POSTCHECK keeps the production anchor unchanged.
+
+The historical identity and17/18 SQL suites now attach an explicitly synthetic legacy ledger to their already-generated baseline fixture. Their PRECHECK/POSTCHECK assertions use the anonymized JSON contract. No real account data is used.

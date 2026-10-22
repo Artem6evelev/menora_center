@@ -1,0 +1,30 @@
+PASS native fresh: ordinary project runner executes canonical chain plus real no-op adoption marker
+PASS native fresh: synthetic common future migration executes once; second runner is no-op
+PASS native legacy: permanent PRECHECK recognizes exact 17 rows and returns complete object baseline
+PASS native runner rejects legacy chain without adoption before DDL
+PASS negative native ledger: changed legacy hash
+PASS negative native ledger: changed timestamp
+PASS negative native ledger: reordered rows
+PASS negative native ledger: partial 16-row legacy chain
+PASS negative native ledger: 18 unknown rows
+PASS negative native ledger: duplicate legacy row
+PASS negative native ledger: legacy without marker
+PASS negative native ledger: wrong marker hash
+PASS negative native ledger: fake appended canonical history
+PASS negative native baseline: incompatible schema aborts entire adoption without marker or release tables
+PASS native legacy: atomic concurrent owner adoption on independent connections records one marker
+PASS negative ordinary runner and owner SQL on native DB: changed legacy hash
+PASS negative ordinary runner and owner SQL on native DB: changed timestamp
+PASS negative ordinary runner and owner SQL on native DB: reordered rows
+PASS negative ordinary runner and owner SQL on native DB: partial 16-row legacy chain
+PASS negative ordinary runner and owner SQL on native DB: 18 unknown rows
+PASS negative ordinary runner and owner SQL on native DB: duplicate legacy row
+PASS negative ordinary runner and owner SQL on native DB: legacy without marker
+PASS negative ordinary runner and owner SQL on native DB: wrong marker hash
+PASS negative ordinary runner and owner SQL on native DB: fake appended canonical history
+PASS native 111-user backfill preserves canonical IDs, family/filter data; creates unknown-consent contacts once
+PASS native postcheck proves schema/security/identity/marker; rejects a different production fingerprint
+PASS native repeat after future ownership merge preserves survivor, subscriptions and identity/contact timestamps
+PASS native adopted legacy: ordinary runner skips canonical 0000-0012, executes common future once on new backend
+TOTAL 28 PASS
+Disposable native adoption cluster stopped; no remote access.

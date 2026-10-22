@@ -2,6 +2,16 @@
 
 Локальный RC завершён 22.10.2026. Готовность относится к Telegram Mini App, bot, CRM audience/broadcast queue и Shutafim handoff. Это не подтверждение готовности уже работающей production-среды, Google LIVE SSO или фактической доставки/оплаты. Новый общий аудит сайта не проводился.
 
+## Adoption update — 22.10.2026
+
+Исходный RC HEAD: `7bb5ce3b9bec0312661e3116697077eebc6cb0b2`. Последующий локальный adoption commit меняет migration tooling, SQL-проверки, тесты и документацию; web/Mini App business code сохранён. Итоговый SHA: `git rev-parse HEAD` после локального коммита. [Подробный протокол](ADOPTION.md), [native evidence](evidence/adoption/adoption-native-results.json).
+
+Владелец выполнил production READ ONLY диагностику и сообщил: **PostgreSQL 17.6; `drizzle.__drizzle_migrations` = историческая `supabase/migrations/0000–0016`, 17/17 exact hash + created_at + ordinal; неизвестных/дублирующихся строк 0; 43 event registrations; orphan references 0; fingerprint `f599ce780eed5cf293d9838316eb9f54`; legacy Telegram conflicts 0; release tables ещё отсутствуют.** Для backfill ожидаются 111 legacy Telegram profiles. Агент production не подключал. Применение нового MANUAL_SQL/adoption пока не выполнено.
+
+`0013_adopt_legacy_production_baseline` получена штатным `npm run db:generate -- --custom --name=adopt_legacy_production_baseline`. Fresh проходит реальные 0000–0012, schema-verification/no-op marker и общие будущие миграции. Production сохраняет свои 17 строк и получает одну реальную adoption-запись; далее используется тот же future suffix. Guard сверяет порядок по ledger id, точные hashes/timestamps, frozen baseline и marker. Обе процедуры сериализованы общим advisory lock; MANUAL_SQL также блокирует изменяемые таблицы и проверяет сохранность business fingerprints. Префиксы/неизвестные/смешанные/поддельные histories отвергаются.
+
+Текущий порядок владельца: **backup → актуальный PRECHECK → MANUAL_SQL + adoption → POSTCHECK → push/deploy → Telegram config → acceptance**. Перед применением повторить именно новые файлы этого коммита. PRECHECK проверяет более полный schema contract, чем предыдущая диагностика ledger. `SAFE TO ADOPT` требуется до owner apply; POSTCHECK должен дать `PASS`, legacy17 + marker1 и неизменный production registration baseline. При несовпадении — остановка, без правки ledger/данных предположением.
+
 ## Код и контрольная точка
 
 Ветка: `feat/miniapp-auth-v1`. Проверенный product HEAD: **`0fb18c258f51c50858b58de55d0a61217d48839b`**. Последующий `chore: prepare telegram production release` содержит тесты, отчёт и evidence; продукт после этого HEAD не изменён. Точный итоговый HEAD: `git rev-parse HEAD` (также указан в итоговом сообщении владельцу). Рабочее дерево после релизного коммита должно быть чистым.
@@ -34,6 +44,7 @@
 
 - `drizzle/0011_telegram_release_candidate.sql`: `telegram_updates`, `telegram_campaigns`, `telegram_broadcasts`, `telegram_broadcast_deliveries`, `event_payment_attempts`. Payment attempt нужен для неизменяемой корреляции состава/суммы/registration при повторных открытиях и обращении из разных каналов; одних изменяемых полей participant недостаточно.
 - `drizzle/0012_telegram_query_indexes.sql`: индексы списка событий и user/event registrations. Без изменения строк.
+- `drizzle/0013_adopt_legacy_production_baseline.sql`: реальная schema-verification/adoption migration; общая точка схождения fresh и production history.
 
 Единый owner-run production block для Step2+3+completion:
 
@@ -41,7 +52,7 @@
 2. [MANUAL_SQL.sql](../miniapp-identity-v1/MANUAL_SQL.sql).
 3. READ ONLY [POSTCHECK.sql](../miniapp-identity-v1/POSTCHECK.sql).
 
-MANUAL_SQL генерируется `node scripts/build-miniapp-manual-sql.cjs`; включает0009–0012 в одной транзакции, strict compatibility/RLS/grants checks, повторное применение и сохранение истории проверены. PRECHECK выводит schema/ledger inventory и fingerprint регистраций для приватного сравнения с POSTCHECK. Не публиковать его идентификаторы/данные. Native runner не делает автоматический adoption смешанной истории.
+Все три release SQL и marker воспроизводятся `node scripts/build-adoption-artifacts.cjs`. MANUAL_SQL включает0009–0012 и проверку/регистрацию0013 в одной транзакции. Базовая community schema и точная legacy history проверяются до изменений, итоговая schema/RLS/grants/identity invariants — до единственного marker INSERT. Текущие0000–0012 в production ledger не подставляются. Повторный запуск сохраняет identities/ownership/consent и не добавляет marker повторно. PRECHECK и POSTCHECK — только SELECT/metadata в READ ONLY transaction; user IDs, profile values и session/token hashes не выводятся. Полный registration baseline возвращается явным JSON object.
 
 **Обоснованное исключение для уже подготовленной истории:** в0009/0010 добавлены только6 строк нормализации redundant `contype=n` при сравнении catalog. PostgreSQL17 хранит relation NOT NULL в pg_attribute,18 также в pg_constraint; обязательность колонок по attnotnull по-прежнему строго сравнивается. DDL/backfill не переписаны. Это устраняет реальный отказ подготовленного SQL на17; полная цепочка проверена на17.5/18. Старые и новые hashes указаны в MANIFEST. По исходному заданию production ещё не получила Step2+. Если где-либо0009/0010 уже зарегистрированы со старыми checksum, остановить native migrate и сверить ledger приватно — не переписывать журнал/чужие hashes автоматически.
 
@@ -59,10 +70,10 @@ MANUAL_SQL генерируется `node scripts/build-miniapp-manual-sql.cjs`;
 
 ## Проверки
 
-**532/532 PASS,21 групп.** [Полный список/counts/среды](evidence/checks.json). Никакие assertions не отключены ради PASS.
+**560/560 PASS,22 группы.** [Полный текущий список/counts/среды](evidence/adoption/checks.json). Никакие assertions не отключены ради PASS.
 
 - Mini App auth87; profile/filter/session31; bridge6; existing UI39; production browser2.
-- Identity23; native Drizzle chain8; PostgreSQL17.5/18 compatibility10.
+- Identity23; native Drizzle chain8; PostgreSQL17.5/18 compatibility10; новые adoption-native28.
 - Новый Telegram release61 на PGlite и62 на native PostgreSQL18 с реальным postgres-js pool max10/независимыми backend PIDs; новый browser32; scripts5; JS boundary1.
 - Community regression36; SSR21; spec/server17; existing production/server28; HTTP11; SDK callback lifecycle10; browser callback10 и website spec32.
 
@@ -79,9 +90,9 @@ Browser:320/390/1000 и прежний desktop1280, RU/HE/EN, RTL, family rights
 ## Production rollout — только после проверки владельца
 
 1. Сделать backup/подтвердить целевой DB project и сохранить текущую конфигурацию bot/webhook/menu приватно.
-2. Выполнить PRECHECK. Сверить schema/ledger/hashes, ambiguous identities, baseline registration fingerprint; остановиться на несовместимости.
-3. Применить единый MANUAL_SQL0009–0012 владельцем.
-4. Выполнить POSTCHECK: grants/RLS/FK/orphans/duplicates и неизменность прежних регистраций. До этого код не выкатывать.
+2. Выполнить актуальный PRECHECK этого коммита: exact legacy17, compatible core schema, отсутствие Telegram conflicts и прежний registration baseline. Остановиться на несовместимости.
+3. Владелец применяет единый MANUAL_SQL0009–0012 + truthful adoption marker0013. Original17 rows сохраняются без UPDATE/DELETE; canonical rows не фабрикуются.
+4. Выполнить POSTCHECK: schema/indexes/grants/RLS/identity integrity, exact legacy17 + marker1, 43 registrations, fingerprint `f599ce780eed5cf293d9838316eb9f54`, orphan references0. До PASS код не выкатывать.
 5. Настроить production env по ENV.md и получить успешный check-production-env в соответствующем окружении. Push выполняет владелец.
 6. Дождаться Vercel READY с этой версией, проверить health/guest website/обычный browser Mini App fallback. Убедиться, что server env и canonical HTTPS origin соответствуют production.
 7. Выполнить read-only telegram:check. Затем отдельный owner apply webhook secret/menu/commands; повторить check. До этого новый handler отвергает webhook без secret, pending updates не сбрасываются.
@@ -102,7 +113,7 @@ Code rollback выполняет владелец на совместимый с
 
 ## Оставшиеся ограничения
 
-**BLOCKER перед rollout:** owner DB backup/PRECHECK/apply/POSTCHECK и production env ещё не подтверждены в целевой среде. Это ожидаемые внешние gates, а не незаконченный локальный код. Новый Telegram endpoint без правильно настроенного secret будет возвращать401; конфигурацию нельзя пропускать.
+**BLOCKER перед rollout:** backup, новый schema-bound PRECHECK, owner MANUAL_SQL/adoption, POSTCHECK и production env ещё требуют завершения. Предыдущая READ ONLY диагностика владельца доказала происхождение legacy ledger и registration baseline; это не применение SQL. Это ожидаемые внешние gates, а не незаконченный локальный код. Новый Telegram endpoint без правильно настроенного secret будет возвращать401; конфигурацию нельзя пропускать.
 
 **POST-DEPLOY ACCEPTANCE:** настоящий Telegram launch и физические клиенты, фактический bot identity/webhook/menu/secret, owner-only доставка и отписка, реальные production DB privileges, free registration и paid pending handoff. Не выданы за пройденные локальными SDK mocks.
 

@@ -1,0 +1,11 @@
+PASS desktop current member callback and reload retain the original event and profile
+PASS desktop legacy callback requires the filter and saves before returning to the event
+PASS desktop new draft callback saves one permanent profile and child, then survives replay and reload
+PASS desktop callback without an event uses dashboard events
+PASS desktop third category callback remains on resources after reload
+PASS mobile current member callback and reload retain the original event and profile
+PASS mobile legacy callback requires the filter and saves before returning to the event
+PASS mobile new draft callback saves one permanent profile and child, then survives replay and reload
+PASS mobile callback without an event uses dashboard events
+PASS mobile third category callback remains on resources after reload
+Callback browser: 10/10 PASS; mock identity only.

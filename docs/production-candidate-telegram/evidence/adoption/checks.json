@@ -1,0 +1,168 @@
+{
+  "environment": "Fresh current working copy; isolated PGlite PostgreSQL17/18, disposable native PostgreSQL, local Chromium; synthetic fixtures only",
+  "baseRcHead": "7bb5ce3b9bec0312661e3116697077eebc6cb0b2",
+  "groups": [
+    {
+      "name": "Mini App auth",
+      "passed": 87,
+      "failed": 0,
+      "evidence": "miniapp-auth-results.json"
+    },
+    {
+      "name": "Mini App profile/filter/session",
+      "passed": 31,
+      "failed": 0,
+      "evidence": "miniapp-ui-server-results.json"
+    },
+    {
+      "name": "Bridge",
+      "passed": 6,
+      "failed": 0,
+      "evidence": "miniapp-ui-bridge-results.json"
+    },
+    {
+      "name": "Mini App UI",
+      "passed": 39,
+      "failed": 0,
+      "evidence": "miniapp-ui-browser-results.json"
+    },
+    {
+      "name": "Production browser",
+      "passed": 2,
+      "failed": 0,
+      "evidence": "miniapp-ui-production-results.json"
+    },
+    {
+      "name": "Identity",
+      "passed": 23,
+      "failed": 0,
+      "evidence": "identity-results.json"
+    },
+    {
+      "name": "Native Drizzle migrations",
+      "passed": 8,
+      "failed": 0,
+      "evidence": "migration-results.json"
+    },
+    {
+      "name": "Community regression",
+      "passed": 36,
+      "failed": 0,
+      "evidence": "regression-results.json"
+    },
+    {
+      "name": "React SSR",
+      "passed": 21,
+      "failed": 0,
+      "evidence": "render-results.json"
+    },
+    {
+      "name": "Website spec/server",
+      "passed": 17,
+      "failed": 0,
+      "evidence": "spec-results.json"
+    },
+    {
+      "name": "Website production/server",
+      "passed": 28,
+      "failed": 0,
+      "evidence": "production-results.json"
+    },
+    {
+      "name": "Website HTTP SSR",
+      "passed": 11,
+      "failed": 0,
+      "evidence": "http-results.json"
+    },
+    {
+      "name": "Website callback browser",
+      "passed": 10,
+      "failed": 0,
+      "evidence": "callback-browser.json"
+    },
+    {
+      "name": "Website spec browser",
+      "passed": 32,
+      "failed": 0,
+      "evidence": "website-spec-browser/results.json"
+    },
+    {
+      "name": "Telegram release/PGlite",
+      "passed": 61,
+      "failed": 0,
+      "evidence": "telegram-release-results.json"
+    },
+    {
+      "name": "Telegram release/native PostgreSQL",
+      "passed": 62,
+      "failed": 0,
+      "evidence": "telegram-native-results.json"
+    },
+    {
+      "name": "Telegram release/browser",
+      "passed": 32,
+      "failed": 0,
+      "evidence": "telegram-release-browser-results.json"
+    },
+    {
+      "name": "PostgreSQL 17/18 compatibility",
+      "passed": 10,
+      "failed": 0,
+      "evidence": "telegram-migrations-results.json"
+    },
+    {
+      "name": "Configuration tools",
+      "passed": 5,
+      "failed": 0,
+      "evidence": "telegram-tools-results.json"
+    },
+    {
+      "name": "Initial JS without Clerk",
+      "passed": 1,
+      "failed": 0,
+      "evidence": "bundle.json"
+    },
+    {
+      "name": "Clerk callback lifecycle (mock identity)",
+      "passed": 10,
+      "failed": 0,
+      "evidence": "sso-callback.log"
+    },
+    {
+      "name": "Truthful adoption/native PostgreSQL",
+      "passed": 28,
+      "failed": 0,
+      "evidence": "adoption-native-results.json"
+    }
+  ],
+  "passed": 560,
+  "failed": 0,
+  "standardCommands": {
+    "typecheck": {
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "log": "typecheck.log"
+    },
+    "lint": {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "errors": 0,
+      "warnings": 30,
+      "log": "lint.log"
+    },
+    "build": {
+      "command": "npm run build",
+      "exitCode": 0,
+      "copy": "/tmp/menora-production-build",
+      "currentWorkingTree": true,
+      "realEnvCopied": false,
+      "database": "unavailable synthetic 127.0.0.1:1, no remote writes",
+      "log": "build.log"
+    }
+  },
+  "productionConnected": false,
+  "productionChanged": false,
+  "push": false,
+  "deploy": false,
+  "logNormalization": "Console logs normalized only for trailing whitespace/CRLF; diagnostic content preserved."
+}

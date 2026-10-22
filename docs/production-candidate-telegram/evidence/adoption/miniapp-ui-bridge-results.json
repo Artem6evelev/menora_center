@@ -1,0 +1,29 @@
+{
+  "method": "production adapter, synthetic SDK; no real WebView",
+  "checks": [
+    {
+      "name": "ready/expand, seven SDK listeners, platform/version/theme and both safe areas initialize",
+      "status": "PASS"
+    },
+    {
+      "name": "viewport/theme/safe-area/activation events refresh snapshot without changing Menorah chrome colors",
+      "status": "PASS"
+    },
+    {
+      "name": "unsupported older Telegram version does not receive new chrome or BackButton calls",
+      "status": "PASS"
+    },
+    {
+      "name": "6.1 header uses allowed theme keyword and avoids bottomBar API",
+      "status": "PASS"
+    },
+    {
+      "name": "BackButton replaces callbacks and dispose removes all SDK/native listeners and owned CSS variables",
+      "status": "PASS"
+    },
+    {
+      "name": "invalid viewport/inset values cannot inject CSS values",
+      "status": "PASS"
+    }
+  ]
+}

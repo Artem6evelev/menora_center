@@ -1,0 +1,6 @@
+PASS production env checker accepts required valid format and exposes names/booleans only
+PASS missing secrets, insecure app origin and TEST Clerk keys fail production contract
+PASS configure check calls only read-only methods and reports secret is not readable
+PASS future apply configures matching webhook secret/menu/commands without dropping updates
+PASS wrong bot or invalid URL fails before mutation and errors do not expose token
+TOTAL 5 PASS

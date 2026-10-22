@@ -1,0 +1,118 @@
+{
+  "engine": "PGlite/Drizzle real SQL + current source; mock identity/cookies, no real OAuth/browser/network",
+  "manualSqlSha256": "e2794049c0c19333d115b7de4d33cbfe05f50418b3d433adaa631ad0605f6533",
+  "checks": [
+    {
+      "name": "Manual SQL before0004: complete additive effect and unchanged business history",
+      "status": "PASS"
+    },
+    {
+      "name": "Manual SQL has0004and0005: complete additive effect and unchanged business history",
+      "status": "PASS"
+    },
+    {
+      "name": "Manual SQL partialEmpty: complete additive effect and unchanged business history",
+      "status": "PASS"
+    },
+    {
+      "name": "Manual SQL rejects wrongType atomically instead of silently skipping",
+      "status": "PASS"
+    },
+    {
+      "name": "Manual SQL rejects wrongCheck atomically instead of silently skipping",
+      "status": "PASS"
+    },
+    {
+      "name": "Manual SQL rejects wrongDefault atomically instead of silently skipping",
+      "status": "PASS"
+    },
+    {
+      "name": "Manual SQL rejects wrongNamedCheck atomically instead of silently skipping",
+      "status": "PASS"
+    },
+    {
+      "name": "Manual SQL rejects wrongIndex atomically instead of silently skipping",
+      "status": "PASS"
+    },
+    {
+      "name": "Manual SQL rejects wrongFK atomically instead of silently skipping",
+      "status": "PASS"
+    },
+    {
+      "name": "Manual SQL rejects missingEventFK atomically instead of silently skipping",
+      "status": "PASS"
+    },
+    {
+      "name": "Old complete profile and active admin session both require fixed version2; direct event/admin calls deny",
+      "status": "PASS"
+    },
+    {
+      "name": "Full questionnaire roundtrip: every field, explicit false and preserved omitted family/source",
+      "status": "PASS"
+    },
+    {
+      "name": "Explicit clear/list/false persist; stale revision and service-field injection reject",
+      "status": "PASS"
+    },
+    {
+      "name": "Signed third branch completes filter independently of full form, preserves history and remains denied",
+      "status": "PASS"
+    },
+    {
+      "name": "CRM filters use three persisted categories and completion, never the historical status enum",
+      "status": "PASS"
+    },
+    {
+      "name": "Anonymous submitted form is in DB before OAuth, HttpOnly bound, and creates no identified profile",
+      "status": "PASS"
+    },
+    {
+      "name": "Verified-identity seam consumes draft atomically, keeps one Clerk-ID profile and child ownership",
+      "status": "PASS"
+    },
+    {
+      "name": "Failure after profile write rolls back profile, children, draft claim and completion stamp",
+      "status": "PASS"
+    },
+    {
+      "name": "Two pending attempts cannot overwrite a completed current profile; explicit review keeps the draft",
+      "status": "PASS"
+    },
+    {
+      "name": "Explicit review and third-branch save consume the original draft atomically and deny another identity",
+      "status": "PASS"
+    },
+    {
+      "name": "Current unified manual SQL after actual form completion is repeatable and never resets v2 or saved fields",
+      "status": "PASS"
+    },
+    {
+      "name": "Clerk signed create/update/replay preserve questionnaire; deleted identity preserves history but loses access",
+      "status": "PASS"
+    },
+    {
+      "name": "Private people/tags/chat/notification actions deny foreign IDs, guests, forged sender and ordinary bulk",
+      "status": "PASS"
+    },
+    {
+      "name": "Public article/comments expose only public author fields; private task/admin getters require fresh staff",
+      "status": "PASS"
+    },
+    {
+      "name": "Bot settings deny ordinary/stale admin and arbitrary fields, update one known row only",
+      "status": "PASS"
+    },
+    {
+      "name": "Role changes require current superadmin and a known role, with no email-based elevation",
+      "status": "PASS"
+    },
+    {
+      "name": "Event payment initiation remains pending; manual paid and every webhook remain rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "Father/admin exception keeps father status and logs actor/reason; ordinary account cannot use it",
+      "status": "PASS"
+    }
+  ]
+}

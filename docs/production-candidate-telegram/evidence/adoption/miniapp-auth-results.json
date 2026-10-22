@@ -1,0 +1,356 @@
+{
+  "environment": "Node crypto, real NextResponse, native Drizzle migrations, isolated PGlite 0.5.10; synthetic data",
+  "remoteDatabaseTouched": false,
+  "realTelegramLaunch": false,
+  "concurrency": "Promise.all on PGlite serial scheduler plus actual unique-violation rollback/retry fault injection; no independent PostgreSQL connections",
+  "checks": [
+    {
+      "name": "independent Python HMAC fixture: decoded UTF-8, plus, future field and signature are signed",
+      "status": "PASS"
+    },
+    {
+      "name": "valid signed user supports ID string, optional Telegram fields and frozen proof",
+      "status": "PASS"
+    },
+    {
+      "name": "first_name tamper rejected before trust",
+      "status": "PASS"
+    },
+    {
+      "name": "user ID tamper rejected before trust",
+      "status": "PASS"
+    },
+    {
+      "name": "start_param tamper rejected before trust",
+      "status": "PASS"
+    },
+    {
+      "name": "wrong hash rejected before trust",
+      "status": "PASS"
+    },
+    {
+      "name": "additional signed field tamper rejected before trust",
+      "status": "PASS"
+    },
+    {
+      "name": "signature field tamper rejected before trust",
+      "status": "PASS"
+    },
+    {
+      "name": "missing hash malformed rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "missing auth_date malformed rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "short hash malformed rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "nonhex hash malformed rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "duplicate key malformed rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "bad percent encoding malformed rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "ambiguous canonical newline malformed rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "malformed user JSON malformed rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "missing user malformed rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "array user malformed rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "unsafe numeric ID malformed rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "string ID malformed rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "missing first name malformed rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "untrusted boolean string malformed rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "non-HTTPS photo malformed rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "oversize initData malformed rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "expired auth_date rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "future auth_date over 60 seconds rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "bounded future clock skew accepted",
+      "status": "PASS"
+    },
+    {
+      "name": "age env honors valid bound and invalid values retain secure 900 default",
+      "status": "PASS"
+    },
+    {
+      "name": "missing bot config fails closed",
+      "status": "PASS"
+    },
+    {
+      "name": "malformed signed start_param ignored without denying authentication",
+      "status": "PASS"
+    },
+    {
+      "name": "new Telegram subject creates exactly one opaque canonical user",
+      "status": "PASS"
+    },
+    {
+      "name": "new identity uses telegram primary verified subject, never username",
+      "status": "PASS"
+    },
+    {
+      "name": "new Telegram contact is backend-owned and has unknown marketing consent",
+      "status": "PASS"
+    },
+    {
+      "name": "new profile has NULL email, affiliation, gender, giyur and filter; no privacy consent",
+      "status": "PASS"
+    },
+    {
+      "name": "Mini App never derives private chat ID even from signed group chat or write permission",
+      "status": "PASS"
+    },
+    {
+      "name": "repeated bootstrap preserves canonical profile, family, filter, consent and account role",
+      "status": "PASS"
+    },
+    {
+      "name": "first attribution write-once, last valid launch updates and invalid launch does not erase",
+      "status": "PASS"
+    },
+    {
+      "name": "initially absent attribution records first later valid launch once",
+      "status": "PASS"
+    },
+    {
+      "name": "omitted optional Telegram metadata preserves known values and provenance",
+      "status": "PASS"
+    },
+    {
+      "name": "subscribed marketing state and delivery/chat metadata survive Telegram refresh",
+      "status": "PASS"
+    },
+    {
+      "name": "unsubscribed marketing state and delivery/chat metadata survive Telegram refresh",
+      "status": "PASS"
+    },
+    {
+      "name": "blocked marketing state and delivery/chat metadata survive Telegram refresh",
+      "status": "PASS"
+    },
+    {
+      "name": "legacy contact without identity keeps existing canonical user and creates one identity",
+      "status": "PASS"
+    },
+    {
+      "name": "exact legacy bot key created after migration is reused without inventing chat or rewriting email",
+      "status": "PASS"
+    },
+    {
+      "name": "identity without a contact recreates safe contact and retains current owner",
+      "status": "PASS"
+    },
+    {
+      "name": "disabled identity denies bootstrap without creating session or resetting disabled state",
+      "status": "PASS"
+    },
+    {
+      "name": "disabled canonical user denies bootstrap",
+      "status": "PASS"
+    },
+    {
+      "name": "identity/contact owner conflict fails closed with safe generic response and unchanged owners",
+      "status": "PASS"
+    },
+    {
+      "name": "unsafe DTO cannot bypass runtime proof and reach bootstrap",
+      "status": "PASS"
+    },
+    {
+      "name": "a failed session insert rolls back tentative user, identity and contact together",
+      "status": "PASS"
+    },
+    {
+      "name": "parallel bootstrap calls for the same subject converge without orphan users (PGlite serial transaction scheduler)",
+      "status": "PASS"
+    },
+    {
+      "name": "actual provider-subject unique violation rolls back tentative user then safely retries lookup",
+      "status": "PASS"
+    },
+    {
+      "name": "nextStep uses existing filter version and policy in filter/resources/profile/home order",
+      "status": "PASS"
+    },
+    {
+      "name": "bootstrap HTTP response contains only minimal profile, no-store and HttpOnly SameSite cookie",
+      "status": "PASS"
+    },
+    {
+      "name": "database stores SHA-256 only, token is 256-bit random, not provider token",
+      "status": "PASS"
+    },
+    {
+      "name": "valid cookie resolves canonical Mini App user independently of Clerk and updates last seen",
+      "status": "PASS"
+    },
+    {
+      "name": "missing or malformed cookie is unauthenticated",
+      "status": "PASS"
+    },
+    {
+      "name": "unknown well-formed cookie is unauthenticated",
+      "status": "PASS"
+    },
+    {
+      "name": "expired session is unauthenticated",
+      "status": "PASS"
+    },
+    {
+      "name": "revoked session is unauthenticated",
+      "status": "PASS"
+    },
+    {
+      "name": "live identity disable immediately rejects existing session",
+      "status": "PASS"
+    },
+    {
+      "name": "live user disable immediately rejects existing session",
+      "status": "PASS"
+    },
+    {
+      "name": "session FK prevents identity/user ownership mismatch and invalid hash/lifetime",
+      "status": "PASS"
+    },
+    {
+      "name": "Clerk identity cannot authenticate through a Mini App session",
+      "status": "PASS"
+    },
+    {
+      "name": "logout revokes only current session, clears cookie and preserves user/identity/marketing",
+      "status": "PASS"
+    },
+    {
+      "name": "logout without a session is idempotent",
+      "status": "PASS"
+    },
+    {
+      "name": "production cookie is host-only HttpOnly Secure SameSite=Lax with bounded TTL",
+      "status": "PASS"
+    },
+    {
+      "name": "cross-site bootstrap/logout denied without cookie issuance or session revocation",
+      "status": "PASS"
+    },
+    {
+      "name": "HTTP invalid JSON rejected with no-store and no cookie",
+      "status": "PASS"
+    },
+    {
+      "name": "HTTP array body rejected with no-store and no cookie",
+      "status": "PASS"
+    },
+    {
+      "name": "HTTP extra unsafe identity input rejected with no-store and no cookie",
+      "status": "PASS"
+    },
+    {
+      "name": "HTTP non-JSON rejected with no-store and no cookie",
+      "status": "PASS"
+    },
+    {
+      "name": "HTTP declared oversize rejected with no-store and no cookie",
+      "status": "PASS"
+    },
+    {
+      "name": "HTTP streamed oversize rejected with no-store and no cookie",
+      "status": "PASS"
+    },
+    {
+      "name": "HTTP invalid signature rejected with no-store and no cookie",
+      "status": "PASS"
+    },
+    {
+      "name": "stream limit counts bytes despite misleading Content-Length",
+      "status": "PASS"
+    },
+    {
+      "name": "unknown database errors are generic and never include driver details",
+      "status": "PASS"
+    },
+    {
+      "name": "production refuses absent or insecure origin configuration",
+      "status": "PASS"
+    },
+    {
+      "name": "sessions backend-only RLS/grants, duplicate hashes and FK postcheck are explicit",
+      "status": "PASS"
+    },
+    {
+      "name": "unified Step 2+3 rerun preserves existing sessions, revoked state and canonical data",
+      "status": "PASS"
+    },
+    {
+      "name": "unified repeat removes session table and column grants and restores RLS",
+      "status": "PASS"
+    },
+    {
+      "name": "session partial rollout fails atomically: nullable hash",
+      "status": "PASS"
+    },
+    {
+      "name": "session partial rollout fails atomically: wrong lifetime constraint",
+      "status": "PASS"
+    },
+    {
+      "name": "session partial rollout fails atomically: wrong owner FK",
+      "status": "PASS"
+    },
+    {
+      "name": "session partial rollout fails atomically: public policy",
+      "status": "PASS"
+    },
+    {
+      "name": "session partial rollout fails atomically: inherited grants",
+      "status": "PASS"
+    },
+    {
+      "name": "session partial rollout fails atomically: wrong owner unique index",
+      "status": "PASS"
+    }
+  ]
+}

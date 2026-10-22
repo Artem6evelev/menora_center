@@ -2,6 +2,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const root = path.resolve(__dirname, "..");
+const adoption = require('./adoption-sql.cjs');
 function buildMiniappManualSql() {
   const identity = fs.readFileSync(
     path.join(root, "drizzle/0009_miniapp_identity_v1.sql"),
@@ -32,13 +33,24 @@ ${marker}`,
   );
   return (
     "-- Unified Identity + Mini App + Telegram release candidate. Review READ ONLY PRECHECK before owner execution.\n" +
-    "-- Transactional, repeatable artifact; native migration DDL is preserved; catalog-only compatibility correction is documented.\nBEGIN;\n" +
+    "-- Transactional owner adoption. Original legacy ledger rows are never rewritten.\nBEGIN;\n" +
+    "SET LOCAL search_path=pg_catalog,public; SET LOCAL lock_timeout='5s';\n" +
+    "SELECT pg_advisory_xact_lock(7811397441042026::bigint);\n" +
+    "LOCK TABLE drizzle.__drizzle_migrations IN EXCLUSIVE MODE;\n" +
+    adoption.historyGuard() + '\n' + adoption.schemaAssertion(false) + '\n' +
+    "LOCK TABLE public.users,public.events,public.event_participants,public.kids_applications,public.community_audit,public.community_registration_drafts IN SHARE ROW EXCLUSIVE MODE;\n" +
+    adoption.schemaAssertion(false) + '\n' +
+    "CREATE TEMP TABLE menora_adoption_preservation ON COMMIT DROP AS " + adoption.preservationQuery() + ';\n' +
     compatible +
     "\n--> statement-breakpoint\n" +
     sessions +
     "\n--> statement-breakpoint\n" +
     release +
-    "\n--> statement-breakpoint\n" + indexes +
+    "\n--> statement-breakpoint\n" + indexes + '\n' +
+    fs.readFileSync(path.join(root,'drizzle',adoption.baseline.marker.tag+'.sql'),'utf8') + '\n' +
+    "DO $preserved$ BEGIN IF (SELECT to_jsonb(b) FROM menora_adoption_preservation b) IS DISTINCT FROM (SELECT to_jsonb(a) FROM (" + adoption.preservationQuery() + ") a) THEN RAISE EXCEPTION 'Adoption business data changed; transaction aborted'; END IF; END $preserved$;\n" +
+    `INSERT INTO drizzle.__drizzle_migrations(hash,created_at) SELECT '${adoption.baseline.marker.hash}',${adoption.baseline.marker.when} WHERE (WITH ${adoption.historyCTEs()} SELECT state='legacy-ready' FROM lineage);\n` +
+    adoption.historyGuard() + '\n' +
     "COMMIT;\n"
   );
 }

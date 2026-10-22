@@ -341,9 +341,9 @@ function request(body, headers = {}, url = '/api/telegram/miniapp/bootstrap') {
       assert.equal((await pg.query("SELECT relrowsecurity FROM pg_class WHERE oid='public.telegram_miniapp_sessions'::regclass")).rows[0].relrowsecurity, true);
       for (const role of ['anon', 'authenticated']) { await pg.exec('SET ROLE ' + role); try { await assert.rejects(pg.query('SELECT * FROM telegram_miniapp_sessions'), /permission denied/); } finally { await pg.exec('RESET ROLE'); } }
       const post = await pg.exec(fs.readFileSync(path.join(root, 'docs/miniapp-identity-v1/POSTCHECK.sql'), 'utf8'));
-      const duplicate = post.find(result => result.fields?.some(field => field.name === 'token_hash'));
-      const invalid = post.find(result => result.fields?.some(field => field.name === 'invalid_sessions'));
-      assert.deepEqual(duplicate.rows, []); assert.equal(invalid.rows[0].invalid_sessions, 0);
+      const diagnostic=post[1].rows[0].postcheck;
+      assert.equal(diagnostic.identity_integrity.invalid_sessions,0);
+      assert.equal((await pg.query('SELECT count(*) AS n FROM (SELECT token_hash FROM telegram_miniapp_sessions GROUP BY token_hash HAVING count(*)>1) d')).rows[0].n,0);
       const stored = (await pg.query('SELECT * FROM telegram_miniapp_sessions LIMIT 1')).rows[0];
       await assert.rejects(db.insert(schema.telegramMiniappSessions).values({ userId: stored.user_id, identityId: stored.identity_id, tokenHash: stored.token_hash, expiresAt: new Date(Date.now() + 60000) }));
     });

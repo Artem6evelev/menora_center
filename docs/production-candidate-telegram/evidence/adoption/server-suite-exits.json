@@ -1,0 +1,72 @@
+[
+  {
+    "name": "migrations",
+    "code": 0,
+    "log": "migrations.log"
+  },
+  {
+    "name": "telegram-migrations",
+    "code": 0,
+    "log": "telegram-migrations.log"
+  },
+  {
+    "name": "identity-schema",
+    "code": 0,
+    "log": "identity-schema.log"
+  },
+  {
+    "name": "miniapp-ui-server",
+    "code": 0,
+    "log": "miniapp-ui-server.log"
+  },
+  {
+    "name": "miniapp-ui-bridge",
+    "code": 0,
+    "log": "miniapp-ui-bridge.log"
+  },
+  {
+    "name": "miniapp-auth",
+    "code": 0,
+    "log": "miniapp-auth.log"
+  },
+  {
+    "name": "render",
+    "code": 0,
+    "log": "render.log"
+  },
+  {
+    "name": "regression",
+    "code": 0,
+    "log": "regression.log"
+  },
+  {
+    "name": "spec-update",
+    "code": 0,
+    "log": "spec-update.log"
+  },
+  {
+    "name": "telegram-release",
+    "code": 0,
+    "log": "telegram-release.log"
+  },
+  {
+    "name": "production",
+    "code": 0,
+    "log": "production.log"
+  },
+  {
+    "name": "telegram-tools",
+    "code": 0,
+    "log": "telegram-tools.log"
+  },
+  {
+    "name": "telegram-native",
+    "code": 0,
+    "log": "telegram-native.log"
+  },
+  {
+    "name": "sso-callback",
+    "code": 0,
+    "log": "sso-callback.log"
+  }
+]

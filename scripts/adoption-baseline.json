@@ -1,0 +1,760 @@
+{
+  "version": 1,
+  "releaseHead": "7bb5ce3b9bec0312661e3116697077eebc6cb0b2",
+  "marker": {
+    "tag": "0013_adopt_legacy_production_baseline",
+    "when": 1792667918001,
+    "hash": "10192f05e7746ee3a4b31c5c2cf426f1b0ea325300ede6ccc1f6db6c768e0d9e"
+  },
+  "canonical": [
+    {
+      "tag": "0000_sudden_living_lightning",
+      "hash": "901e018c3ec116e1f701ff9ce2fe6451d9675319dd6485116f6de1118a995635",
+      "created_at": 1774109638145
+    },
+    {
+      "tag": "0001_shallow_doctor_faustus",
+      "hash": "6d96aff4a7957e0d8dd5179b0b7eb7cc2d554a18ed0ddc0e07cb30e85a5d560c",
+      "created_at": 1774123110276
+    },
+    {
+      "tag": "0002_massive_wilson_fisk",
+      "hash": "444fc5920e11e0e2d5c814fbf5faa3388bd655f939496a18a55bafaf8ebd3007",
+      "created_at": 1780425802302
+    },
+    {
+      "tag": "0003_chemical_falcon",
+      "hash": "3e22e1f7c8a7b7a92015ace31eb3146a17234fcdcc0ad252a3093f62d8b069d6",
+      "created_at": 1783278410413
+    },
+    {
+      "tag": "0004_community_filtering",
+      "hash": "cef39399cddcc59ac5654848d0ccfeee1be7c3fc3b1ed531a96f55c2b75130c7",
+      "created_at": 1792518180402
+    },
+    {
+      "tag": "0005_giyur_stage",
+      "hash": "a09bbe7e8c4efccc1ee1b9c2641a14cc24ac460f862eaa9e72ee380bf1a19c16",
+      "created_at": 1792519876795
+    },
+    {
+      "tag": "0006_reconcile_existing_schema",
+      "hash": "790700b4212614d8ada5301ca937fa5716f207b256325bafdf71954ec75b65f8",
+      "created_at": 1792523309776
+    },
+    {
+      "tag": "0007_filter_v2_and_registration_drafts",
+      "hash": "4e0aafde81ccf079d7d03d34d6c947377ea045b3be0d9e9d6431edd38db04f1e",
+      "created_at": 1792526637663
+    },
+    {
+      "tag": "0008_city_identity",
+      "hash": "5cff7fb6291fb5eb2dac27c7c245280b1804bbed6c46f5ec8e8a127d0c67dbd8",
+      "created_at": 1792572358315
+    },
+    {
+      "tag": "0009_miniapp_identity_v1",
+      "hash": "68f34eb82d3bb73d79de89b059917c4eec98b2659441c172627fc2524b5444fd",
+      "created_at": 1792651464393
+    },
+    {
+      "tag": "0010_telegram_miniapp_sessions",
+      "hash": "5211f68e83569e9432e55f1c3b8e3931135415947b2060928d16dae2b9aab0eb",
+      "created_at": 1792654817386
+    },
+    {
+      "tag": "0011_telegram_release_candidate",
+      "hash": "98aa3d4e9defdb995fbe1ceb0adb5988037cb3bd2722e34a4d30eb77bdb48f44",
+      "created_at": 1792661261974
+    },
+    {
+      "tag": "0012_telegram_query_indexes",
+      "hash": "81ca1cd2549e4ef97e7e0889ab3e8b897f9cdfa9240c58f0e206b52ad681f47b",
+      "created_at": 1792663846904
+    }
+  ],
+  "legacy": [
+    {
+      "tag": "0000_large_magus",
+      "hash": "ad2a06696c21bd2be25083489ddaea6b792b85d4564ab48e03ba2fc512820ab9",
+      "created_at": 1773604602794
+    },
+    {
+      "tag": "0001_black_hydra",
+      "hash": "ccdba012740edf96fb5bba5d6226f1a23c676f02930bd6053443e625c99ee14b",
+      "created_at": 1773644876377
+    },
+    {
+      "tag": "0002_mixed_wiccan",
+      "hash": "ba9961610e05e4e213221a998aef5b850447fd2d32478666d4fe3f29f220b98b",
+      "created_at": 1773649907617
+    },
+    {
+      "tag": "0003_daffy_omega_red",
+      "hash": "86c993f478cfcf1a3a736c03aba76a4ea514892a59fe4f3cc3dd66b277af5a89",
+      "created_at": 1773652653449
+    },
+    {
+      "tag": "0004_melodic_gamora",
+      "hash": "8feb4711809e18ba4638998ff49d72bf870c724043ab3724af37f8028611329b",
+      "created_at": 1773660780050
+    },
+    {
+      "tag": "0005_demonic_hairball",
+      "hash": "0a40870b155d6d7bf2febe0ab58ec870e899df0d60a442c9d1d47071e76003d2",
+      "created_at": 1773661405244
+    },
+    {
+      "tag": "0006_dear_madame_hydra",
+      "hash": "396da33d8d7b10317b872f090164476b918adfe86474d4376dcdd6630c402c9a",
+      "created_at": 1773661638286
+    },
+    {
+      "tag": "0007_flaky_freak",
+      "hash": "8d942defd3e2b0f4cbfc6876597e042db408007db93531acf8dbf3c34d18259c",
+      "created_at": 1773661753365
+    },
+    {
+      "tag": "0008_steady_vargas",
+      "hash": "14965302db643c45e73a65e938256ef7e74bf33ee37bad34157263054988bcf8",
+      "created_at": 1773663338060
+    },
+    {
+      "tag": "0009_freezing_kabuki",
+      "hash": "cc30561bc6611ce8ab24ace46cdf11036d3005d845f7f9a7c76adc687e1c57c4",
+      "created_at": 1773669776058
+    },
+    {
+      "tag": "0010_fixed_morph",
+      "hash": "2a8d2ce25ceea6861cc4bbdae9301bd3e25f6e38901b567e467530553b89d756",
+      "created_at": 1773676191563
+    },
+    {
+      "tag": "0011_greedy_rumiko_fujikawa",
+      "hash": "8421e27cb69f91fcace671c11a1137ffca4630e807ea627bf3ddca21fd235a8e",
+      "created_at": 1773676627166
+    },
+    {
+      "tag": "0012_worried_bedlam",
+      "hash": "813ff35a63d9aae4c68ebcee6c258e2f97663d77bb6d9b2cfbd281d070c6440f",
+      "created_at": 1773737576251
+    },
+    {
+      "tag": "0013_smiling_the_liberteens",
+      "hash": "51bbd4183b3c8de8333f4623ebed5620f9689fec0cffc7b4d5aabb4c74f8e723",
+      "created_at": 1773817937324
+    },
+    {
+      "tag": "0014_real_ultron",
+      "hash": "d02cb6816076ab044127ea230e839de1b69ad2f5df08870ddcdf5e981c76466a",
+      "created_at": 1773820575672
+    },
+    {
+      "tag": "0015_open_harry_osborn",
+      "hash": "57aff6969c81e8e1b0956897ff85d9a8365bebc0e1ea8d06aa2f3180fa932e51",
+      "created_at": 1773900727040
+    },
+    {
+      "tag": "0016_lean_justice",
+      "hash": "bb964e78c7212b24209139b88d9e68eab7fa3f26b9208dff191a17ab6e6e6dac",
+      "created_at": 1773916312666
+    }
+  ],
+  "productionEvidence": {
+    "source": "Owner-provided READ ONLY diagnostic; no agent production connection",
+    "postgres": "17.6",
+    "legacyExactRows": 17,
+    "registrations": 43,
+    "registrationFingerprint": "f599ce780eed5cf293d9838316eb9f54",
+    "telegramLegacyUsers": 111,
+    "telegramConflicts": 0
+  },
+  "core": {
+    "users": {
+      "columns": [
+        {
+          "name": "affiliation",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "agreed_to_privacy",
+          "type": "boolean",
+          "not_null": false,
+          "default": "false"
+        },
+        {
+          "name": "children_data",
+          "type": "jsonb",
+          "not_null": true,
+          "default": "'[]'::jsonb"
+        },
+        {
+          "name": "city",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "city_id",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "date_of_birth",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "email",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "filter_completed_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "filter_revision",
+          "type": "integer",
+          "not_null": true,
+          "default": "0"
+        },
+        {
+          "name": "filter_version",
+          "type": "integer",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "first_name",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "gender",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "giyur_stage",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "has_children",
+          "type": "boolean",
+          "not_null": false,
+          "default": "false"
+        },
+        {
+          "name": "id",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "identity_disabled_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "image_url",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "is_profile_complete",
+          "type": "boolean",
+          "not_null": true,
+          "default": "false"
+        },
+        {
+          "name": "jewish_status",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "last_name",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "marital_status",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "phone",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "role",
+          "type": "text",
+          "not_null": true,
+          "default": "'client'::text"
+        },
+        {
+          "name": "source",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "spouse_name",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "tags",
+          "type": "text",
+          "not_null": false,
+          "default": "'[]'::text"
+        },
+        {
+          "name": "telegram_chat_id",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "username",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        }
+      ],
+      "constraints": [
+        {
+          "type": "c",
+          "definition": "CHECK (((affiliation IS NULL) OR (affiliation = ANY (ARRAY['maternal'::text, 'giyur'::text, 'none'::text]))))"
+        },
+        {
+          "type": "c",
+          "definition": "CHECK (((filter_version IS DISTINCT FROM 2) OR (filter_completed_at IS NOT NULL)))"
+        },
+        {
+          "type": "c",
+          "definition": "CHECK (((gender IS NULL) OR (gender = ANY (ARRAY['male'::text, 'female'::text]))))"
+        },
+        {
+          "type": "c",
+          "definition": "CHECK (((giyur_stage IS NULL) OR (giyur_stage = ANY (ARRAY['advanced'::text, 'completed'::text]))))"
+        },
+        {
+          "type": "p",
+          "definition": "PRIMARY KEY (id)"
+        }
+      ]
+    },
+    "events": {
+      "columns": [
+        {
+          "name": "audience",
+          "type": "text",
+          "not_null": true,
+          "default": "'all'::text"
+        },
+        {
+          "name": "category_id",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "child_price",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "date",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "id",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "image_url",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "is_free",
+          "type": "boolean",
+          "not_null": true,
+          "default": "false"
+        },
+        {
+          "name": "is_recurring",
+          "type": "boolean",
+          "not_null": true,
+          "default": "false"
+        },
+        {
+          "name": "is_registration_closed",
+          "type": "boolean",
+          "not_null": false,
+          "default": "false"
+        },
+        {
+          "name": "location",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "payment_url",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "price",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "recurring_days",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "recurring_pattern",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "not_null": true,
+          "default": "'planned'::text"
+        },
+        {
+          "name": "time",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "title",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        }
+      ],
+      "constraints": [
+        {
+          "type": "f",
+          "definition": "FOREIGN KEY (category_id) REFERENCES event_categories(id)"
+        },
+        {
+          "type": "p",
+          "definition": "PRIMARY KEY (id)"
+        }
+      ]
+    },
+    "event_participants": {
+      "columns": [
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "event_id",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "extra_data",
+          "type": "jsonb",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "id",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "phone",
+          "type": "text",
+          "not_null": true,
+          "default": "'Не указан'::text"
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "not_null": true,
+          "default": "'pending'::text"
+        },
+        {
+          "name": "user_id",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        }
+      ],
+      "constraints": [
+        {
+          "type": "f",
+          "definition": "FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE"
+        },
+        {
+          "type": "f",
+          "definition": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+        },
+        {
+          "type": "p",
+          "definition": "PRIMARY KEY (id)"
+        }
+      ]
+    },
+    "kids_applications": {
+      "columns": [
+        {
+          "name": "children",
+          "type": "jsonb",
+          "not_null": true,
+          "default": "'[]'::jsonb"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "email",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "parent_first_name",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "parent_last_name",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "phone",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "program_title",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "not_null": true,
+          "default": "'pending'::text"
+        },
+        {
+          "name": "user_id",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        }
+      ],
+      "constraints": [
+        {
+          "type": "f",
+          "definition": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL"
+        },
+        {
+          "type": "p",
+          "definition": "PRIMARY KEY (id)"
+        }
+      ]
+    },
+    "community_audit": {
+      "columns": [
+        {
+          "name": "action",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "actor_id",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "details",
+          "type": "jsonb",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "parent_id",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "reason",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "target_id",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        }
+      ],
+      "constraints": [
+        {
+          "type": "p",
+          "definition": "PRIMARY KEY (id)"
+        }
+      ]
+    },
+    "community_registration_drafts": {
+      "columns": [
+        {
+          "name": "consumed_at",
+          "type": "timestamp with time zone",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": "now()"
+        },
+        {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "filter_version",
+          "type": "integer",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "id",
+          "type": "uuid",
+          "not_null": true,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "owner_id",
+          "type": "text",
+          "not_null": false,
+          "default": null
+        },
+        {
+          "name": "payload",
+          "type": "jsonb",
+          "not_null": true,
+          "default": null
+        },
+        {
+          "name": "token_hash",
+          "type": "text",
+          "not_null": true,
+          "default": null
+        }
+      ],
+      "constraints": [
+        {
+          "type": "f",
+          "definition": "FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE SET NULL"
+        },
+        {
+          "type": "p",
+          "definition": "PRIMARY KEY (id)"
+        },
+        {
+          "type": "u",
+          "definition": "UNIQUE (token_hash)"
+        }
+      ]
+    }
+  }
+}
