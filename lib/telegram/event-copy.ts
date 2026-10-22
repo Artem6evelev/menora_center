@@ -36,7 +36,7 @@ export const eventCopy = {
     notifications: "Получать анонсы",
     unsubscribe: "Отключить анонсы",
     unknown: "Анонсы не включены",
-    subscribed: "Анонсы включены",
+    subscribed: "Анонсы Menorah Center включены",
     unsubscribed: "Анонсы отключены",
     blocked:
       "Доставка в Telegram заблокирована. Откройте бота и разрешите сообщения.",
@@ -80,7 +80,7 @@ export const eventCopy = {
     notifications: "Receive announcements",
     unsubscribe: "Turn off announcements",
     unknown: "Announcements not enabled",
-    subscribed: "Announcements enabled",
+    subscribed: "Menorah Center announcements are on",
     unsubscribed: "Announcements disabled",
     blocked: "Telegram delivery blocked. Open the bot and allow messages.",
     subscriptionNote:
@@ -123,7 +123,7 @@ export const eventCopy = {
     notifications: "קבלת הודעות",
     unsubscribe: "ביטול הודעות",
     unknown: "הודעות לא הופעלו",
-    subscribed: "הודעות מופעלות",
+    subscribed: "הודעות Menorah Center מופעלות",
     unsubscribed: "הודעות כבויות",
     blocked: "המשלוח בטלגרם חסום. פתחו את הבוט ואפשרו הודעות.",
     subscriptionNote: "ההרשמה מרצון וניתן לבטל אותה בכל עת.",

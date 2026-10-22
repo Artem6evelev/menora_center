@@ -1,0 +1,45 @@
+{
+  "environment": "Local isolated synthetic fixtures",
+  "checks": [
+    {
+      "name": "desktop current member callback and reload retain the original event and profile",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop legacy callback requires the filter and saves before returning to the event",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop new draft callback saves one permanent profile and child, then survives replay and reload",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop callback without an event uses dashboard events",
+      "status": "PASS"
+    },
+    {
+      "name": "desktop third category callback remains on resources after reload",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile current member callback and reload retain the original event and profile",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile legacy callback requires the filter and saves before returning to the event",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile new draft callback saves one permanent profile and child, then survives replay and reload",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile callback without an event uses dashboard events",
+      "status": "PASS"
+    },
+    {
+      "name": "mobile third category callback remains on resources after reload",
+      "status": "PASS"
+    }
+  ]
+}

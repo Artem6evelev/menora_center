@@ -50,8 +50,8 @@ export default function MiniAppProfileForm({ data, copy, onSave, onDirty }: {
         <span>{copy.privacy} <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">{copy.privacyLink}<span className="sr-only">{copy.external}</span></a>.</span>
       </label>
       {error && <p role="alert" className="miniapp-error">{error}</p>}
-      <button type="submit" className="miniapp-primary w-full" disabled={pending}>
-        {pending ? copy.saving : data.summary.nextStep === "home" ? copy.saveEdit : copy.save}</button>
+      <div className="miniapp-form-actions"><button type="submit" className="miniapp-primary w-full" disabled={pending}>
+        {pending ? copy.saving : data.summary.nextStep === "home" ? copy.saveEdit : copy.save}</button></div>
     </fieldset>
   </form>;
 }

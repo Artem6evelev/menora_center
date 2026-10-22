@@ -120,9 +120,9 @@ function request(body, headers = {}, url = '/api/telegram/miniapp/bootstrap') {
       const identity = await row('user_identities', 'user_id', first.id); assert.equal(identity.provider, 'telegram'); assert.equal(identity.provider_instance, 'primary');
       assert.equal(identity.provider_user_id, '700001'); assert.ok(identity.verified_at);
     });
-    await test('new Telegram contact is backend-owned and has unknown marketing consent', async () => {
-      const contact = await contactSnapshot(700001); assert.equal(contact.user_id, first.id); assert.equal(contact.marketing_status, 'unknown');
-      assert.equal(contact.marketing_opt_in_at, null); assert.equal(contact.allows_write_to_pm, false);
+    await test('new Telegram contact is backend-owned and is subscribed on verified bootstrap', async () => {
+      const contact = await contactSnapshot(700001); assert.equal(contact.user_id, first.id); assert.equal(contact.marketing_status, 'subscribed');
+      assert.ok(contact.marketing_opt_in_at); assert.equal(contact.allows_write_to_pm, false);
     });
     await test('new profile has NULL email, affiliation, gender, giyur and filter; no privacy consent', async () => {
       const user = await userSnapshot(first.id);
@@ -133,7 +133,7 @@ function request(body, headers = {}, url = '/api/telegram/miniapp/bootstrap') {
     await test('Mini App never derives private chat ID even from signed group chat or write permission', async () => {
       await userService.bootstrapTelegramMiniAppUser(validated(700001, { chat: JSON.stringify({ id: -100999, type: 'supergroup' }) }, { allows_write_to_pm: true }));
       assert.equal((await contactSnapshot(700001)).telegram_chat_id, null); assert.equal((await userSnapshot(first.id)).telegram_chat_id, null);
-      assert.equal((await contactSnapshot(700001)).marketing_status, 'unknown');
+      assert.equal((await contactSnapshot(700001)).marketing_status, 'subscribed');
     });
     await test('repeated bootstrap preserves canonical profile, family, filter, consent and account role', async () => {
       await db.update(schema.users).set({ firstName: 'Canonical name', gender: 'female', affiliation: 'giyur', giyurStage: 'advanced', filterVersion: 2,

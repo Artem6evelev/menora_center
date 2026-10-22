@@ -5,7 +5,9 @@ import { db } from "@/lib/db";
 import { telegramContacts, telegramUpdates } from "@/lib/db/schema";
 import { withTelegramBotUser } from "./miniapp-user";
 import { telegramApi, TelegramApiError } from "./bot-api";
-import { escapeTelegramHtml, telegramAppUrl, telegramLog } from "./safety";
+import { telegramLog } from "./safety";
+import { botLanguage, botWelcome, botWelcomeCopy } from "./bot-welcome";
+import { campaignLaunchEvent } from "./event-launch";
 const person = z.object({
   id: z
     .number()
@@ -104,74 +106,56 @@ export async function handleTelegramUpdate(raw: unknown) {
         .update(telegramContacts)
         .set({
           telegramChatId: String(ch.id),
-          blockedAt: null,
-          lastDeliveryErrorCode: null,
           updatedAt: now,
           ...(action
             ? {
                 marketingStatus: action,
                 ...(action === "subscribed"
-                  ? { marketingOptInAt: now }
+                  // Explicit /subscribe (or a legacy subscribe callback) may
+                  // restore delivery. /start and bootstrap never clear a block.
+                  ? { marketingOptInAt: now, blockedAt: null, lastDeliveryErrorCode: null }
                   : { unsubscribedAt: now }),
               }
-            : contact.marketingStatus === "blocked"
-              ? { marketingStatus: "unknown" }
-              : {}),
+            : {}),
         })
         .where(eq(telegramContacts.id, contact.id));
       return {
         contactId: contact.id,
-        status:
-          action ??
-          (contact.marketingStatus === "blocked"
-            ? "unknown"
-            : contact.marketingStatus),
+        status: action === "subscribed" ? "subscribed" : contact.marketingStatus === "blocked" || contact.blockedAt ? "blocked" : action ?? contact.marketingStatus,
+        event: startParam ? await campaignLaunchEvent(tx, startParam) : null,
       };
     },
     String(u.update_id),
+    !!start,
   );
   if (!result) return { duplicate: true };
-  const launchUrl = new URL(telegramAppUrl());
-  if (startParam) launchUrl.searchParams.set("campaign", startParam);
-  const appUrl = launchUrl.toString();
-  const keyboard = {
-    inline_keyboard: [
-      [{ text: "Открыть Menorah Center", web_app: { url: appUrl } }],
-      [
-        { text: "Связаться с нами", url: "https://t.me/menorah_center" },
-        { text: "Telegram канал", url: "https://t.me/menorah_rishon" },
-      ],
-      [
-        {
-          text:
-            result.status === "subscribed"
-              ? "Отключить анонсы"
-              : "Получать анонсы",
-          callback_data:
-            result.status === "subscribed"
-              ? "announcements_off"
-              : "announcements_on",
-        },
-      ],
-    ],
-  };
-  const response =
-    action === "subscribed"
-      ? "Анонсы включены. Вы можете отключить их в любое время."
-      : action === "unsubscribed"
-        ? "Анонсы отключены."
-        : `Шалом, ${escapeTelegramHtml(tg.first_name)}! Добро пожаловать в Menorah Center.\n\nОткройте приложение. Если оно временно недоступно, попробуйте позже или свяжитесь с нами.\nПодписка на анонсы включается только по вашему желанию.`;
+  // A persisted block is never cleared by /start/bootstrap or a welcome retry.
+  if (result.status === "blocked") return { processed: true };
+  const language = botLanguage(tg.language_code), c = botWelcomeCopy[language];
+  const welcome = botWelcome({ firstName: tg.first_name, language, campaign: startParam, event: result.event, status: result.status });
+  const response = action === "subscribed" ? c.subscribed : action === "unsubscribed" ? c.unsubscribed : welcome.caption;
   try {
     if (callback)
       await telegramApi("answerCallbackQuery", {
         callback_query_id: callback.id,
       });
-    await telegramApi("sendMessage", {
-      chat_id: String(ch.id),
-      text: response,
-      parse_mode: "HTML",
-      reply_markup: keyboard,
-    });
+    const message = { chat_id: String(ch.id), parse_mode: "HTML", reply_markup: welcome.keyboard };
+    if (start) {
+      try {
+        await telegramApi("sendPhoto", { ...message, photo: welcome.photo, caption: response });
+      } catch (error) {
+        // Retry only a definite rejection, never an uncertain delivery (timeout,
+        // network, 5xx, 429). The update ledger prevents duplicate webhook sends.
+        if (!(error instanceof TelegramApiError) || error.kind !== "permanent") throw error;
+        if (welcome.photo !== welcome.brandedPhoto) {
+          try { await telegramApi("sendPhoto", { ...message, photo: welcome.brandedPhoto, caption: response }); }
+          catch (fallbackError) {
+            if (!(fallbackError instanceof TelegramApiError) || fallbackError.kind !== "permanent") throw fallbackError;
+            await telegramApi("sendMessage", { ...message, text: response });
+          }
+        } else await telegramApi("sendMessage", { ...message, text: response });
+      }
+    } else await telegramApi("sendMessage", { ...message, text: response });
   } catch (error) {
     if (error instanceof TelegramApiError && error.kind === "blocked")
       await db

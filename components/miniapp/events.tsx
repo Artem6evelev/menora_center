@@ -1,5 +1,7 @@
 "use client";
-import Image from "next/image";
+import { EventCard, EventImage, EventMeta } from "./event-card";
+import { EmptyState, EventSkeleton } from "./ui";
+import { miniAppUiCopy } from "@/lib/telegram/miniapp-ui-copy";
 import { useCallback, useEffect, useState } from "react";
 import type { MiniAppLanguage } from "@/lib/telegram/miniapp-i18n";
 import { eventCopy } from "@/lib/telegram/event-copy";
@@ -29,19 +31,6 @@ const money = (amount: number, language: MiniAppLanguage) =>
     style: "currency",
     currency: "ILS",
   }).format(amount / 100);
-function EventImage({ event }: { event: Event }) {
-  return event.imageUrl ? (
-    <div className="miniapp-event-image">
-      <Image
-        src={event.imageUrl}
-        alt=""
-        fill
-        sizes="(max-width: 600px) 100vw, 600px"
-        unoptimized
-      />
-    </div>
-  ) : null;
-}
 export default function MiniAppEvents({
   language,
   mode,
@@ -57,7 +46,7 @@ export default function MiniAppEvents({
   initialEvent?: string;
   onProfileChanged: () => Promise<void>;
 }) {
-  const c = eventCopy[language];
+  const c = eventCopy[language], u = miniAppUiCopy[language];
   const [list, setList] = useState<Event[]>([]),
     [registrations, setRegistrations] = useState<Registration[]>([]),
     [detail, setDetail] = useState<Detail | null>(null);
@@ -93,7 +82,7 @@ export default function MiniAppEvents({
     return () => onNested(null);
   }, [eventId, back, onNested]);
   const load = useCallback(
-    async (next = 1) => {
+    async (next = 1, signal?: AbortSignal) => {
       setLoading(true);
       setError(false);
       try {
@@ -101,7 +90,8 @@ export default function MiniAppEvents({
           const { data } = await miniAppRequest<{
             events: Event[];
             hasMore: boolean;
-          }>(`events?page=${next}`);
+          }>(`events?page=${next}`, { signal });
+          if (signal?.aborted) return;
           setList((old) =>
             next === 1 ? data.events : [...old, ...data.events],
           );
@@ -110,7 +100,8 @@ export default function MiniAppEvents({
           const { data } = await miniAppRequest<{
             registrations: Registration[];
             hasMore: boolean;
-          }>(`registrations?page=${next}`);
+          }>(`registrations?page=${next}`, { signal });
+          if (signal?.aborted) return;
           setRegistrations((old) =>
             next === 1 ? data.registrations : [...old, ...data.registrations],
           );
@@ -118,24 +109,28 @@ export default function MiniAppEvents({
         }
         setPage(next);
       } catch {
-        setError(true);
+        if (!signal?.aborted) setError(true);
       } finally {
-        setLoading(false);
+        if (!signal?.aborted) setLoading(false);
       }
     },
     [mode],
   );
   useEffect(() => {
-    void load();
-  }, [load]);
-  const loadDetail = useCallback(async () => {
+    if (eventId) return;
+    const controller = new AbortController();
+    void load(1, controller.signal);
+    return () => controller.abort();
+  }, [load, eventId]);
+  const loadDetail = useCallback(async (signal?: AbortSignal) => {
     if (!eventId) return;
     setLoading(true);
     setError(false);
     try {
       const { data } = await miniAppRequest<Detail>(
-        `events?id=${encodeURIComponent(eventId)}`,
+        `events?id=${encodeURIComponent(eventId)}`, { signal },
       );
+      if (signal?.aborted) return;
       setDetail(data);
       setSelected((old) =>
         old.filter((id) => data.children.some((child) => child.id === id)),
@@ -143,13 +138,15 @@ export default function MiniAppEvents({
       setQuote(null);
       setReceipt(data.registration);
     } catch {
-      setError(true);
+      if (!signal?.aborted) setError(true);
     } finally {
-      setLoading(false);
+      if (!signal?.aborted) setLoading(false);
     }
   }, [eventId]);
   useEffect(() => {
-    void loadDetail();
+    const controller = new AbortController();
+    void loadDetail(controller.signal);
+    return () => controller.abort();
   }, [loadDetail]);
   async function action(kind: "quote" | "register") {
     setBusy(true);
@@ -189,13 +186,13 @@ export default function MiniAppEvents({
     status;
   return (
     <div className="space-y-5" data-miniapp-events={mode}>
-      <div className="miniapp-intro">
+      {!eventId && <div className="miniapp-intro">
         <p className="miniapp-eyebrow">Menorah Center</p>
         <h1>
           {detail?.event.title ||
             (mode === "events" ? c.events : c.registrations)}
         </h1>
-      </div>
+      </div>}
       {eventId && (
         <button className="miniapp-text-action" disabled={busy} onClick={back}>
           {c.back}
@@ -214,28 +211,24 @@ export default function MiniAppEvents({
         </div>
       )}
       {loading && !detail && (
-        <div className="miniapp-spinner" role="status" aria-label="Loading" />
+        <EventSkeleton label={u.loading} detail={!!eventId} />
       )}
       {eventId && detail ? (
-        <section className="miniapp-panel space-y-5">
-          <EventImage event={detail.event} />
-          <p className="miniapp-muted">
-            {detail.event.date} · {detail.event.time}
-            <br />
-            {detail.event.location}
-          </p>
-          <p className="whitespace-pre-wrap break-words">
-            {detail.event.description?.replace(/<[^>]*>/g, "")}
-          </p>
-          <p>
-            {detail.event.isFree
-              ? c.free
-              : `${c.adult}: ${detail.event.price || 0} ₪ · ${c.child}: ${detail.event.childPrice || 0} ₪`}
-          </p>
+        <article className="miniapp-event-detail miniapp-enter" data-event-detail={detail.event.id}>
+          <EventImage event={detail.event} priority />
+          <div className="miniapp-detail-summary space-y-4">
+            <h1>{detail.event.title}</h1>
+            <EventMeta event={detail.event} language={language} />
+            {!detail.event.isRegistrationClosed && <a className="miniapp-primary w-full" href={receipt ? "#miniapp-receipt" : "#miniapp-participants"}>{receipt ? u.myRegistration : u.join}</a>}
+            {receipt && <p className="miniapp-status">{u.already}</p>}
+            {detail.event.description && <details className="miniapp-description" open>
+              <summary>{u.about}</summary><p>{detail.event.description.replace(/<\/(?:p|div)>|<br\s*\/?>/gi, "\n").replace(/<[^>]*>/g, "")}</p>
+            </details>}
+            {!detail.event.isFree && <p className="miniapp-helper">{`${c.adult}: ${detail.event.price || 0} ₪ · ${c.child}: ${detail.event.childPrice || 0} ₪`}</p>}
           {detail.event.isRegistrationClosed ? (
             <p className="miniapp-error">{c.closed}</p>
           ) : receipt ? (
-            <div className="space-y-4" data-payment-handoff>
+            <div className="space-y-4" id="miniapp-receipt" data-payment-handoff>
               <h2>{statusLabel(receipt.status)}</h2>
               {receipt.status === "pending" && (
                 <>
@@ -257,7 +250,7 @@ export default function MiniAppEvents({
             </div>
           ) : (
             <>
-              <fieldset className="space-y-3" disabled={busy}>
+              <fieldset id="miniapp-participants" className="space-y-3" disabled={busy}>
                 <legend className="font-bold mb-3">{c.participants}</legend>
                 <label className="miniapp-selection">
                   <input type="checkbox" checked disabled />
@@ -314,14 +307,14 @@ export default function MiniAppEvents({
                 </fieldset>
               )}
               <button
-                className="miniapp-secondary w-full"
+                className="miniapp-primary w-full"
                 disabled={busy}
                 onClick={() => void action("quote")}
               >
                 {c.calculate}
               </button>
               {quote && (
-                <div className="space-y-3" data-calculated-total>
+                <div className="space-y-3 miniapp-form-actions" data-calculated-total>
                   <p>
                     {c.adult}: {quote.adults} · {c.child}: {quote.children}
                   </p>
@@ -339,36 +332,14 @@ export default function MiniAppEvents({
               )}
             </>
           )}
-        </section>
+          </div>
+        </article>
       ) : (
         !eventId && (
           <div className="space-y-4">
             {mode === "events"
               ? list.map((event) => (
-                  <button
-                    type="button"
-                    className="miniapp-event-poster"
-                    key={event.id}
-                    onClick={() => setEventId(event.id)}
-                  >
-                    <EventImage event={event} />
-                    <div className="miniapp-poster-content">
-                      <h2>{event.title}</h2>
-                      <p>
-                        {event.date} · {event.time}
-                      </p>
-                      <p className="miniapp-poster-location">
-                        {event.location}
-                      </p>
-                      <span className="miniapp-status">
-                        {event.isRegistrationClosed
-                          ? c.closed
-                          : event.isFree
-                            ? c.free
-                            : `${event.price || 0} ₪`}
-                      </span>
-                    </div>
-                  </button>
+                  <EventCard key={event.id} event={event} language={language} onSelect={id => { setEventId(id); window.scrollTo({ top: 0, behavior: "instant" }); }} />
                 ))
               : registrations.map((row) => (
                   <button
@@ -388,9 +359,7 @@ export default function MiniAppEvents({
                 ))}
             {!loading &&
               !(mode === "events" ? list.length : registrations.length) && (
-                <p className="miniapp-panel">
-                  {mode === "events" ? c.empty : c.none}
-                </p>
+                <EmptyState title={mode === "events" ? c.empty : c.none} hint={mode === "events" ? u.emptyHint : undefined} />
               )}
             {more && (
               <button

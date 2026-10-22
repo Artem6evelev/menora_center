@@ -1,15 +1,20 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  Home as House,
   LogOut,
   MessageCircle,
   UserRound,
   ArrowRight,
-  Check,
   HeartHandshake,
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import { MiniAppHeader, WelcomeCard, ProfileStatusCard, ActionCard, BottomNav, EventSkeleton } from "./ui";
+import { EventListSection } from "./event-list-section";
+import { EventEntry } from "./event-entry";
+import { useMiniAppFocus } from "./use-miniapp-focus";
+import type { MiniAppLaunch } from "@/lib/telegram/event-launch";
+import { miniAppUiCopy } from "@/lib/telegram/miniapp-ui-copy";
+import { Ticket } from "lucide-react";
 import FilterFields from "@/components/community/filter-fields";
 import ResourceMessage from "@/components/community/resource-message";
 import type { Affiliation, Gender } from "@/lib/community/policy";
@@ -44,8 +49,8 @@ export function MiniAppSplash({
   return (
     <div className="miniapp-splash" role="status">
       <Logo linked={false} appearance="light" />
-      <div className="miniapp-spinner" aria-hidden="true" />
       <p>{copy.loading}</p>
+      <EventSkeleton label={copy.loading} />
     </div>
   );
 }
@@ -100,7 +105,7 @@ function FilterForm({
           {error}
         </p>
       )}
-      <button
+      <div className="miniapp-form-actions"><button
         type="submit"
         className="miniapp-primary w-full"
         disabled={
@@ -109,7 +114,7 @@ function FilterForm({
       >
         {pending ? copy.saving : copy.next}
         <ArrowRight size={18} aria-hidden="true" className="rtl:rotate-180" />
-      </button>
+      </button></div>
     </form>
   );
 }
@@ -119,10 +124,12 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
     bridge = useRef<MiniAppBridge | null>(null),
     tag = useRef<string>();
   const nestedBack = useRef<(() => void) | null>(null);
+  useMiniAppFocus(root);
   const onNested = useCallback((handler: (() => void) | null) => {
     nestedBack.current = handler;
   }, []);
-  const launchResolved = useRef(false);
+  const [launchEvent, setLaunchEvent] = useState<MiniAppLaunch["event"]>(null);
+  const [entryGate, setEntryGate] = useState(false), [onboardingStarted, setOnboardingStarted] = useState(false);
   const [initialEvent, setInitialEvent] = useState<string>();
   const languageChosen = useRef(false),
     bootSequence = useRef(0);
@@ -141,7 +148,8 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
     [busy, setBusy] = useState(false),
     [saved, setSaved] = useState(false);
   const copy = miniAppDictionaries[language],
-    screen = view ?? data?.summary.nextStep;
+    screen = launchEvent && !onboardingStarted && data?.summary.nextStep !== "home" && data?.summary.nextStep !== "resources" ? "entry" : view ?? data?.summary.nextStep;
+  const uiCopy = miniAppUiCopy[language];
   const accept = useCallback(
     (result: { data: ProfileResponse; tag?: string }) => {
       tag.current = result.tag;
@@ -169,7 +177,9 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
       sequence = ++bootSequence.current;
     const timer = setTimeout(() => {
       void (async () => {
-        launchResolved.current = false;
+        setLaunchEvent(null);
+        setEntryGate(false);
+        setOnboardingStarted(false);
         setInitialEvent(undefined);
         setStatus("loading");
         setActionError("");
@@ -209,8 +219,26 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
           signal: controller.signal,
         });
         if (!controller.signal.aborted && sequence === bootSequence.current) {
+          const params = new URL(window.location.href).searchParams;
+          const hasLaunch = params.has("event") || params.has("campaign") || new URLSearchParams(bridge.current?.rawInitData()).has("start_param");
+          let launch: MiniAppLaunch["event"] = null;
+          if (hasLaunch && result.data.summary.nextStep !== "resources") {
+            const query = new URLSearchParams();
+            for (const key of ["event", "campaign"]) if (params.get(key)) query.set(key, params.get(key)!);
+            const resolved = await miniAppRequest<MiniAppLaunch>(`launch?${query}`, { signal: controller.signal });
+            launch = resolved.data.event;
+            if (launch) {
+              const url = new URL(window.location.href);
+              url.searchParams.set("event", launch.id);
+              window.history.replaceState(window.history.state, "", url);
+            }
+          }
+          if (controller.signal.aborted || sequence !== bootSequence.current) return;
           accept(result);
-          setView(null);
+          setLaunchEvent(launch);
+          setInitialEvent(launch?.id);
+          setView(result.data.summary.nextStep === "home" ? (launch || params.get("view") === "events" ? "events" : null) : null);
+          if (!launch && (params.has("event") || (params.get("campaign") ?? new URLSearchParams(bridge.current?.rawInitData()).get("start_param") ?? "").startsWith("event_")) && result.data.summary.nextStep !== "resources") setActionError("event_unavailable");
           setStatus("ready");
         }
       })().catch((error) => {
@@ -229,50 +257,22 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
       bridge.current = null;
     };
   }, [retry, accept]);
-  useEffect(() => {
-    if (
-      status !== "ready" ||
-      data?.summary.nextStep !== "home" ||
-      launchResolved.current ||
-      view
-    )
-      return;
-    launchResolved.current = true;
-    const requested = new URL(window.location.href).searchParams.get("event");
-    if (requested && /^[A-Za-z0-9_-]{1,150}$/.test(requested)) {
-      setInitialEvent(requested);
-      setView("events");
-      return;
-    }
-    if (
-      !new URLSearchParams(bridge.current?.rawInitData()).has("start_param") &&
-      !new URL(window.location.href).searchParams.has("campaign")
-    )
-      return;
-    const controller = new AbortController();
-    miniAppRequest<{ campaignEventId?: string }>("events", {
-      signal: controller.signal,
-    })
-      .then(({ data: result }) => {
-        if (result.campaignEventId) {
-          setInitialEvent(result.campaignEventId);
-          setView("events");
-        }
-      })
-      .catch(() => {});
-    return () => controller.abort();
-  }, [status, data?.summary.nextStep, view]);
   const navigate = useCallback(
     (next: "profile" | "filter" | "events" | "registrations" | null) => {
       if (busy || (dirty && !window.confirm(copy.unsaved))) return;
-      setInitialEvent(undefined);
+      // Editing/backtracking inside onboarding must retain the ad destination.
+      if (!launchEvent || data?.summary.nextStep === "home" ||
+        (next !== "filter" && next !== "profile" && next !== null)) {
+        setInitialEvent(undefined);
+        setLaunchEvent(null);
+      }
       setDirty(false);
       setView(next);
       setSaved(false);
       setActionError("");
       window.scrollTo({ top: 0, behavior: "instant" });
     },
-    [busy, dirty, copy.unsaved],
+    [busy, dirty, copy.unsaved, launchEvent, data?.summary.nextStep],
   );
   const canGoBack = status === "ready" && !!view;
   useEffect(
@@ -320,8 +320,9 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
       }
       accept(result);
       setDirty(false);
-      setView(null);
-      setSaved(!filterOnly);
+      if (launchEvent && result.data.summary.nextStep === "home") { setInitialEvent(launchEvent.id); setView("events"); }
+      else setView(null);
+      setSaved(!filterOnly || !!launchEvent && result.data.summary.nextStep === "home");
       window.scrollTo({ top: 0, behavior: "instant" });
     } finally {
       setBusy(false);
@@ -362,31 +363,9 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
       dir={language === "he" ? "rtl" : "ltr"}
     >
       <div className="miniapp-frame">
-        <header className="miniapp-header">
-          <div className="miniapp-brand">
-            <Logo linked={false} appearance="light" />
-            <span className="miniapp-wordmark" dir="ltr" aria-hidden="true">
-              Menorah<span>Center</span>
-            </span>
-          </div>
-          <label className="miniapp-language">
-            <span className="sr-only">{copy.language}</span>
-            <select
-              aria-label={copy.language}
-              value={language}
-              onChange={(event) => {
-                languageChosen.current = true;
-                setLanguage(event.target.value as MiniAppLanguage);
-              }}
-            >
-              <option value="ru">RU</option>
-              <option value="he">עב</option>
-              <option value="en">EN</option>
-            </select>
-          </label>
-        </header>
+        <MiniAppHeader language={language} onLanguage={value => { languageChosen.current = true; setLanguage(value); }} />
         {preview && <p className="miniapp-preview">{copy.preview}</p>}
-        <main className="miniapp-content">
+        <main className="miniapp-content miniapp-enter" key={status === "ready" ? screen : status}>
           {status === "loading" ? (
             <MiniAppSplash copy={copy} />
           ) : status === "outside" ||
@@ -428,82 +407,26 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
                 <span className="sr-only">{copy.external}</span>
               </a>
             </section>
+          ) : data && screen === "entry" && launchEvent ? (
+            <><WelcomeCard language={language} /><EventEntry event={launchEvent} language={language} gate={entryGate} onRegister={() => setEntryGate(true)} onContinue={() => { setOnboardingStarted(true); window.scrollTo({ top: 0, behavior: "instant" }); }} /></>
           ) : data && screen === "home" ? (
             <>
-              <div className="miniapp-intro">
-                <p className="miniapp-eyebrow">{copy.account}</p>
-                <h1>
-                  {copy.greeting}, <bdi>{data.profile.firstName}</bdi>{" "}
-                  <span aria-hidden="true">👋</span>
-                </h1>
-                <p className="miniapp-muted">{copy.brand}</p>
-              </div>
-              {saved && (
-                <p role="status" className="miniapp-success">
-                  {copy.saved}
-                </p>
-              )}
-              <section className="miniapp-panel miniapp-welcome">
-                <HeartHandshake size={32} aria-hidden="true" />
-                <h2>{copy.homeTitle}</h2>
-                <p>{copy.homeBody}</p>
-                <span className="miniapp-status">
-                  <Check size={15} aria-hidden="true" />
-                  {copy.status}
-                </span>
-              </section>
+              <WelcomeCard language={language} firstName={data.profile.firstName} />
+              <EventListSection language={language} onSelect={id => { setInitialEvent(id); setView("events"); window.scrollTo({ top: 0, behavior: "instant" }); }} onAll={() => navigate("events")} />
+              {saved && <p role="status" className="miniapp-success">{copy.saved}</p>}
+              <ProfileStatusCard language={language} childrenAllowed={data.permissions.canEditChildren} />
               <div className="miniapp-actions">
-                <button
-                  className="miniapp-action-card"
-                  onClick={() => navigate("profile")}
-                >
-                  <span className="miniapp-emblem">
-                    <UserRound size={22} aria-hidden="true" />
-                  </span>
-                  <span>{copy.profile}</span>
-                  <ArrowRight
-                    size={19}
-                    aria-hidden="true"
-                    className="ms-auto rtl:rotate-180"
-                  />
-                </button>
-                <a
-                  className="miniapp-action-card"
-                  href={contactUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <span className="miniapp-emblem">
-                    <MessageCircle size={22} aria-hidden="true" />
-                  </span>
-                  <span>
-                    {copy.contact}
-                    <span className="sr-only">{copy.external}</span>
-                  </span>
-                  <ArrowRight
-                    size={19}
-                    aria-hidden="true"
-                    className="ms-auto rtl:rotate-180"
-                  />
-                </a>
+                <ActionCard icon={UserRound} onClick={() => navigate("profile")}>{copy.profile}</ActionCard>
+                <ActionCard icon={Ticket} onClick={() => navigate("registrations")}>{eventCopy[language].registrations}</ActionCard>
               </div>
-              <button
-                className="miniapp-text-action self-start"
-                disabled={busy}
-                onClick={() => void logout()}
-              >
-                <LogOut size={17} aria-hidden="true" />
-                {copy.logout}
-              </button>
-              <button
-                className="miniapp-primary w-full"
-                onClick={() => navigate("events")}
-              >
-                {eventCopy[language].events}
-              </button>
               <Subscription language={language} />
+              <ActionCard icon={MessageCircle} href={contactUrl}>{copy.contact}<span className="sr-only">{copy.external}</span></ActionCard>
+              <button className="miniapp-text-action self-start" disabled={busy} onClick={() => void logout()}><LogOut size={17} aria-hidden="true" />{copy.logout}</button>
             </>
           ) : data && (screen === "events" || screen === "registrations") ? (
+            <>
+            <p className="miniapp-helper">{uiCopy.identity}</p>
+            {saved && launchEvent && <p role="status" className="miniapp-success" data-onboarding-complete>{uiCopy.ready}</p>}
             <MiniAppEvents
               key={screen}
               initialEvent={initialEvent}
@@ -513,6 +436,7 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
               openPayment={(url) => bridge.current?.openLink(url)}
               onProfileChanged={refreshProfile}
             />
+            </>
           ) : data ? (
             <section className="miniapp-panel">
               {canGoBack && (
@@ -526,11 +450,12 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
                 </button>
               )}
               <div className="miniapp-intro">
+                {data.summary.nextStep !== "home" && screen !== "resources" && <p className="miniapp-helper">{uiCopy.identity}</p>}
                 <p className="miniapp-eyebrow">
                   {screen === "filter"
-                    ? copy.stepFilter
+                    ? uiCopy.step1
                     : screen === "profile"
-                      ? copy.stepProfile
+                      ? data.summary.nextStep === "home" ? copy.stepProfile : uiCopy.step2
                       : copy.brand}
                 </p>
                 <h1>{title}</h1>
@@ -603,44 +528,12 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
           ) : null}
           {status === "ready" && actionError && (
             <p role="alert" className="miniapp-error">
-              {copy.errors[actionError as keyof typeof copy.errors] ??
-                copy.errors.generic}
+              {actionError === "event_unavailable" ? uiCopy.unavailable : copy.errors[actionError as keyof typeof copy.errors] ?? copy.errors.generic}
             </p>
           )}
         </main>
         {status === "ready" && data?.summary.nextStep === "home" && (
-          <nav className="miniapp-nav" aria-label={copy.account}>
-            <button
-              type="button"
-              aria-current={!view ? "page" : undefined}
-              onClick={() => navigate(null)}
-            >
-              <House size={21} aria-hidden="true" />
-              {copy.home}
-            </button>
-            <button
-              type="button"
-              aria-current={view === "events" ? "page" : undefined}
-              onClick={() => navigate("events")}
-            >
-              {eventCopy[language].events}
-            </button>
-            <button
-              type="button"
-              aria-current={view === "registrations" ? "page" : undefined}
-              onClick={() => navigate("registrations")}
-            >
-              {eventCopy[language].registrations}
-            </button>
-            <button
-              type="button"
-              aria-current={view === "profile" ? "page" : undefined}
-              onClick={() => navigate("profile")}
-            >
-              <UserRound size={21} aria-hidden="true" />
-              {copy.profile}
-            </button>
-          </nav>
+          <BottomNav language={language} view={view} navigate={navigate} />
         )}
       </div>
     </div>

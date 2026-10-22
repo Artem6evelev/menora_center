@@ -62,6 +62,7 @@ async function bootstrap(
   tx: MiniAppTransaction,
   data: TelegramIdentityData,
   source = "telegram_miniapp",
+  subscribeUnknown = source === "telegram_miniapp",
 ): Promise<MiniAppPrincipal> {
   const tg = data.user;
   // Serialize our writers for one verified subject; the unique index also covers other writers.
@@ -183,6 +184,8 @@ async function bootstrap(
       .update(telegramContacts)
       .set({
         ...safeMetadata,
+        ...(subscribeUnknown && contact.marketingStatus === "unknown" && !contact.blockedAt
+          ? { marketingStatus: "subscribed", marketingOptInAt: now } : {}),
         ...(data.startParam
           ? {
               firstStartParam: contact.firstStartParam ?? data.startParam,
@@ -210,7 +213,8 @@ async function bootstrap(
         telegramUserId: tg.id,
         telegramChatId: null,
         isPrimary: !primary,
-        marketingStatus: "unknown",
+        marketingStatus: subscribeUnknown ? "subscribed" : "unknown",
+        marketingOptInAt: subscribeUnknown ? now : null,
         firstStartParam: data.startParam,
         lastStartParam: data.startParam,
       });
@@ -240,6 +244,7 @@ export async function withTelegramBotUser<T>(
   data: TelegramIdentityData,
   finish: (tx: MiniAppTransaction, principal: MiniAppPrincipal) => Promise<T>,
   updateId: string,
+  subscribeUnknown = false,
 ): Promise<T | null> {
   for (let attempt = 0; ; attempt++) {
     try {
@@ -252,7 +257,7 @@ export async function withTelegramBotUser<T>(
           .from(telegramUpdates)
           .where(eq(telegramUpdates.updateId, updateId));
         if (seen) return null;
-        return finish(tx, await bootstrap(tx, data, "telegram_bot"));
+        return finish(tx, await bootstrap(tx, data, "telegram_bot", subscribeUnknown));
       });
     } catch (error) {
       if (attempt >= 2 || !retryable(error)) throw error;

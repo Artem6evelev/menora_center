@@ -1,0 +1,313 @@
+{
+  "environment": "Disposable native PostgreSQL 18, postgres-js pool max10, production HMAC/session/services; synthetic Bot API only",
+  "checks": [
+    {
+      "name": "native PostgreSQL pool uses independent backend connections",
+      "status": "PASS"
+    },
+    {
+      "name": "anonymous cannot list events, read details, register or read registrations",
+      "status": "PASS"
+    },
+    {
+      "name": "permitted list follows existing site community policy and omits payment URL",
+      "status": "PASS"
+    },
+    {
+      "name": "event detail exposes owned eligible children only",
+      "status": "PASS"
+    },
+    {
+      "name": "unknown event detail is hidden server-side",
+      "status": "PASS"
+    },
+    {
+      "name": "closed registration is explicit and server rejects submit",
+      "status": "PASS"
+    },
+    {
+      "name": "server price uses adult DB price in exact agorot",
+      "status": "PASS"
+    },
+    {
+      "name": "maternal child selection uses child DB price and counts participants",
+      "status": "PASS"
+    },
+    {
+      "name": "tampered total, arbitrary userId and chatId are rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "foreign child ID and duplicate non-owned family keys are rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "free event creates confirmed registration without payment attempt",
+      "status": "PASS"
+    },
+    {
+      "name": "double tap free event creates one registration",
+      "status": "PASS"
+    },
+    {
+      "name": "paid handoff uses backend amount and pending registration/immutable attempt",
+      "status": "PASS"
+    },
+    {
+      "name": "duplicate paid request returns same attempt and registration",
+      "status": "PASS"
+    },
+    {
+      "name": "changed selection cannot mutate handed-off pending order",
+      "status": "PASS"
+    },
+    {
+      "name": "DB price change cannot mutate existing pending attempt amount",
+      "status": "PASS"
+    },
+    {
+      "name": "close/return/read does not confirm payment",
+      "status": "PASS"
+    },
+    {
+      "name": "male can register self but cannot register existing child",
+      "status": "PASS"
+    },
+    {
+      "name": "my registrations never return another canonical user registration",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur null self access and exact child policy",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur advanced self access and exact child policy",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur completed self access and exact child policy",
+      "status": "PASS"
+    },
+    {
+      "name": "separate child clarification saves stage without main questionnaire reset",
+      "status": "PASS"
+    },
+    {
+      "name": "male cannot gain child rights via clarification endpoint",
+      "status": "PASS"
+    },
+    {
+      "name": "third category cannot list, read or register even with completed profile",
+      "status": "PASS"
+    },
+    {
+      "name": "malformed DB price fails closed instead of parseFloat partial acceptance",
+      "status": "PASS"
+    },
+    {
+      "name": "missing/invalid Telegram webhook secret is 401 with no identity side effects",
+      "status": "PASS"
+    },
+    {
+      "name": "new bot start creates canonical identity/contact without fake email; subscribes unknown on real /start",
+      "status": "PASS"
+    },
+    {
+      "name": "bot greeting escapes dynamic HTML and has Mini App navigation, no old holiday flow",
+      "status": "PASS"
+    },
+    {
+      "name": "duplicate update does not send duplicate reply or create identity",
+      "status": "PASS"
+    },
+    {
+      "name": "replayed update ID with changed subject creates no second canonical account",
+      "status": "PASS"
+    },
+    {
+      "name": "bot then Mini App uses same canonical profile and preserves campaign attribution",
+      "status": "PASS"
+    },
+    {
+      "name": "Mini App then bot reuses same identity, never legacy tg writer",
+      "status": "PASS"
+    },
+    {
+      "name": "concurrent Mini App bootstrap creates one canonical user and identity",
+      "status": "PASS"
+    },
+    {
+      "name": "concurrent bot and Mini App bootstrap share the same canonical person",
+      "status": "PASS"
+    },
+    {
+      "name": "explicit subscribe and unsubscribe persist across repeated start/Mini App open",
+      "status": "PASS"
+    },
+    {
+      "name": "explicit subscription API remains supported and rejects arbitrary target contact",
+      "status": "PASS"
+    },
+    {
+      "name": "group chat cannot become a canonical person",
+      "status": "PASS"
+    },
+    {
+      "name": "campaign mapping cannot bypass shared community authorization",
+      "status": "PASS"
+    },
+    {
+      "name": "ad preview requires Telegram authentication",
+      "status": "PASS"
+    },
+    {
+      "name": "new ad user gets bounded planned preview but cannot read full detail or register before filter",
+      "status": "PASS"
+    },
+    {
+      "name": "third category ad hint cannot bypass resources or read preview",
+      "status": "PASS"
+    },
+    {
+      "name": "campaign lookup precedes event fallback and disabled/unknown/archived hints stay unavailable",
+      "status": "PASS"
+    },
+    {
+      "name": "ru welcome has event CTA, safe photo, escaped caption and transparent unsubscribe command",
+      "status": "PASS"
+    },
+    {
+      "name": "he welcome has event CTA, safe photo, escaped caption and transparent unsubscribe command",
+      "status": "PASS"
+    },
+    {
+      "name": "en welcome has event CTA, safe photo, escaped caption and transparent unsubscribe command",
+      "status": "PASS"
+    },
+    {
+      "name": "bot event /start selects planned event photo and preserves campaign in CTA",
+      "status": "PASS"
+    },
+    {
+      "name": "definite photo rejection falls back to branded image, uncertain delivery never retries",
+      "status": "PASS"
+    },
+    {
+      "name": "only verified bootstrap converts legacy unknown; no mass update and no fabricated chat",
+      "status": "PASS"
+    },
+    {
+      "name": "non-start bot message does not subscribe legacy unknown",
+      "status": "PASS"
+    },
+    {
+      "name": "unsubscribe survives bootstrap/start, explicit subscribe restores announcements",
+      "status": "PASS"
+    },
+    {
+      "name": "blocked survives start/bootstrap without outbound attempts or changed timestamp",
+      "status": "PASS"
+    },
+    {
+      "name": "explicit subscribe restores a blocked contact only after a verified private command",
+      "status": "PASS"
+    },
+    {
+      "name": "non-admin cannot read audience, preview, enqueue or drain queue",
+      "status": "PASS"
+    },
+    {
+      "name": "CRM paginates canonical audience without technical Telegram IDs",
+      "status": "PASS"
+    },
+    {
+      "name": "all-filtered selection includes every server match beyond first page",
+      "status": "PASS"
+    },
+    {
+      "name": "audience affiliation, gender, city, Telegram, consent, profile and filter filters are server-side",
+      "status": "PASS"
+    },
+    {
+      "name": "selected and excluded users narrow server audience",
+      "status": "PASS"
+    },
+    {
+      "name": "arbitrary recipient/chat injection rejected by enqueue schema",
+      "status": "PASS"
+    },
+    {
+      "name": "default broadcast audience excludes unknown, unsubscribed, blocked, blocked timestamps and absent chats",
+      "status": "PASS"
+    },
+    {
+      "name": "enqueue is durable and sends nothing",
+      "status": "PASS"
+    },
+    {
+      "name": "enqueue retry with same request key creates no duplicate deliveries",
+      "status": "PASS"
+    },
+    {
+      "name": "unsubscribe between enqueue and send is skipped",
+      "status": "PASS"
+    },
+    {
+      "name": "worker sends plain text, marks delivered and repeated invocation does not resend",
+      "status": "PASS"
+    },
+    {
+      "name": "Telegram 429 respects retry_after and does not immediate resend",
+      "status": "PASS"
+    },
+    {
+      "name": "definite Telegram 5xx is retried with bounded backoff",
+      "status": "PASS"
+    },
+    {
+      "name": "Telegram forbidden marks blocked and failed; future audience excludes contact",
+      "status": "PASS"
+    },
+    {
+      "name": "permanent bad request fails without retry",
+      "status": "PASS"
+    },
+    {
+      "name": "uncertain transport outcome is unknown and not retried automatically",
+      "status": "PASS"
+    },
+    {
+      "name": "interrupted worker claim is unknown, never resent by another worker",
+      "status": "PASS"
+    },
+    {
+      "name": "parallel worker invocations deliver a due recipient at most once",
+      "status": "PASS"
+    },
+    {
+      "name": "max attempts terminate definite transient failure",
+      "status": "PASS"
+    },
+    {
+      "name": "future bot interaction preserves transport block and sends nothing",
+      "status": "PASS"
+    },
+    {
+      "name": "worker requires configured CRON_SECRET, rejects undefined bearer bypass",
+      "status": "PASS"
+    },
+    {
+      "name": "security logs contain no tokens, initData, PII or raw payload",
+      "status": "PASS"
+    },
+    {
+      "name": "release tables enable RLS and have no anon/authenticated/PUBLIC grants",
+      "status": "PASS"
+    },
+    {
+      "name": "manual SQL repeat preserves existing registration/payment/consent/history rows",
+      "status": "PASS"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "environment": "Isolated callback component with injected Clerk/navigation; no real Google OAuth",
+  "checks": [
+    {
+      "name": "cold SDK load starts callback once after a stable Clerk instance becomes ready",
+      "status": "PASS"
+    },
+    {
+      "name": "warm SDK load preserves all signup and signin continuation destinations",
+      "status": "PASS"
+    },
+    {
+      "name": "external return targets, nested callbacks and invalid attempts cannot escape the server completion route",
+      "status": "PASS"
+    },
+    {
+      "name": "missing event context uses dashboard events without inventing a registration attempt",
+      "status": "PASS"
+    },
+    {
+      "name": "unloaded SDK gives recovery after 20 seconds with the entire original journey intact",
+      "status": "PASS"
+    },
+    {
+      "name": "pending or resolved callback without navigation gives recovery without automatic retries or direct event navigation",
+      "status": "PASS"
+    },
+    {
+      "name": "late SDK readiness still starts its callback after the recovery message appears",
+      "status": "PASS"
+    },
+    {
+      "name": "a different callback journey remounts its handler with the correct event and attempt",
+      "status": "PASS"
+    },
+    {
+      "name": "remount with a simulated active session keeps completion owned by Clerk and preserves the attempt",
+      "status": "PASS"
+    },
+    {
+      "name": "unmount clears the watchdog instead of updating an abandoned callback",
+      "status": "PASS"
+    }
+  ]
+}
