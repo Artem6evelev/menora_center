@@ -96,11 +96,9 @@ export const userIdentities = pgTable(
       table.providerInstance,
       table.providerUserId,
     ),
-    userProviderIdx: uniqueIndex("user_identities_user_provider_idx").on(
-      table.userId,
-      table.provider,
-      table.providerInstance,
-    ),
+    activeClerkPerUserIdx: uniqueIndex("user_identities_active_clerk_per_user_idx")
+      .on(table.userId)
+      .where(sql`${table.provider} = 'clerk' AND ${table.disabledAt} IS NULL`),
   }),
 ).enableRLS();
 
@@ -110,8 +108,7 @@ export const telegramContacts = pgTable(
     id: uuid("id").defaultRandom().primaryKey(),
     userId: text("user_id")
       .references(() => users.id, { onDelete: "cascade" })
-      .notNull()
-      .unique(),
+      .notNull(),
     telegramUserId: text("telegram_user_id").notNull().unique(),
     telegramChatId: text("telegram_chat_id").unique(),
     username: text("username"),
@@ -120,6 +117,7 @@ export const telegramContacts = pgTable(
     languageCode: text("language_code"),
     photoUrl: text("photo_url"),
     allowsWriteToPm: boolean("allows_write_to_pm").default(false).notNull(),
+    isPrimary: boolean("is_primary").default(true).notNull(),
     marketingStatus: text("marketing_status").default("unknown").notNull(),
     marketingOptInAt: timestamp("marketing_opt_in_at", { withTimezone: true }),
     unsubscribedAt: timestamp("unsubscribed_at", { withTimezone: true }),
@@ -138,6 +136,9 @@ export const telegramContacts = pgTable(
       "telegram_contacts_marketing_status_check",
       sql`${table.marketingStatus} IN ('unknown', 'subscribed', 'unsubscribed', 'blocked')`,
     ),
+    primaryPerUserIdx: uniqueIndex("telegram_contacts_one_primary_per_user_idx")
+      .on(table.userId)
+      .where(sql`${table.isPrimary} = true`),
   }),
 ).enableRLS();
 
