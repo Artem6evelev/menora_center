@@ -71,6 +71,13 @@
       "when": 1792651464393,
       "tag": "0009_miniapp_identity_v1",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792654817386,
+      "tag": "0010_telegram_miniapp_sessions",
+      "breakpoints": true
     }
   ]
 }

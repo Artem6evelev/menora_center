@@ -62,7 +62,7 @@ const profilePayload = (override = {}) => ({ affiliation: 'maternal', gender: 'f
   for (const column of ['gender','affiliation','filter_version','filter_revision','giyur_stage']) delete baseline.tables['public.users'].columns[column];
   baseline.tables['public.users'].checkConstraints = {};
   const empty = { ...baseline, tables: {}, schemas: {}, enums: {}, sequences: {}, roles: {}, policies: {}, views: {} };
-  const statements = await generateMigration(empty, baseline);
+  const statements = require('./schema-ddl.cjs').orderSchemaDdl(await generateMigration(empty, baseline));
   await pg.exec(statements.join('\n'));
   await pg.exec(`INSERT INTO users(id,email,is_profile_complete,jewish_status,children_data) VALUES ('legacy','legacy@example.invalid',true,'Еврей по материнской линии','[{"name":"Original child","dateOfBirth":"2020-01-01"}]');`);
   await test('video author projection works on baseline without any filtering columns', async () => {

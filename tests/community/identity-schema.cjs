@@ -43,8 +43,8 @@ async function backendOnly(pg){
 }
 (async()=>{
  baselineSql=(await generateMigration(empty,baseline)).join('\n');
- await test('manual artifact contains exactly the canonical Drizzle migration body inside one transaction',async()=>{
-  assert.equal(manual.slice(manual.indexOf('BEGIN;\n')+7,-'COMMIT;\n'.length),body);
+ await test('unified manual artifact matches the deterministic 0009 + 0010 builder without changing native history',async()=>{
+  assert.equal(manual,require('../../scripts/build-miniapp-manual-sql.cjs').buildMiniappManualSql());
   assert.match(pre,/BEGIN TRANSACTION READ ONLY/);assert.match(post,/BEGIN TRANSACTION READ ONLY/);
  });
  const pg=await fresh();

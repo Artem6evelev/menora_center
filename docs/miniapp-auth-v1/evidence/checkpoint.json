@@ -1,0 +1,170 @@
+{
+  "branch": "feat/miniapp-auth-v1",
+  "HEAD": "39ef782cceeefb3a7767ac61c9590a9f3b09fd25",
+  "step2Checkpoint": "39ef782cceeefb3a7767ac61c9590a9f3b09fd25",
+  "step2Initial": {
+    "branch": "main",
+    "HEAD": "6bd190107a5c7a2776e737255fe70520b7efb906",
+    "expectedFiles": 28,
+    "changedFromStep2Manifest": 0,
+    "missingFiles": 0,
+    "unexpectedFiles": 0
+  },
+  "step3Committed": false,
+  "history0000Through0009Unchanged": true,
+  "remoteDatabaseTouched": false,
+  "push": false,
+  "deploy": false,
+  "scope": "server auth/bootstrap only; no UI/bot configuration/payments",
+  "manifestExcludesItself": true,
+  "files": [
+    {
+      "path": ".env.example",
+      "sha256": "419bcef4e84567f4ef8d3db2f163bec8c2d4fd546463b335d552d4c903e70b6d"
+    },
+    {
+      "path": "app/api/telegram/miniapp/bootstrap/route.ts",
+      "sha256": "eaa2c6a56c29b4fbcddba5659475b22cfb8b65e8af21b7591f44f51f46043345"
+    },
+    {
+      "path": "app/api/telegram/miniapp/logout/route.ts",
+      "sha256": "b0801f11e47c47c9ce27c51b1c74b9122f73020a027496a2dd081f5fca483852"
+    },
+    {
+      "path": "app/api/telegram/miniapp/session/route.ts",
+      "sha256": "626d4ba446533787ff96ed4818a0af8e699cb2aadf49597e31c613e0c3726ced"
+    },
+    {
+      "path": "docs/miniapp-auth-v1/REPORT.md",
+      "sha256": "d68a521902ce7e9ae0a2df6cda816d2c2548b3f8deae6f77330c149eb9d8fbaf"
+    },
+    {
+      "path": "docs/miniapp-auth-v1/evidence/build-result.json",
+      "sha256": "ab36f2147c83429c6cbd3deeeeed9789276b9c6e9308d11ecd04419d766207a7"
+    },
+    {
+      "path": "docs/miniapp-auth-v1/evidence/build.log",
+      "sha256": "4de222d67f104fab08c3a05635467774db3e688843f2a361c7fc503e1430819b"
+    },
+    {
+      "path": "docs/miniapp-auth-v1/evidence/checks.json",
+      "sha256": "64da5588a010fc1fa2f316a6036306e3daaf082d4bab6c13e175ce905f1848ba"
+    },
+    {
+      "path": "docs/miniapp-auth-v1/evidence/identity-results.json",
+      "sha256": "62c5b758768dbd311c09e34ff33d94e2254b083a7c8f2267f7518923395fb7a9"
+    },
+    {
+      "path": "docs/miniapp-auth-v1/evidence/identity.log",
+      "sha256": "888ac71affb60c778a0b2dc78c450408e86ace4579d71c931543241054541e18"
+    },
+    {
+      "path": "docs/miniapp-auth-v1/evidence/lint.log",
+      "sha256": "45a1786047ac44ee0d86a3d36fb3fdafe5136f3410cc2393e0747ee6db3fb7cf"
+    },
+    {
+      "path": "docs/miniapp-auth-v1/evidence/migration-results.json",
+      "sha256": "01ab6c998ca51add19cad7bf7a9631ef91b06ccc10e0fee2f1f37a03618c5e57"
+    },
+    {
+      "path": "docs/miniapp-auth-v1/evidence/migrations.log",
+      "sha256": "5f2c29e9b2d7741228ccdb714b4844e0142d8ce6854d252ee5bcb52e8942cc39"
+    },
+    {
+      "path": "docs/miniapp-auth-v1/evidence/miniapp-auth-results.json",
+      "sha256": "abc3da3a17b73d2dd6661522283d5ce5feeb982b4be84f13f31f545f243b9ff0"
+    },
+    {
+      "path": "docs/miniapp-auth-v1/evidence/miniapp-auth.log",
+      "sha256": "dcb88cb7d2af964b3be9ae837039bb2803e816531b1a3d8f31710a660c061306"
+    },
+    {
+      "path": "docs/miniapp-auth-v1/evidence/regression-results.json",
+      "sha256": "8618b92b891dcf95e16bbf770e385b40f1b330b9a345a4567b6ab34be9dd6eee"
+    },
+    {
+      "path": "docs/miniapp-auth-v1/evidence/regression.log",
+      "sha256": "03a07a290521eb9fac8284d5c146b73616b40ad88abc909acb590bf8f5d543c0"
+    },
+    {
+      "path": "docs/miniapp-auth-v1/evidence/typecheck.log",
+      "sha256": "c587c0f7b20efba6d9e78038ef6e1afcc70e5a66a2289fd554e3183c10522e6f"
+    },
+    {
+      "path": "docs/miniapp-identity-v1/MANUAL_SQL.sql",
+      "sha256": "4cbc18e8b8fc25ad5fef596466fab693f9ed8b7381ca473d8844b026756c2d92"
+    },
+    {
+      "path": "docs/miniapp-identity-v1/POSTCHECK.sql",
+      "sha256": "aff9ee9d1118adc8f1741b58ba869ed82020c22f8a2166ba47998ebf597943e9"
+    },
+    {
+      "path": "drizzle/0010_telegram_miniapp_sessions.sql",
+      "sha256": "5740f8f314cd9ca7f5c27c8478861e403742846aa6292223446f58fd7a689c27"
+    },
+    {
+      "path": "drizzle/meta/0010_snapshot.json",
+      "sha256": "26a6354deb4bb0e6501114b2c6bf9c2598187eb69c07616df8058da2b10644ee"
+    },
+    {
+      "path": "drizzle/meta/_journal.json",
+      "sha256": "ff65d96c5635722b722f720d3614d70ff250468ac7c448b1d827254cb233593b"
+    },
+    {
+      "path": "lib/db/schema.ts",
+      "sha256": "bef3fab0690bccc6c3c504ae7f6a3fec1d0032d7a769efee3e4f9aceef5959e1"
+    },
+    {
+      "path": "lib/telegram/miniapp-config.ts",
+      "sha256": "276bfd8441bc6bfce098cf9fc211205de0d43335a0ccf4c9da9775d4070b3471"
+    },
+    {
+      "path": "lib/telegram/miniapp-errors.ts",
+      "sha256": "356acfaa5a9848f6e426c1bcda7de857e28bfa47f947e69feaafa108ba15e392"
+    },
+    {
+      "path": "lib/telegram/miniapp-http.ts",
+      "sha256": "eecfc103e74a19a657a99c7a14640eb0869c46b2dafec51e9835f11697520faf"
+    },
+    {
+      "path": "lib/telegram/miniapp-init-data.ts",
+      "sha256": "0b1a06fb7711bbc40ea7ac723abcc7cb32ade600fde8c7ac38d0d5cfd99a11e4"
+    },
+    {
+      "path": "lib/telegram/miniapp-session.ts",
+      "sha256": "d52ff722971574cf74dfa00e47145df5fdc08710db8fa47a9edf8c6a50023d25"
+    },
+    {
+      "path": "lib/telegram/miniapp-user.ts",
+      "sha256": "c2e701a526d18adfd7970ce9c6ab935eb2942b71dfaaf79e7a678aeb3d214cce"
+    },
+    {
+      "path": "scripts/build-miniapp-manual-sql.cjs",
+      "sha256": "df52f4811a395b890a310336ccedfc27db7634f7f6b69995ecc8135289cc67f2"
+    },
+    {
+      "path": "tests/community/README.md",
+      "sha256": "008e486d0d2c4bd4e3463a6913ddd480ca3b3250a3ffe76d0f0c7ab9c8ee7677"
+    },
+    {
+      "path": "tests/community/identity-schema.cjs",
+      "sha256": "9b25ce2467895739216b26c0bc7164718b240c3ddd650e49ca31c24bd12fa26d"
+    },
+    {
+      "path": "tests/community/migrations.cjs",
+      "sha256": "f3b5eae04ae4b84de8c759d239b2fe1aba73384d93413030260cd579d52f90b2"
+    },
+    {
+      "path": "tests/community/miniapp-auth.cjs",
+      "sha256": "b88aab94d30c9bcc7ac61120de8b6d1fdb74b82fd50f5779c6bf08f5e2fda732"
+    },
+    {
+      "path": "tests/community/regression.cjs",
+      "sha256": "ead09ffead45007181126f58eb32e096dfd3b0bd4e2f0fb7b0832e9b3531f207"
+    },
+    {
+      "path": "tests/community/schema-ddl.cjs",
+      "sha256": "67527f421fff131c2651c2b0df3ab47485bf8274bb81a0366755e493b2dacc92"
+    }
+  ]
+}

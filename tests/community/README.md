@@ -61,3 +61,17 @@ node tests/community/sso-callback.cjs
 `callback-browser.cjs` проверяет только затронутые переходы на desktop/mobile: актуальный, старый и новый профили, повтор callback/reload, отсутствие исходного события и третью категорию. Подготовить отдельный стенд через `COMMUNITY_HTTP_FIXTURE=/tmp/menora-login-fix-http node tests/community/http-fixture.cjs`, запустить его на `http://127.0.0.1:3341` с синтетическими env из примера выше и выполнить `node tests/community/callback-browser.cjs`. Состояние фикстуры должно быть свежим; повторный запуск требует её перезапуска с новой локальной БД. `CALLBACK_BROWSER_BASE` позволяет выбрать другой локальный порт. Подставленная identity не доказывает настоящий Google callback.
 
 `node tests/community/browser.cjs` — настоящий локальный Chromium/Playwright (runtime вне product dependencies: `/tmp/menora-browser-runtime/node_modules/playwright` или `COMMUNITY_BROWSER_RUNTIME`). Публичные сценарии на3330 используют реальный Clerk TEST; приватные на3327 явно используют mock identity и настоящие actions/SQL. Это не доказательство завершённого Google OAuth. Требуются оба изолированных стенда; они никогда не публикуются. Viewports1440/390/320 — эмуляция размеров, не физические устройства. `api/test-state` создаётся только в mock /tmp-копии и отсутствует в приложении.
+
+## Telegram Mini App server auth (Step 3)
+
+`node tests/community/miniapp-auth.cjs` uses synthetic env, production modules, real Node crypto,
+NextResponse cookies and a disposable PGlite database with the native migration chain.
+It never loads `.env`, calls Telegram/Clerk or connects to Supabase. `COMMUNITY_TEST_OUTPUT`
+can override the default `docs/miniapp-auth-v1/evidence` output directory.
+The existing PGlite runtime is selected with `COMMUNITY_TEST_RUNTIME` (default
+`/tmp/menora-filter-test-runtime`). Concurrent calls share PGlite's serial scheduler;
+an additional injected stale lookup exercises a real PostgreSQL unique violation,
+transaction rollback and retry. This does not replace a race test on independent PostgreSQL connections.
+
+To regenerate the unified Step 2+3 owner SQL without connecting to a database:
+`node scripts/build-miniapp-manual-sql.cjs`. Historical `0009` is unchanged.

@@ -1,0 +1,9 @@
+{
+  "command": "npm run build",
+  "exitCode": 0,
+  "copy": "/tmp/menora-production-build",
+  "currentWorkingTree": true,
+  "realEnvCopied": false,
+  "database": "unavailable synthetic 127.0.0.1:1, no remote writes",
+  "log": "build.log"
+}

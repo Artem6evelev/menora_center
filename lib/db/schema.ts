@@ -12,6 +12,7 @@ import {
   uniqueIndex,
   index,
   jsonb,
+  foreignKey,
 } from "drizzle-orm/pg-core";
 
 // ==========================================
@@ -100,12 +101,33 @@ export const userIdentities = pgTable(
       table.providerUserId,
     ),
     userIdx: index("user_identities_user_id_idx").on(table.userId),
+    ownerIdx: uniqueIndex("user_identities_id_user_id_idx").on(table.id, table.userId),
     subjectCheck: check("user_identities_subject_check", sql`length(btrim(${table.providerInstance})) > 0 AND length(btrim(${table.providerUserId})) > 0`),
     activeClerkPerUserIdx: uniqueIndex("user_identities_active_clerk_per_user_idx")
       .on(table.userId)
       .where(sql`${table.provider} = 'clerk' AND ${table.disabledAt} IS NULL`),
   }),
 ).enableRLS();
+
+export const telegramMiniappSessions = pgTable("telegram_miniapp_sessions", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  identityId: uuid("identity_id").notNull(),
+  tokenHash: text("token_hash").notNull().unique(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  revokedAt: timestamp("revoked_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  lastSeenAt: timestamp("last_seen_at", { withTimezone: true }).defaultNow().notNull(),
+}, table => ({
+  ownerFk: foreignKey({ name: "telegram_miniapp_sessions_identity_owner_fk",
+    columns: [table.identityId, table.userId], foreignColumns: [userIdentities.id, userIdentities.userId] })
+    .onDelete("cascade").onUpdate("cascade"),
+  hashCheck: check("telegram_miniapp_sessions_hash_check", sql`${table.tokenHash} ~ '^[0-9a-f]{64}$'`),
+  lifetimeCheck: check("telegram_miniapp_sessions_lifetime_check", sql`${table.expiresAt} > ${table.createdAt} AND ${table.lastSeenAt} >= ${table.createdAt} AND (${table.revokedAt} IS NULL OR ${table.revokedAt} >= ${table.createdAt})`),
+  userIdx: index("telegram_miniapp_sessions_user_id_idx").on(table.userId),
+  identityIdx: index("telegram_miniapp_sessions_identity_id_idx").on(table.identityId),
+  expiryIdx: index("telegram_miniapp_sessions_open_expiry_idx").on(table.expiresAt).where(sql`${table.revokedAt} IS NULL`),
+})).enableRLS();
 
 export const telegramContacts = pgTable(
   "telegram_contacts",
@@ -460,6 +482,7 @@ export const botSettings = pgTable("bot_settings", {
 
 export const usersRelations = relations(users, ({ one, many }) => ({
   identities: many(userIdentities),
+  miniappSessions: many(telegramMiniappSessions),
   telegramContacts: many(telegramContacts),
   identityLinkAttempts: many(userIdentityLinkAttempts),
   authorProfile: one(authorProfiles, {
@@ -471,11 +494,18 @@ export const usersRelations = relations(users, ({ one, many }) => ({
 }));
 
 
-export const userIdentitiesRelations = relations(userIdentities, ({ one }) => ({
+export const userIdentitiesRelations = relations(userIdentities, ({ one, many }) => ({
+  miniappSessions: many(telegramMiniappSessions),
   user: one(users, {
     fields: [userIdentities.userId],
     references: [users.id],
   }),
+}));
+
+export const telegramMiniappSessionsRelations = relations(telegramMiniappSessions, ({ one }) => ({
+  user: one(users, { fields: [telegramMiniappSessions.userId], references: [users.id] }),
+  identity: one(userIdentities, { fields: [telegramMiniappSessions.identityId, telegramMiniappSessions.userId],
+    references: [userIdentities.id, userIdentities.userId] }),
 }));
 
 export const telegramContactsRelations = relations(telegramContacts, ({ one }) => ({

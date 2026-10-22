@@ -1,0 +1,3534 @@
+{
+  "environment": "Isolated PGlite 0.5.10; native drizzle-orm/pglite/migrator, same PgDialect and drizzle/ files as postgres-js runner",
+  "realDatabaseTouched": false,
+  "checks": [
+    {
+      "name": "Empty database: complete native chain matches ORM columns/types/defaults/FKs/checks/indexes/RLS",
+      "status": "PASS"
+    },
+    {
+      "name": "Every migration, including 0004/0005/0006, registered by native Drizzle",
+      "status": "PASS"
+    },
+    {
+      "name": "Second native run on fresh database: no migration statements reapplied, journal/schema unchanged",
+      "status": "PASS"
+    },
+    {
+      "name": "Equivalent pre-existing child FK with a different name is retained without a duplicate",
+      "status": "PASS"
+    },
+    {
+      "name": "Old synthetic schema: native upgrade preserves children/families/paid registrations/content and unknown giyur",
+      "status": "PASS"
+    },
+    {
+      "name": "Second native run after upgrade: no migrations reapplied, business rows preserved",
+      "status": "PASS"
+    },
+    {
+      "name": "Migration preflight rejects existing untracked schema, foreign chain and changed checksums",
+      "status": "PASS"
+    },
+    {
+      "name": "Already registered 0004 v1 remains compatible with statement-boundary-only v2",
+      "status": "PASS"
+    }
+  ],
+  "expected": {
+    "columns": [
+      {
+        "table_name": "author_profiles",
+        "column_name": "created_at",
+        "data_type": "timestamp without time zone",
+        "udt_name": "timestamp",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "author_profiles",
+        "column_name": "donation_link",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "author_profiles",
+        "column_name": "facebook_url",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "author_profiles",
+        "column_name": "id",
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()"
+      },
+      {
+        "table_name": "author_profiles",
+        "column_name": "instagram_url",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "author_profiles",
+        "column_name": "is_active",
+        "data_type": "boolean",
+        "udt_name": "bool",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "true"
+      },
+      {
+        "table_name": "author_profiles",
+        "column_name": "short_bio",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "author_profiles",
+        "column_name": "slug",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "author_profiles",
+        "column_name": "telegram_url",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "author_profiles",
+        "column_name": "updated_at",
+        "data_type": "timestamp without time zone",
+        "udt_name": "timestamp",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "author_profiles",
+        "column_name": "user_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "author_profiles",
+        "column_name": "website_url",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "author_profiles",
+        "column_name": "youtube_url",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "bot_settings",
+        "column_name": "channel_link",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "bot_settings",
+        "column_name": "events_topic_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "bot_settings",
+        "column_name": "id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "bot_settings",
+        "column_name": "is_active",
+        "data_type": "boolean",
+        "udt_name": "bool",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "true"
+      },
+      {
+        "table_name": "bot_settings",
+        "column_name": "notification_group_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "bot_settings",
+        "column_name": "reminder_message",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": "'Доброе утро! ☕️ Утренний Хасидут начнется через 10 минут. Ждем вас!'::text"
+      },
+      {
+        "table_name": "bot_settings",
+        "column_name": "services_topic_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "bot_settings",
+        "column_name": "superadmin_telegram_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "bot_settings",
+        "column_name": "tzedakah_link",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "bot_settings",
+        "column_name": "tzedakah_message",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": "'Спасибо, что были с нами на эфире! Поддержать общину можно по ссылке ниже:'::text"
+      },
+      {
+        "table_name": "bot_settings",
+        "column_name": "updated_at",
+        "data_type": "timestamp without time zone",
+        "udt_name": "timestamp",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "community_audit",
+        "column_name": "action",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "community_audit",
+        "column_name": "actor_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "community_audit",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "community_audit",
+        "column_name": "details",
+        "data_type": "jsonb",
+        "udt_name": "jsonb",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "community_audit",
+        "column_name": "id",
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()"
+      },
+      {
+        "table_name": "community_audit",
+        "column_name": "parent_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "community_audit",
+        "column_name": "reason",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "community_audit",
+        "column_name": "target_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "community_registration_drafts",
+        "column_name": "consumed_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "community_registration_drafts",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "community_registration_drafts",
+        "column_name": "expires_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "community_registration_drafts",
+        "column_name": "filter_version",
+        "data_type": "integer",
+        "udt_name": "int4",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "community_registration_drafts",
+        "column_name": "id",
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()"
+      },
+      {
+        "table_name": "community_registration_drafts",
+        "column_name": "owner_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "community_registration_drafts",
+        "column_name": "payload",
+        "data_type": "jsonb",
+        "udt_name": "jsonb",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "community_registration_drafts",
+        "column_name": "token_hash",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "event_categories",
+        "column_name": "color",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'#3b82f6'::text"
+      },
+      {
+        "table_name": "event_categories",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "event_categories",
+        "column_name": "id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "event_categories",
+        "column_name": "name",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "event_participants",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "event_participants",
+        "column_name": "event_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "event_participants",
+        "column_name": "extra_data",
+        "data_type": "jsonb",
+        "udt_name": "jsonb",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "event_participants",
+        "column_name": "id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "event_participants",
+        "column_name": "phone",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'Не указан'::text"
+      },
+      {
+        "table_name": "event_participants",
+        "column_name": "status",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'pending'::text"
+      },
+      {
+        "table_name": "event_participants",
+        "column_name": "user_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "events",
+        "column_name": "audience",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'all'::text"
+      },
+      {
+        "table_name": "events",
+        "column_name": "category_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "events",
+        "column_name": "child_price",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "events",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "events",
+        "column_name": "date",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "events",
+        "column_name": "description",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "events",
+        "column_name": "id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "events",
+        "column_name": "image_url",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "events",
+        "column_name": "is_free",
+        "data_type": "boolean",
+        "udt_name": "bool",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "false"
+      },
+      {
+        "table_name": "events",
+        "column_name": "is_recurring",
+        "data_type": "boolean",
+        "udt_name": "bool",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "false"
+      },
+      {
+        "table_name": "events",
+        "column_name": "is_registration_closed",
+        "data_type": "boolean",
+        "udt_name": "bool",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": "false"
+      },
+      {
+        "table_name": "events",
+        "column_name": "location",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "events",
+        "column_name": "payment_url",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "events",
+        "column_name": "price",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "events",
+        "column_name": "recurring_days",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "events",
+        "column_name": "recurring_pattern",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "events",
+        "column_name": "status",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'planned'::text"
+      },
+      {
+        "table_name": "events",
+        "column_name": "time",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "events",
+        "column_name": "title",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "kids_applications",
+        "column_name": "children",
+        "data_type": "jsonb",
+        "udt_name": "jsonb",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'[]'::jsonb"
+      },
+      {
+        "table_name": "kids_applications",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "kids_applications",
+        "column_name": "email",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "kids_applications",
+        "column_name": "id",
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()"
+      },
+      {
+        "table_name": "kids_applications",
+        "column_name": "parent_first_name",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "kids_applications",
+        "column_name": "parent_last_name",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "kids_applications",
+        "column_name": "phone",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "kids_applications",
+        "column_name": "program_title",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "kids_applications",
+        "column_name": "status",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'pending'::text"
+      },
+      {
+        "table_name": "kids_applications",
+        "column_name": "user_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "news_categories",
+        "column_name": "description",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "news_categories",
+        "column_name": "icon",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "news_categories",
+        "column_name": "id",
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()"
+      },
+      {
+        "table_name": "news_categories",
+        "column_name": "name",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "news_categories",
+        "column_name": "slug",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "news_categories",
+        "column_name": "updated_at",
+        "data_type": "timestamp without time zone",
+        "udt_name": "timestamp",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "news_comments",
+        "column_name": "content",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "news_comments",
+        "column_name": "created_at",
+        "data_type": "timestamp without time zone",
+        "udt_name": "timestamp",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "news_comments",
+        "column_name": "id",
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()"
+      },
+      {
+        "table_name": "news_comments",
+        "column_name": "news_id",
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "news_comments",
+        "column_name": "user_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "news",
+        "column_name": "author_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "news",
+        "column_name": "category_id",
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "news",
+        "column_name": "content",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "news",
+        "column_name": "created_at",
+        "data_type": "timestamp without time zone",
+        "udt_name": "timestamp",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "news",
+        "column_name": "id",
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()"
+      },
+      {
+        "table_name": "news",
+        "column_name": "image_url",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "news",
+        "column_name": "is_pinned",
+        "data_type": "boolean",
+        "udt_name": "bool",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": "false"
+      },
+      {
+        "table_name": "news",
+        "column_name": "is_published",
+        "data_type": "boolean",
+        "udt_name": "bool",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": "true"
+      },
+      {
+        "table_name": "news",
+        "column_name": "rejection_reason",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "news",
+        "column_name": "slug",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "news",
+        "column_name": "status",
+        "data_type": "character varying",
+        "udt_name": "varchar",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'draft'::character varying"
+      },
+      {
+        "table_name": "news",
+        "column_name": "title",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "news",
+        "column_name": "updated_at",
+        "data_type": "timestamp without time zone",
+        "udt_name": "timestamp",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "news",
+        "column_name": "views",
+        "data_type": "integer",
+        "udt_name": "int4",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": "0"
+      },
+      {
+        "table_name": "notifications",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "notifications",
+        "column_name": "id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "notifications",
+        "column_name": "is_read",
+        "data_type": "boolean",
+        "udt_name": "bool",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "false"
+      },
+      {
+        "table_name": "notifications",
+        "column_name": "link",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "notifications",
+        "column_name": "message",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "notifications",
+        "column_name": "sender_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "notifications",
+        "column_name": "title",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "notifications",
+        "column_name": "type",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'system'::text"
+      },
+      {
+        "table_name": "notifications",
+        "column_name": "user_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "service_categories",
+        "column_name": "color",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'#10b981'::text"
+      },
+      {
+        "table_name": "service_categories",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "service_categories",
+        "column_name": "id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "service_categories",
+        "column_name": "name",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "service_participants",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "service_participants",
+        "column_name": "id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "service_participants",
+        "column_name": "phone",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "service_participants",
+        "column_name": "service_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "service_participants",
+        "column_name": "status",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'pending'::text"
+      },
+      {
+        "table_name": "service_participants",
+        "column_name": "user_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "services",
+        "column_name": "category_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "services",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "services",
+        "column_name": "description",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "services",
+        "column_name": "duration",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "services",
+        "column_name": "id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "services",
+        "column_name": "image_url",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "services",
+        "column_name": "is_active",
+        "data_type": "boolean",
+        "udt_name": "bool",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "true"
+      },
+      {
+        "table_name": "services",
+        "column_name": "price",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "services",
+        "column_name": "title",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "tasks",
+        "column_name": "assignee_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "tasks",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "tasks",
+        "column_name": "creator_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "tasks",
+        "column_name": "deadline",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "tasks",
+        "column_name": "description",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "tasks",
+        "column_name": "event_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "tasks",
+        "column_name": "id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "tasks",
+        "column_name": "status",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'backlog'::text"
+      },
+      {
+        "table_name": "tasks",
+        "column_name": "title",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "telegram_contacts",
+        "column_name": "allows_write_to_pm",
+        "data_type": "boolean",
+        "udt_name": "bool",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "false"
+      },
+      {
+        "table_name": "telegram_contacts",
+        "column_name": "blocked_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "telegram_contacts",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "telegram_contacts",
+        "column_name": "first_name",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "telegram_contacts",
+        "column_name": "first_seen_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "telegram_contacts",
+        "column_name": "first_start_param",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "telegram_contacts",
+        "column_name": "id",
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()"
+      },
+      {
+        "table_name": "telegram_contacts",
+        "column_name": "is_primary",
+        "data_type": "boolean",
+        "udt_name": "bool",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "true"
+      },
+      {
+        "table_name": "telegram_contacts",
+        "column_name": "language_code",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "telegram_contacts",
+        "column_name": "last_delivery_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "telegram_contacts",
+        "column_name": "last_delivery_error_code",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "telegram_contacts",
+        "column_name": "last_name",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "telegram_contacts",
+        "column_name": "last_seen_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "telegram_contacts",
+        "column_name": "last_start_param",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "telegram_contacts",
+        "column_name": "marketing_opt_in_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "telegram_contacts",
+        "column_name": "marketing_status",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'unknown'::text"
+      },
+      {
+        "table_name": "telegram_contacts",
+        "column_name": "photo_url",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "telegram_contacts",
+        "column_name": "telegram_chat_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "telegram_contacts",
+        "column_name": "telegram_user_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "telegram_contacts",
+        "column_name": "unsubscribed_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "telegram_contacts",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "telegram_contacts",
+        "column_name": "user_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "telegram_contacts",
+        "column_name": "username",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "telegram_miniapp_sessions",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "telegram_miniapp_sessions",
+        "column_name": "expires_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "telegram_miniapp_sessions",
+        "column_name": "id",
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()"
+      },
+      {
+        "table_name": "telegram_miniapp_sessions",
+        "column_name": "identity_id",
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "telegram_miniapp_sessions",
+        "column_name": "last_seen_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "telegram_miniapp_sessions",
+        "column_name": "revoked_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "telegram_miniapp_sessions",
+        "column_name": "token_hash",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "telegram_miniapp_sessions",
+        "column_name": "user_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "user_identities",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "user_identities",
+        "column_name": "disabled_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "user_identities",
+        "column_name": "id",
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()"
+      },
+      {
+        "table_name": "user_identities",
+        "column_name": "last_seen_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "user_identities",
+        "column_name": "metadata",
+        "data_type": "jsonb",
+        "udt_name": "jsonb",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'{}'::jsonb"
+      },
+      {
+        "table_name": "user_identities",
+        "column_name": "provider",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "user_identities",
+        "column_name": "provider_instance",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'primary'::text"
+      },
+      {
+        "table_name": "user_identities",
+        "column_name": "provider_user_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "user_identities",
+        "column_name": "user_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "user_identities",
+        "column_name": "verified_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "user_identity_link_attempts",
+        "column_name": "consumed_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "user_identity_link_attempts",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "user_identity_link_attempts",
+        "column_name": "expires_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "user_identity_link_attempts",
+        "column_name": "id",
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()"
+      },
+      {
+        "table_name": "user_identity_link_attempts",
+        "column_name": "provider",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "user_identity_link_attempts",
+        "column_name": "provider_instance",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'primary'::text"
+      },
+      {
+        "table_name": "user_identity_link_attempts",
+        "column_name": "return_to",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "user_identity_link_attempts",
+        "column_name": "token_hash",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "user_identity_link_attempts",
+        "column_name": "user_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "user_identity_merge_log",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "user_identity_merge_log",
+        "column_name": "details",
+        "data_type": "jsonb",
+        "udt_name": "jsonb",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'{}'::jsonb"
+      },
+      {
+        "table_name": "user_identity_merge_log",
+        "column_name": "id",
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()"
+      },
+      {
+        "table_name": "user_identity_merge_log",
+        "column_name": "reason",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "user_identity_merge_log",
+        "column_name": "source_user_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "user_identity_merge_log",
+        "column_name": "target_user_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "user_identity_merge_log",
+        "column_name": "trigger_provider",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "user_identity_merge_log",
+        "column_name": "trigger_provider_user_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "users",
+        "column_name": "affiliation",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "users",
+        "column_name": "agreed_to_privacy",
+        "data_type": "boolean",
+        "udt_name": "bool",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": "false"
+      },
+      {
+        "table_name": "users",
+        "column_name": "children_data",
+        "data_type": "jsonb",
+        "udt_name": "jsonb",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'[]'::jsonb"
+      },
+      {
+        "table_name": "users",
+        "column_name": "city",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "users",
+        "column_name": "city_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "users",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "users",
+        "column_name": "date_of_birth",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "users",
+        "column_name": "email",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "users",
+        "column_name": "filter_completed_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "users",
+        "column_name": "filter_revision",
+        "data_type": "integer",
+        "udt_name": "int4",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "0"
+      },
+      {
+        "table_name": "users",
+        "column_name": "filter_version",
+        "data_type": "integer",
+        "udt_name": "int4",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "users",
+        "column_name": "first_name",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "users",
+        "column_name": "gender",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "users",
+        "column_name": "giyur_stage",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "users",
+        "column_name": "has_children",
+        "data_type": "boolean",
+        "udt_name": "bool",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": "false"
+      },
+      {
+        "table_name": "users",
+        "column_name": "id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "users",
+        "column_name": "identity_disabled_at",
+        "data_type": "timestamp with time zone",
+        "udt_name": "timestamptz",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "users",
+        "column_name": "image_url",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "users",
+        "column_name": "is_profile_complete",
+        "data_type": "boolean",
+        "udt_name": "bool",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "false"
+      },
+      {
+        "table_name": "users",
+        "column_name": "jewish_status",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "users",
+        "column_name": "last_name",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "users",
+        "column_name": "marital_status",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "users",
+        "column_name": "phone",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "users",
+        "column_name": "role",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'client'::text"
+      },
+      {
+        "table_name": "users",
+        "column_name": "source",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "users",
+        "column_name": "spouse_name",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "users",
+        "column_name": "tags",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": "'[]'::text"
+      },
+      {
+        "table_name": "users",
+        "column_name": "telegram_chat_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "users",
+        "column_name": "username",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "videos",
+        "column_name": "author_id",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "videos",
+        "column_name": "category",
+        "data_type": "character varying",
+        "udt_name": "varchar",
+        "character_maximum_length": 255,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "videos",
+        "column_name": "created_at",
+        "data_type": "timestamp without time zone",
+        "udt_name": "timestamp",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "now()"
+      },
+      {
+        "table_name": "videos",
+        "column_name": "description",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "videos",
+        "column_name": "id",
+        "data_type": "uuid",
+        "udt_name": "uuid",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "gen_random_uuid()"
+      },
+      {
+        "table_name": "videos",
+        "column_name": "image_url",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "videos",
+        "column_name": "is_published",
+        "data_type": "boolean",
+        "udt_name": "bool",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": "true"
+      },
+      {
+        "table_name": "videos",
+        "column_name": "link",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "videos",
+        "column_name": "rejection_reason",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": null
+      },
+      {
+        "table_name": "videos",
+        "column_name": "status",
+        "data_type": "character varying",
+        "udt_name": "varchar",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": "'draft'::character varying"
+      },
+      {
+        "table_name": "videos",
+        "column_name": "title",
+        "data_type": "text",
+        "udt_name": "text",
+        "character_maximum_length": null,
+        "is_nullable": "NO",
+        "column_default": null
+      },
+      {
+        "table_name": "videos",
+        "column_name": "views",
+        "data_type": "integer",
+        "udt_name": "int4",
+        "character_maximum_length": null,
+        "is_nullable": "YES",
+        "column_default": "0"
+      }
+    ],
+    "constraints": [
+      {
+        "table_name": "author_profiles",
+        "definition": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+      },
+      {
+        "table_name": "author_profiles",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "table_name": "author_profiles",
+        "definition": "NOT NULL id"
+      },
+      {
+        "table_name": "author_profiles",
+        "definition": "NOT NULL is_active"
+      },
+      {
+        "table_name": "author_profiles",
+        "definition": "NOT NULL slug"
+      },
+      {
+        "table_name": "author_profiles",
+        "definition": "NOT NULL updated_at"
+      },
+      {
+        "table_name": "author_profiles",
+        "definition": "NOT NULL user_id"
+      },
+      {
+        "table_name": "author_profiles",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "author_profiles",
+        "definition": "UNIQUE (slug)"
+      },
+      {
+        "table_name": "author_profiles",
+        "definition": "UNIQUE (user_id)"
+      },
+      {
+        "table_name": "bot_settings",
+        "definition": "NOT NULL id"
+      },
+      {
+        "table_name": "bot_settings",
+        "definition": "NOT NULL is_active"
+      },
+      {
+        "table_name": "bot_settings",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "community_audit",
+        "definition": "NOT NULL action"
+      },
+      {
+        "table_name": "community_audit",
+        "definition": "NOT NULL actor_id"
+      },
+      {
+        "table_name": "community_audit",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "table_name": "community_audit",
+        "definition": "NOT NULL details"
+      },
+      {
+        "table_name": "community_audit",
+        "definition": "NOT NULL id"
+      },
+      {
+        "table_name": "community_audit",
+        "definition": "NOT NULL parent_id"
+      },
+      {
+        "table_name": "community_audit",
+        "definition": "NOT NULL reason"
+      },
+      {
+        "table_name": "community_audit",
+        "definition": "NOT NULL target_id"
+      },
+      {
+        "table_name": "community_audit",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "community_registration_drafts",
+        "definition": "FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE SET NULL"
+      },
+      {
+        "table_name": "community_registration_drafts",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "table_name": "community_registration_drafts",
+        "definition": "NOT NULL expires_at"
+      },
+      {
+        "table_name": "community_registration_drafts",
+        "definition": "NOT NULL filter_version"
+      },
+      {
+        "table_name": "community_registration_drafts",
+        "definition": "NOT NULL id"
+      },
+      {
+        "table_name": "community_registration_drafts",
+        "definition": "NOT NULL payload"
+      },
+      {
+        "table_name": "community_registration_drafts",
+        "definition": "NOT NULL token_hash"
+      },
+      {
+        "table_name": "community_registration_drafts",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "community_registration_drafts",
+        "definition": "UNIQUE (token_hash)"
+      },
+      {
+        "table_name": "event_categories",
+        "definition": "NOT NULL color"
+      },
+      {
+        "table_name": "event_categories",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "table_name": "event_categories",
+        "definition": "NOT NULL id"
+      },
+      {
+        "table_name": "event_categories",
+        "definition": "NOT NULL name"
+      },
+      {
+        "table_name": "event_categories",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "event_participants",
+        "definition": "FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE"
+      },
+      {
+        "table_name": "event_participants",
+        "definition": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+      },
+      {
+        "table_name": "event_participants",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "table_name": "event_participants",
+        "definition": "NOT NULL event_id"
+      },
+      {
+        "table_name": "event_participants",
+        "definition": "NOT NULL id"
+      },
+      {
+        "table_name": "event_participants",
+        "definition": "NOT NULL phone"
+      },
+      {
+        "table_name": "event_participants",
+        "definition": "NOT NULL status"
+      },
+      {
+        "table_name": "event_participants",
+        "definition": "NOT NULL user_id"
+      },
+      {
+        "table_name": "event_participants",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "events",
+        "definition": "FOREIGN KEY (category_id) REFERENCES event_categories(id)"
+      },
+      {
+        "table_name": "events",
+        "definition": "NOT NULL audience"
+      },
+      {
+        "table_name": "events",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "table_name": "events",
+        "definition": "NOT NULL id"
+      },
+      {
+        "table_name": "events",
+        "definition": "NOT NULL is_free"
+      },
+      {
+        "table_name": "events",
+        "definition": "NOT NULL is_recurring"
+      },
+      {
+        "table_name": "events",
+        "definition": "NOT NULL status"
+      },
+      {
+        "table_name": "events",
+        "definition": "NOT NULL title"
+      },
+      {
+        "table_name": "events",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "kids_applications",
+        "definition": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL"
+      },
+      {
+        "table_name": "kids_applications",
+        "definition": "NOT NULL children"
+      },
+      {
+        "table_name": "kids_applications",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "table_name": "kids_applications",
+        "definition": "NOT NULL email"
+      },
+      {
+        "table_name": "kids_applications",
+        "definition": "NOT NULL id"
+      },
+      {
+        "table_name": "kids_applications",
+        "definition": "NOT NULL parent_first_name"
+      },
+      {
+        "table_name": "kids_applications",
+        "definition": "NOT NULL parent_last_name"
+      },
+      {
+        "table_name": "kids_applications",
+        "definition": "NOT NULL phone"
+      },
+      {
+        "table_name": "kids_applications",
+        "definition": "NOT NULL program_title"
+      },
+      {
+        "table_name": "kids_applications",
+        "definition": "NOT NULL status"
+      },
+      {
+        "table_name": "kids_applications",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "news",
+        "definition": "FOREIGN KEY (author_id) REFERENCES users(id)"
+      },
+      {
+        "table_name": "news",
+        "definition": "FOREIGN KEY (category_id) REFERENCES news_categories(id) ON DELETE SET NULL"
+      },
+      {
+        "table_name": "news",
+        "definition": "NOT NULL author_id"
+      },
+      {
+        "table_name": "news",
+        "definition": "NOT NULL content"
+      },
+      {
+        "table_name": "news",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "table_name": "news",
+        "definition": "NOT NULL id"
+      },
+      {
+        "table_name": "news",
+        "definition": "NOT NULL slug"
+      },
+      {
+        "table_name": "news",
+        "definition": "NOT NULL status"
+      },
+      {
+        "table_name": "news",
+        "definition": "NOT NULL title"
+      },
+      {
+        "table_name": "news",
+        "definition": "NOT NULL updated_at"
+      },
+      {
+        "table_name": "news",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "news",
+        "definition": "UNIQUE (slug)"
+      },
+      {
+        "table_name": "news_categories",
+        "definition": "NOT NULL id"
+      },
+      {
+        "table_name": "news_categories",
+        "definition": "NOT NULL name"
+      },
+      {
+        "table_name": "news_categories",
+        "definition": "NOT NULL slug"
+      },
+      {
+        "table_name": "news_categories",
+        "definition": "NOT NULL updated_at"
+      },
+      {
+        "table_name": "news_categories",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "news_categories",
+        "definition": "UNIQUE (slug)"
+      },
+      {
+        "table_name": "news_comments",
+        "definition": "FOREIGN KEY (news_id) REFERENCES news(id) ON DELETE CASCADE"
+      },
+      {
+        "table_name": "news_comments",
+        "definition": "FOREIGN KEY (user_id) REFERENCES users(id)"
+      },
+      {
+        "table_name": "news_comments",
+        "definition": "NOT NULL content"
+      },
+      {
+        "table_name": "news_comments",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "table_name": "news_comments",
+        "definition": "NOT NULL id"
+      },
+      {
+        "table_name": "news_comments",
+        "definition": "NOT NULL news_id"
+      },
+      {
+        "table_name": "news_comments",
+        "definition": "NOT NULL user_id"
+      },
+      {
+        "table_name": "news_comments",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "notifications",
+        "definition": "FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE SET NULL"
+      },
+      {
+        "table_name": "notifications",
+        "definition": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+      },
+      {
+        "table_name": "notifications",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "table_name": "notifications",
+        "definition": "NOT NULL id"
+      },
+      {
+        "table_name": "notifications",
+        "definition": "NOT NULL is_read"
+      },
+      {
+        "table_name": "notifications",
+        "definition": "NOT NULL message"
+      },
+      {
+        "table_name": "notifications",
+        "definition": "NOT NULL title"
+      },
+      {
+        "table_name": "notifications",
+        "definition": "NOT NULL type"
+      },
+      {
+        "table_name": "notifications",
+        "definition": "NOT NULL user_id"
+      },
+      {
+        "table_name": "notifications",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "service_categories",
+        "definition": "NOT NULL color"
+      },
+      {
+        "table_name": "service_categories",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "table_name": "service_categories",
+        "definition": "NOT NULL id"
+      },
+      {
+        "table_name": "service_categories",
+        "definition": "NOT NULL name"
+      },
+      {
+        "table_name": "service_categories",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "service_participants",
+        "definition": "FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE CASCADE"
+      },
+      {
+        "table_name": "service_participants",
+        "definition": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+      },
+      {
+        "table_name": "service_participants",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "table_name": "service_participants",
+        "definition": "NOT NULL id"
+      },
+      {
+        "table_name": "service_participants",
+        "definition": "NOT NULL phone"
+      },
+      {
+        "table_name": "service_participants",
+        "definition": "NOT NULL service_id"
+      },
+      {
+        "table_name": "service_participants",
+        "definition": "NOT NULL status"
+      },
+      {
+        "table_name": "service_participants",
+        "definition": "NOT NULL user_id"
+      },
+      {
+        "table_name": "service_participants",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "services",
+        "definition": "FOREIGN KEY (category_id) REFERENCES service_categories(id) ON DELETE SET NULL"
+      },
+      {
+        "table_name": "services",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "table_name": "services",
+        "definition": "NOT NULL id"
+      },
+      {
+        "table_name": "services",
+        "definition": "NOT NULL is_active"
+      },
+      {
+        "table_name": "services",
+        "definition": "NOT NULL title"
+      },
+      {
+        "table_name": "services",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "tasks",
+        "definition": "FOREIGN KEY (assignee_id) REFERENCES users(id)"
+      },
+      {
+        "table_name": "tasks",
+        "definition": "FOREIGN KEY (creator_id) REFERENCES users(id)"
+      },
+      {
+        "table_name": "tasks",
+        "definition": "FOREIGN KEY (event_id) REFERENCES events(id)"
+      },
+      {
+        "table_name": "tasks",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "table_name": "tasks",
+        "definition": "NOT NULL id"
+      },
+      {
+        "table_name": "tasks",
+        "definition": "NOT NULL status"
+      },
+      {
+        "table_name": "tasks",
+        "definition": "NOT NULL title"
+      },
+      {
+        "table_name": "tasks",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "telegram_contacts",
+        "definition": "CHECK ((marketing_status = ANY (ARRAY['unknown'::text, 'subscribed'::text, 'unsubscribed'::text, 'blocked'::text])))"
+      },
+      {
+        "table_name": "telegram_contacts",
+        "definition": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+      },
+      {
+        "table_name": "telegram_contacts",
+        "definition": "NOT NULL allows_write_to_pm"
+      },
+      {
+        "table_name": "telegram_contacts",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "table_name": "telegram_contacts",
+        "definition": "NOT NULL first_seen_at"
+      },
+      {
+        "table_name": "telegram_contacts",
+        "definition": "NOT NULL id"
+      },
+      {
+        "table_name": "telegram_contacts",
+        "definition": "NOT NULL is_primary"
+      },
+      {
+        "table_name": "telegram_contacts",
+        "definition": "NOT NULL last_seen_at"
+      },
+      {
+        "table_name": "telegram_contacts",
+        "definition": "NOT NULL marketing_status"
+      },
+      {
+        "table_name": "telegram_contacts",
+        "definition": "NOT NULL telegram_user_id"
+      },
+      {
+        "table_name": "telegram_contacts",
+        "definition": "NOT NULL updated_at"
+      },
+      {
+        "table_name": "telegram_contacts",
+        "definition": "NOT NULL user_id"
+      },
+      {
+        "table_name": "telegram_contacts",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "telegram_contacts",
+        "definition": "UNIQUE (telegram_chat_id)"
+      },
+      {
+        "table_name": "telegram_contacts",
+        "definition": "UNIQUE (telegram_user_id)"
+      },
+      {
+        "table_name": "telegram_miniapp_sessions",
+        "definition": "CHECK (((expires_at > created_at) AND (last_seen_at >= created_at) AND ((revoked_at IS NULL) OR (revoked_at >= created_at))))"
+      },
+      {
+        "table_name": "telegram_miniapp_sessions",
+        "definition": "CHECK ((token_hash ~ '^[0-9a-f]{64}$'::text))"
+      },
+      {
+        "table_name": "telegram_miniapp_sessions",
+        "definition": "FOREIGN KEY (identity_id, user_id) REFERENCES user_identities(id, user_id) ON UPDATE CASCADE ON DELETE CASCADE"
+      },
+      {
+        "table_name": "telegram_miniapp_sessions",
+        "definition": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+      },
+      {
+        "table_name": "telegram_miniapp_sessions",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "table_name": "telegram_miniapp_sessions",
+        "definition": "NOT NULL expires_at"
+      },
+      {
+        "table_name": "telegram_miniapp_sessions",
+        "definition": "NOT NULL id"
+      },
+      {
+        "table_name": "telegram_miniapp_sessions",
+        "definition": "NOT NULL identity_id"
+      },
+      {
+        "table_name": "telegram_miniapp_sessions",
+        "definition": "NOT NULL last_seen_at"
+      },
+      {
+        "table_name": "telegram_miniapp_sessions",
+        "definition": "NOT NULL token_hash"
+      },
+      {
+        "table_name": "telegram_miniapp_sessions",
+        "definition": "NOT NULL user_id"
+      },
+      {
+        "table_name": "telegram_miniapp_sessions",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "telegram_miniapp_sessions",
+        "definition": "UNIQUE (token_hash)"
+      },
+      {
+        "table_name": "user_identities",
+        "definition": "CHECK (((length(btrim(provider_instance)) > 0) AND (length(btrim(provider_user_id)) > 0)))"
+      },
+      {
+        "table_name": "user_identities",
+        "definition": "CHECK ((provider = ANY (ARRAY['clerk'::text, 'telegram'::text])))"
+      },
+      {
+        "table_name": "user_identities",
+        "definition": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+      },
+      {
+        "table_name": "user_identities",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "table_name": "user_identities",
+        "definition": "NOT NULL id"
+      },
+      {
+        "table_name": "user_identities",
+        "definition": "NOT NULL last_seen_at"
+      },
+      {
+        "table_name": "user_identities",
+        "definition": "NOT NULL metadata"
+      },
+      {
+        "table_name": "user_identities",
+        "definition": "NOT NULL provider"
+      },
+      {
+        "table_name": "user_identities",
+        "definition": "NOT NULL provider_instance"
+      },
+      {
+        "table_name": "user_identities",
+        "definition": "NOT NULL provider_user_id"
+      },
+      {
+        "table_name": "user_identities",
+        "definition": "NOT NULL user_id"
+      },
+      {
+        "table_name": "user_identities",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "user_identity_link_attempts",
+        "definition": "CHECK (((expires_at > created_at) AND ((consumed_at IS NULL) OR ((consumed_at >= created_at) AND (consumed_at <= expires_at)))))"
+      },
+      {
+        "table_name": "user_identity_link_attempts",
+        "definition": "CHECK ((provider = ANY (ARRAY['clerk'::text, 'telegram'::text])))"
+      },
+      {
+        "table_name": "user_identity_link_attempts",
+        "definition": "CHECK ((token_hash ~ '^[0-9a-f]{64}$'::text))"
+      },
+      {
+        "table_name": "user_identity_link_attempts",
+        "definition": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+      },
+      {
+        "table_name": "user_identity_link_attempts",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "table_name": "user_identity_link_attempts",
+        "definition": "NOT NULL expires_at"
+      },
+      {
+        "table_name": "user_identity_link_attempts",
+        "definition": "NOT NULL id"
+      },
+      {
+        "table_name": "user_identity_link_attempts",
+        "definition": "NOT NULL provider"
+      },
+      {
+        "table_name": "user_identity_link_attempts",
+        "definition": "NOT NULL provider_instance"
+      },
+      {
+        "table_name": "user_identity_link_attempts",
+        "definition": "NOT NULL token_hash"
+      },
+      {
+        "table_name": "user_identity_link_attempts",
+        "definition": "NOT NULL user_id"
+      },
+      {
+        "table_name": "user_identity_link_attempts",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "user_identity_link_attempts",
+        "definition": "UNIQUE (token_hash)"
+      },
+      {
+        "table_name": "user_identity_merge_log",
+        "definition": "CHECK (((source_user_id <> target_user_id) AND (length(btrim(reason)) > 0)))"
+      },
+      {
+        "table_name": "user_identity_merge_log",
+        "definition": "CHECK ((trigger_provider = ANY (ARRAY['clerk'::text, 'telegram'::text])))"
+      },
+      {
+        "table_name": "user_identity_merge_log",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "table_name": "user_identity_merge_log",
+        "definition": "NOT NULL details"
+      },
+      {
+        "table_name": "user_identity_merge_log",
+        "definition": "NOT NULL id"
+      },
+      {
+        "table_name": "user_identity_merge_log",
+        "definition": "NOT NULL reason"
+      },
+      {
+        "table_name": "user_identity_merge_log",
+        "definition": "NOT NULL source_user_id"
+      },
+      {
+        "table_name": "user_identity_merge_log",
+        "definition": "NOT NULL target_user_id"
+      },
+      {
+        "table_name": "user_identity_merge_log",
+        "definition": "NOT NULL trigger_provider"
+      },
+      {
+        "table_name": "user_identity_merge_log",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "users",
+        "definition": "CHECK (((affiliation IS NULL) OR (affiliation = ANY (ARRAY['maternal'::text, 'giyur'::text, 'none'::text]))))"
+      },
+      {
+        "table_name": "users",
+        "definition": "CHECK (((filter_version IS DISTINCT FROM 2) OR (filter_completed_at IS NOT NULL)))"
+      },
+      {
+        "table_name": "users",
+        "definition": "CHECK (((gender IS NULL) OR (gender = ANY (ARRAY['male'::text, 'female'::text]))))"
+      },
+      {
+        "table_name": "users",
+        "definition": "CHECK (((giyur_stage IS NULL) OR (giyur_stage = ANY (ARRAY['advanced'::text, 'completed'::text]))))"
+      },
+      {
+        "table_name": "users",
+        "definition": "NOT NULL children_data"
+      },
+      {
+        "table_name": "users",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "table_name": "users",
+        "definition": "NOT NULL filter_revision"
+      },
+      {
+        "table_name": "users",
+        "definition": "NOT NULL id"
+      },
+      {
+        "table_name": "users",
+        "definition": "NOT NULL is_profile_complete"
+      },
+      {
+        "table_name": "users",
+        "definition": "NOT NULL role"
+      },
+      {
+        "table_name": "users",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "table_name": "videos",
+        "definition": "FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE SET NULL"
+      },
+      {
+        "table_name": "videos",
+        "definition": "NOT NULL created_at"
+      },
+      {
+        "table_name": "videos",
+        "definition": "NOT NULL id"
+      },
+      {
+        "table_name": "videos",
+        "definition": "NOT NULL link"
+      },
+      {
+        "table_name": "videos",
+        "definition": "NOT NULL status"
+      },
+      {
+        "table_name": "videos",
+        "definition": "NOT NULL title"
+      },
+      {
+        "table_name": "videos",
+        "definition": "PRIMARY KEY (id)"
+      }
+    ],
+    "indexes": [
+      {
+        "tablename": "author_profiles",
+        "indexname": "author_profiles_pkey",
+        "indexdef": "CREATE UNIQUE INDEX author_profiles_pkey ON public.author_profiles USING btree (id)"
+      },
+      {
+        "tablename": "author_profiles",
+        "indexname": "author_profiles_slug_unique",
+        "indexdef": "CREATE UNIQUE INDEX author_profiles_slug_unique ON public.author_profiles USING btree (slug)"
+      },
+      {
+        "tablename": "author_profiles",
+        "indexname": "author_profiles_user_id_unique",
+        "indexdef": "CREATE UNIQUE INDEX author_profiles_user_id_unique ON public.author_profiles USING btree (user_id)"
+      },
+      {
+        "tablename": "bot_settings",
+        "indexname": "bot_settings_pkey",
+        "indexdef": "CREATE UNIQUE INDEX bot_settings_pkey ON public.bot_settings USING btree (id)"
+      },
+      {
+        "tablename": "community_audit",
+        "indexname": "community_audit_pkey",
+        "indexdef": "CREATE UNIQUE INDEX community_audit_pkey ON public.community_audit USING btree (id)"
+      },
+      {
+        "tablename": "community_registration_drafts",
+        "indexname": "community_registration_drafts_pkey",
+        "indexdef": "CREATE UNIQUE INDEX community_registration_drafts_pkey ON public.community_registration_drafts USING btree (id)"
+      },
+      {
+        "tablename": "community_registration_drafts",
+        "indexname": "community_registration_drafts_token_hash_unique",
+        "indexdef": "CREATE UNIQUE INDEX community_registration_drafts_token_hash_unique ON public.community_registration_drafts USING btree (token_hash)"
+      },
+      {
+        "tablename": "event_categories",
+        "indexname": "event_categories_pkey",
+        "indexdef": "CREATE UNIQUE INDEX event_categories_pkey ON public.event_categories USING btree (id)"
+      },
+      {
+        "tablename": "event_participants",
+        "indexname": "event_participants_pkey",
+        "indexdef": "CREATE UNIQUE INDEX event_participants_pkey ON public.event_participants USING btree (id)"
+      },
+      {
+        "tablename": "events",
+        "indexname": "events_pkey",
+        "indexdef": "CREATE UNIQUE INDEX events_pkey ON public.events USING btree (id)"
+      },
+      {
+        "tablename": "kids_applications",
+        "indexname": "kids_applications_pkey",
+        "indexdef": "CREATE UNIQUE INDEX kids_applications_pkey ON public.kids_applications USING btree (id)"
+      },
+      {
+        "tablename": "news",
+        "indexname": "news_pkey",
+        "indexdef": "CREATE UNIQUE INDEX news_pkey ON public.news USING btree (id)"
+      },
+      {
+        "tablename": "news",
+        "indexname": "news_slug_unique",
+        "indexdef": "CREATE UNIQUE INDEX news_slug_unique ON public.news USING btree (slug)"
+      },
+      {
+        "tablename": "news_categories",
+        "indexname": "news_categories_pkey",
+        "indexdef": "CREATE UNIQUE INDEX news_categories_pkey ON public.news_categories USING btree (id)"
+      },
+      {
+        "tablename": "news_categories",
+        "indexname": "news_categories_slug_unique",
+        "indexdef": "CREATE UNIQUE INDEX news_categories_slug_unique ON public.news_categories USING btree (slug)"
+      },
+      {
+        "tablename": "news_comments",
+        "indexname": "news_comments_pkey",
+        "indexdef": "CREATE UNIQUE INDEX news_comments_pkey ON public.news_comments USING btree (id)"
+      },
+      {
+        "tablename": "notifications",
+        "indexname": "notifications_pkey",
+        "indexdef": "CREATE UNIQUE INDEX notifications_pkey ON public.notifications USING btree (id)"
+      },
+      {
+        "tablename": "service_categories",
+        "indexname": "service_categories_pkey",
+        "indexdef": "CREATE UNIQUE INDEX service_categories_pkey ON public.service_categories USING btree (id)"
+      },
+      {
+        "tablename": "service_participants",
+        "indexname": "service_participants_pkey",
+        "indexdef": "CREATE UNIQUE INDEX service_participants_pkey ON public.service_participants USING btree (id)"
+      },
+      {
+        "tablename": "services",
+        "indexname": "services_pkey",
+        "indexdef": "CREATE UNIQUE INDEX services_pkey ON public.services USING btree (id)"
+      },
+      {
+        "tablename": "tasks",
+        "indexname": "tasks_pkey",
+        "indexdef": "CREATE UNIQUE INDEX tasks_pkey ON public.tasks USING btree (id)"
+      },
+      {
+        "tablename": "telegram_contacts",
+        "indexname": "telegram_contacts_one_primary_per_user_idx",
+        "indexdef": "CREATE UNIQUE INDEX telegram_contacts_one_primary_per_user_idx ON public.telegram_contacts USING btree (user_id) WHERE (is_primary = true)"
+      },
+      {
+        "tablename": "telegram_contacts",
+        "indexname": "telegram_contacts_pkey",
+        "indexdef": "CREATE UNIQUE INDEX telegram_contacts_pkey ON public.telegram_contacts USING btree (id)"
+      },
+      {
+        "tablename": "telegram_contacts",
+        "indexname": "telegram_contacts_telegram_chat_id_unique",
+        "indexdef": "CREATE UNIQUE INDEX telegram_contacts_telegram_chat_id_unique ON public.telegram_contacts USING btree (telegram_chat_id)"
+      },
+      {
+        "tablename": "telegram_contacts",
+        "indexname": "telegram_contacts_telegram_user_id_unique",
+        "indexdef": "CREATE UNIQUE INDEX telegram_contacts_telegram_user_id_unique ON public.telegram_contacts USING btree (telegram_user_id)"
+      },
+      {
+        "tablename": "telegram_contacts",
+        "indexname": "telegram_contacts_user_id_idx",
+        "indexdef": "CREATE INDEX telegram_contacts_user_id_idx ON public.telegram_contacts USING btree (user_id)"
+      },
+      {
+        "tablename": "telegram_miniapp_sessions",
+        "indexname": "telegram_miniapp_sessions_identity_id_idx",
+        "indexdef": "CREATE INDEX telegram_miniapp_sessions_identity_id_idx ON public.telegram_miniapp_sessions USING btree (identity_id)"
+      },
+      {
+        "tablename": "telegram_miniapp_sessions",
+        "indexname": "telegram_miniapp_sessions_open_expiry_idx",
+        "indexdef": "CREATE INDEX telegram_miniapp_sessions_open_expiry_idx ON public.telegram_miniapp_sessions USING btree (expires_at) WHERE (revoked_at IS NULL)"
+      },
+      {
+        "tablename": "telegram_miniapp_sessions",
+        "indexname": "telegram_miniapp_sessions_pkey",
+        "indexdef": "CREATE UNIQUE INDEX telegram_miniapp_sessions_pkey ON public.telegram_miniapp_sessions USING btree (id)"
+      },
+      {
+        "tablename": "telegram_miniapp_sessions",
+        "indexname": "telegram_miniapp_sessions_token_hash_unique",
+        "indexdef": "CREATE UNIQUE INDEX telegram_miniapp_sessions_token_hash_unique ON public.telegram_miniapp_sessions USING btree (token_hash)"
+      },
+      {
+        "tablename": "telegram_miniapp_sessions",
+        "indexname": "telegram_miniapp_sessions_user_id_idx",
+        "indexdef": "CREATE INDEX telegram_miniapp_sessions_user_id_idx ON public.telegram_miniapp_sessions USING btree (user_id)"
+      },
+      {
+        "tablename": "user_identities",
+        "indexname": "user_identities_active_clerk_per_user_idx",
+        "indexdef": "CREATE UNIQUE INDEX user_identities_active_clerk_per_user_idx ON public.user_identities USING btree (user_id) WHERE ((provider = 'clerk'::text) AND (disabled_at IS NULL))"
+      },
+      {
+        "tablename": "user_identities",
+        "indexname": "user_identities_id_user_id_idx",
+        "indexdef": "CREATE UNIQUE INDEX user_identities_id_user_id_idx ON public.user_identities USING btree (id, user_id)"
+      },
+      {
+        "tablename": "user_identities",
+        "indexname": "user_identities_pkey",
+        "indexdef": "CREATE UNIQUE INDEX user_identities_pkey ON public.user_identities USING btree (id)"
+      },
+      {
+        "tablename": "user_identities",
+        "indexname": "user_identities_provider_subject_idx",
+        "indexdef": "CREATE UNIQUE INDEX user_identities_provider_subject_idx ON public.user_identities USING btree (provider, provider_instance, provider_user_id)"
+      },
+      {
+        "tablename": "user_identities",
+        "indexname": "user_identities_user_id_idx",
+        "indexdef": "CREATE INDEX user_identities_user_id_idx ON public.user_identities USING btree (user_id)"
+      },
+      {
+        "tablename": "user_identity_link_attempts",
+        "indexname": "user_identity_link_attempts_open_expiry_idx",
+        "indexdef": "CREATE INDEX user_identity_link_attempts_open_expiry_idx ON public.user_identity_link_attempts USING btree (expires_at) WHERE (consumed_at IS NULL)"
+      },
+      {
+        "tablename": "user_identity_link_attempts",
+        "indexname": "user_identity_link_attempts_pkey",
+        "indexdef": "CREATE UNIQUE INDEX user_identity_link_attempts_pkey ON public.user_identity_link_attempts USING btree (id)"
+      },
+      {
+        "tablename": "user_identity_link_attempts",
+        "indexname": "user_identity_link_attempts_token_hash_unique",
+        "indexdef": "CREATE UNIQUE INDEX user_identity_link_attempts_token_hash_unique ON public.user_identity_link_attempts USING btree (token_hash)"
+      },
+      {
+        "tablename": "user_identity_link_attempts",
+        "indexname": "user_identity_link_attempts_user_id_idx",
+        "indexdef": "CREATE INDEX user_identity_link_attempts_user_id_idx ON public.user_identity_link_attempts USING btree (user_id)"
+      },
+      {
+        "tablename": "user_identity_merge_log",
+        "indexname": "user_identity_merge_log_pkey",
+        "indexdef": "CREATE UNIQUE INDEX user_identity_merge_log_pkey ON public.user_identity_merge_log USING btree (id)"
+      },
+      {
+        "tablename": "users",
+        "indexname": "telegram_chat_id_idx",
+        "indexdef": "CREATE UNIQUE INDEX telegram_chat_id_idx ON public.users USING btree (telegram_chat_id)"
+      },
+      {
+        "tablename": "users",
+        "indexname": "users_pkey",
+        "indexdef": "CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id)"
+      },
+      {
+        "tablename": "videos",
+        "indexname": "videos_pkey",
+        "indexdef": "CREATE UNIQUE INDEX videos_pkey ON public.videos USING btree (id)"
+      }
+    ],
+    "rls": [
+      {
+        "relname": "author_profiles",
+        "relrowsecurity": true
+      },
+      {
+        "relname": "bot_settings",
+        "relrowsecurity": true
+      },
+      {
+        "relname": "community_audit",
+        "relrowsecurity": true
+      },
+      {
+        "relname": "community_registration_drafts",
+        "relrowsecurity": true
+      },
+      {
+        "relname": "event_categories",
+        "relrowsecurity": true
+      },
+      {
+        "relname": "event_participants",
+        "relrowsecurity": true
+      },
+      {
+        "relname": "events",
+        "relrowsecurity": true
+      },
+      {
+        "relname": "kids_applications",
+        "relrowsecurity": true
+      },
+      {
+        "relname": "news",
+        "relrowsecurity": true
+      },
+      {
+        "relname": "news_categories",
+        "relrowsecurity": true
+      },
+      {
+        "relname": "news_comments",
+        "relrowsecurity": true
+      },
+      {
+        "relname": "notifications",
+        "relrowsecurity": true
+      },
+      {
+        "relname": "service_categories",
+        "relrowsecurity": true
+      },
+      {
+        "relname": "service_participants",
+        "relrowsecurity": true
+      },
+      {
+        "relname": "services",
+        "relrowsecurity": true
+      },
+      {
+        "relname": "tasks",
+        "relrowsecurity": true
+      },
+      {
+        "relname": "telegram_contacts",
+        "relrowsecurity": true
+      },
+      {
+        "relname": "telegram_miniapp_sessions",
+        "relrowsecurity": true
+      },
+      {
+        "relname": "user_identities",
+        "relrowsecurity": true
+      },
+      {
+        "relname": "user_identity_link_attempts",
+        "relrowsecurity": true
+      },
+      {
+        "relname": "user_identity_merge_log",
+        "relrowsecurity": true
+      },
+      {
+        "relname": "users",
+        "relrowsecurity": true
+      },
+      {
+        "relname": "videos",
+        "relrowsecurity": true
+      }
+    ]
+  },
+  "emptyLedger": [
+    {
+      "hash": "901e018c3ec116e1f701ff9ce2fe6451d9675319dd6485116f6de1118a995635",
+      "created_at": 1774109638145
+    },
+    {
+      "hash": "6d96aff4a7957e0d8dd5179b0b7eb7cc2d554a18ed0ddc0e07cb30e85a5d560c",
+      "created_at": 1774123110276
+    },
+    {
+      "hash": "444fc5920e11e0e2d5c814fbf5faa3388bd655f939496a18a55bafaf8ebd3007",
+      "created_at": 1780425802302
+    },
+    {
+      "hash": "3e22e1f7c8a7b7a92015ace31eb3146a17234fcdcc0ad252a3093f62d8b069d6",
+      "created_at": 1783278410413
+    },
+    {
+      "hash": "cef39399cddcc59ac5654848d0ccfeee1be7c3fc3b1ed531a96f55c2b75130c7",
+      "created_at": 1792518180402
+    },
+    {
+      "hash": "a09bbe7e8c4efccc1ee1b9c2641a14cc24ac460f862eaa9e72ee380bf1a19c16",
+      "created_at": 1792519876795
+    },
+    {
+      "hash": "790700b4212614d8ada5301ca937fa5716f207b256325bafdf71954ec75b65f8",
+      "created_at": 1792523309776
+    },
+    {
+      "hash": "4e0aafde81ccf079d7d03d34d6c947377ea045b3be0d9e9d6431edd38db04f1e",
+      "created_at": 1792526637663
+    },
+    {
+      "hash": "5cff7fb6291fb5eb2dac27c7c245280b1804bbed6c46f5ec8e8a127d0c67dbd8",
+      "created_at": 1792572358315
+    },
+    {
+      "hash": "0b7ac0c3fdada97898b9582900510946d818b1e268578b9b725984d4bf7b9a2e",
+      "created_at": 1792651464393
+    },
+    {
+      "hash": "5740f8f314cd9ca7f5c27c8478861e403742846aa6292223446f58fd7a689c27",
+      "created_at": 1792654817386
+    }
+  ],
+  "emptyRepeat": {
+    "ledgerRows": 11,
+    "migrationStatementsReapplied": 0,
+    "schemaUnchanged": true
+  },
+  "upgrade": {
+    "businessBefore": {
+      "users": {
+        "hash": "176ebd300992aff011cf425933ef4ae6",
+        "count": 2
+      },
+      "events": {
+        "hash": "605304f965cd06e90bf433355e924592",
+        "count": 1
+      },
+      "event_participants": {
+        "hash": "9ead6fa27da7509aca28abb664153d90",
+        "count": 1
+      },
+      "kids_applications": {
+        "hash": "17b6ed1b6ed2d17793d81922dd6bf54c",
+        "count": 1
+      },
+      "service_participants": {
+        "hash": "0700f2514d8d82c46b8a748a7004bbdf",
+        "count": 1
+      },
+      "news": {
+        "hash": "0a6dfb02da6007be477639ef58892aed",
+        "count": 1
+      },
+      "videos": {
+        "hash": "5dbc2735c215f1365ca5ce39e7f110b1",
+        "count": 1
+      }
+    },
+    "businessAfter": {
+      "users": {
+        "hash": "176ebd300992aff011cf425933ef4ae6",
+        "count": 2
+      },
+      "events": {
+        "hash": "605304f965cd06e90bf433355e924592",
+        "count": 1
+      },
+      "event_participants": {
+        "hash": "9ead6fa27da7509aca28abb664153d90",
+        "count": 1
+      },
+      "kids_applications": {
+        "hash": "17b6ed1b6ed2d17793d81922dd6bf54c",
+        "count": 1
+      },
+      "service_participants": {
+        "hash": "0700f2514d8d82c46b8a748a7004bbdf",
+        "count": 1
+      },
+      "news": {
+        "hash": "0a6dfb02da6007be477639ef58892aed",
+        "count": 1
+      },
+      "videos": {
+        "hash": "5dbc2735c215f1365ca5ce39e7f110b1",
+        "count": 1
+      }
+    },
+    "ledger": [
+      {
+        "hash": "901e018c3ec116e1f701ff9ce2fe6451d9675319dd6485116f6de1118a995635",
+        "created_at": 1774109638145
+      },
+      {
+        "hash": "6d96aff4a7957e0d8dd5179b0b7eb7cc2d554a18ed0ddc0e07cb30e85a5d560c",
+        "created_at": 1774123110276
+      },
+      {
+        "hash": "444fc5920e11e0e2d5c814fbf5faa3388bd655f939496a18a55bafaf8ebd3007",
+        "created_at": 1780425802302
+      },
+      {
+        "hash": "3e22e1f7c8a7b7a92015ace31eb3146a17234fcdcc0ad252a3093f62d8b069d6",
+        "created_at": 1783278410413
+      },
+      {
+        "hash": "cef39399cddcc59ac5654848d0ccfeee1be7c3fc3b1ed531a96f55c2b75130c7",
+        "created_at": 1792518180402
+      },
+      {
+        "hash": "a09bbe7e8c4efccc1ee1b9c2641a14cc24ac460f862eaa9e72ee380bf1a19c16",
+        "created_at": 1792519876795
+      },
+      {
+        "hash": "790700b4212614d8ada5301ca937fa5716f207b256325bafdf71954ec75b65f8",
+        "created_at": 1792523309776
+      },
+      {
+        "hash": "4e0aafde81ccf079d7d03d34d6c947377ea045b3be0d9e9d6431edd38db04f1e",
+        "created_at": 1792526637663
+      },
+      {
+        "hash": "5cff7fb6291fb5eb2dac27c7c245280b1804bbed6c46f5ec8e8a127d0c67dbd8",
+        "created_at": 1792572358315
+      },
+      {
+        "hash": "0b7ac0c3fdada97898b9582900510946d818b1e268578b9b725984d4bf7b9a2e",
+        "created_at": 1792651464393
+      },
+      {
+        "hash": "5740f8f314cd9ca7f5c27c8478861e403742846aa6292223446f58fd7a689c27",
+        "created_at": 1792654817386
+      }
+    ],
+    "unknownAnswersRemainNull": true
+  },
+  "upgradeRepeat": {
+    "ledgerRows": 11,
+    "migrationStatementsReapplied": 0,
+    "schemaUnchanged": true
+  }
+}

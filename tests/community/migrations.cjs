@@ -63,7 +63,10 @@ async function repeat(pg) {
   const evidence = { environment: 'Isolated PGlite 0.5.10; native drizzle-orm/pglite/migrator, same PgDialect and drizzle/ files as postgres-js runner', realDatabaseTouched: false, checks };
   let pg = new PGlite();
   try {
-    await pg.exec((await generateMigration(empty, current)).join('\n'));
+    // drizzle-kit 0.31 emits indexes after FKs even when a compound FK references
+    // that unique index. Order the generated oracle DDL by that dependency too.
+    const generated = require('./schema-ddl.cjs').orderSchemaDdl(await generateMigration(empty, current));
+    await pg.exec(generated.join('\n'));
     evidence.expected = await metadata(pg);
   } finally { await pg.close(); }
 
@@ -92,7 +95,7 @@ async function repeat(pg) {
     const legacy = structuredClone(current);
     delete legacy.tables['public.community_audit'];
     delete legacy.tables['public.community_registration_drafts'];
-    for (const table of ['user_identities', 'telegram_contacts', 'user_identity_link_attempts', 'user_identity_merge_log']) delete legacy.tables['public.' + table];
+    for (const table of ['user_identities', 'telegram_contacts', 'user_identity_link_attempts', 'user_identity_merge_log', 'telegram_miniapp_sessions']) delete legacy.tables['public.' + table];
     // The pre-identity schema required an email. New Telegram-first users do not.
     legacy.tables['public.users'].columns.email.notNull = true;
     for (const col of ['city_id', 'gender', 'affiliation', 'filter_version', 'filter_revision', 'giyur_stage', 'filter_completed_at', 'identity_disabled_at']) delete legacy.tables['public.users'].columns[col];

@@ -1,0 +1,48 @@
+{
+  "totalChecks": 154,
+  "remoteDatabaseTouched": false,
+  "commands": [
+    {
+      "command": "node tests/community/miniapp-auth.cjs",
+      "exitCode": 0,
+      "checks": 87,
+      "result": "miniapp-auth-results.json"
+    },
+    {
+      "command": "node tests/community/identity-schema.cjs",
+      "exitCode": 0,
+      "checks": 23,
+      "result": "identity-results.json"
+    },
+    {
+      "command": "npm run db:test",
+      "exitCode": 0,
+      "checks": 8,
+      "result": "migration-results.json"
+    },
+    {
+      "command": "node tests/community/regression.cjs",
+      "exitCode": 0,
+      "checks": 36,
+      "result": "regression-results.json"
+    },
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "log": "typecheck.log"
+    },
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "errors": 0,
+      "warnings": 30,
+      "log": "lint.log"
+    },
+    {
+      "command": "npm run build",
+      "exitCode": 0,
+      "result": "build-result.json",
+      "environment": "current code copy, synthetic env, unavailable loopback DB"
+    }
+  ]
+}
