@@ -1,0 +1,86 @@
+{
+  "environment": "isolated PGlite, production route/services with one shared Drizzle logger, short IDs; counts exclude SQL BEGIN/COMMIT",
+  "measurements": [
+    {
+      "label": "new-user-start",
+      "statements": 10,
+      "kinds": {
+        "SELECT": 6,
+        "INSERT": 4
+      },
+      "locked": 3
+    },
+    {
+      "label": "returning-home-start",
+      "statements": 5,
+      "kinds": {
+        "SELECT": 5
+      },
+      "locked": 0
+    },
+    {
+      "label": "GET profile",
+      "statements": 2,
+      "kinds": {
+        "SELECT": 2
+      },
+      "locked": 0
+    },
+    {
+      "label": "GET session",
+      "statements": 1,
+      "kinds": {
+        "SELECT": 1
+      },
+      "locked": 0
+    },
+    {
+      "label": "GET events",
+      "statements": 5,
+      "kinds": {
+        "SELECT": 5
+      },
+      "locked": 0
+    },
+    {
+      "label": "GET events?id=startup-event",
+      "statements": 5,
+      "kinds": {
+        "SELECT": 5
+      },
+      "locked": 0
+    },
+    {
+      "label": "GET registrations",
+      "statements": 2,
+      "kinds": {
+        "SELECT": 2
+      },
+      "locked": 0
+    },
+    {
+      "label": "GET kids",
+      "statements": 3,
+      "kinds": {
+        "SELECT": 3
+      },
+      "locked": 0
+    },
+    {
+      "label": "GET subscription",
+      "statements": 2,
+      "kinds": {
+        "SELECT": 2
+      },
+      "locked": 0
+    },
+    {
+      "label": "GET launch?event=startup-event",
+      "statements": 4,
+      "kinds": {
+        "SELECT": 4
+      },
+      "locked": 0
+    }
+  ]
+}

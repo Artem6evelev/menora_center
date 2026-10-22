@@ -1,0 +1,21 @@
+{
+  "readOnly": true,
+  "vercel": {
+    "exitCode": 0,
+    "projectId": "prj_g4eRiADinsBdYSIhJGzYXUK0EXt9",
+    "teamId": "team_RjT9U6PyU1lZm7gMsj20ANzw",
+    "functionRegion": "iad1",
+    "defaultRegions": [
+      "iad1"
+    ]
+  },
+  "supabase": {
+    "projectRef": "gwuzekpkfrkmgluzblty",
+    "projectRegion": "NOT VERIFIED",
+    "metadataToolResult": "INVALID_ARGUMENT; production project absent from connected list",
+    "cli": "projects list unavailable: not authorized",
+    "poolerLocationHint": "eu-central-1",
+    "poolerHintIsAuthoritativeProjectRegion": false
+  },
+  "settingsChanged": false
+}

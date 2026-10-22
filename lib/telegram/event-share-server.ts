@@ -12,10 +12,10 @@ export async function canonicalTelegramEventShareLinks(tx: MiniAppTransaction, e
   const ids = [...new Set(eventIds)];
   const result = new Map<string, string | null>(ids.map(id => [id, null]));
   if (!ids.length) return result;
-  // Stable lock order across batches; callers already lock the canonical user.
+  // A read snapshot suffices: launch/checkout revalidate planned status and access.
   const rows = await tx.select({ id: events.id }).from(events)
     .where(and(inArray(events.id, ids), eq(events.status, "planned")))
-    .orderBy(events.id).for("update");
+    .orderBy(events.id);
   const targets = rows.map(({ id }) => {
     const direct = /^[A-Za-z0-9_-]{1,58}$/.test(id);
     const key = direct ? `event_${id}` : `evs_${createHash("sha256").update(id).digest("hex").slice(0, 40)}`;

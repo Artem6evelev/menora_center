@@ -1,0 +1,45 @@
+{
+  "environment": "Local isolated synthetic fixtures",
+  "checks": [
+    {
+      "name": "PostgreSQL 17 full additive chain with exact catalog checks",
+      "status": "PASS"
+    },
+    {
+      "name": "PostgreSQL 17 PRECHECK and POSTCHECK are read-only and executable",
+      "status": "PASS"
+    },
+    {
+      "name": "PostgreSQL 17 unified manual SQL is repeatable and preserves paid history, children and unknown giyur",
+      "status": "PASS"
+    },
+    {
+      "name": "PostgreSQL 17 public roles cannot access operational tables",
+      "status": "PASS"
+    },
+    {
+      "name": "PostgreSQL 17 incompatible release table fails atomically",
+      "status": "PASS"
+    },
+    {
+      "name": "PostgreSQL 18 full additive chain with exact catalog checks",
+      "status": "PASS"
+    },
+    {
+      "name": "PostgreSQL 18 PRECHECK and POSTCHECK are read-only and executable",
+      "status": "PASS"
+    },
+    {
+      "name": "PostgreSQL 18 unified manual SQL is repeatable and preserves paid history, children and unknown giyur",
+      "status": "PASS"
+    },
+    {
+      "name": "PostgreSQL 18 public roles cannot access operational tables",
+      "status": "PASS"
+    },
+    {
+      "name": "PostgreSQL 18 incompatible release table fails atomically",
+      "status": "PASS"
+    }
+  ]
+}

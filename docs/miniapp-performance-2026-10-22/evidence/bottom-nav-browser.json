@@ -1,0 +1,65 @@
+{
+  "environment": "Local Chromium + actual Mini App session/routes/SQL; synthetic Telegram SDK, blocked external requests",
+  "checks": [
+    {
+      "name": "320 five equal single-line tabs, Baby icon, internal Kids and stable active gold/navy state",
+      "status": "PASS"
+    },
+    {
+      "name": "320 all four existing tabs and bottom Home work without navigation or width changes",
+      "status": "PASS"
+    },
+    {
+      "name": "390 five equal single-line tabs, Baby icon, internal Kids and stable active gold/navy state",
+      "status": "PASS"
+    },
+    {
+      "name": "390 all four existing tabs and bottom Home work without navigation or width changes",
+      "status": "PASS"
+    },
+    {
+      "name": "1280 five equal single-line tabs, Baby icon, internal Kids and stable active gold/navy state",
+      "status": "PASS"
+    },
+    {
+      "name": "1280 all four existing tabs and bottom Home work without navigation or width changes",
+      "status": "PASS"
+    },
+    {
+      "name": "direct section=kids is active immediately; bottom Home clears destination and reload stays Home",
+      "status": "PASS"
+    },
+    {
+      "name": "SDK safe areas and reduced viewport keep navigation above the bottom inset",
+      "status": "PASS"
+    },
+    {
+      "name": "male always sees Kids tab and retains existing permission UI",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur-male always sees Kids tab and retains existing permission UI",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur-unknown always sees Kids tab and retains existing permission UI",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur-advanced always sees Kids tab and retains existing permission UI",
+      "status": "PASS"
+    },
+    {
+      "name": "giyur-completed always sees Kids tab and retains existing permission UI",
+      "status": "PASS"
+    },
+    {
+      "name": "none sees all tabs and active Kids but remains resources without protected API access",
+      "status": "PASS"
+    },
+    {
+      "name": "new user chooses Kids before completion, cannot skip filter, and returns to active Kids after profile/reload",
+      "status": "PASS"
+    }
+  ]
+}

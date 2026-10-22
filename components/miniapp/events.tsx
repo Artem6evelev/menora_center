@@ -7,17 +7,21 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { MiniAppLanguage } from "@/lib/telegram/miniapp-i18n";
 import { eventCopy } from "@/lib/telegram/event-copy";
 import { miniAppRequest } from "@/lib/telegram/miniapp-client";
-import type { eventDto } from "@/lib/telegram/miniapp-events";
+import type { eventPreviewDto, eventDetailDto } from "@/lib/telegram/miniapp-events";
+import type { MiniAppCache } from "@/lib/telegram/miniapp-cache";
+import type { MiniAppProfileData } from "@/lib/telegram/miniapp-profile";
 import { MiniAppContact } from "./contact";
+import { EventLaunchPreview } from "./event-entry";
+import type { MiniAppLaunch } from "@/lib/telegram/event-launch";
 
-type Event = ReturnType<typeof eventDto>;
+type Event = ReturnType<typeof eventPreviewDto>;
 type Detail = {
   registration: {
     status: string;
     amountAgorot: number | null;
     paymentUrl: string | null;
   } | null;
-  event: Event;
+  event: ReturnType<typeof eventDetailDto>;
   children: { id: string; name: string }[];
   canRegisterChildren: boolean;
   needsGiyurClarification: boolean;
@@ -29,46 +33,49 @@ type Registration = {
   amountAgorot: number | null;
   paymentUrl: string | null;
 };
-const money = (amount: number, language: MiniAppLanguage) =>
-  new Intl.NumberFormat("ru", {
-    style: "currency",
-    currency: "ILS",
-  }).format(amount / 100);
+const currency = new Intl.NumberFormat("ru", {style: "currency", currency: "ILS"});
+const money = (amount: number, _language: MiniAppLanguage) => currency.format(amount / 100);
 export default function MiniAppEvents({
   language,
   mode,
   onNested,
   openPayment,
   initialEvent,
-  onProfileChanged,
+  onProfileChanged, cache, initialPreview,
 }: {
   language: MiniAppLanguage;
   mode: "events" | "registrations";
   onNested: (back: (() => void) | null) => void;
   openPayment: (url: string) => void;
   initialEvent?: string;
-  onProfileChanged: () => Promise<void>;
+  initialPreview: MiniAppLaunch["event"];
+  onProfileChanged: (snapshot: MiniAppProfileData & { ok: true }) => boolean;
+  cache: MiniAppCache;
 }) {
   const c = eventCopy.ru, u = miniAppUiCopy.ru;
-  const [list, setList] = useState<Event[]>([]),
-    [registrations, setRegistrations] = useState<Registration[]>([]),
-    [detail, setDetail] = useState<Detail | null>(null);
+  const [list, setList] = useState<Event[]>(cache.peek<{events: Event[]}>("events?page=1")?.events ?? []),
+    [registrations, setRegistrations] = useState<Registration[]>(cache.peek<{registrations:Registration[]}>("registrations?page=1")?.registrations ?? []),
+    [detail, setDetail] = useState<Detail | null>(initialEvent ? cache.peek<Detail>(`events?id=${encodeURIComponent(initialEvent)}`) ?? null : null);
   const [page, setPage] = useState(1),
     [more, setMore] = useState(false),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(false),
-    [loading, setLoading] = useState(true);
+    [loading, setLoading] = useState(() => initialEvent
+      ? !cache.peek(`events?id=${encodeURIComponent(initialEvent)}`)
+      : !cache.peek(`${mode}?page=1`));
   const [selected, setSelected] = useState<string[]>([]),
     [quote, setQuote] = useState<{
       amountAgorot: number;
       adults: number;
       children: number;
     } | null>(null);
-  const [receipt, setReceipt] = useState<Detail["registration"]>(null),
+  const [receipt, setReceipt] = useState<Detail["registration"]>(initialEvent ? cache.peek<Detail>(`events?id=${encodeURIComponent(initialEvent)}`)?.registration ?? null : null),
     [clarify, setClarify] = useState(false),
     [stage, setStage] = useState<"advanced" | "completed" | "">("");
   const [eventId, setEventId] = useState(initialEvent || "");
   const requestPending = useRef(false);
+  const alive = useRef(true);
+  useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
   const back = useCallback(() => {
     if (requestPending.current) return;
     setEventId("");
@@ -76,31 +83,32 @@ export default function MiniAppEvents({
     setReceipt(null);
     setQuote(null);
     setError(false);
-  }, []);
+    setLoading(!cache.peek(`${mode}?page=1`));
+  }, [cache, mode]);
   useEffect(() => {
     onNested(eventId ? back : null);
     return () => onNested(null);
   }, [eventId, back, onNested]);
   const load = useCallback(
     async (next = 1, signal?: AbortSignal) => {
-      setLoading(true);
+      setLoading(!cache.peek(`${mode}?page=${next}`));
       setError(false);
       try {
         if (mode === "events") {
-          const { data } = await miniAppRequest<{
+          const data = await cache.read<{
             events: Event[];
             hasMore: boolean;
-          }>(`events?page=${next}`, { signal });
+          }>(`events?page=${next}`, signal);
           if (signal?.aborted) return;
           setList((old) =>
             next === 1 ? data.events : [...old, ...data.events],
           );
           setMore(data.hasMore);
         } else {
-          const { data } = await miniAppRequest<{
+          const data = await cache.read<{
             registrations: Registration[];
             hasMore: boolean;
-          }>(`registrations?page=${next}`, { signal });
+          }>(`registrations?page=${next}`, signal);
           if (signal?.aborted) return;
           setRegistrations((old) =>
             next === 1 ? data.registrations : [...old, ...data.registrations],
@@ -114,7 +122,7 @@ export default function MiniAppEvents({
         if (!signal?.aborted) setLoading(false);
       }
     },
-    [mode],
+    [mode, cache],
   );
   useEffect(() => {
     if (eventId) return;
@@ -124,11 +132,11 @@ export default function MiniAppEvents({
   }, [load, eventId]);
   const loadDetail = useCallback(async (signal?: AbortSignal) => {
     if (!eventId) return;
-    setLoading(true);
+    setLoading(!cache.peek(`events?id=${encodeURIComponent(eventId)}`));
     setError(false);
     try {
-      const { data } = await miniAppRequest<Detail>(
-        `events?id=${encodeURIComponent(eventId)}`, { signal },
+      const data = await cache.read<Detail>(
+        `events?id=${encodeURIComponent(eventId)}`, signal,
       );
       if (signal?.aborted) return;
       setDetail(data);
@@ -142,7 +150,7 @@ export default function MiniAppEvents({
     } finally {
       if (!signal?.aborted) setLoading(false);
     }
-  }, [eventId]);
+  }, [eventId, cache]);
   useEffect(() => {
     const controller = new AbortController();
     void loadDetail(controller.signal);
@@ -158,10 +166,11 @@ export default function MiniAppEvents({
         quote?: typeof quote;
         registration?: NonNullable<typeof receipt>;
       }>("events", { body: { action: kind, eventId, childIds: selected } });
+      if (!alive.current) return;
       if (data.quote) setQuote(data.quote);
       if (data.registration) {
         setReceipt(data.registration);
-        await load();
+        cache.invalidate("registrations", `events?id=${encodeURIComponent(eventId)}`);
       }
     } catch {
       setError(true);
@@ -176,8 +185,9 @@ export default function MiniAppEvents({
     setBusy(true);
     setError(false);
     try {
-      await miniAppRequest("giyur", { body: { stage } });
-      await onProfileChanged();
+      const result = await miniAppRequest<MiniAppProfileData & { ok: true }>("giyur", { body: { stage } });
+      if (!alive.current || !onProfileChanged(result.data)) return;
+      cache.invalidate("kids", "events", "registrations");
       setClarify(false);
       await loadDetail();
     } catch {
@@ -193,7 +203,10 @@ export default function MiniAppEvents({
   const pendingPayment = !!receipt && !detail?.event.isFree && receipt.status === "pending";
   const confirmed = !!receipt && ["paid", "confirmed"].includes(receipt.status);
   function pay(url: string) {
-    try { openPayment(url); } catch { setError(true); }
+    try {
+      cache.invalidate("registrations", `events?id=${encodeURIComponent(eventId)}`);
+      openPayment(url);
+    } catch { setError(true); }
   }
   return (
     <div className="space-y-5" data-miniapp-events={mode}>
@@ -222,7 +235,7 @@ export default function MiniAppEvents({
         </div>
       )}
       {loading && !detail && (
-        <EventSkeleton label={u.loading} detail={!!eventId} />
+        eventId && initialPreview?.id === eventId ? <EventLaunchPreview event={initialPreview} language={language} /> : <EventSkeleton label={u.loading} detail={!!eventId} />
       )}
       {eventId && detail ? (
         <article id="miniapp-event" className="miniapp-event-detail miniapp-enter" data-event-detail={detail.event.id}>

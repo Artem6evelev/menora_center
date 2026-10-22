@@ -8,7 +8,7 @@ import { filterInput, fullProfileInput } from "@/lib/community/validation";
 import { writeCanonicalCommunityProfile } from "@/lib/community/profile-write";
 import { profileChildren } from "@/lib/community/children";
 import { CommunityError } from "@/lib/community/errors";
-import { miniAppProfile, type MiniAppTransaction, type MiniAppUser } from "./miniapp-user";
+import { miniAppProfile, type MiniAppTransaction, type LockedTransaction, type MiniAppUser } from "./miniapp-user";
 import { MiniAppAuthError } from "./miniapp-errors";
 
 const dateOnly = (value: Date | null) => value?.toISOString().slice(0, 10) ?? "";
@@ -19,11 +19,11 @@ const profileFields = fullProfileInput.innerType().omit({ affiliation: true, gen
   returnTo: true, giyurStage: true, source: true });
 
 export async function miniAppProfileData(tx: MiniAppTransaction, user: MiniAppUser) {
-  const [contact] = await tx.select({ languageCode: telegramContacts.languageCode }).from(telegramContacts)
+  const [contact] = await tx.select({ languageCode: telegramContacts.languageCode, marketingStatus: telegramContacts.marketingStatus }).from(telegramContacts)
     .where(and(eq(telegramContacts.userId, user.id), eq(telegramContacts.isPrimary, true)));
   // Keep the optimistic-lock token with the snapshot. HTTP ETag is a cache validator
   // and can be removed or rewritten by compression/proxies before reaching a WebView.
-  return { profileVersion: miniAppProfileTag(user), summary: miniAppProfile(user), languageCode: contact?.languageCode ?? null,
+  return { profileVersion: miniAppProfileTag(user), summary: miniAppProfile(user), languageCode: contact?.languageCode ?? null, announcementStatus: (contact?.marketingStatus ?? "unknown") as "unknown" | "subscribed" | "unsubscribed" | "blocked",
     // Presentation permission for the questionnaire; the shared writer independently enforces it.
     permissions: { canEditChildren: communityAccess({ ...user, isProfileComplete: true }).canManageChildren },
     profile: { firstName: user.firstName ?? "", lastName: user.lastName ?? "", phone: user.phone ?? "+972",
@@ -34,7 +34,7 @@ export async function miniAppProfileData(tx: MiniAppTransaction, user: MiniAppUs
         dateOfBirth: child.dateOfBirth, gender: (child.gender === "male" || child.gender === "female" ? child.gender : null) as "male" | "female" | null })) } };
 }
 
-export async function saveMiniAppProfile(tx: MiniAppTransaction, user: MiniAppUser, raw: unknown,
+export async function saveMiniAppProfile(tx: LockedTransaction, user: MiniAppUser, raw: unknown,
   tag: string | null, filterOnly: boolean) {
   if (raw && typeof raw === "object" && !Array.isArray(raw) && Object.prototype.hasOwnProperty.call(raw, "profileVersion")) {
     const { profileVersion, ...fields } = raw as Record<string, unknown>;

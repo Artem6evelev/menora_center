@@ -194,3 +194,34 @@ node tests/community/miniapp-payment-ux-browser.cjs
 The first covers `/miniapp?section=kids`, onboarding/reload/Back and existing permission gates. The second covers free/pending/confirmed receipts, immutable server totals, payment resumption, WhatsApp recovery and safe external-link fallback. Its `test-payment-state` endpoint exists only in the disposable fixture, requires development/loopback/PGlite, and changes synthetic rows only. External payment navigation is intercepted; no real payment or Telegram send is performed. Server cases also run in `telegram-release.cjs` and the disposable native PostgreSQL runner.
 
 `node tests/community/miniapp-bottom-nav-browser.cjs` uses the same isolated3342 fixture. It verifies five equal tabs, Baby/active styles, single-line labels and hit targets at320/390/1280, safe-area updates, internal navigation/Back, all permission categories and Kids destination through onboarding. SDK/native callbacks are synthetic; no real Telegram WebView or production account is used.
+
+## Mini App performance pass
+
+[Baseline](../../docs/miniapp-performance-2026-10-22/BASELINE.md) and
+[results](../../docs/miniapp-performance-2026-10-22/REPORT.md) distinguish request/statement counts,
+local production JS bytes and generated-media optimization from real-device latency.
+
+```sh
+node tests/community/miniapp-performance-fixture.cjs
+# Start the generated /tmp/menora-miniapp-ui server on3342 as above.
+# From the source repository, run browser cohorts SEQUENTIALLY:
+COMMUNITY_TEST_OUTPUT=/tmp/menora-performance-evidence/miniapp-performance-browser node tests/community/miniapp-performance-browser.cjs
+COMMUNITY_TEST_OUTPUT=/tmp/menora-performance-evidence/miniapp-images-browser node tests/community/miniapp-images-browser.cjs
+COMMUNITY_TEST_OUTPUT=/tmp/menora-performance-evidence/miniapp-ui-server node tests/community/miniapp-ui-server.cjs
+COMMUNITY_TEST_OUTPUT=/tmp/menora-performance-evidence/miniapp-cache node tests/community/miniapp-cache.cjs
+COMMUNITY_TEST_OUTPUT=/tmp/menora-performance-evidence/query-plans node tests/community/miniapp-query-plans.cjs
+# After the isolated current production build is running on3343:
+COMMUNITY_TEST_OUTPUT=/tmp/menora-performance-evidence/bundle node tests/community/telegram-bundle.cjs
+COMMUNITY_TEST_OUTPUT=/tmp/menora-performance-evidence/bundle node tests/community/miniapp-performance-bundle.cjs
+```
+
+The performance fixture adds aggregate statement counters only to its disposable copy;
+it exposes no SQL text/parameters and adds no route to the deployable app. Browser measurements
+must not overlap other cohorts that reset that shared synthetic database. Cross-route dev counters
+can miss statements; the shared-logger server test supplies authoritative local SQL counts.
+Image tests generate a synthetic JPEG outside Git and exercise the actual local Next optimizer;
+approved/unknown remote-host contract checks intercept media rather than downloading real posters.
+Query plans use only the migrated isolated catalogue and explicitly label forced index-availability
+plans; they are not production EXPLAIN ANALYZE or production latency measurements.
+
+For long performance cohorts the disposable fixture retains compiled dev routes for one hour (`onDemandEntries`), avoiding inactive-entry recompilation during UI interaction deadlines. This does not change production config or the instance data-cache TTL. UI helpers also consume the actual website SSR response immediately before the shared website integration cases. No permission/interaction assertion is skipped; startup counts and production bundle/image measurements remain separate from dev compilation time.

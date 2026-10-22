@@ -9,8 +9,8 @@ async function setup({width=390,language='ru',kind=null,start='',query='',slow=f
  const context=await browser.newContext({viewport:{width,height:844},reducedMotion:'reduce'}),subject=id++;
  await installSdk(context,{id:subject,language,start});
  await context.route('**/*',route=>new URL(route.request().url()).origin===base?route.continue():route.abort());
- if(subscriptionFailure)await context.route('**/api/telegram/miniapp/subscription',route=>route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({ok:false,error:'temporarily_unavailable'})}));
- if(slow)await context.route('**/api/telegram/miniapp/events*',async route=>{await new Promise(r=>setTimeout(r,500));const response=await route.fetch(),data=await response.json();if(data.events?.length>=2){data.events[0].imageUrl='/test-missing-event-image.png';data.events[1].imageUrl=null;}await route.fulfill({response,json:data});});
+ if(subscriptionFailure)await context.route('**/api/telegram/miniapp/start',async route=>{const response=await route.fetch(),data=await response.json();data.announcementStatus=null;await route.fulfill({response,json:data});});
+ if(slow)await context.route('**/api/telegram/miniapp/start',async route=>{await new Promise(r=>setTimeout(r,500));const response=await route.fetch(),data=await response.json();if(data.homeEvents?.length>=2){data.homeEvents[0].imageUrl='/test-missing-event-image.png';data.homeEvents[1].imageUrl=null;}await route.fulfill({response,json:data});});
  if(kind)assert.equal((await context.request.post(base+'/api/test-miniapp-state',{data:{id:subject,kind,language}})).status(),200);
  const page=await context.newPage();page.setDefaultTimeout(40000);page.on('pageerror',e=>errors.push(e.message));
  await page.goto(base+'/miniapp'+query);return{context,page,subject};
@@ -58,7 +58,7 @@ async function finishProfile(page){
  await test('legacy completed profile from an ad requires only the new filter and returns with confirmation',async()=>{const{context,page}=await setup({kind:'legacy',start:'event_fixture-event'});try{await page.locator('[data-entry-register]').click();await page.locator('[data-onboarding-gate] button').click();await page.locator('[data-screen=filter]').waitFor();await page.locator('[name=affiliation][value=giyur]').check();await page.locator('[name=gender][value=male]').check();await page.locator('[data-miniapp-form=filter] button[type=submit]').click();await page.locator('[data-event-detail=fixture-event]').waitFor();await page.locator('[data-onboarding-complete]').waitFor();assert.equal(await page.locator('[data-miniapp-form]').count(),0);const data=await(await context.request.get(base+'/api/telegram/miniapp/profile')).json();assert.equal(data.summary.nextStep,'home');assert.equal(data.profile.cityId,'8300');assert.equal(data.profile.agreedToPrivacy,true);}finally{await context.close();}});
  for(const width of [320,390,1280])await test(width+' generic home is events-first, fixed icons/ratio, stable fallback, no opt-in card',async()=>{
   const{context,page}=await setup({width,kind:'home',slow:true});try{
-   await page.locator('[data-screen=home]').waitFor();await page.locator('[data-upcoming-events] [data-skeleton]').first().waitFor();
+   await page.locator('[data-screen=loading] [data-skeleton]').first().waitFor();await page.locator('[data-screen=home]').waitFor();
    await page.locator('[data-upcoming-events] [data-event-card]').first().waitFor();
    const positions=await page.evaluate(()=>{const card=document.querySelector('[data-upcoming-events] [data-event-card]'),status=document.querySelector('[data-profile-status]');return{card:card.getBoundingClientRect().top,status:status.getBoundingClientRect().top,height:innerHeight};});
    assert.ok(positions.card<positions.height/2);assert.ok(positions.card<positions.status);

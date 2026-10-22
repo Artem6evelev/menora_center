@@ -1,0 +1,865 @@
+{
+  "environment": "Isolated PGlite/PostgreSQL17 with current repository migrations; tiny empty tables, no production timing claim",
+  "checks": [
+    {
+      "name": "all startup/session/event/payment/campaign indexed lookup paths exist in current migrated catalogue",
+      "status": "PASS"
+    },
+    {
+      "name": "Kids owner lookup has no user_id index; EXPLAIN records unindexed scan separately without creating a migration",
+      "status": "PASS"
+    }
+  ],
+  "indexes": [
+    {
+      "tablename": "event_participants",
+      "indexname": "event_participants_owner_event_idx",
+      "indexdef": "CREATE INDEX event_participants_owner_event_idx ON public.event_participants USING btree (user_id, event_id, created_at)"
+    },
+    {
+      "tablename": "event_participants",
+      "indexname": "event_participants_pkey",
+      "indexdef": "CREATE UNIQUE INDEX event_participants_pkey ON public.event_participants USING btree (id)"
+    },
+    {
+      "tablename": "event_payment_attempts",
+      "indexname": "event_payment_attempts_owner_idx",
+      "indexdef": "CREATE INDEX event_payment_attempts_owner_idx ON public.event_payment_attempts USING btree (user_id, event_id)"
+    },
+    {
+      "tablename": "event_payment_attempts",
+      "indexname": "event_payment_attempts_pkey",
+      "indexdef": "CREATE UNIQUE INDEX event_payment_attempts_pkey ON public.event_payment_attempts USING btree (id)"
+    },
+    {
+      "tablename": "event_payment_attempts",
+      "indexname": "event_payment_attempts_registration_id_unique",
+      "indexdef": "CREATE UNIQUE INDEX event_payment_attempts_registration_id_unique ON public.event_payment_attempts USING btree (registration_id)"
+    },
+    {
+      "tablename": "events",
+      "indexname": "events_pkey",
+      "indexdef": "CREATE UNIQUE INDEX events_pkey ON public.events USING btree (id)"
+    },
+    {
+      "tablename": "events",
+      "indexname": "events_status_created_idx",
+      "indexdef": "CREATE INDEX events_status_created_idx ON public.events USING btree (status, created_at, id)"
+    },
+    {
+      "tablename": "kids_applications",
+      "indexname": "kids_applications_pkey",
+      "indexdef": "CREATE UNIQUE INDEX kids_applications_pkey ON public.kids_applications USING btree (id)"
+    },
+    {
+      "tablename": "telegram_campaigns",
+      "indexname": "telegram_campaigns_pkey",
+      "indexdef": "CREATE UNIQUE INDEX telegram_campaigns_pkey ON public.telegram_campaigns USING btree (key)"
+    },
+    {
+      "tablename": "telegram_miniapp_sessions",
+      "indexname": "telegram_miniapp_sessions_identity_id_idx",
+      "indexdef": "CREATE INDEX telegram_miniapp_sessions_identity_id_idx ON public.telegram_miniapp_sessions USING btree (identity_id)"
+    },
+    {
+      "tablename": "telegram_miniapp_sessions",
+      "indexname": "telegram_miniapp_sessions_open_expiry_idx",
+      "indexdef": "CREATE INDEX telegram_miniapp_sessions_open_expiry_idx ON public.telegram_miniapp_sessions USING btree (expires_at) WHERE (revoked_at IS NULL)"
+    },
+    {
+      "tablename": "telegram_miniapp_sessions",
+      "indexname": "telegram_miniapp_sessions_pkey",
+      "indexdef": "CREATE UNIQUE INDEX telegram_miniapp_sessions_pkey ON public.telegram_miniapp_sessions USING btree (id)"
+    },
+    {
+      "tablename": "telegram_miniapp_sessions",
+      "indexname": "telegram_miniapp_sessions_token_hash_unique",
+      "indexdef": "CREATE UNIQUE INDEX telegram_miniapp_sessions_token_hash_unique ON public.telegram_miniapp_sessions USING btree (token_hash)"
+    },
+    {
+      "tablename": "telegram_miniapp_sessions",
+      "indexname": "telegram_miniapp_sessions_user_id_idx",
+      "indexdef": "CREATE INDEX telegram_miniapp_sessions_user_id_idx ON public.telegram_miniapp_sessions USING btree (user_id)"
+    },
+    {
+      "tablename": "user_identities",
+      "indexname": "user_identities_active_clerk_per_user_idx",
+      "indexdef": "CREATE UNIQUE INDEX user_identities_active_clerk_per_user_idx ON public.user_identities USING btree (user_id) WHERE ((provider = 'clerk'::text) AND (disabled_at IS NULL))"
+    },
+    {
+      "tablename": "user_identities",
+      "indexname": "user_identities_id_user_id_idx",
+      "indexdef": "CREATE UNIQUE INDEX user_identities_id_user_id_idx ON public.user_identities USING btree (id, user_id)"
+    },
+    {
+      "tablename": "user_identities",
+      "indexname": "user_identities_pkey",
+      "indexdef": "CREATE UNIQUE INDEX user_identities_pkey ON public.user_identities USING btree (id)"
+    },
+    {
+      "tablename": "user_identities",
+      "indexname": "user_identities_provider_subject_idx",
+      "indexdef": "CREATE UNIQUE INDEX user_identities_provider_subject_idx ON public.user_identities USING btree (provider, provider_instance, provider_user_id)"
+    },
+    {
+      "tablename": "user_identities",
+      "indexname": "user_identities_user_id_idx",
+      "indexdef": "CREATE INDEX user_identities_user_id_idx ON public.user_identities USING btree (user_id)"
+    },
+    {
+      "tablename": "users",
+      "indexname": "telegram_chat_id_idx",
+      "indexdef": "CREATE UNIQUE INDEX telegram_chat_id_idx ON public.users USING btree (telegram_chat_id)"
+    },
+    {
+      "tablename": "users",
+      "indexname": "users_pkey",
+      "indexdef": "CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id)"
+    }
+  ],
+  "plans": {
+    "session": {
+      "query": "SELECT s.id,i.id,u.id FROM telegram_miniapp_sessions s JOIN user_identities i ON i.id=s.identity_id JOIN users u ON u.id=s.user_id WHERE s.token_hash=repeat('a',64) LIMIT 1",
+      "smallFixtureDefault": [
+        {
+          "Plan": {
+            "Node Type": "Limit",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Startup Cost": 0.44,
+            "Total Cost": 24.68,
+            "Plan Rows": 1,
+            "Plan Width": 64,
+            "Disabled": false,
+            "Plans": [
+              {
+                "Node Type": "Nested Loop",
+                "Parent Relationship": "Outer",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Join Type": "Inner",
+                "Startup Cost": 0.44,
+                "Total Cost": 24.68,
+                "Plan Rows": 1,
+                "Plan Width": 64,
+                "Disabled": false,
+                "Inner Unique": true,
+                "Plans": [
+                  {
+                    "Node Type": "Nested Loop",
+                    "Parent Relationship": "Outer",
+                    "Parallel Aware": false,
+                    "Async Capable": false,
+                    "Join Type": "Inner",
+                    "Startup Cost": 0.3,
+                    "Total Cost": 16.38,
+                    "Plan Rows": 1,
+                    "Plan Width": 64,
+                    "Disabled": false,
+                    "Inner Unique": true,
+                    "Plans": [
+                      {
+                        "Node Type": "Index Scan",
+                        "Parent Relationship": "Outer",
+                        "Parallel Aware": false,
+                        "Async Capable": false,
+                        "Scan Direction": "Forward",
+                        "Index Name": "telegram_miniapp_sessions_token_hash_unique",
+                        "Relation Name": "telegram_miniapp_sessions",
+                        "Alias": "s",
+                        "Startup Cost": 0.15,
+                        "Total Cost": 8.17,
+                        "Plan Rows": 1,
+                        "Plan Width": 64,
+                        "Disabled": false,
+                        "Index Cond": "(token_hash = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'::text)"
+                      },
+                      {
+                        "Node Type": "Index Only Scan",
+                        "Parent Relationship": "Inner",
+                        "Parallel Aware": false,
+                        "Async Capable": false,
+                        "Scan Direction": "Forward",
+                        "Index Name": "user_identities_id_user_id_idx",
+                        "Relation Name": "user_identities",
+                        "Alias": "i",
+                        "Startup Cost": 0.15,
+                        "Total Cost": 8.17,
+                        "Plan Rows": 1,
+                        "Plan Width": 16,
+                        "Disabled": false,
+                        "Index Cond": "(id = s.identity_id)"
+                      }
+                    ]
+                  },
+                  {
+                    "Node Type": "Index Only Scan",
+                    "Parent Relationship": "Inner",
+                    "Parallel Aware": false,
+                    "Async Capable": false,
+                    "Scan Direction": "Forward",
+                    "Index Name": "users_pkey",
+                    "Relation Name": "users",
+                    "Alias": "u",
+                    "Startup Cost": 0.14,
+                    "Total Cost": 8.16,
+                    "Plan Rows": 1,
+                    "Plan Width": 32,
+                    "Disabled": false,
+                    "Index Cond": "(id = s.user_id)"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "indexAvailabilityWithSeqscanDiscouraged": [
+        {
+          "Plan": {
+            "Node Type": "Limit",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Startup Cost": 0.44,
+            "Total Cost": 24.68,
+            "Plan Rows": 1,
+            "Plan Width": 64,
+            "Disabled": false,
+            "Plans": [
+              {
+                "Node Type": "Nested Loop",
+                "Parent Relationship": "Outer",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Join Type": "Inner",
+                "Startup Cost": 0.44,
+                "Total Cost": 24.68,
+                "Plan Rows": 1,
+                "Plan Width": 64,
+                "Disabled": false,
+                "Inner Unique": true,
+                "Plans": [
+                  {
+                    "Node Type": "Nested Loop",
+                    "Parent Relationship": "Outer",
+                    "Parallel Aware": false,
+                    "Async Capable": false,
+                    "Join Type": "Inner",
+                    "Startup Cost": 0.3,
+                    "Total Cost": 16.38,
+                    "Plan Rows": 1,
+                    "Plan Width": 64,
+                    "Disabled": false,
+                    "Inner Unique": true,
+                    "Plans": [
+                      {
+                        "Node Type": "Index Scan",
+                        "Parent Relationship": "Outer",
+                        "Parallel Aware": false,
+                        "Async Capable": false,
+                        "Scan Direction": "Forward",
+                        "Index Name": "telegram_miniapp_sessions_token_hash_unique",
+                        "Relation Name": "telegram_miniapp_sessions",
+                        "Alias": "s",
+                        "Startup Cost": 0.15,
+                        "Total Cost": 8.17,
+                        "Plan Rows": 1,
+                        "Plan Width": 64,
+                        "Disabled": false,
+                        "Index Cond": "(token_hash = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'::text)"
+                      },
+                      {
+                        "Node Type": "Index Only Scan",
+                        "Parent Relationship": "Inner",
+                        "Parallel Aware": false,
+                        "Async Capable": false,
+                        "Scan Direction": "Forward",
+                        "Index Name": "user_identities_id_user_id_idx",
+                        "Relation Name": "user_identities",
+                        "Alias": "i",
+                        "Startup Cost": 0.15,
+                        "Total Cost": 8.17,
+                        "Plan Rows": 1,
+                        "Plan Width": 16,
+                        "Disabled": false,
+                        "Index Cond": "(id = s.identity_id)"
+                      }
+                    ]
+                  },
+                  {
+                    "Node Type": "Index Only Scan",
+                    "Parent Relationship": "Inner",
+                    "Parallel Aware": false,
+                    "Async Capable": false,
+                    "Scan Direction": "Forward",
+                    "Index Name": "users_pkey",
+                    "Relation Name": "users",
+                    "Alias": "u",
+                    "Startup Cost": 0.14,
+                    "Total Cost": 8.16,
+                    "Plan Rows": 1,
+                    "Plan Width": 32,
+                    "Disabled": false,
+                    "Index Cond": "(id = s.user_id)"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "identity": {
+      "query": "SELECT id FROM user_identities WHERE provider='telegram' AND provider_instance='primary' AND provider_user_id='synthetic'",
+      "smallFixtureDefault": [
+        {
+          "Plan": {
+            "Node Type": "Index Scan",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Scan Direction": "Forward",
+            "Index Name": "user_identities_provider_subject_idx",
+            "Relation Name": "user_identities",
+            "Alias": "user_identities",
+            "Startup Cost": 0.15,
+            "Total Cost": 8.17,
+            "Plan Rows": 1,
+            "Plan Width": 16,
+            "Disabled": false,
+            "Index Cond": "((provider = 'telegram'::text) AND (provider_instance = 'primary'::text) AND (provider_user_id = 'synthetic'::text))"
+          }
+        }
+      ],
+      "indexAvailabilityWithSeqscanDiscouraged": [
+        {
+          "Plan": {
+            "Node Type": "Index Scan",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Scan Direction": "Forward",
+            "Index Name": "user_identities_provider_subject_idx",
+            "Relation Name": "user_identities",
+            "Alias": "user_identities",
+            "Startup Cost": 0.15,
+            "Total Cost": 8.17,
+            "Plan Rows": 1,
+            "Plan Width": 16,
+            "Disabled": false,
+            "Index Cond": "((provider = 'telegram'::text) AND (provider_instance = 'primary'::text) AND (provider_user_id = 'synthetic'::text))"
+          }
+        }
+      ]
+    },
+    "user": {
+      "query": "SELECT id FROM users WHERE id='synthetic'",
+      "smallFixtureDefault": [
+        {
+          "Plan": {
+            "Node Type": "Index Only Scan",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Scan Direction": "Forward",
+            "Index Name": "users_pkey",
+            "Relation Name": "users",
+            "Alias": "users",
+            "Startup Cost": 0.14,
+            "Total Cost": 8.16,
+            "Plan Rows": 1,
+            "Plan Width": 32,
+            "Disabled": false,
+            "Index Cond": "(id = 'synthetic'::text)"
+          }
+        }
+      ],
+      "indexAvailabilityWithSeqscanDiscouraged": [
+        {
+          "Plan": {
+            "Node Type": "Index Only Scan",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Scan Direction": "Forward",
+            "Index Name": "users_pkey",
+            "Relation Name": "users",
+            "Alias": "users",
+            "Startup Cost": 0.14,
+            "Total Cost": 8.16,
+            "Plan Rows": 1,
+            "Plan Width": 32,
+            "Disabled": false,
+            "Index Cond": "(id = 'synthetic'::text)"
+          }
+        }
+      ]
+    },
+    "events": {
+      "query": "SELECT id,title FROM events WHERE status='planned' ORDER BY created_at DESC,id LIMIT 2",
+      "smallFixtureDefault": [
+        {
+          "Plan": {
+            "Node Type": "Limit",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Startup Cost": 8.17,
+            "Total Cost": 8.22,
+            "Plan Rows": 2,
+            "Plan Width": 72,
+            "Disabled": false,
+            "Plans": [
+              {
+                "Node Type": "Incremental Sort",
+                "Parent Relationship": "Outer",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Startup Cost": 8.17,
+                "Total Cost": 8.22,
+                "Plan Rows": 2,
+                "Plan Width": 72,
+                "Disabled": false,
+                "Sort Key": [
+                  "created_at DESC",
+                  "id"
+                ],
+                "Presorted Key": [
+                  "created_at"
+                ],
+                "Plans": [
+                  {
+                    "Node Type": "Index Scan",
+                    "Parent Relationship": "Outer",
+                    "Parallel Aware": false,
+                    "Async Capable": false,
+                    "Scan Direction": "Backward",
+                    "Index Name": "events_status_created_idx",
+                    "Relation Name": "events",
+                    "Alias": "events",
+                    "Startup Cost": 0.14,
+                    "Total Cost": 8.16,
+                    "Plan Rows": 1,
+                    "Plan Width": 72,
+                    "Disabled": false,
+                    "Index Cond": "(status = 'planned'::text)"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "indexAvailabilityWithSeqscanDiscouraged": [
+        {
+          "Plan": {
+            "Node Type": "Limit",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Startup Cost": 8.17,
+            "Total Cost": 8.22,
+            "Plan Rows": 2,
+            "Plan Width": 72,
+            "Disabled": false,
+            "Plans": [
+              {
+                "Node Type": "Incremental Sort",
+                "Parent Relationship": "Outer",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Startup Cost": 8.17,
+                "Total Cost": 8.22,
+                "Plan Rows": 2,
+                "Plan Width": 72,
+                "Disabled": false,
+                "Sort Key": [
+                  "created_at DESC",
+                  "id"
+                ],
+                "Presorted Key": [
+                  "created_at"
+                ],
+                "Plans": [
+                  {
+                    "Node Type": "Index Scan",
+                    "Parent Relationship": "Outer",
+                    "Parallel Aware": false,
+                    "Async Capable": false,
+                    "Scan Direction": "Backward",
+                    "Index Name": "events_status_created_idx",
+                    "Relation Name": "events",
+                    "Alias": "events",
+                    "Startup Cost": 0.14,
+                    "Total Cost": 8.16,
+                    "Plan Rows": 1,
+                    "Plan Width": 72,
+                    "Disabled": false,
+                    "Index Cond": "(status = 'planned'::text)"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "detail": {
+      "query": "SELECT id FROM events WHERE id='synthetic' AND status='planned'",
+      "smallFixtureDefault": [
+        {
+          "Plan": {
+            "Node Type": "Index Only Scan",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Scan Direction": "Forward",
+            "Index Name": "events_status_created_idx",
+            "Relation Name": "events",
+            "Alias": "events",
+            "Startup Cost": 0.14,
+            "Total Cost": 8.16,
+            "Plan Rows": 1,
+            "Plan Width": 32,
+            "Disabled": false,
+            "Index Cond": "((status = 'planned'::text) AND (id = 'synthetic'::text))"
+          }
+        }
+      ],
+      "indexAvailabilityWithSeqscanDiscouraged": [
+        {
+          "Plan": {
+            "Node Type": "Index Only Scan",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Scan Direction": "Forward",
+            "Index Name": "events_status_created_idx",
+            "Relation Name": "events",
+            "Alias": "events",
+            "Startup Cost": 0.14,
+            "Total Cost": 8.16,
+            "Plan Rows": 1,
+            "Plan Width": 32,
+            "Disabled": false,
+            "Index Cond": "((status = 'planned'::text) AND (id = 'synthetic'::text))"
+          }
+        }
+      ]
+    },
+    "registrations": {
+      "query": "SELECT id FROM event_participants WHERE user_id='synthetic' ORDER BY created_at DESC,id LIMIT 21",
+      "smallFixtureDefault": [
+        {
+          "Plan": {
+            "Node Type": "Limit",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Startup Cost": 9.51,
+            "Total Cost": 9.52,
+            "Plan Rows": 2,
+            "Plan Width": 40,
+            "Disabled": false,
+            "Plans": [
+              {
+                "Node Type": "Sort",
+                "Parent Relationship": "Outer",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Startup Cost": 9.51,
+                "Total Cost": 9.52,
+                "Plan Rows": 2,
+                "Plan Width": 40,
+                "Disabled": false,
+                "Sort Key": [
+                  "created_at DESC",
+                  "id"
+                ],
+                "Plans": [
+                  {
+                    "Node Type": "Bitmap Heap Scan",
+                    "Parent Relationship": "Outer",
+                    "Parallel Aware": false,
+                    "Async Capable": false,
+                    "Relation Name": "event_participants",
+                    "Alias": "event_participants",
+                    "Startup Cost": 4.16,
+                    "Total Cost": 9.5,
+                    "Plan Rows": 2,
+                    "Plan Width": 40,
+                    "Disabled": false,
+                    "Recheck Cond": "(user_id = 'synthetic'::text)",
+                    "Plans": [
+                      {
+                        "Node Type": "Bitmap Index Scan",
+                        "Parent Relationship": "Outer",
+                        "Parallel Aware": false,
+                        "Async Capable": false,
+                        "Index Name": "event_participants_owner_event_idx",
+                        "Startup Cost": 0,
+                        "Total Cost": 4.16,
+                        "Plan Rows": 2,
+                        "Plan Width": 0,
+                        "Disabled": false,
+                        "Index Cond": "(user_id = 'synthetic'::text)"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "indexAvailabilityWithSeqscanDiscouraged": [
+        {
+          "Plan": {
+            "Node Type": "Limit",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Startup Cost": 9.51,
+            "Total Cost": 9.52,
+            "Plan Rows": 2,
+            "Plan Width": 40,
+            "Disabled": false,
+            "Plans": [
+              {
+                "Node Type": "Sort",
+                "Parent Relationship": "Outer",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Startup Cost": 9.51,
+                "Total Cost": 9.52,
+                "Plan Rows": 2,
+                "Plan Width": 40,
+                "Disabled": false,
+                "Sort Key": [
+                  "created_at DESC",
+                  "id"
+                ],
+                "Plans": [
+                  {
+                    "Node Type": "Bitmap Heap Scan",
+                    "Parent Relationship": "Outer",
+                    "Parallel Aware": false,
+                    "Async Capable": false,
+                    "Relation Name": "event_participants",
+                    "Alias": "event_participants",
+                    "Startup Cost": 4.16,
+                    "Total Cost": 9.5,
+                    "Plan Rows": 2,
+                    "Plan Width": 40,
+                    "Disabled": false,
+                    "Recheck Cond": "(user_id = 'synthetic'::text)",
+                    "Plans": [
+                      {
+                        "Node Type": "Bitmap Index Scan",
+                        "Parent Relationship": "Outer",
+                        "Parallel Aware": false,
+                        "Async Capable": false,
+                        "Index Name": "event_participants_owner_event_idx",
+                        "Startup Cost": 0,
+                        "Total Cost": 4.16,
+                        "Plan Rows": 2,
+                        "Plan Width": 0,
+                        "Disabled": false,
+                        "Index Cond": "(user_id = 'synthetic'::text)"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "eventRegistration": {
+      "query": "SELECT id FROM event_participants WHERE user_id='synthetic' AND event_id='synthetic'",
+      "smallFixtureDefault": [
+        {
+          "Plan": {
+            "Node Type": "Index Scan",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Scan Direction": "Forward",
+            "Index Name": "event_participants_owner_event_idx",
+            "Relation Name": "event_participants",
+            "Alias": "event_participants",
+            "Startup Cost": 0.15,
+            "Total Cost": 8.17,
+            "Plan Rows": 1,
+            "Plan Width": 32,
+            "Disabled": false,
+            "Index Cond": "((user_id = 'synthetic'::text) AND (event_id = 'synthetic'::text))"
+          }
+        }
+      ],
+      "indexAvailabilityWithSeqscanDiscouraged": [
+        {
+          "Plan": {
+            "Node Type": "Index Scan",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Scan Direction": "Forward",
+            "Index Name": "event_participants_owner_event_idx",
+            "Relation Name": "event_participants",
+            "Alias": "event_participants",
+            "Startup Cost": 0.15,
+            "Total Cost": 8.17,
+            "Plan Rows": 1,
+            "Plan Width": 32,
+            "Disabled": false,
+            "Index Cond": "((user_id = 'synthetic'::text) AND (event_id = 'synthetic'::text))"
+          }
+        }
+      ]
+    },
+    "payment": {
+      "query": "SELECT id FROM event_payment_attempts WHERE registration_id='synthetic'",
+      "smallFixtureDefault": [
+        {
+          "Plan": {
+            "Node Type": "Index Scan",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Scan Direction": "Forward",
+            "Index Name": "event_payment_attempts_registration_id_unique",
+            "Relation Name": "event_payment_attempts",
+            "Alias": "event_payment_attempts",
+            "Startup Cost": 0.14,
+            "Total Cost": 8.16,
+            "Plan Rows": 1,
+            "Plan Width": 16,
+            "Disabled": false,
+            "Index Cond": "(registration_id = 'synthetic'::text)"
+          }
+        }
+      ],
+      "indexAvailabilityWithSeqscanDiscouraged": [
+        {
+          "Plan": {
+            "Node Type": "Index Scan",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Scan Direction": "Forward",
+            "Index Name": "event_payment_attempts_registration_id_unique",
+            "Relation Name": "event_payment_attempts",
+            "Alias": "event_payment_attempts",
+            "Startup Cost": 0.14,
+            "Total Cost": 8.16,
+            "Plan Rows": 1,
+            "Plan Width": 16,
+            "Disabled": false,
+            "Index Cond": "(registration_id = 'synthetic'::text)"
+          }
+        }
+      ]
+    },
+    "campaign": {
+      "query": "SELECT key FROM telegram_campaigns WHERE key='synthetic'",
+      "smallFixtureDefault": [
+        {
+          "Plan": {
+            "Node Type": "Index Only Scan",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Scan Direction": "Forward",
+            "Index Name": "telegram_campaigns_pkey",
+            "Relation Name": "telegram_campaigns",
+            "Alias": "telegram_campaigns",
+            "Startup Cost": 0.15,
+            "Total Cost": 8.17,
+            "Plan Rows": 1,
+            "Plan Width": 32,
+            "Disabled": false,
+            "Index Cond": "(key = 'synthetic'::text)"
+          }
+        }
+      ],
+      "indexAvailabilityWithSeqscanDiscouraged": [
+        {
+          "Plan": {
+            "Node Type": "Index Only Scan",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Scan Direction": "Forward",
+            "Index Name": "telegram_campaigns_pkey",
+            "Relation Name": "telegram_campaigns",
+            "Alias": "telegram_campaigns",
+            "Startup Cost": 0.15,
+            "Total Cost": 8.17,
+            "Plan Rows": 1,
+            "Plan Width": 32,
+            "Disabled": false,
+            "Index Cond": "(key = 'synthetic'::text)"
+          }
+        }
+      ]
+    },
+    "kids": {
+      "query": "SELECT id FROM kids_applications WHERE user_id='synthetic' ORDER BY created_at DESC,id",
+      "smallFixtureDefault": [
+        {
+          "Plan": {
+            "Node Type": "Sort",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Startup Cost": 13.26,
+            "Total Cost": 13.27,
+            "Plan Rows": 1,
+            "Plan Width": 24,
+            "Disabled": false,
+            "Sort Key": [
+              "created_at DESC",
+              "id"
+            ],
+            "Plans": [
+              {
+                "Node Type": "Seq Scan",
+                "Parent Relationship": "Outer",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Relation Name": "kids_applications",
+                "Alias": "kids_applications",
+                "Startup Cost": 0,
+                "Total Cost": 13.25,
+                "Plan Rows": 1,
+                "Plan Width": 24,
+                "Disabled": false,
+                "Filter": "(user_id = 'synthetic'::text)"
+              }
+            ]
+          }
+        }
+      ],
+      "indexAvailabilityWithSeqscanDiscouraged": [
+        {
+          "Plan": {
+            "Node Type": "Sort",
+            "Parallel Aware": false,
+            "Async Capable": false,
+            "Startup Cost": 13.26,
+            "Total Cost": 13.27,
+            "Plan Rows": 1,
+            "Plan Width": 24,
+            "Disabled": false,
+            "Sort Key": [
+              "created_at DESC",
+              "id"
+            ],
+            "Plans": [
+              {
+                "Node Type": "Seq Scan",
+                "Parent Relationship": "Outer",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Relation Name": "kids_applications",
+                "Alias": "kids_applications",
+                "Startup Cost": 0,
+                "Total Cost": 13.25,
+                "Plan Rows": 1,
+                "Plan Width": 24,
+                "Disabled": true,
+                "Filter": "(user_id = 'synthetic'::text)"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "productionDatabaseTouched": false
+}

@@ -4,12 +4,7 @@ import ProfileFields, { type CommunityFields } from "@/components/community/prof
 import ChildEditor, { type ChildValue } from "@/components/community/child-editor";
 import type { MiniAppCopy } from "@/lib/telegram/miniapp-i18n";
 import type { MiniAppProfileData } from "@/lib/telegram/miniapp-profile";
-import { MiniAppRequestError } from "@/lib/telegram/miniapp-client";
-
-export function requestMessage(error: unknown, copy: MiniAppCopy) {
-  const code = error instanceof MiniAppRequestError ? error.code : "generic";
-  return copy.errors[code as keyof typeof copy.errors] ?? copy.errors.generic;
-}
+import { requestMessage } from "./request-message";
 
 export default function MiniAppProfileForm({ data, copy, onSave, onDirty }: {
   data: MiniAppProfileData; copy: MiniAppCopy; onSave: (input: unknown) => Promise<void>; onDirty: (value: boolean) => void;

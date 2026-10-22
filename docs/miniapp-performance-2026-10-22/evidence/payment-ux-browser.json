@@ -1,0 +1,65 @@
+{
+  "environment": "Local Chromium 320/390/1280 + actual routes/session/SQL; synthetic Telegram SDK; external requests blocked",
+  "checks": [
+    {
+      "name": "320 paid pending shows payment-required UX and opens Shutafim with server family amount",
+      "status": "PASS"
+    },
+    {
+      "name": "320 free registration confirms without payment CTA and offers My registration",
+      "status": "PASS"
+    },
+    {
+      "name": "390 paid pending shows payment-required UX and opens Shutafim with server family amount",
+      "status": "PASS"
+    },
+    {
+      "name": "390 free registration confirms without payment CTA and offers My registration",
+      "status": "PASS"
+    },
+    {
+      "name": "1280 paid pending shows payment-required UX and opens Shutafim with server family amount",
+      "status": "PASS"
+    },
+    {
+      "name": "1280 free registration confirms without payment CTA and offers My registration",
+      "status": "PASS"
+    },
+    {
+      "name": "repeat pending registration returns the same server row/attempt and immutable amount after a price change",
+      "status": "PASS"
+    },
+    {
+      "name": "return/paid query flags and activation/reload never promote pending or remove payment CTA",
+      "status": "PASS"
+    },
+    {
+      "name": "only server paid status shows confirmed payment after reload",
+      "status": "PASS"
+    },
+    {
+      "name": "only server confirmed status shows confirmed payment after reload",
+      "status": "PASS"
+    },
+    {
+      "name": "My registrations distinguishes pending, free and confirmed with a working server payment link",
+      "status": "PASS"
+    },
+    {
+      "name": "legacy paid pending without a payment URL shows known amount and WhatsApp, no dead button",
+      "status": "PASS"
+    },
+    {
+      "name": "unsafe persisted URL is suppressed by the server and falls back to WhatsApp",
+      "status": "PASS"
+    },
+    {
+      "name": "missing Telegram openLink safely falls back without marking payment successful",
+      "status": "PASS"
+    },
+    {
+      "name": "throws Telegram openLink safely falls back without marking payment successful",
+      "status": "PASS"
+    }
+  ]
+}

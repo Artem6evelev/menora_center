@@ -1,4 +1,4 @@
-import { withMiniAppSession } from "@/lib/telegram/miniapp-session";
+import { withMiniAppSessionRead } from "@/lib/telegram/miniapp-session";
 import {
   miniAppErrorResponse,
   miniAppResponse,
@@ -8,7 +8,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   try {
-    return await withMiniAppSession(async (tx, user) =>
+    return await withMiniAppSessionRead(async (tx, user) =>
       miniAppResponse({
         ok: true,
         ...(await miniAppRegistrations(

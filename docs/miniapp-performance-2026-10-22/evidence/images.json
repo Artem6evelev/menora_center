@@ -1,0 +1,66 @@
+{
+  "environment": "Local Chromium + real Next Image optimizer, generated 1800x2700 JPEG; host contract uses intercepted bytes, no production media/device claim",
+  "checks": [
+    {
+      "name": "320 optimized WebP resource reused for contain poster/backdrop; responsive dimensions, no frame shift/overflow",
+      "status": "PASS"
+    },
+    {
+      "name": "390 optimized WebP resource reused for contain poster/backdrop; responsive dimensions, no frame shift/overflow",
+      "status": "PASS"
+    },
+    {
+      "name": "gwuzekpkfrkmgluzblty.supabase.co optimizer allowlist contract without external image reads",
+      "status": "PASS"
+    },
+    {
+      "name": "unknown.example.invalid optimizer allowlist contract without external image reads",
+      "status": "PASS"
+    }
+  ],
+  "measurements": [
+    {
+      "width": 320,
+      "originalBytes": 825489,
+      "optimizedBytes": 86784,
+      "resourceRequests": 1,
+      "imageWidth": "640",
+      "format": "image/webp",
+      "frameBefore": {
+        "x": 17,
+        "y": 292.578125,
+        "width": 286,
+        "height": 160.875
+      },
+      "frameAfter": {
+        "x": 17,
+        "y": 292.578125,
+        "width": 286,
+        "height": 160.875
+      },
+      "foregroundFit": "contain"
+    },
+    {
+      "width": 390,
+      "originalBytes": 825489,
+      "optimizedBytes": 86784,
+      "resourceRequests": 1,
+      "imageWidth": "640",
+      "format": "image/webp",
+      "frameBefore": {
+        "x": 17,
+        "y": 292.578125,
+        "width": 356,
+        "height": 200.25
+      },
+      "frameAfter": {
+        "x": 17,
+        "y": 292.578125,
+        "width": 356,
+        "height": 200.25
+      },
+      "foregroundFit": "contain"
+    }
+  ],
+  "productionImagesRead": false
+}

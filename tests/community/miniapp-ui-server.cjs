@@ -47,7 +47,9 @@ async function test(name, fn) { await fn(); checks.push({name,status:'PASS'}); c
 const base = 'http://localhost:3999';
 function request(body, tag, origin = base) { return new Request(base+'/api/telegram/miniapp/profile', { method:'POST',headers:{origin,'content-type':'application/json',...(tag?{'if-match':tag}:{})}, body:JSON.stringify(body) }); }
 (async()=>{
- const pg = new PGlite(), schema = source('lib/db/schema.ts'); db = drizzle(pg,{schema});
+ const queries=[],queryMeasurements=[];
+ const measure=label=>queryMeasurements.push({label,statements:queries.length,kinds:queries.reduce((a,q)=>{const k=q.trim().split(/\s+/)[0].toUpperCase();a[k]=(a[k]??0)+1;return a;},{}),locked:queries.filter(q=>/for update/i.test(q)).length});
+ const pg = new PGlite(), schema = source('lib/db/schema.ts'); db = drizzle(pg,{schema,logger:{logQuery(query){queries.push(query);}}});
  await migrate(db,{migrationsFolder:path.join(root,'drizzle')});
  const resume=source('app/api/telegram/miniapp/session/route.ts'), bootstrap=source('app/api/telegram/miniapp/bootstrap/route.ts'), profile=source('app/api/telegram/miniapp/profile/route.ts'), filter=source('app/api/telegram/miniapp/filter/route.ts');
  const cookie=source('lib/telegram/miniapp-config.ts').miniAppCookieName();
@@ -192,6 +194,95 @@ function request(body, tag, origin = base) { return new Request(base+'/api/teleg
    for(const version of [null,'','*','"invalid"','"'+ '0'.repeat(64)+'"'])await post(profile,{...fields(),profileVersion:version},fresh.tag,409);
    await post(profile,fields(),undefined,409);
   });
+
+  const start=source('app/api/telegram/miniapp/start/route.ts');
+  const startAs=async(id,extra={},expected=200,raw=initData(id))=>{
+   const response=await start.POST(request({initData:raw,...extra}));const data=await response.json();
+   assert.equal(response.status,expected,JSON.stringify(data));
+   const issued=response.cookies.get(cookie);if(issued)cookieJar.set(cookie,issued.value);
+   return{response,data,tag:data.profileVersion};
+  };
+  await pg.exec("INSERT INTO events(id,title,status,is_free,description) VALUES('startup-event','Synthetic startup','planned',true,'DETAIL_ONLY_DESCRIPTION'),('startup-two','Synthetic second','planned',true,'DETAIL_ONLY_DESCRIPTION')");
+  await test('unified start creates a new real canonical identity/session and returns filter in one response',async()=>{
+   cookieJar.clear();queries.length=0;const first=await startAs(750200);measure('new-user-start');assert.equal(first.data.sessionCreated,true);
+   assert.equal(first.data.summary.nextStep,'filter');assert.match(first.tag,/^"[0-9a-f]{64}"$/);
+   assert.equal(first.data.destination,'home');assert.equal(first.data.homeEvents.length,0);
+   assert.equal(first.response.headers.get('cache-control'),'no-store');assert.equal(first.data.profile.gender,null);
+  });
+  await test('returning Home start resumes its subject, includes at most two compact events, and does not lock or write',async()=>{
+   await login(750001);queries.length=0;const result=await startAs(750001);measure('returning-home-start');
+   assert.equal(result.data.sessionCreated,false);assert.equal(result.data.summary.nextStep,'home');
+   assert.equal(result.data.homeEvents.length,2);assert.equal(result.data.profile.firstName,(await stored(750001)).first_name);
+   assert.ok(result.data.homeEvents.every(e=>e.shareUrl&&!Object.hasOwn(e,'description')&&!Object.hasOwn(e,'childPrice')&&!Object.hasOwn(e,'status')));
+   assert.equal(queries.some(q=>/for update|^update |^insert /i.test(q)),false,queries.join('\n'));
+   assert.equal(queries.filter(q=>/^select /i.test(q)).length,5);
+  });
+  await test('startup touch is throttled and never extends session expiry',async()=>{
+   await pg.exec("UPDATE telegram_miniapp_sessions SET created_at=now()-interval '20 minutes',last_seen_at=now()-interval '10 minutes' WHERE revoked_at IS NULL");
+   const before=(await pg.query('SELECT id,expires_at FROM telegram_miniapp_sessions ORDER BY id')).rows;
+   queries.length=0;await startAs(750001);assert.equal(queries.filter(q=>/^update /i.test(q)).length,1);
+   queries.length=0;await startAs(750001);assert.equal(queries.filter(q=>/^update /i.test(q)).length,0);
+   assert.deepEqual((await pg.query('SELECT id,expires_at FROM telegram_miniapp_sessions ORDER BY id')).rows,before);
+  });
+  await test('all ordinary Mini App GET routes authorize without row locks or lastSeen writes',async()=>{
+   const before=(await pg.query('SELECT id,last_seen_at FROM telegram_miniapp_sessions ORDER BY id')).rows;
+   for(const [route,url]of[['profile','profile'],['session','session'],['events','events'],['events','events?id=startup-event'],['registrations','registrations'],['kids','kids'],['subscription','subscription'],['launch','launch?event=startup-event']]){
+    queries.length=0;const response=await source('app/api/telegram/miniapp/'+route+'/route.ts').GET(new Request(base+'/api/telegram/miniapp/'+url));
+    assert.equal(response.status,200,route+': '+await response.text());measure('GET '+url);
+    assert.equal(queries.some(q=>/for update|^update |^insert /i.test(q)),false,route+queries.join('\n'));
+    assert.ok(queries[0].includes('inner join "user_identities"')&&queries[0].includes('inner join "users"'));
+   }
+   assert.deepEqual((await pg.query('SELECT id,last_seen_at FROM telegram_miniapp_sessions ORDER BY id')).rows,before);
+  });
+  await test('Kids response carries one coherent canonical snapshot/version, consent, city and children',async()=>{
+   const response=await source('app/api/telegram/miniapp/kids/route.ts').GET();assert.equal(response.status,200);
+   const data=await response.json(),canonical=await read();assert.equal(data.profileVersion,canonical.data.profileVersion);
+   assert.equal(data.profileSnapshot.profileVersion,canonical.data.profileVersion);
+   assert.deepEqual({...data.profileSnapshot.profile,childrenData:data.children},canonical.data.profile);
+   assert.equal(data.profileSnapshot.profile.agreedToPrivacy,true);assert.equal(data.profileSnapshot.profile.cityId,'8300');
+  });
+  await test('ad launch and Kids destinations survive unified startup; launch preview stays bounded',async()=>{
+   const ad=await startAs(750001,{event:'startup-event',section:'kids'});assert.equal(ad.data.destination,'events');
+   assert.equal(ad.data.launchEvent.id,'startup-event');assert.ok(ad.data.launchEvent.lead.length<=280);assert.ok(!Object.hasOwn(ad.data.launchEvent,'description'));assert.equal(ad.data.homeEvents.length,0);
+   const kids=await startAs(750001,{section:'kids'});assert.equal(kids.data.destination,'kids');assert.equal(kids.data.launchEvent,null);
+  });
+  await test('cookie from another account is replaced only after fresh signed subject validation; no family data leaks',async()=>{
+   const next=await startAs(750200);assert.equal(next.data.sessionCreated,true);assert.equal(next.data.summary.nextStep,'filter');
+   assert.deepEqual(next.data.profile.childrenData,[]);assert.notEqual(next.tag,source('lib/telegram/miniapp-profile.ts').miniAppProfileTag((await db.select().from(schema.users).where(eq(schema.users.id,(await stored(750001)).id)))[0]));
+   const row=await stored(750200);assert.ok(row.filter_version<source('lib/community/policy.ts').FILTER_VERSION);
+  });
+  await test('expired session starts fresh with fresh proof and rejects an old proof',async()=>{
+   await pg.exec("UPDATE telegram_miniapp_sessions SET created_at=now()-interval '20 minutes',last_seen_at=now()-interval '10 minutes',expires_at=now()-interval '1 second' WHERE user_id=(SELECT user_id FROM user_identities WHERE provider_user_id='750200')");
+   await startAs(750200,{},401,initData(750200,'ru',Math.floor(Date.now()/1000)-3600));
+   assert.equal((await startAs(750200)).data.sessionCreated,true);
+  });
+  await test('existing valid session accepts its own older signed launch but rejects tampering',async()=>{
+   assert.equal((await startAs(750200,{},200,initData(750200,'ru',Math.floor(Date.now()/1000)-3600))).data.sessionCreated,false);
+   await startAs(750200,{},401,initData(750200).replace('Synthetic','Tampered'));
+  });
+  await test('revoked own session is rejected, not silently replaced',async()=>{
+   await source('lib/telegram/miniapp-session.ts').revokeCurrentMiniAppSession();
+   const count=(await pg.query('SELECT count(*)::int AS n FROM telegram_miniapp_sessions')).rows;
+   await startAs(750200,{},401);assert.deepEqual((await pg.query('SELECT count(*)::int AS n FROM telegram_miniapp_sessions')).rows,count);
+  });
+  for(const disable of ['identity','user'])await test('disabled '+disable+' is rejected on both resume and fresh bootstrap',async()=>{
+   const id=disable==='identity'?750201:750202;cookieJar.clear();await startAs(id);
+   await pg.exec(disable==='identity'?"UPDATE user_identities SET disabled_at=now() WHERE provider_user_id='750201'":"UPDATE users SET identity_disabled_at=now() WHERE id=(SELECT user_id FROM user_identities WHERE provider_user_id='750202')");
+   await startAs(id,{},401);cookieJar.clear();await startAs(id,{},403);
+  });
+  await test('start keeps same-origin, body limit, strict hints and signed raw identity requirements',async()=>{
+   assert.equal((await start.POST(request({initData:initData(750001)},null,'https://attacker.example.invalid'))).status,403);
+   assert.equal((await start.POST(request({initData:'x'.repeat(17000)}))).status,413);
+   for(const extra of[{userId:'foreign'},{section:'admin'},{event:'x'.repeat(151)},{campaign:'x'.repeat(65)}])await startAs(750001,extra,400);
+   cookieJar.clear();await startAs(750001,{},400,'user=untrusted');
+  });
+  await test('unified startup snapshot retains optimistic locking against a real competing edit',async()=>{
+   cookieJar.clear();let loaded=await startAs(750203);
+   loaded=await post(filter,{affiliation:'giyur',gender:'male'},loaded.tag);
+   const snapshot=await startAs(750203);await post(profile,fields({firstName:'Winner'}),snapshot.tag);
+   await post(profile,fields({firstName:'Stale'}),snapshot.tag,409);assert.equal((await stored(750203)).first_name,'Winner');
+   assert.equal((await startAs(750203)).data.summary.nextStep,'home');assert.equal((await stored(750203)).giyur_stage,null);
+  });
  }finally{await pg.close();}
- fs.mkdirSync(output,{recursive:true});fs.writeFileSync(path.join(output,'miniapp-ui-server-results.json'),JSON.stringify({environment:'production API/services + synthetic Telegram HMAC + native migrations + isolated PGlite',remoteDatabaseTouched:false,checks},null,2)+'\n');console.log(`${checks.length}/${checks.length} Mini App UI server checks passed`);
+ fs.mkdirSync(output,{recursive:true});fs.writeFileSync(path.join(output,'miniapp-query-counts.json'),JSON.stringify({environment:'isolated PGlite, production route/services with one shared Drizzle logger, short IDs; counts exclude SQL BEGIN/COMMIT',measurements:queryMeasurements},null,2)+'\n');fs.writeFileSync(path.join(output,'miniapp-ui-server-results.json'),JSON.stringify({environment:'production API/services + synthetic Telegram HMAC + native migrations + isolated PGlite',remoteDatabaseTouched:false,checks},null,2)+'\n');console.log(`${checks.length}/${checks.length} Mini App UI server checks passed`);
 })().catch(error=>{console.error(error);process.exitCode=1;});

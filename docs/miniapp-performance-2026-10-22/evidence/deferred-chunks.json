@@ -1,0 +1,59 @@
+{
+  "environment": "current local production build, actual Chromium initial resource bytes + generated loadable manifest; gzip locally estimated",
+  "checks": [
+    {
+      "name": "./events has a deferred chunk absent from initial production JS",
+      "status": "PASS"
+    },
+    {
+      "name": "./kids has a deferred chunk absent from initial production JS",
+      "status": "PASS"
+    },
+    {
+      "name": "./profile-form has a deferred chunk absent from initial production JS",
+      "status": "PASS"
+    },
+    {
+      "name": "@/components/community/resource-message has a deferred chunk absent from initial production JS",
+      "status": "PASS"
+    },
+    {
+      "name": "official async SDK is in Mini App SSR HTML before effects, not global website layout",
+      "status": "PASS"
+    },
+    {
+      "name": "actual initial JS response bytes are below the recorded b2 baseline",
+      "status": "PASS"
+    }
+  ],
+  "baselineBytes": 534836,
+  "initialBytes": 517334,
+  "baselineGzip": 165643,
+  "initialGzip": 161743,
+  "deferredChunks": [
+    {
+      "screen": "./events",
+      "file": "static/chunks/4723.f965859ac7522317.js",
+      "bytes": 9590,
+      "estimatedGzipBytes": 3197
+    },
+    {
+      "screen": "./kids",
+      "file": "static/chunks/7003.0e326eb833573eb0.js",
+      "bytes": 19537,
+      "estimatedGzipBytes": 7001
+    },
+    {
+      "screen": "./profile-form",
+      "file": "static/chunks/9074.adc0769a854dab14.js",
+      "bytes": 2575,
+      "estimatedGzipBytes": 1211
+    },
+    {
+      "screen": "@/components/community/resource-message",
+      "file": "static/chunks/5885.8ceed0d6bace4505.js",
+      "bytes": 859,
+      "estimatedGzipBytes": 549
+    }
+  ]
+}
