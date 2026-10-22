@@ -64,6 +64,13 @@
       "when": 1792572358315,
       "tag": "0008_city_identity",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792651464393,
+      "tag": "0009_miniapp_identity_v1",
+      "breakpoints": true
     }
   ]
 }

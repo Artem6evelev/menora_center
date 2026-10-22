@@ -1,0 +1,24 @@
+PASS manual artifact contains exactly the canonical Drizzle migration body inside one transaction
+PASS READ ONLY PRECHECK reports real counts and ambiguous Clerk IDs without modifying profiles
+PASS manual upgrade keeps IDs/family/filter/paid history, clears only the exact fake address and imports no marketing consent or fresh verification
+PASS backend-only RLS and grants deny anon/authenticated despite inherited PUBLIC defaults
+PASS Telegram-first canonical users accept NULL email; provider/FK/primary/active Clerk invariants are enforced
+PASS link attempts store hash-only unique tokens with bounded lifetime and a consumption marker
+PASS rerun never resubscribes, reactivates, rewrites metadata or timestamps
+PASS future merged ownership with two Telegram identities/contacts survives rerun and keeps one primary
+PASS merge audit allows INSERT but rejects UPDATE/DELETE/TRUNCATE without requiring the source profile to survive
+PASS rerun restores the audit mutation guard if a privileged operator disabled it
+PASS READ ONLY POSTCHECK confirms contacts/identity owners, unique subjects, RLS and no public effective grants
+PASS PRECHECK detects negative group chat and manual migration refuses atomically
+PASS PRECHECK detects tg ID/chat mismatch and manual migration refuses atomically
+PASS PRECHECK detects duplicate subject without a proven mapping and manual migration refuses atomically
+PASS import can create multiple missing Telegram contacts for an already proven survivor with exactly one primary
+PASS incompatible partial rollout fails closed: wrong nullable/default contract
+PASS incompatible partial rollout fails closed: wrong default
+PASS incompatible partial rollout fails closed: wrong check with the expected name
+PASS incompatible partial rollout fails closed: wrong partial unique index
+PASS incompatible partial rollout fails closed: wrong foreign key
+PASS incompatible partial rollout fails closed: public policy
+PASS incompatible partial rollout fails closed: inherited grant
+PASS repeat removes direct table and column grants without altering existing records
+23/23 identity schema checks passed; remote database not touched.

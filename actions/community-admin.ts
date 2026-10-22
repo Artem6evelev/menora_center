@@ -73,7 +73,7 @@ export async function registerChildManually(raw: unknown) {
         if (!input.programTitle) throw new CommunityError("Укажите детскую программу");
         id = randomUUID();
         await tx.insert(kidsApplications).values({ id, userId: parent.id, programTitle: input.programTitle,
-          parentFirstName: parent.firstName || "", parentLastName: parent.lastName || "", email: parent.email,
+          parentFirstName: parent.firstName || "", parentLastName: parent.lastName || "", email: parent.email ?? "",
           phone: parent.phone || "Не указан", children: selected, status: "pending" });
       }
       if (input.newChild) {

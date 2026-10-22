@@ -30,7 +30,7 @@ export async function submitKidsApplication(data: any) {
       const actual = profileChildren(actor.id, fresh.childrenData);
       if (ids.some(id => !actual.some(child => child.id === id))) throw new CommunityError("Данные детей изменились. Обновите страницу.");
       await tx.insert(kidsApplications).values({ programTitle: data.programTitle, parentFirstName: fresh.firstName || "",
-        parentLastName: fresh.lastName || "", email: fresh.email, phone: fresh.phone || "", children: ids.map(id => actual.find(child => child.id === id)!), userId: actor.id });
+        parentLastName: fresh.lastName || "", email: fresh.email ?? "", phone: fresh.phone || "", children: ids.map(id => actual.find(child => child.id === id)!), userId: actor.id });
     });
     revalidatePath("/dashboard/kids"); revalidatePath("/dashboard/kids-applications");
     return { success: true as const };

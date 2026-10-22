@@ -10,6 +10,7 @@ import {
   integer,
   varchar,
   uniqueIndex,
+  index,
   jsonb,
 } from "drizzle-orm/pg-core";
 
@@ -19,8 +20,10 @@ import {
 export const users = pgTable(
   "users",
   {
+    // Canonical Menorah key. Existing Clerk/tg_ keys remain unchanged.
     id: text("id").primaryKey(),
-    email: text("email").notNull(),
+    // Telegram-first Mini App profiles may exist before a Clerk/email identity is linked.
+    email: text("email"),
     firstName: text("first_name"),
     lastName: text("last_name"),
     imageUrl: text("image_url"),
@@ -67,6 +70,124 @@ export const users = pgTable(
     };
   },
 ).enableRLS();
+
+
+export const userIdentities = pgTable(
+  "user_identities",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    provider: text("provider").notNull(),
+    providerInstance: text("provider_instance").default("primary").notNull(),
+    providerUserId: text("provider_user_id").notNull(),
+    metadata: jsonb("metadata").default({}).notNull(),
+    // Legacy import is routing evidence, not a fresh authentication proof.
+    verifiedAt: timestamp("verified_at", { withTimezone: true }),
+    lastSeenAt: timestamp("last_seen_at", { withTimezone: true }).defaultNow().notNull(),
+    disabledAt: timestamp("disabled_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => ({
+    providerCheck: check(
+      "user_identities_provider_check",
+      sql`${table.provider} IN ('clerk', 'telegram')`,
+    ),
+    providerSubjectIdx: uniqueIndex("user_identities_provider_subject_idx").on(
+      table.provider,
+      table.providerInstance,
+      table.providerUserId,
+    ),
+    userIdx: index("user_identities_user_id_idx").on(table.userId),
+    subjectCheck: check("user_identities_subject_check", sql`length(btrim(${table.providerInstance})) > 0 AND length(btrim(${table.providerUserId})) > 0`),
+    activeClerkPerUserIdx: uniqueIndex("user_identities_active_clerk_per_user_idx")
+      .on(table.userId)
+      .where(sql`${table.provider} = 'clerk' AND ${table.disabledAt} IS NULL`),
+  }),
+).enableRLS();
+
+export const telegramContacts = pgTable(
+  "telegram_contacts",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    telegramUserId: text("telegram_user_id").notNull().unique(),
+    telegramChatId: text("telegram_chat_id").unique(),
+    username: text("username"),
+    firstName: text("first_name"),
+    lastName: text("last_name"),
+    languageCode: text("language_code"),
+    photoUrl: text("photo_url"),
+    allowsWriteToPm: boolean("allows_write_to_pm").default(false).notNull(),
+    isPrimary: boolean("is_primary").default(true).notNull(),
+    marketingStatus: text("marketing_status").default("unknown").notNull(),
+    marketingOptInAt: timestamp("marketing_opt_in_at", { withTimezone: true }),
+    unsubscribedAt: timestamp("unsubscribed_at", { withTimezone: true }),
+    blockedAt: timestamp("blocked_at", { withTimezone: true }),
+    firstStartParam: text("first_start_param"),
+    lastStartParam: text("last_start_param"),
+    firstSeenAt: timestamp("first_seen_at", { withTimezone: true }).defaultNow().notNull(),
+    lastSeenAt: timestamp("last_seen_at", { withTimezone: true }).defaultNow().notNull(),
+    lastDeliveryAt: timestamp("last_delivery_at", { withTimezone: true }),
+    lastDeliveryErrorCode: text("last_delivery_error_code"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => ({
+    marketingStatusCheck: check(
+      "telegram_contacts_marketing_status_check",
+      sql`${table.marketingStatus} IN ('unknown', 'subscribed', 'unsubscribed', 'blocked')`,
+    ),
+    primaryPerUserIdx: uniqueIndex("telegram_contacts_one_primary_per_user_idx")
+      .on(table.userId)
+      .where(sql`${table.isPrimary} = true`),
+    userIdx: index("telegram_contacts_user_id_idx").on(table.userId),
+  }),
+).enableRLS();
+
+export const userIdentityLinkAttempts = pgTable(
+  "user_identity_link_attempts",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    provider: text("provider").notNull(),
+    providerInstance: text("provider_instance").default("primary").notNull(),
+    tokenHash: text("token_hash").notNull().unique(),
+    returnTo: text("return_to"),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    consumedAt: timestamp("consumed_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => ({
+    providerCheck: check(
+      "user_identity_link_attempts_provider_check",
+      sql`${table.provider} IN ('clerk', 'telegram')`,
+    ),
+    tokenHashCheck: check("user_identity_link_attempts_hash_check", sql`${table.tokenHash} ~ '^[0-9a-f]{64}$'`),
+    lifetimeCheck: check("user_identity_link_attempts_lifetime_check", sql`${table.expiresAt} > ${table.createdAt} AND (${table.consumedAt} IS NULL OR (${table.consumedAt} >= ${table.createdAt} AND ${table.consumedAt} <= ${table.expiresAt}))`),
+    userIdx: index("user_identity_link_attempts_user_id_idx").on(table.userId),
+    openExpiryIdx: index("user_identity_link_attempts_open_expiry_idx").on(table.expiresAt).where(sql`${table.consumedAt} IS NULL`),
+  }),
+).enableRLS();
+
+export const userIdentityMergeLog = pgTable("user_identity_merge_log", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  sourceUserId: text("source_user_id").notNull(),
+  targetUserId: text("target_user_id").notNull(),
+  triggerProvider: text("trigger_provider").notNull(),
+  triggerProviderUserId: text("trigger_provider_user_id"),
+  reason: text("reason").notNull(),
+  details: jsonb("details").default({}).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+}, (table) => ({
+  providerCheck: check("user_identity_merge_log_provider_check", sql`${table.triggerProvider} IN ('clerk', 'telegram')`),
+  distinctUsersCheck: check("user_identity_merge_log_users_check", sql`${table.sourceUserId} <> ${table.targetUserId} AND length(btrim(${table.reason})) > 0`),
+})).enableRLS();
 
 export const authorProfiles = pgTable("author_profiles", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -338,12 +459,37 @@ export const botSettings = pgTable("bot_settings", {
 // ==========================================
 
 export const usersRelations = relations(users, ({ one, many }) => ({
+  identities: many(userIdentities),
+  telegramContacts: many(telegramContacts),
+  identityLinkAttempts: many(userIdentityLinkAttempts),
   authorProfile: one(authorProfiles, {
     fields: [users.id],
     references: [authorProfiles.userId],
   }),
   news: many(news),
   videos: many(videos),
+}));
+
+
+export const userIdentitiesRelations = relations(userIdentities, ({ one }) => ({
+  user: one(users, {
+    fields: [userIdentities.userId],
+    references: [users.id],
+  }),
+}));
+
+export const telegramContactsRelations = relations(telegramContacts, ({ one }) => ({
+  user: one(users, {
+    fields: [telegramContacts.userId],
+    references: [users.id],
+  }),
+}));
+
+export const userIdentityLinkAttemptsRelations = relations(userIdentityLinkAttempts, ({ one }) => ({
+  user: one(users, {
+    fields: [userIdentityLinkAttempts.userId],
+    references: [users.id],
+  }),
 }));
 
 export const authorProfilesRelations = relations(authorProfiles, ({ one }) => ({

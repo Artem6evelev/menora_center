@@ -92,6 +92,9 @@ async function repeat(pg) {
     const legacy = structuredClone(current);
     delete legacy.tables['public.community_audit'];
     delete legacy.tables['public.community_registration_drafts'];
+    for (const table of ['user_identities', 'telegram_contacts', 'user_identity_link_attempts', 'user_identity_merge_log']) delete legacy.tables['public.' + table];
+    // The pre-identity schema required an email. New Telegram-first users do not.
+    legacy.tables['public.users'].columns.email.notNull = true;
     for (const col of ['city_id', 'gender', 'affiliation', 'filter_version', 'filter_revision', 'giyur_stage', 'filter_completed_at', 'identity_disabled_at']) delete legacy.tables['public.users'].columns[col];
     legacy.tables['public.users'].checkConstraints = {};
     // Represent the previously observed additive schema drift (families/payments already exist).
@@ -100,7 +103,7 @@ async function repeat(pg) {
     await pg.exec('ALTER TABLE kids_applications RENAME CONSTRAINT kids_applications_user_id_users_id_fk TO kids_applications_user_id_fkey');
     await pg.exec(`
       INSERT INTO users(id,email,is_profile_complete,jewish_status,spouse_name,children_data,telegram_chat_id)
-      VALUES ('legacy-father','father@example.invalid',true,'Еврей по материнской линии','Preserved spouse','[{"id":"old-child","name":"Preserved child","dateOfBirth":"2020-01-01"}]','synthetic-chat'),
+      VALUES ('legacy-father','father@example.invalid',true,'Еврей по материнской линии','Preserved spouse','[{"id":"old-child","name":"Preserved child","dateOfBirth":"2020-01-01"}]','780001'),
       ('legacy-giyur','giyur@example.invalid',true,'Гиюр завершён или нахожусь на продвинутом этапе',NULL,'[]',NULL);
       INSERT INTO events(id,title,is_free,payment_url,child_price) VALUES ('old-event','Preserved event',false,'https://example.invalid/payment','25');
       INSERT INTO event_participants(id,event_id,user_id,status,extra_data) VALUES ('old-ticket','old-event','legacy-father','paid','{"children":[{"id":"old-child","name":"Preserved child"}],"totalAmount":125}');

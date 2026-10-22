@@ -314,6 +314,18 @@ const profilePayload = (override = {}) => ({ affiliation: 'maternal', gender: 'f
     assert.equal((await event.registerForEvent('event-free',actor,undefined,{childIds:['child-other']})).success,false);
     await db.update(users).set({affiliation:'none'}).where(eq(users.id,actor)); assert.equal(await event.getEventById('event-free'),null);
   });
+  await test('nullable canonical email preserves child applications and registration without inventing an address', async () => {
+    const mom='null-email-mom',father='null-email-father';
+    await db.insert(users).values([{id:mom,email:null,firstName:'Synthetic',gender:'female',affiliation:'maternal',filterVersion:2,filterCompletedAt:new Date(),isProfileComplete:true,childrenData:[{id:'null-email-child',parentId:mom,name:'Synthetic child',gender:'female',dateOfBirth:'2020-01-01'}]},
+      {id:father,email:null,firstName:'Synthetic',gender:'male',affiliation:'none',filterVersion:2,filterCompletedAt:new Date(),isProfileComplete:true}]);
+    actor=mom;assert.equal((await kids.submitKidsApplication({programTitle:'Nullable contact program',childIds:['null-email-child']})).success,true);
+    assert.equal((await db.select().from(kidsApplications).where(eq(kidsApplications.userId,mom)))[0].email,'');
+    assert.equal((await event.registerForEvent('event-free',mom)).success,true);
+    assert.equal(notifications[notifications.length-1][1].email,'');
+    actor='admin';assert.equal((await admin.registerChildManually({requestId:crypto.randomUUID(),parentId:father,childIds:[],newChild:{name:'Synthetic child',gender:'female',dateOfBirth:'2020-01-01'},kind:'program',programTitle:'Nullable admin contact',reason:'Synthetic exception reason'})).success,true);
+    assert.equal((await db.select().from(kidsApplications).where(eq(kidsApplications.userId,father)))[0].email,'');
+    for(const id of [mom,father])assert.equal((await db.select().from(users).where(eq(users.id,id)))[0].email,null);
+  });
   await pg.close();
   const result={engine:'PGlite 0.5.10 PostgreSQL/WASM, Drizzle real SQL/transactions; auth and external side effects injected',limitations:['Not real Clerk/Google OAuth or browser E2E','PGlite serializes transactions; multi-connection PostgreSQL locking/load not measured','No real DB, external delivery or payments'],checks};
   const output=path.join(process.env.COMMUNITY_TEST_OUTPUT || path.join(ROOT,'docs/implementation-2026-10-20'),'regression-results.json');fs.mkdirSync(path.dirname(output),{recursive:true});fs.writeFileSync(output,JSON.stringify(result,null,2)+'\n');

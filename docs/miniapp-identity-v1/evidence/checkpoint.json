@@ -1,0 +1,138 @@
+{
+  "checkedAt": "2026-10-22T07:12:29.535243+00:00",
+  "branch": "main",
+  "head": "6bd190107a5c7a2776e737255fe70520b7efb906",
+  "originMain": "6bd190107a5c7a2776e737255fe70520b7efb906",
+  "initialStatus": "clean; nothing to commit",
+  "initialAheadBehind": [
+    0,
+    0
+  ],
+  "remoteMainConfirmedByLsRemote": "6bd190107a5c7a2776e737255fe70520b7efb906",
+  "safetyBranch": "safety/miniapp-step2-2026-10-22-6bd1901",
+  "featureHead": "cf1a4de86bdc45dcec38c1c6159219a85374b370",
+  "importedRemoteFiles": [
+    "docs/miniapp-identity-v1/DESIGN.md",
+    "docs/miniapp-identity-v1/MANUAL_SQL.sql",
+    "docs/miniapp-identity-v1/POSTCHECK.sql",
+    "docs/miniapp-identity-v1/PRECHECK.sql",
+    "lib/db/schema.ts"
+  ],
+  "worktreeHasUncommittedIntegration": true,
+  "trackedDiffSha256": "cabe2ad842d2bb647ff28adf26b07fd7ec38fae962242087b07be5c34ebfa963",
+  "files": [
+    {
+      "file": "actions/community-admin.ts",
+      "sha256": "69b6aca1163649b0c82e0cb0057e179c2fd482d7f49c48a1675c203b02d8b76b"
+    },
+    {
+      "file": "actions/event.ts",
+      "sha256": "58ef2e506bc87d38fd0c8ea3294bd21b81354d1b34c6902f3cecada32b627bcd"
+    },
+    {
+      "file": "actions/kids.actions.ts",
+      "sha256": "676aa9e1f1578d005c75faf3c4579c368fca56f8dc253bc319e609bd74c6f6a4"
+    },
+    {
+      "file": "docs/miniapp-identity-v1/DESIGN.md",
+      "sha256": "141ecbd1c5133094289e1d26c09b2b95402e7a129841a2c2f4f1f5302d32c874"
+    },
+    {
+      "file": "docs/miniapp-identity-v1/MANUAL_SQL.sql",
+      "sha256": "2fa34d1bbc454c844abeca3a548c4d1c247ee230d340baa2148f8552006b01f6"
+    },
+    {
+      "file": "docs/miniapp-identity-v1/POSTCHECK.sql",
+      "sha256": "08bda440ed64e46a5435f919fd6c11e8246a385611656878b528124bd579fb09"
+    },
+    {
+      "file": "docs/miniapp-identity-v1/PRECHECK.sql",
+      "sha256": "7a8690a7965acadd0b39fa8f7d2e6822b0fa8b173dd1b662157346bff39215eb"
+    },
+    {
+      "file": "docs/miniapp-identity-v1/REPORT.md",
+      "sha256": "55b714824e48bac96f2db5ad1ec66d7093304ade942a2ef4edd3ea7fc082af2b"
+    },
+    {
+      "file": "docs/miniapp-identity-v1/evidence/build-result.json",
+      "sha256": "ab36f2147c83429c6cbd3deeeeed9789276b9c6e9308d11ecd04419d766207a7"
+    },
+    {
+      "file": "docs/miniapp-identity-v1/evidence/build.log",
+      "sha256": "4abc97785ad7f326db252e8d5ce5cbd09b6b7111bcc8429b8fa388203fda81b7"
+    },
+    {
+      "file": "docs/miniapp-identity-v1/evidence/identity-results.json",
+      "sha256": "5c84df6f445f90db46ec314cce2bf9552d77deab60662546786a72b0f8eaafb9"
+    },
+    {
+      "file": "docs/miniapp-identity-v1/evidence/identity-tests.log",
+      "sha256": "4f5d1d7dc585d454c29e410974b43a09fcaffd0445c5d9480aff63365b2c8d25"
+    },
+    {
+      "file": "docs/miniapp-identity-v1/evidence/lint.log",
+      "sha256": "45a1786047ac44ee0d86a3d36fb3fdafe5136f3410cc2393e0747ee6db3fb7cf"
+    },
+    {
+      "file": "docs/miniapp-identity-v1/evidence/migration-results.json",
+      "sha256": "bd9d8175068b38ca1611404e11c2f09d1a44a555cdf0a45fc85d1bab7cbe6f3f"
+    },
+    {
+      "file": "docs/miniapp-identity-v1/evidence/migrations.log",
+      "sha256": "5f2c29e9b2d7741228ccdb714b4844e0142d8ce6854d252ee5bcb52e8942cc39"
+    },
+    {
+      "file": "docs/miniapp-identity-v1/evidence/regression-results.json",
+      "sha256": "8618b92b891dcf95e16bbf770e385b40f1b330b9a345a4567b6ab34be9dd6eee"
+    },
+    {
+      "file": "docs/miniapp-identity-v1/evidence/regression.log",
+      "sha256": "03a07a290521eb9fac8284d5c146b73616b40ad88abc909acb590bf8f5d543c0"
+    },
+    {
+      "file": "docs/miniapp-identity-v1/evidence/typecheck.log",
+      "sha256": "c587c0f7b20efba6d9e78038ef6e1afcc70e5a66a2289fd554e3183c10522e6f"
+    },
+    {
+      "file": "drizzle/0009_miniapp_identity_v1.sql",
+      "sha256": "0b7ac0c3fdada97898b9582900510946d818b1e268578b9b725984d4bf7b9a2e"
+    },
+    {
+      "file": "drizzle/meta/0009_snapshot.json",
+      "sha256": "4cd0dd57bd6569e3e4360aa5cbc1ff13ce77cf5bf480ae12c6f7cdca23f28807"
+    },
+    {
+      "file": "drizzle/meta/_journal.json",
+      "sha256": "a12a42b576b1bd9d2d18d3b3500119c398745203baa10a758c426594e7ed66e7"
+    },
+    {
+      "file": "lib/db/schema.ts",
+      "sha256": "06c68ea47750f5a2c4f8d2c4720196e3faceefa4bef3962578c8f59ab8acddca"
+    },
+    {
+      "file": "store/useUserStore.ts",
+      "sha256": "d5c0d3fb07dfb063ab50082c81bd0f2aa2c0be94dbe4b6d9bcc7b0187dfc213e"
+    },
+    {
+      "file": "tests/community/README.md",
+      "sha256": "ee193d7fb71e141fdf93d0d0ad88658c70578c5f7d41902ad526a3bdb870b0fa"
+    },
+    {
+      "file": "tests/community/identity-schema.cjs",
+      "sha256": "a1508d6204aa7f6dd6f0e20210cc7b1e89b72cca6e8caaf7b062c68d0d58836c"
+    },
+    {
+      "file": "tests/community/migrations.cjs",
+      "sha256": "3d6a4c00948dc7eeaacb7f72a92e39527d0ab2d9279f456a138bce53151bea42"
+    },
+    {
+      "file": "tests/community/regression.cjs",
+      "sha256": "e0f285e93dfb221a2a6714c4bd58289a410556143ba8932eb5560c2fc0c7cd8a"
+    }
+  ],
+  "remoteDatabaseQueried": false,
+  "remoteDatabaseChanged": false,
+  "pushed": false,
+  "deployed": false,
+  "miniAppUiStarted": false
+}

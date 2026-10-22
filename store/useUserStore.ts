@@ -4,7 +4,7 @@ import { updateUserRoleAction } from "@/actions/user";
 // Типизируем нашего пользователя (чтобы TypeScript помогал)
 export type UserType = {
   id: string;
-  email: string;
+  email: string | null;
   firstName: string | null;
   lastName: string | null;
   imageUrl: string | null;

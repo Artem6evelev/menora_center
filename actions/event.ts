@@ -398,7 +398,7 @@ export async function registerForEvent(
         status: prepared.totalAmount > 0 ? "pending" : "confirmed", extraData: prepared.extraData };
       if (pending) await tx.update(eventParticipants).set(participant).where(eq(eventParticipants.id, id));
       else await tx.insert(eventParticipants).values({ id, ...participant });
-      return { paymentUrl, alreadyRegistered: false, notify: pending ? null : { title: event.title, firstName: profile.firstName || "", lastName: profile.lastName || "", email: profile.email, phone: participant.phone } };
+      return { paymentUrl, alreadyRegistered: false, notify: pending ? null : { title: event.title, firstName: profile.firstName || "", lastName: profile.lastName || "", email: profile.email ?? "", phone: participant.phone } };
     });
     if (result.notify) { try { const { title, ...person } = result.notify; await sendEventRegistrationNotification(title, person); } catch { /* Registration remains saved if delivery fails. */ } }
     revalidatePath("/dashboard/my-events"); revalidatePath("/dashboard/applications");
