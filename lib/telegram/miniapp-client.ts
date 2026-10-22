@@ -95,11 +95,15 @@ export class MiniAppRequestError extends Error {
   constructor(public readonly status: number, public readonly code: string) { super(code); }
 }
 export async function miniAppRequest<T>(path: string, options: { body?: unknown; tag?: string; signal?: AbortSignal } = {}) {
+  const body = options.tag && options.body && typeof options.body === "object" && !Array.isArray(options.body)
+    ? { ...options.body, profileVersion: options.tag } : options.body;
   const response = await fetch(`/api/telegram/miniapp/${path}`, { method: options.body === undefined ? "GET" : "POST",
     credentials: "same-origin", cache: "no-store", signal: options.signal,
-    headers: { ...(options.body !== undefined ? { "Content-Type": "application/json" } : {}), ...(options.tag ? { "If-Match": options.tag } : {}) },
-    ...(options.body !== undefined ? { body: JSON.stringify(options.body) } : {}) });
+    headers: { ...(options.body !== undefined ? { "Content-Type": "application/json" } : {}) },
+    ...(options.body !== undefined ? { body: JSON.stringify(body) } : {}) });
   const data = await response.json();
   if (!response.ok || !data.ok) throw new MiniAppRequestError(response.status, data.error || "generic");
-  return { data: data as T, tag: response.headers.get("etag") ?? undefined };
+  const profileVersion = typeof data.profileVersion === "string" && /^"[0-9a-f]{64}"$/.test(data.profileVersion)
+    ? data.profileVersion : undefined;
+  return { data: data as T, tag: profileVersion ?? response.headers.get("etag") ?? undefined };
 }

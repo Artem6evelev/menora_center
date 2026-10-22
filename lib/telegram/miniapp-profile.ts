@@ -21,7 +21,9 @@ const profileFields = fullProfileInput.innerType().omit({ affiliation: true, gen
 export async function miniAppProfileData(tx: MiniAppTransaction, user: MiniAppUser) {
   const [contact] = await tx.select({ languageCode: telegramContacts.languageCode }).from(telegramContacts)
     .where(and(eq(telegramContacts.userId, user.id), eq(telegramContacts.isPrimary, true)));
-  return { summary: miniAppProfile(user), languageCode: contact?.languageCode ?? null,
+  // Keep the optimistic-lock token with the snapshot. HTTP ETag is a cache validator
+  // and can be removed or rewritten by compression/proxies before reaching a WebView.
+  return { profileVersion: miniAppProfileTag(user), summary: miniAppProfile(user), languageCode: contact?.languageCode ?? null,
     // Presentation permission for the questionnaire; the shared writer independently enforces it.
     permissions: { canEditChildren: communityAccess({ ...user, isProfileComplete: true }).canManageChildren },
     profile: { firstName: user.firstName ?? "", lastName: user.lastName ?? "", phone: user.phone ?? "+972",
@@ -34,6 +36,15 @@ export async function miniAppProfileData(tx: MiniAppTransaction, user: MiniAppUs
 
 export async function saveMiniAppProfile(tx: MiniAppTransaction, user: MiniAppUser, raw: unknown,
   tag: string | null, filterOnly: boolean) {
+  if (raw && typeof raw === "object" && !Array.isArray(raw) && Object.prototype.hasOwnProperty.call(raw, "profileVersion")) {
+    const { profileVersion, ...fields } = raw as Record<string, unknown>;
+    // An explicit body token is authoritative, even when invalid/stale. Never
+    // replace it with a newer header or silently refresh it before saving edits.
+    tag = typeof profileVersion === "string" ? profileVersion : null;
+    raw = fields;
+  }
+  // The caller holds the canonical user row lock; legacy If-Match clients still
+  // use the same exact comparison, with no wildcard/weak matching or blind retry.
   if (tag !== miniAppProfileTag(user)) throw new MiniAppAuthError(409, "profile_changed");
   try {
     if (filterOnly) {

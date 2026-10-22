@@ -1,0 +1,179 @@
+{
+  "baseHead": "cd5ca459748a2f956c7e267c3035ae47ec764188",
+  "environment": "Isolated PGlite PostgreSQL17/18, disposable native PostgreSQL18 and local Chromium; synthetic fixtures only",
+  "groups": [
+    {
+      "name": "miniapp-auth",
+      "passed": 87,
+      "failed": 0,
+      "evidence": "/tmp/menora-onboarding-fix-evidence/miniapp-auth/miniapp-auth-results.json"
+    },
+    {
+      "name": "server",
+      "passed": 43,
+      "failed": 0,
+      "evidence": "/tmp/menora-onboarding-fix-evidence/server/miniapp-ui-server-results.json"
+    },
+    {
+      "name": "miniapp-ui-bridge",
+      "passed": 6,
+      "failed": 0,
+      "evidence": "/tmp/menora-onboarding-fix-evidence/miniapp-ui-bridge/miniapp-ui-bridge-results.json"
+    },
+    {
+      "name": "miniapp-ui-browser",
+      "passed": 39,
+      "failed": 0,
+      "evidence": "/tmp/menora-onboarding-fix-evidence/miniapp-ui-browser/miniapp-ui-browser-results.json"
+    },
+    {
+      "name": "production-browser",
+      "passed": 2,
+      "failed": 0,
+      "evidence": "/tmp/menora-onboarding-fix-evidence/production-browser/miniapp-ui-production-results.json"
+    },
+    {
+      "name": "identity-schema",
+      "passed": 23,
+      "failed": 0,
+      "evidence": "/tmp/menora-onboarding-fix-evidence/identity-schema/identity-results.json"
+    },
+    {
+      "name": "migrations",
+      "passed": 8,
+      "failed": 0,
+      "evidence": "/tmp/menora-onboarding-fix-evidence/migrations/migration-results.json"
+    },
+    {
+      "name": "regression",
+      "passed": 36,
+      "failed": 0,
+      "evidence": "/tmp/menora-onboarding-fix-evidence/regression/regression-results.json"
+    },
+    {
+      "name": "render",
+      "passed": 21,
+      "failed": 0,
+      "evidence": "/tmp/menora-onboarding-fix-evidence/render/render-results.json"
+    },
+    {
+      "name": "spec-update",
+      "passed": 17,
+      "failed": 0,
+      "evidence": "/tmp/menora-onboarding-fix-evidence/spec-update/spec-results.json"
+    },
+    {
+      "name": "production",
+      "passed": 28,
+      "failed": 0,
+      "evidence": "/tmp/menora-onboarding-fix-evidence/production/production-results.json"
+    },
+    {
+      "name": "http",
+      "passed": 11,
+      "failed": 0,
+      "evidence": "/tmp/menora-onboarding-fix-evidence/http/http-results.json"
+    },
+    {
+      "name": "callback-browser",
+      "passed": 10,
+      "failed": 0,
+      "evidence": "/tmp/menora-onboarding-fix-evidence/callback-browser/callback-browser.json"
+    },
+    {
+      "name": "spec-browser",
+      "passed": 32,
+      "failed": 0,
+      "evidence": "/tmp/menora-onboarding-fix-evidence/spec-browser/results.json"
+    },
+    {
+      "name": "telegram-release",
+      "passed": 61,
+      "failed": 0,
+      "evidence": "/tmp/menora-onboarding-fix-evidence/telegram-release/telegram-release-results.json"
+    },
+    {
+      "name": "telegram-native",
+      "passed": 62,
+      "failed": 0,
+      "evidence": "/tmp/menora-onboarding-fix-evidence/telegram-native/telegram-native-results.json"
+    },
+    {
+      "name": "telegram-release-browser",
+      "passed": 32,
+      "failed": 0,
+      "evidence": "/tmp/menora-onboarding-fix-evidence/telegram-release-browser/telegram-release-browser-results.json"
+    },
+    {
+      "name": "telegram-migrations",
+      "passed": 10,
+      "failed": 0,
+      "evidence": "/tmp/menora-onboarding-fix-evidence/telegram-migrations/telegram-migrations-results.json"
+    },
+    {
+      "name": "telegram-tools",
+      "passed": 5,
+      "failed": 0,
+      "evidence": "/tmp/menora-onboarding-fix-evidence/telegram-tools/telegram-tools-results.json"
+    },
+    {
+      "name": "bundle",
+      "passed": 1,
+      "failed": 0,
+      "evidence": "/tmp/menora-onboarding-fix-evidence/bundle/bundle.json"
+    },
+    {
+      "name": "adoption-native",
+      "passed": 28,
+      "failed": 0,
+      "evidence": "/tmp/menora-onboarding-fix-evidence/adoption-native/adoption-native-results.json"
+    },
+    {
+      "name": "onboarding-browser",
+      "passed": 4,
+      "failed": 0,
+      "evidence": "/tmp/menora-onboarding-fix-evidence/onboarding-browser/miniapp-onboarding-browser-results.json"
+    },
+    {
+      "name": "sso-callback",
+      "passed": 10,
+      "failed": 0,
+      "evidence": "/tmp/menora-onboarding-fix-evidence/sso-callback/run.log"
+    }
+  ],
+  "passed": 576,
+  "failed": 0,
+  "typecheck": {
+    "command": "npm run typecheck",
+    "exitCode": 0
+  },
+  "lint": {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "errors": 0,
+    "existingWarnings": 30
+  },
+  "build": {
+    "command": "npm run build",
+    "exitCode": 0,
+    "copy": "/tmp/menora-production-build",
+    "currentWorkingTree": true,
+    "realEnvCopied": false,
+    "database": "unavailable synthetic 127.0.0.1:1, no remote writes",
+    "log": "build.log"
+  },
+  "checkedSourceFiles": [
+    {
+      "file": "lib/telegram/miniapp-client.ts",
+      "sha256": "c18db01454916ce6402b053f6cc908085a911c294506228c44c2037911a7d0ef"
+    },
+    {
+      "file": "lib/telegram/miniapp-profile.ts",
+      "sha256": "8427b1e4aa7a7d0c736763627784e75d0194ad2bdd8186ffb3da0a6ea8de2b7d"
+    }
+  ],
+  "productionConnected": false,
+  "productionChanged": false,
+  "productionRequestTraceAvailable": false,
+  "realTelegramWebViewVerified": false
+}

@@ -140,6 +140,14 @@ Run browser cohorts sequentially; restart only the temporary server between suit
 Current regression includes miniapp-auth, miniapp-ui-server, miniapp-ui-bridge, miniapp-ui-browser,
 miniapp-ui-production (production build on 3343), identity-schema, migrations, regression, render,
 production, spec-update, sso-callback, HTTP, callback-browser, spec-browser, telegram-bundle, and the three Telegram server/tool/migration suites.
+`node tests/community/miniapp-onboarding-browser.cjs` runs against the same isolated fixture on3342,
+sequentially with the other browser cohorts. It resets only the proven synthetic PGlite fixture.
+RU/HE/EN first-save journeys remove/weaken/replace ETag and remove If-Match at the transport boundary;
+the actual client, routes and SQL must advance giyur/male from filter to profile to home and retain data on reload.
+An independent competing profile request must still return409 without losing unsaved UI input.
+`miniapp-ui-server.cjs` also covers technical Telegram resync, exact body-version comparison,
+legacy If-Match compatibility and cross-channel optimistic locking with the website Clerk writer.
+The opaque `profileVersion` now travels with the JSON snapshot and write payload; numeric revisions remain server-owned.
 `spec-browser` also exercises a denied late notification request after changing synthetic account.
 The HTTP expectations now reflect the existing click-to-open child clarification and approved dashboard-events fallback.
 `production.cjs` uses a real historical NOT NULL email baseline for the legacy SQL checks and the current unified manual SQL after identity migration.

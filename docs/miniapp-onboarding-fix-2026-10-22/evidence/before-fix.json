@@ -1,0 +1,12 @@
+{
+  "baseHead": "cd5ca459748a2f956c7e267c3035ae47ec764188",
+  "environment": "Same local real client/routes/SQL harness with a transport removing ETag/If-Match; canonical profile not edited",
+  "legacyChecksPassed": 31,
+  "firstNewCheck": "ru/missing: bootstrap, technical resync, first giyur/male filter and questionnaire save advance to home",
+  "exitCode": 1,
+  "error": {
+    "status": 409,
+    "code": "profile_changed"
+  },
+  "productionTrace": false
+}

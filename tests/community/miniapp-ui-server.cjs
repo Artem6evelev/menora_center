@@ -10,7 +10,7 @@ const { eq } = require('drizzle-orm');
 const root = path.resolve(__dirname, '../..'), output = process.env.COMMUNITY_TEST_OUTPUT || path.join(root, 'docs/miniapp-ui-v1/evidence');
 const env = { NODE_ENV: 'development', TELEGRAM_BOT_TOKEN: '123456:synthetic-unit-test-token', NEXT_PUBLIC_APP_URL: 'http://localhost:3999' };
 const cookieJar = new Map(), cache = new Map();
-let db;
+let db, clientFetch;
 function source(file) {
   const absolute = path.join(root, file);
   if (file.endsWith('.json')) return JSON.parse(fs.readFileSync(absolute, 'utf8'));
@@ -32,13 +32,14 @@ function source(file) {
   }
   vm.runInNewContext(code, { module: mod, exports: mod.exports, require: localRequire, process: { env },
     console: { log() { throw new Error('Unexpected auth log'); }, error() { throw new Error('Unexpected auth log'); } },
-    Date, Buffer, URL, URLSearchParams, TextDecoder, crypto: crypto.webcrypto }, { filename: file });
+    Date, Buffer, URL, URLSearchParams, TextDecoder, crypto: crypto.webcrypto,
+    fetch: (...args) => clientFetch(...args) }, { filename: file });
   return mod.exports;
 }
 const plain = value => JSON.parse(JSON.stringify(value)), checks = [];
 const { createHmac } = crypto;
-function initData(id, language = 'ru', authDate = Math.floor(Date.now()/1000)) {
-  const values = { auth_date: String(authDate), user: JSON.stringify({ id, first_name: 'Synthetic', language_code: language }) };
+function initData(id, language = 'ru', authDate = Math.floor(Date.now()/1000), metadata = {}) {
+  const values = { auth_date: String(authDate), user: JSON.stringify({ id, first_name: 'Synthetic', language_code: language, ...metadata }) };
   const secret = createHmac('sha256','WebAppData').update(env.TELEGRAM_BOT_TOKEN).digest();
   return new URLSearchParams({ ...values, hash: createHmac('sha256',secret).update(Object.keys(values).sort().map(key => key+'='+values[key]).join('\n')).digest('hex') }).toString();
 }
@@ -52,7 +53,7 @@ function request(body, tag, origin = base) { return new Request(base+'/api/teleg
  const cookie=source('lib/telegram/miniapp-config.ts').miniAppCookieName();
  const read=async()=>{const response=await profile.GET();return{response,data:await response.json(),tag:response.headers.get('etag')};};
  const post=async(route,body,tag,expected=200)=>{const response=await route.POST(request(body,tag));const data=await response.json();assert.equal(response.status,expected,JSON.stringify(data));return{response,data,tag:response.headers.get('etag')};};
- const login=async(id)=>{cookieJar.clear();const response=await bootstrap.POST(request({initData:initData(id)}));assert.equal(response.status,200);cookieJar.set(cookie,response.cookies.get(cookie).value);return read();};
+ const login=async(id,language='ru')=>{cookieJar.clear();const response=await bootstrap.POST(request({initData:initData(id,language)}));assert.equal(response.status,200);cookieJar.set(cookie,response.cookies.get(cookie).value);return read();};
  const stored=async(id)=>(await pg.query("SELECT u.* FROM users u JOIN user_identities i ON i.user_id=u.id WHERE i.provider='telegram' AND i.provider_user_id=$1",[String(id)])).rows[0];
  const fields=(override={})=>({firstName:'Synthetic',lastName:'Questionnaire',phone:'+972501234567',dateOfBirth:'1990-01-01',city:'Ришон ле-Цион',cityId:'8300',maritalStatus:'single',spouseName:null,hasChildren:false,agreedToPrivacy:true,...override});
  try {
@@ -140,6 +141,57 @@ function request(body, tag, origin = base) { return new Request(base+'/api/teleg
   await test('profile GET ignores untrusted target query and only uses current session owner',async()=>{const result=await profile.GET(new Request(base+'?userId=foreign'));assert.equal((await result.json()).profile.firstName,(await stored(750003)).first_name);});
   await test('revoked cookie cannot write questionnaire or filter',async()=>{await source('lib/telegram/miniapp-session.ts').revokeCurrentMiniAppSession();assert.equal((await profile.GET()).status,401);await post(filter,{affiliation:'none'},state.tag,401);});
   await test('disabled identity is rechecked before profile mutation',async()=>{const person=await login(750006);await pg.exec("UPDATE user_identities SET disabled_at=now() WHERE provider_user_id='750006'");await post(profile,fields(),person.tag,401);});
+  // Real client adapter + routes + SQL, with a transport that changes cache validators.
+  // No user/profile update occurs between reading the form and its first submission.
+  const client=source('lib/telegram/miniapp-client.ts');
+  let transport='missing';
+  clientFetch=async(url,options={})=>{
+   const headers=new Headers(options.headers);headers.set('origin',base);headers.delete('if-match');
+   const req=new Request(base+url,{...options,headers});
+   const response=options.method==='POST'?await (url.endsWith('/filter')?filter:profile).POST(req):await profile.GET();
+   const outgoing=new Headers(response.headers),etag=outgoing.get('etag');
+   if(transport==='missing')outgoing.delete('etag');
+   else outgoing.set('etag',transport==='weak'?'W/'+etag:'"transport-representation-tag"');
+   return new Response(response.body,{status:response.status,headers:outgoing});
+  };
+  let newSubject=750100;
+  for(const language of ['ru','he','en'])for(const mode of ['missing','weak','replaced'])await test(`${language}/${mode}: bootstrap, technical resync, first giyur/male filter and questionnaire save advance to home`,async()=>{
+   transport=mode;const id=newSubject++;await login(id,language);
+   const first=await client.miniAppRequest('profile');assert.equal(first.data.summary.nextStep,'filter');
+   const filtered=await client.miniAppRequest('filter',{body:{affiliation:'giyur',gender:'male'},tag:first.tag});
+   assert.equal(filtered.data.summary.nextStep,'profile');assert.equal(filtered.data.languageCode,language);
+   assert.equal(filtered.data.permissions.canEditChildren,false);assert.ok(!Object.hasOwn(filtered.data.profile,'giyurStage'));
+   const before=await stored(id);
+   const synced=await bootstrap.POST(request({initData:initData(id,language,undefined,{first_name:'Technical metadata',username:'synthetic_resynced',photo_url:'https://example.invalid/photo'})}));
+   assert.equal(synced.status,200);cookieJar.set(cookie,synced.cookies.get(cookie).value);
+   assert.equal((await stored(id)).filter_revision,before.filter_revision);
+   assert.equal((await pg.query('SELECT username FROM telegram_contacts WHERE user_id=$1',[before.id])).rows[0].username,'synthetic_resynced');
+   const completed=await client.miniAppRequest('profile',{body:fields(),tag:filtered.tag});
+   assert.equal(completed.data.summary.nextStep,'home');assert.equal(completed.data.profile.agreedToPrivacy,true);
+   const saved=await stored(id);assert.equal(saved.giyur_stage,null);assert.equal(saved.city_id,'8300');
+   assert.equal(source('lib/community/policy.ts').communityAccess((await db.select().from(schema.users).where(eq(schema.users.id,saved.id)))[0]).canRegisterSelf,true);
+   assert.equal((await client.miniAppRequest('profile')).data.summary.nextStep,'home');
+  });
+  await test('another real filter request still conflicts with the loaded body version and preserves the winning answers',async()=>{
+   await login(750120);const loaded=await client.miniAppRequest('profile');
+   await client.miniAppRequest('filter',{body:{affiliation:'maternal',gender:'female'},tag:loaded.tag});
+   await assert.rejects(()=>client.miniAppRequest('filter',{body:{affiliation:'giyur',gender:'male'},tag:loaded.tag}),error=>error.status===409&&error.code==='profile_changed');
+   assert.equal((await stored(750120)).affiliation,'maternal');
+  });
+  await test('website Clerk writer keeps revision checks and its update conflicts with an open Mini App questionnaire',async()=>{
+   const loaded=await client.miniAppRequest('profile'),owner=await stored(750120);
+   const identity={id:owner.id,firstName:'Synthetic',lastName:'Clerk',primaryEmailAddressId:'primary',emailAddresses:[{id:'primary',emailAddress:'clerk@example.invalid'}]};
+   const writer=source('lib/community/profile-write.ts');
+   await db.transaction(tx=>writer.writeCommunityProfile(tx,identity,{...fields({firstName:'Website winner'}),affiliation:'maternal',gender:'female',expectedRevision:owner.filter_revision}));
+   await assert.rejects(()=>client.miniAppRequest('profile',{body:fields({firstName:'Stale Mini App'}),tag:loaded.tag}),error=>error.status===409&&error.code==='profile_changed');
+   await assert.rejects(()=>db.transaction(tx=>writer.writeCommunityProfile(tx,identity,{...fields({firstName:'Stale website'}),affiliation:'maternal',gender:'female',expectedRevision:owner.filter_revision})));
+   assert.equal((await stored(750120)).first_name,'Website winner');
+  });
+  await test('missing, malformed and stale body versions never fall back to a fresh header or bypass the lock',async()=>{
+   const fresh=await read();
+   for(const version of [null,'','*','"invalid"','"'+ '0'.repeat(64)+'"'])await post(profile,{...fields(),profileVersion:version},fresh.tag,409);
+   await post(profile,fields(),undefined,409);
+  });
  }finally{await pg.close();}
  fs.mkdirSync(output,{recursive:true});fs.writeFileSync(path.join(output,'miniapp-ui-server-results.json'),JSON.stringify({environment:'production API/services + synthetic Telegram HMAC + native migrations + isolated PGlite',remoteDatabaseTouched:false,checks},null,2)+'\n');console.log(`${checks.length}/${checks.length} Mini App UI server checks passed`);
 })().catch(error=>{console.error(error);process.exitCode=1;});
