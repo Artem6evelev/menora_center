@@ -1,0 +1,18 @@
+{
+  "environment": "real npm production build, no runtime Clerk keys; loopback synthetic DB unavailable; browser outside Telegram",
+  "checks": [
+    {
+      "name": "production query params and preview env cannot enable fake login; no Clerk/analytics/session activity",
+      "status": "PASS"
+    },
+    {
+      "name": "shared public locality directory works without Clerk configuration",
+      "status": "PASS"
+    }
+  ],
+  "errors": [],
+  "externalDomains": [
+    "telegram.org"
+  ],
+  "miniappRequests": []
+}

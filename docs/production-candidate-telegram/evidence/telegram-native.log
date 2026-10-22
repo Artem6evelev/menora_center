@@ -1,0 +1,65 @@
+Native isolated PostgreSQL started on loopback; empty synthetic database; no system user or remote access.
+PASS native PostgreSQL pool uses independent backend connections
+PASS anonymous cannot list events, read details, register or read registrations
+PASS permitted list follows existing site community policy and omits payment URL
+PASS event detail exposes owned eligible children only
+PASS unknown event detail is hidden server-side
+PASS closed registration is explicit and server rejects submit
+PASS server price uses adult DB price in exact agorot
+PASS maternal child selection uses child DB price and counts participants
+PASS tampered total, arbitrary userId and chatId are rejected
+PASS foreign child ID and duplicate non-owned family keys are rejected
+PASS free event creates confirmed registration without payment attempt
+PASS double tap free event creates one registration
+PASS paid handoff uses backend amount and pending registration/immutable attempt
+PASS duplicate paid request returns same attempt and registration
+PASS changed selection cannot mutate handed-off pending order
+PASS DB price change cannot mutate existing pending attempt amount
+PASS close/return/read does not confirm payment
+PASS male can register self but cannot register existing child
+PASS my registrations never return another canonical user registration
+PASS giyur null self access and exact child policy
+PASS giyur advanced self access and exact child policy
+PASS giyur completed self access and exact child policy
+PASS separate child clarification saves stage without main questionnaire reset
+PASS male cannot gain child rights via clarification endpoint
+PASS third category cannot list, read or register even with completed profile
+PASS malformed DB price fails closed instead of parseFloat partial acceptance
+PASS missing/invalid Telegram webhook secret is 401 with no identity side effects
+PASS new bot start creates canonical identity/contact without fake email or auto subscription
+PASS bot greeting escapes dynamic HTML and has Mini App navigation, no old holiday flow
+PASS duplicate update does not send duplicate reply or create identity
+PASS replayed update ID with changed subject creates no second canonical account
+PASS bot then Mini App uses same canonical profile and preserves campaign attribution
+PASS Mini App then bot reuses same identity, never legacy tg writer
+PASS concurrent Mini App bootstrap creates one canonical user and identity
+PASS concurrent bot and Mini App bootstrap share the same canonical person
+PASS explicit subscribe and unsubscribe persist across repeated start/Mini App open
+PASS Mini App explicit opt-in is required and no arbitrary target contact accepted
+PASS group chat cannot become a canonical person
+PASS campaign mapping cannot bypass shared community authorization
+PASS non-admin cannot read audience, preview, enqueue or drain queue
+PASS CRM paginates canonical audience without technical Telegram IDs
+PASS all-filtered selection includes every server match beyond first page
+PASS audience affiliation, gender, city, Telegram, consent, profile and filter filters are server-side
+PASS selected and excluded users narrow server audience
+PASS arbitrary recipient/chat injection rejected by enqueue schema
+PASS enqueue is durable and sends nothing
+PASS enqueue retry with same request key creates no duplicate deliveries
+PASS unsubscribe between enqueue and send is skipped
+PASS worker sends plain text, marks delivered and repeated invocation does not resend
+PASS Telegram 429 respects retry_after and does not immediate resend
+PASS definite Telegram 5xx is retried with bounded backoff
+PASS Telegram forbidden marks blocked and failed; future audience excludes contact
+PASS permanent bad request fails without retry
+PASS uncertain transport outcome is unknown and not retried automatically
+PASS interrupted worker claim is unknown, never resent by another worker
+PASS parallel worker invocations deliver a due recipient at most once
+PASS max attempts terminate definite transient failure
+PASS valid future bot interaction clears transport block without restoring marketing opt-in
+PASS worker requires configured CRON_SECRET, rejects undefined bearer bypass
+PASS security logs contain no tokens, initData, PII or raw payload
+PASS release tables enable RLS and have no anon/authenticated/PUBLIC grants
+PASS manual SQL repeat preserves existing registration/payment/consent/history rows
+TOTAL 62 PASS
+Disposable native PostgreSQL stopped.

@@ -1,0 +1,70 @@
+{
+  "source": "Local env files, format/presence only; not remote Vercel configuration",
+  "variables": [
+    {
+      "name": "TELEGRAM_BOT_TOKEN",
+      "present": true,
+      "valid": true
+    },
+    {
+      "name": "TELEGRAM_WEBHOOK_SECRET",
+      "present": false,
+      "valid": false
+    },
+    {
+      "name": "TELEGRAM_BOT_USERNAME",
+      "present": false,
+      "valid": false
+    },
+    {
+      "name": "NEXT_PUBLIC_APP_URL",
+      "present": true,
+      "valid": false
+    },
+    {
+      "name": "TELEGRAM_INIT_DATA_MAX_AGE_SECONDS",
+      "present": false,
+      "valid": false
+    },
+    {
+      "name": "TELEGRAM_MINIAPP_SESSION_TTL_SECONDS",
+      "present": false,
+      "valid": false
+    },
+    {
+      "name": "CRON_SECRET",
+      "present": true,
+      "valid": false
+    },
+    {
+      "name": "DATABASE_URL",
+      "present": true,
+      "valid": true
+    },
+    {
+      "name": "NEXT_PUBLIC_SUPABASE_URL",
+      "present": true,
+      "valid": true
+    },
+    {
+      "name": "SUPABASE_SERVICE_ROLE_KEY",
+      "present": true,
+      "valid": true
+    },
+    {
+      "name": "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+      "present": true,
+      "valid": false
+    },
+    {
+      "name": "CLERK_SECRET_KEY",
+      "present": true,
+      "valid": false
+    },
+    {
+      "name": "CLERK_WEBHOOK_SECRET",
+      "present": false,
+      "valid": false
+    }
+  ]
+}

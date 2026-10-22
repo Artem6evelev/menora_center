@@ -1,0 +1,1344 @@
+{
+  "createdAt": "2026-10-22T10:37:31.574Z",
+  "branch": "feat/miniapp-auth-v1",
+  "productHead": "0fb18c258f51c50858b58de55d0a61217d48839b",
+  "releaseCommit": "The chore: prepare telegram production release commit containing this manifest; exact SHA via git rev-parse HEAD",
+  "initialHead": "cd2493ead3043250bd3c90fa7b673a0bbb798eed",
+  "step4Checkpoint": "c166aaf6d2d0310a30b04618ab720b0abf72ce70",
+  "step4Verification": {
+    "files": 118,
+    "mismatches": [],
+    "unexpected": []
+  },
+  "commits": [
+    "0fb18c258f51c50858b58de55d0a61217d48839b fix: handle stale notification requests after account switch",
+    "0b2de846f7dd2c0f433e70d8c419b6e52d72ffe3 feat: rebuild telegram bot and add crm broadcast queue",
+    "4fb9efbab80ce75f543116fc1f438bf61d0fb534 feat: add miniapp events and payment handoff",
+    "c166aaf6d2d0310a30b04618ab720b0abf72ce70 feat: add menorah telegram miniapp ui"
+  ],
+  "migrations": [
+    {
+      "path": "drizzle/0000_sudden_living_lightning.sql",
+      "sha256": "901e018c3ec116e1f701ff9ce2fe6451d9675319dd6485116f6de1118a995635"
+    },
+    {
+      "path": "drizzle/0001_shallow_doctor_faustus.sql",
+      "sha256": "6d96aff4a7957e0d8dd5179b0b7eb7cc2d554a18ed0ddc0e07cb30e85a5d560c"
+    },
+    {
+      "path": "drizzle/0002_massive_wilson_fisk.sql",
+      "sha256": "444fc5920e11e0e2d5c814fbf5faa3388bd655f939496a18a55bafaf8ebd3007"
+    },
+    {
+      "path": "drizzle/0003_chemical_falcon.sql",
+      "sha256": "3e22e1f7c8a7b7a92015ace31eb3146a17234fcdcc0ad252a3093f62d8b069d6"
+    },
+    {
+      "path": "drizzle/0004_community_filtering.sql",
+      "sha256": "cef39399cddcc59ac5654848d0ccfeee1be7c3fc3b1ed531a96f55c2b75130c7"
+    },
+    {
+      "path": "drizzle/0005_giyur_stage.sql",
+      "sha256": "a09bbe7e8c4efccc1ee1b9c2641a14cc24ac460f862eaa9e72ee380bf1a19c16"
+    },
+    {
+      "path": "drizzle/0006_reconcile_existing_schema.sql",
+      "sha256": "790700b4212614d8ada5301ca937fa5716f207b256325bafdf71954ec75b65f8"
+    },
+    {
+      "path": "drizzle/0007_filter_v2_and_registration_drafts.sql",
+      "sha256": "4e0aafde81ccf079d7d03d34d6c947377ea045b3be0d9e9d6431edd38db04f1e"
+    },
+    {
+      "path": "drizzle/0008_city_identity.sql",
+      "sha256": "5cff7fb6291fb5eb2dac27c7c245280b1804bbed6c46f5ec8e8a127d0c67dbd8"
+    },
+    {
+      "path": "drizzle/0009_miniapp_identity_v1.sql",
+      "sha256": "68f34eb82d3bb73d79de89b059917c4eec98b2659441c172627fc2524b5444fd"
+    },
+    {
+      "path": "drizzle/0010_telegram_miniapp_sessions.sql",
+      "sha256": "5211f68e83569e9432e55f1c3b8e3931135415947b2060928d16dae2b9aab0eb"
+    },
+    {
+      "path": "drizzle/0011_telegram_release_candidate.sql",
+      "sha256": "98aa3d4e9defdb995fbe1ceb0adb5988037cb3bd2722e34a4d30eb77bdb48f44"
+    },
+    {
+      "path": "drizzle/0012_telegram_query_indexes.sql",
+      "sha256": "81ca1cd2549e4ef97e7e0889ab3e8b897f9cdfa9240c58f0e206b52ad681f47b"
+    }
+  ],
+  "historicalCatalogCorrections": [
+    {
+      "path": "drizzle/0009_miniapp_identity_v1.sql",
+      "previousSha256": "0b7ac0c3fdada97898b9582900510946d818b1e268578b9b725984d4bf7b9a2e",
+      "releaseSha256": "68f34eb82d3bb73d79de89b059917c4eec98b2659441c172627fc2524b5444fd",
+      "reason": "Catalog-only normalization of redundant NOT NULL representation; DDL unchanged; PostgreSQL 17/18 tested. Native runner must reject any previously registered old checksum, never force-adopt."
+    },
+    {
+      "path": "drizzle/0010_telegram_miniapp_sessions.sql",
+      "previousSha256": "5740f8f314cd9ca7f5c27c8478861e403742846aa6292223446f58fd7a689c27",
+      "releaseSha256": "5211f68e83569e9432e55f1c3b8e3931135415947b2060928d16dae2b9aab0eb",
+      "reason": "Catalog-only normalization of redundant NOT NULL representation; DDL unchanged; PostgreSQL 17/18 tested. Native runner must reject any previously registered old checksum, never force-adopt."
+    }
+  ],
+  "manualSql": {
+    "path": "docs/miniapp-identity-v1/MANUAL_SQL.sql",
+    "sha256": "e1189ceff98cff593bbc6f40ec5452923509d1699287e68eb677a6db4cd6ff00",
+    "precheck": "docs/miniapp-identity-v1/PRECHECK.sql",
+    "postcheck": "docs/miniapp-identity-v1/POSTCHECK.sql"
+  },
+  "checks": {
+    "path": "evidence/checks.json",
+    "passed": 532,
+    "failed": 0
+  },
+  "buildParity": "evidence/client-boundary.json",
+  "screenshots": "evidence/screenshots.json",
+  "remoteDatabaseRead": false,
+  "remoteDatabaseChanged": false,
+  "push": false,
+  "deploy": false,
+  "productionTelegramChanged": false,
+  "realPayments": false,
+  "realNotifications": false,
+  "realBroadcasts": false,
+  "realDeviceAcceptance": "NOT VERIFIED",
+  "manifestExcludesItself": true,
+  "files": [
+    {
+      "path": "actions/event.ts",
+      "sha256": "0e0414c3194772cd6d64d4b6a09b93e4693a34325e3b2b2f649d5352f5769f44"
+    },
+    {
+      "path": "actions/service.ts",
+      "sha256": "726afc189f453c4c92771c09de1fa8fe880790e55d961b7a13600f9b0afc4094"
+    },
+    {
+      "path": "actions/telegram-broadcast.ts",
+      "sha256": "22301e5a038e136b46ca7e0fa8b943a6ff9ecd4f37ba27b0a21494b8bb1c1b68"
+    },
+    {
+      "path": "actions/telegram.ts",
+      "sha256": "f6fcd17e67598e550eea687365b031513a7a84ffc14d46040bc87df710891d7b"
+    },
+    {
+      "path": "app/api/internal/telegram/broadcast-worker/route.ts",
+      "sha256": "cb70531a91e688c0b25c5673d24cbb8a79681e0eade9e7d787cb88aa1e7c5ee8"
+    },
+    {
+      "path": "app/api/telegram/miniapp/bootstrap/route.ts",
+      "sha256": "4edd1eba0de8179ef59496764122d89c8113d2f46da6268f20240064903a43fc"
+    },
+    {
+      "path": "app/api/telegram/miniapp/events/route.ts",
+      "sha256": "267b06b81900319dbeb93d92408ad57518f9dfec623f576aeccfb0e3126349c6"
+    },
+    {
+      "path": "app/api/telegram/miniapp/filter/route.ts",
+      "sha256": "afe1305166b3c78681575d7d24c6710a7972374d6b2b0823360be78aae25f08f"
+    },
+    {
+      "path": "app/api/telegram/miniapp/giyur/route.ts",
+      "sha256": "bb23cdcf4b4781bbf0c03dde6dd3c0a6ffbf48b88fcc20a4aabb18e4f146c031"
+    },
+    {
+      "path": "app/api/telegram/miniapp/profile/route.ts",
+      "sha256": "23130b78be4c372f9754d85157b9ae2ed0ffe7b15698f1d3d526996c23ff961e"
+    },
+    {
+      "path": "app/api/telegram/miniapp/registrations/route.ts",
+      "sha256": "fb5fc98b360a74b7eca778281bfbbe7e8fac38ffc11bcf967b26dc80572a63f2"
+    },
+    {
+      "path": "app/api/telegram/miniapp/session/route.ts",
+      "sha256": "00be8791417587d8beae65e5d97786e86c017cc1ba036e0b2b2ee78ac9466942"
+    },
+    {
+      "path": "app/api/telegram/miniapp/subscription/route.ts",
+      "sha256": "91f00ea6dc94cb05fe2d9978dd1091161d7c671d54240e3cdefaabf60200a834"
+    },
+    {
+      "path": "app/api/telegram/remind/route.ts",
+      "sha256": "0bc7c5f1295b4205463b0c7e8858eb5c91d6038b5d3ad2bc6f42b84436bac5cf"
+    },
+    {
+      "path": "app/api/telegram/webhook/route.ts",
+      "sha256": "3415e31c8a112a0b271aa1fe0b406f8b8e21f905ea939d551991ad57a7a55164"
+    },
+    {
+      "path": "app/dashboard/telegram/page.tsx",
+      "sha256": "cf0b97468b36ad3fc97945dbc1510a3de236bc961b44416b4a71909eeff04da5"
+    },
+    {
+      "path": "app/dashboard/users/page.tsx",
+      "sha256": "3e570b75233441faf9790a30057fc2cab5e19068baa47f3eede9d49456ccb407"
+    },
+    {
+      "path": "app/layout.tsx",
+      "sha256": "df60d81c67796b447a9690eb2dad1dde8bd9facae50bbe1fc23a8142f310e8d6"
+    },
+    {
+      "path": "app/miniapp/error.tsx",
+      "sha256": "0d6398bca6408357c3c2149f293237d7077a72be6f04b4a8b5a43b5771f7ac3c"
+    },
+    {
+      "path": "app/miniapp/layout.tsx",
+      "sha256": "bdb4f6c55046f766cd64201eaecac3d1ea02c59b0e1c641cb23ded8a335b30c1"
+    },
+    {
+      "path": "app/miniapp/loading.tsx",
+      "sha256": "1476e1f11f9004e351daa9fab6e2142b6457ddbbf6f1430f5b4d56cb5127ebf7"
+    },
+    {
+      "path": "app/miniapp/miniapp.css",
+      "sha256": "41fb9f130ab3e39344d376a2d290a8332aa5359acfbb4e74b5f3aee76e2fa8d6"
+    },
+    {
+      "path": "app/miniapp/page.tsx",
+      "sha256": "6d30b24945b5a48292efe4e5b9b224ee8bf0c8314ad173c14ba5946ca9715176"
+    },
+    {
+      "path": "components/Logo.tsx",
+      "sha256": "ddee1eee5a40dacaeab695502197defdc885ac83671d9b7aa7c83de30f1c72d5"
+    },
+    {
+      "path": "components/community/child-editor.tsx",
+      "sha256": "5475fbe6fc0d97ba502476f51333aa03f266531c7a7704d2a5a1d1cff73b5a1c"
+    },
+    {
+      "path": "components/community/city-picker.tsx",
+      "sha256": "971c6649e924c324677cd34c2028c86f7c73cebc30276677765d0a5916d2a3a3"
+    },
+    {
+      "path": "components/community/filter-fields.tsx",
+      "sha256": "45484bec436881a9842f9c3e09ab41f8876cc2849ca3f85093a130c66c774a7b"
+    },
+    {
+      "path": "components/community/profile-fields.tsx",
+      "sha256": "7153b96c426ff560ba3389a63a1851ebd0e47bf4d1473acb107255a2802ce4e1"
+    },
+    {
+      "path": "components/community/resource-message.tsx",
+      "sha256": "331276dda12d4fdab5609186a2f9dca32c66e6ea74348b88a8a9e02a33bf05b5"
+    },
+    {
+      "path": "components/dashboard/main/onboarding-form.tsx",
+      "sha256": "a60dfe4b1c36516b476f82441d43f4fc64da93f549d139f3755ce4b6511f6e61"
+    },
+    {
+      "path": "components/dashboard/notification-bell.tsx",
+      "sha256": "0e777f0a5611232b43bbe7749888b7061727464061f5938a80b0807890cac467"
+    },
+    {
+      "path": "components/dashboard/telegram/audience-client.tsx",
+      "sha256": "528f38dc8dd3096e393683f1296078f683950956c67b3a222d163d3d2b32658a"
+    },
+    {
+      "path": "components/miniapp/app.tsx",
+      "sha256": "6da193d09e6e0387dfaf8647c7b7f96d7ab0b487c8d6bbcf4fbe018fb0be09d5"
+    },
+    {
+      "path": "components/miniapp/events.tsx",
+      "sha256": "fbf5b7cc7f886528079d00e610c77ad1b877c536ab10be25b1c2779cbaf464de"
+    },
+    {
+      "path": "components/miniapp/profile-form.tsx",
+      "sha256": "4a8033efbd52a3254d00b48409a445deb456943e6d3880b84a08c78cc688d7f2"
+    },
+    {
+      "path": "components/miniapp/subscription.tsx",
+      "sha256": "ff55a3022b8bd75244f64f08113c40a1a77c44b9477e4469c23e70923ceec33b"
+    },
+    {
+      "path": "components/site-providers.tsx",
+      "sha256": "3fec4d9a53a7e1b1c17cd641356e6c61d394ef74d09215f57321b9908c102f46"
+    },
+    {
+      "path": "components/website-providers.tsx",
+      "sha256": "952adb792c8b69dff5cba4580e83f37ed0155149d4c7aa2599821e4c7a1f2bd8"
+    },
+    {
+      "path": "docs/miniapp-identity-v1/MANUAL_SQL.sql",
+      "sha256": "e1189ceff98cff593bbc6f40ec5452923509d1699287e68eb677a6db4cd6ff00"
+    },
+    {
+      "path": "docs/miniapp-identity-v1/POSTCHECK.sql",
+      "sha256": "fbf7ac87ca182f86b267d6e6e6e3362f67dc9d12f982887dee29f0b280a57688"
+    },
+    {
+      "path": "docs/miniapp-identity-v1/PRECHECK.sql",
+      "sha256": "d85322e62661c6affe4d8e1e2048e059f6b4e36909e4e374712f68e1028fb239"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/REPORT.md",
+      "sha256": "62f716bc8e134ecea9afa3aca1f992b3b3fa4816e61bcc7bb415611cb1e8de5b"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/320-child-editor.png",
+      "sha256": "9799c92225110306a7187ef7f0aea74098200aa2b06ec0003296a57e1e3dd9fb"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/320-filter.png",
+      "sha256": "44e6aae214d97f38e93b6a4dd9109bc5184242f7cce1f404fc7b34ccded79642"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/320-home.png",
+      "sha256": "7f9a48a7497b66559d3aa93e84ed8bca9189d934cfa56523f95d70ed54ca17cd"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/320-profile-edit.png",
+      "sha256": "5cb46dc7c8a8769dbb65a990744b74ff50af17ee2a6c041a33750c1952062674"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/320-profile.png",
+      "sha256": "bd9c46659ec12d94663910f3c4df9af6222fa8325aba69bbc071fd14de9f2cc3"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/320-resources.png",
+      "sha256": "b15ec9eed6e44a061504e7fff1fdb68b07f83f1e7522e0d753c8b3ec20ca98de"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/320-splash.png",
+      "sha256": "1cabe2dc854316f8107c65038b4b77e2e985696c2e5e4a243906032d6496a7c0"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-bootstrap-error.png",
+      "sha256": "4fa83055d528c0a243c1cf2c2c72c51c8c7273bb96ef552cdb1509dd396371ba"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-browser-outside.png",
+      "sha256": "740de20a4c07af3000a72a72019fba0888aec35f4903315895ccf960e4034f49"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-child-editor.png",
+      "sha256": "6230de3c868e86e1c635d415a0493a47ede564040d27f5f663cec6eb5582ecb0"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-english-profile.png",
+      "sha256": "7e25f6b226a2c9253979ca182961b1953ac0f232560fb7867685d26ca8418263"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-filter.png",
+      "sha256": "87fec6d8370e3d599a6335f1035aec2e6cc785c28ff8e3e0776a76792328fa0f"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-giyur-advanced.png",
+      "sha256": "889eecb633d1ca3b6e6e6ce3f6b0c838c7fba8e236a1b543be48e8f45a869596"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-giyur-completed.png",
+      "sha256": "ac3735f9f1a3bfc856e593c298866f453d51ec99647ca949a8e1a45890d163b9"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-giyur-male.png",
+      "sha256": "889eecb633d1ca3b6e6e6ce3f6b0c838c7fba8e236a1b543be48e8f45a869596"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-giyur-unknown.png",
+      "sha256": "889eecb633d1ca3b6e6e6ce3f6b0c838c7fba8e236a1b543be48e8f45a869596"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-hebrew-home.png",
+      "sha256": "1a804b645e08d81dc3f10c3b5cabdc69f29da22204f7475a98c20dc0680ffb23"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-hebrew-profile.png",
+      "sha256": "8228b02138e7a4fca205f8fde3a6d60988c5cb1f0a922ceab314b2f947199a84"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-home.png",
+      "sha256": "bfe0c9bbc0249436a6515fbb82914f98b0b9019d29fe171a7b5170b27861c69d"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-male.png",
+      "sha256": "889eecb633d1ca3b6e6e6ce3f6b0c838c7fba8e236a1b543be48e8f45a869596"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-profile-edit.png",
+      "sha256": "16cb54c1ec1d467e32fef1a77a589ea1115d679123a65484da0940a7cbca9195"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-profile.png",
+      "sha256": "fc1ca6b6ff9b9de53b468d548e26d980a58bdb0c0adb458a94f72540c6f54c9c"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-resources.png",
+      "sha256": "fbdb3f951d69b630c15cac3fa94d3bb1f6af7d877e3ffcf61bbc306a13b19b37"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/390-splash.png",
+      "sha256": "c4e7536b829009e685316db6e13c2ec825d836573952dfe2af4054056ae49523"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/build-result.json",
+      "sha256": "ab36f2147c83429c6cbd3deeeeed9789276b9c6e9308d11ecd04419d766207a7"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/build.log",
+      "sha256": "f2af89985c6a365f3bf08cb820d40bf37f1b42b5ec767c9fcbc3d8a519b6e6a7"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/callback-browser.json",
+      "sha256": "6063ccd383c4cf909eabd90356c3704bc02a1d479ee2737d1f35550a70945b87"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/checkpoint.json",
+      "sha256": "33bf953a38d5b6800f9ccaa7433ef4ac11eccfe1c112ddfccfb53bbba9f82fa9"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/checks.json",
+      "sha256": "3cda2fa44187bfa3140d5ee2058076dff48a155b5c4013afbda4d7f1e965157a"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/client-boundary.json",
+      "sha256": "cd7fe1c3ad8363d006efaa1f69dde87099f14ff93c4604a5e431013addd6e3cd"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/desktop-child-editor.png",
+      "sha256": "e20272e1fc9c9dcf1f97c48688b43ceed15ff6a0ee66f7a4ed49a7bc1e9302f8"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/desktop-filter.png",
+      "sha256": "ec6a046c81365b5779fb6e9f1b3571de988bedc16bc2d0fc92792563c99e4e0b"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/desktop-home.png",
+      "sha256": "44993f8a044c3d67aa9ca8027b3e74a54261b6be2a2c5ea3e9d67cf976444306"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/desktop-profile-edit.png",
+      "sha256": "1d6b4587183f57c8f34a92f776e9950a15db5dc56e04bedb96d98a795ecb04e2"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/desktop-profile.png",
+      "sha256": "e09b0dce0f842727eda96f72acdc7dff1239f4e913038cf655e0018f5de9134d"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/desktop-resources.png",
+      "sha256": "aa67d826d80053276c7b2b413baf222600bc560d24cebdeee2e5a6d58aa5c2c1"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/desktop-splash.png",
+      "sha256": "1f71ae3f4662a060b8a68ab0ea8f8fbbfa5697df79de5b082fb23e9a137dd97c"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/identity-results.json",
+      "sha256": "62c5b758768dbd311c09e34ff33d94e2254b083a7c8f2267f7518923395fb7a9"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/identity.log",
+      "sha256": "888ac71affb60c778a0b2dc78c450408e86ace4579d71c931543241054541e18"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/lint.log",
+      "sha256": "321382e4e7fe9d0d3b0eec7469dc1632789f52d75b794eb49caff350926221a8"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/migration-results.json",
+      "sha256": "7215e79725138fa9c5d37936db5e25976ef6a3dacdf837c93bb7e662b32bb278"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/migrations.log",
+      "sha256": "5f2c29e9b2d7741228ccdb714b4844e0142d8ce6854d252ee5bcb52e8942cc39"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/miniapp-auth-results.json",
+      "sha256": "abc3da3a17b73d2dd6661522283d5ce5feeb982b4be84f13f31f545f243b9ff0"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/miniapp-auth.log",
+      "sha256": "dcb88cb7d2af964b3be9ae837039bb2803e816531b1a3d8f31710a660c061306"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/miniapp-ui-bridge-results.json",
+      "sha256": "93ae3eb249024181c972e1e2b7d2ba192c82ebfe3ffcf85b74854b83ae11f596"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/miniapp-ui-bridge.log",
+      "sha256": "b6ecd39ff85d4ec9cc8278e44f9deecd11b1e530640ad66426d51ff5d35fa55b"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/miniapp-ui-browser-results.json",
+      "sha256": "8fd5ead224cbce97dbab4888ce19940eb91410deed799a5a97f56b69e14e4eeb"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/miniapp-ui-browser.log",
+      "sha256": "024092a8bb7af2dcb5a515d8844e9335cd30259e4837c384bf4e1d304da5b22e"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/miniapp-ui-production-results.json",
+      "sha256": "69b46e905c1ca0db48c5d259daff688e8b62d06bda434605dbdba4164c044d18"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/miniapp-ui-production.log",
+      "sha256": "6c8ae975cbdf418ace9129c17a5a96e35d07c57fd07a62319aacbeb2ecab679f"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/miniapp-ui-server-results.json",
+      "sha256": "bcef89b2e7189e2a4c929a3077d29aa6809a9e385aa652bf3d1d628c43cba8ab"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/miniapp-ui-server.log",
+      "sha256": "fbcce172b803bf14ab37b1615464cca9115218088bd65a10b0fd6cc1d1124e3b"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/production-browser-outside.png",
+      "sha256": "f668e0af0bf068b1bfdc2302241cb8a56a785ebe72f4af1cbcd0bd0e7ef1644d"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/regression-results.json",
+      "sha256": "8618b92b891dcf95e16bbf770e385b40f1b330b9a345a4567b6ab34be9dd6eee"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/regression.log",
+      "sha256": "03a07a290521eb9fac8284d5c146b73616b40ad88abc909acb590bf8f5d543c0"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/render-results.json",
+      "sha256": "6261990277428d14acf4c44038987aac8b9fb7ffc2063d40e3c002830cb9067f"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/render.log",
+      "sha256": "33075bd0036baf23dff7e5b59015b709dfc956704fbcfd8e9740ea63bece1c54"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/render/event-guest.html",
+      "sha256": "2b31777c4501db00f7180d9e87b2553d8d81d2092cdc1d4cb7ab57a4ad8bbe3f"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/render/event-header-guest.html",
+      "sha256": "2ee98b88750705313f23511a22114933ea849d2d9443bea391bc561a7ec370ac"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/render/home-header-guest.html",
+      "sha256": "bab22dfcb5b301df22d9b56d87ec42da38b8a781f4af41b9badbfa99f02caea3"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/render/register-giyur.html",
+      "sha256": "4d8a69150cc98ecc9de9a68d4024b359007d518cf201ab19d83761cafd1c9f35"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/render/register-initial.html",
+      "sha256": "e516da64b59e289daa670321e81c155c8d744b75e0e25217ea81f3013bb5e981"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/render/register-maternal.html",
+      "sha256": "3d6cb1c2bb18c3b916a18b32c8ce1657ce096ea7ea9da26424fcd0cc22e50aed"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/render/register-none.html",
+      "sha256": "27349366547462ee5ecfa044a82f080ad54772411c0626e6c246007d11fbfaac"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/screenshots.json",
+      "sha256": "b8882c6af40f3863b80fccabab696a2763733c6768e1e99e506e271a2e9a1f99"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/spec-results.json",
+      "sha256": "affb8b8ae0f413308e9150d0196dc664a5483ec54be20c2bdaac8bfe4b083c6e"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/spec-update.log",
+      "sha256": "8ddedcbf92a673cbaefbcea8a6caf51c6dab30dcc1ebfeb00ca28d284f07c81d"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/sso-callback.log",
+      "sha256": "c19d222f9319c3301381395aa9349982bfad2a46312158c14399a15ba6396f03"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/typecheck.log",
+      "sha256": "cb1f07e22b5eb32160d3ec1bb7a6c10365bb9eac5c62b73b775cd9eed8898f93"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/website-callback-browser.log",
+      "sha256": "329195f831d67992cdc99bdc83d54d688cff5485f866af3ec05acebb55d86d35"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/website-spec-browser.log",
+      "sha256": "f1a8b969d1ebcc063beacfaee132cda270fb24ce75ecff8d040549a25b619f0b"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/website-spec-browser/desktop-cards.png",
+      "sha256": "0540c6082297b630097a6ca29ae239dd99745b896a19f7089f052effdfd6a21c"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/website-spec-browser/desktop-iframe.png",
+      "sha256": "04eb0d89573e5792c0db8482d35d55b03765a64441b18997d5945bff07f441ca"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/website-spec-browser/desktop-person-card.png",
+      "sha256": "132a10ee198584bc52d6224870227dc705bcbda86710a2c632486d165b60c3fc"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/website-spec-browser/mobile-cards.png",
+      "sha256": "1c4828117b42630649d614e4b7f757a013e73af73d52b26e2fa35e18dfbe19ea"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/website-spec-browser/mobile-iframe.png",
+      "sha256": "8efdea76e5444f8bab9cc28e25ee8285998e58bb669a02c5ceb1e31ca42f79ef"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/website-spec-browser/mobile-person-card.png",
+      "sha256": "db7752302f095ee305e0434f1beaa4b2104e79957c536726614383bf6f72de64"
+    },
+    {
+      "path": "docs/miniapp-ui-v1/evidence/website-spec-browser/results.json",
+      "sha256": "39aecb4817c882ac8575a86c64c429b2d3a9a90e957e65b7020f82ef39871373"
+    },
+    {
+      "path": "docs/production-candidate-telegram/ENV.md",
+      "sha256": "452320c43f07c8defa5a0eb6a5a7d79ff0fd02137ca4ca755b96a13363118d0d"
+    },
+    {
+      "path": "docs/production-candidate-telegram/RELEASE.md",
+      "sha256": "6fd6bb0e1b8bc5d8862e9464f48585dbe6a940905d0f5941e4132eab8d07a7ef"
+    },
+    {
+      "path": "docs/production-candidate-telegram/SECURITY.md",
+      "sha256": "bdda461a3db0e11dc894261d7e9db2a31050cecd7af43d76b6fb88c7de08109e"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/320-child-editor.png",
+      "sha256": "9799c92225110306a7187ef7f0aea74098200aa2b06ec0003296a57e1e3dd9fb"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/320-filter.png",
+      "sha256": "44e6aae214d97f38e93b6a4dd9109bc5184242f7cce1f404fc7b34ccded79642"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/320-home.png",
+      "sha256": "76ec4f6741d26102fc0436035176276bde8bf668f82f0f280a9887a790d85fd3"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/320-profile-edit.png",
+      "sha256": "3cafac840c8c7ddb81c38a529775db0083311bf4fdc1fdcf487c392b50699468"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/320-profile.png",
+      "sha256": "7f79c8107c055f7b3caf487520312486b2c78612d81d9abe029c43f4d98cf17d"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/320-release-detail.png",
+      "sha256": "fb9ebdb3b516f0903c5d9cf4353319991e3750c02c346fb95f5cb41735ca0832"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/320-release-events.png",
+      "sha256": "0fff3904521385cced2733a30f5f66f2571ca5dad7db91299b92a23e9ad1920f"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/320-release-home.png",
+      "sha256": "67bd1d714f603fea0a218ca247456b562f22e641b671935b6e06772e9c835522"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/320-release-participants.png",
+      "sha256": "fb9ebdb3b516f0903c5d9cf4353319991e3750c02c346fb95f5cb41735ca0832"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/320-release-payment.png",
+      "sha256": "6cb5a5bdb1dc739f3633f0ff959bb81cb8e5dd01b5a220379e0d256573c504de"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/320-release-registrations.png",
+      "sha256": "b9d01cba90d4856f3f0c577c2ed0837495dc7ead77b611bb9e67edd07267e643"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/320-release-total.png",
+      "sha256": "bf6033bfdba56a02c89cf88614932fbc188cca4b37127dc638f8e1209bed9eb0"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/320-resources.png",
+      "sha256": "b15ec9eed6e44a061504e7fff1fdb68b07f83f1e7522e0d753c8b3ec20ca98de"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/320-splash.png",
+      "sha256": "885529a9c7740f2070bb6343384947e503389ec82067d9cd2e1abc9a1767f7c8"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/390-bootstrap-error.png",
+      "sha256": "4fa83055d528c0a243c1cf2c2c72c51c8c7273bb96ef552cdb1509dd396371ba"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/390-browser-outside.png",
+      "sha256": "740de20a4c07af3000a72a72019fba0888aec35f4903315895ccf960e4034f49"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/390-child-editor.png",
+      "sha256": "6230de3c868e86e1c635d415a0493a47ede564040d27f5f663cec6eb5582ecb0"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/390-english-profile.png",
+      "sha256": "f896960df5e829b29f9f502b1493ace688b2beaf46b9da691819d7e9b2dc22eb"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/390-filter.png",
+      "sha256": "87fec6d8370e3d599a6335f1035aec2e6cc785c28ff8e3e0776a76792328fa0f"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/390-giyur-advanced.png",
+      "sha256": "33d0d7acdaa960d26cbf1a8185d75a1d526cf4f761419c636eaaa4a37cd867c6"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/390-giyur-completed.png",
+      "sha256": "4d1b6116aa96f6566b0ab58aace3b1376d7bfe14ae45db08dd7e644e707f967c"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/390-giyur-male.png",
+      "sha256": "33d0d7acdaa960d26cbf1a8185d75a1d526cf4f761419c636eaaa4a37cd867c6"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/390-giyur-unknown.png",
+      "sha256": "33d0d7acdaa960d26cbf1a8185d75a1d526cf4f761419c636eaaa4a37cd867c6"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/390-hebrew-home.png",
+      "sha256": "2deae26a7a4531ed0ccdd3afac0448ce9317560a194be7bd4a95ce8177464f95"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/390-hebrew-profile.png",
+      "sha256": "c93b5f18c0a8dd51804f4f2b8300de2c6d051ef53d0c3e9c5ec555edb75cb2a7"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/390-home.png",
+      "sha256": "723f1e14aeadec6e2e7991eb67a5f20402bf798b6f1bf7e292ef8eddd14acc86"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/390-male.png",
+      "sha256": "33d0d7acdaa960d26cbf1a8185d75a1d526cf4f761419c636eaaa4a37cd867c6"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/390-profile-edit.png",
+      "sha256": "1f5741846d405979a0152a8309ea4e703df9e40fe7300ee95680d1f9c466225a"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/390-profile.png",
+      "sha256": "e63319d38fbbd176eef9c43a902f433566077a9768b23cb62ef2366d53054c11"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/390-release-detail.png",
+      "sha256": "171f73b934f56f96a0119801a9fb9c0f1398e9cd5186285a3c82843ba0dcf456"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/390-release-events.png",
+      "sha256": "f0de425e46f53635642c73c4b8215548f6edc8357b353e35d7f232cd77c4ab11"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/390-release-home.png",
+      "sha256": "9adfaed815d3ec76163e8ce61c3b882ea9840a87597292725bdb87eb2161390b"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/390-release-participants.png",
+      "sha256": "171f73b934f56f96a0119801a9fb9c0f1398e9cd5186285a3c82843ba0dcf456"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/390-release-payment.png",
+      "sha256": "277a15771f260b8d431133486e57e28d681e53f900b20c622fb19b7bb692edad"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/390-release-registrations.png",
+      "sha256": "e107e23f12499ce0a4a456c975599b09f585383f6dfb11ec52a69a93e9d75fc6"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/390-release-total.png",
+      "sha256": "8777b2b6dde67aefd651da1e12a091229c6aaa3fd4c53a2b7d7906a961c77d30"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/390-resources.png",
+      "sha256": "fbdb3f951d69b630c15cac3fa94d3bb1f6af7d877e3ffcf61bbc306a13b19b37"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/390-splash.png",
+      "sha256": "2f08149a47b9b858c0ebf35f42d2fdbe746a322ae3e880446091bf4a4beeea4a"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/bridge.log",
+      "sha256": "b6ecd39ff85d4ec9cc8278e44f9deecd11b1e530640ad66426d51ff5d35fa55b"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/build-result.json",
+      "sha256": "ab36f2147c83429c6cbd3deeeeed9789276b9c6e9308d11ecd04419d766207a7"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/build.log",
+      "sha256": "eb08328ed557d6e09e0dc0898f78cf435494002eb015a753d97750a02dd71a9a"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/bundle.json",
+      "sha256": "a095fc79ba9b1186e6148f7b174a5465df0565680434a14bc23690a7304cb712"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/callback-browser.json",
+      "sha256": "6063ccd383c4cf909eabd90356c3704bc02a1d479ee2737d1f35550a70945b87"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/checks.json",
+      "sha256": "ff07ae5e47e0fc01ca81e9bb75de94644d72c88283915b988bfac9f494194875"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/client-boundary.json",
+      "sha256": "7fd96b9995e36e42a8205b5efa7d9de682b8ed25da70ed8b17738a96cc7d8daf"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/crm-release-audience.png",
+      "sha256": "ce9a726ebdc063d445b3ddf6d1825c2340174e4efb52f3fe5f64ddaffde8719a"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/crm-release-composer.png",
+      "sha256": "5094693d2b4b331f12461a52a5d486cd0a385274131d6762e181f9734fe51ec2"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/desktop-child-editor.png",
+      "sha256": "e20272e1fc9c9dcf1f97c48688b43ceed15ff6a0ee66f7a4ed49a7bc1e9302f8"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/desktop-filter.png",
+      "sha256": "ec6a046c81365b5779fb6e9f1b3571de988bedc16bc2d0fc92792563c99e4e0b"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/desktop-home.png",
+      "sha256": "779ed9aeb0f129b12dcf8da2a62c49eddb09b361b4dbc74352aa310952c44fbe"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/desktop-profile-edit.png",
+      "sha256": "bbb7557dec97ac8e3ab90f0002a600697bd2e5ce3fe27343df45257c435aafb4"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/desktop-profile.png",
+      "sha256": "e09b0dce0f842727eda96f72acdc7dff1239f4e913038cf655e0018f5de9134d"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/desktop-release-detail.png",
+      "sha256": "95f0a437d18a851d8ee31de10079351a32c16c2aededd35ff69341e796aeb32f"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/desktop-release-events.png",
+      "sha256": "13d40b74c2518825aa12a5eaceee707e08e0ab73634e142ceddb3a311ae4f31c"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/desktop-release-home.png",
+      "sha256": "cee650dd8cd4a911bb936094a6c06ce86fdca221b151946141dfa1c0951cdff5"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/desktop-release-participants.png",
+      "sha256": "95f0a437d18a851d8ee31de10079351a32c16c2aededd35ff69341e796aeb32f"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/desktop-release-payment.png",
+      "sha256": "2dcda51087f3995c60328f7102ee325a24a935b5c7753ab75d84fa81a5a84da7"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/desktop-release-registrations.png",
+      "sha256": "3fc811e219c700f374d82fea2432a0630902d73eb572880c5516d3b8ed0c067d"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/desktop-release-total.png",
+      "sha256": "2e04324e0cc101688fb458d3f5f630fc091a66aac07145e82b5cc87701096336"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/desktop-resources.png",
+      "sha256": "aa67d826d80053276c7b2b413baf222600bc560d24cebdeee2e5a6d58aa5c2c1"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/desktop-splash.png",
+      "sha256": "9367f70f79c6b66d078056eca5b1e260c114163501a529bbb907240aec6ebb63"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/en-1000-release-detail.png",
+      "sha256": "2baaeda42f34c1726e5d5b3aa0cf7d58ed58d69f8658e81fc6bcc72efc757a49"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/en-1000-release-total.png",
+      "sha256": "cd4702f0f93298865484d04118f0e92d5fded61d702db6b8683c25e4cd0f24b4"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/en-320-release-detail.png",
+      "sha256": "fe08cef8bd6b99516ddb830e5eef6943bad81679c1e5e1da54a58c0f33c44535"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/en-320-release-total.png",
+      "sha256": "99f8e0a60f6994b14e8a3f6fc45d05592f6ebb70b520f4e507d8880955249e35"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/en-390-release-detail.png",
+      "sha256": "ca010a303d645e5ce346a2418c5e3ab432c564820dff6eaf1b74dac716f2d4d2"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/en-390-release-total.png",
+      "sha256": "7eabc701fc5c6c9dfc75a35eb9d46907148ca7312d0994f1700e6d6f88f73a96"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/he-1000-release-detail.png",
+      "sha256": "2e97ffcc32c9821168bc46e6ca9ecf553d3e5397ce84bb3ad7e939dfe7bea84f"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/he-1000-release-total.png",
+      "sha256": "63522e85ac524c0bdb95eba6db23cf42ee01481ef383181f136e1c4874359cb8"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/he-320-release-detail.png",
+      "sha256": "fcacbc6b21087b94fe59d2b7f6d9be30b2cee614edb025c22e529846a03bf21d"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/he-320-release-total.png",
+      "sha256": "a9eaa6faa65ec0303277829c3f25007c03c91dc6a6e056d6fb1e05c4d985ccab"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/he-390-release-detail.png",
+      "sha256": "f18bc54040f2a5a1e2b2aea5ef47a110440c42d106611e900b3a0ddbf2636d04"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/he-390-release-total.png",
+      "sha256": "3e76b1cc4943d6cecbd598d41b883e78b440e7a5ca060cffc4f2a9aef95467a9"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/http-results.json",
+      "sha256": "e2a0243dd2a9f008647d7a27a72c4ca756d68bad7262c87cc01ec4c74ab76833"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/identity-results.json",
+      "sha256": "62c5b758768dbd311c09e34ff33d94e2254b083a7c8f2267f7518923395fb7a9"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/identity.log",
+      "sha256": "888ac71affb60c778a0b2dc78c450408e86ace4579d71c931543241054541e18"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/lint.log",
+      "sha256": "321382e4e7fe9d0d3b0eec7469dc1632789f52d75b794eb49caff350926221a8"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/local-env-check.json",
+      "sha256": "26ab0a825e1df9586020fa3a6d4305309855690c1739a10306efff1282c4ee02"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/migration-results.json",
+      "sha256": "d75f58d25e2ea932a92e550a26edcf085a6e7d2c2667d5890619b939b0e0fc45"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/migrations.log",
+      "sha256": "5f2c29e9b2d7741228ccdb714b4844e0142d8ce6854d252ee5bcb52e8942cc39"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/miniapp-auth-results.json",
+      "sha256": "abc3da3a17b73d2dd6661522283d5ce5feeb982b4be84f13f31f545f243b9ff0"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/miniapp-auth.log",
+      "sha256": "dcb88cb7d2af964b3be9ae837039bb2803e816531b1a3d8f31710a660c061306"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/miniapp-ui-bridge-results.json",
+      "sha256": "93ae3eb249024181c972e1e2b7d2ba192c82ebfe3ffcf85b74854b83ae11f596"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/miniapp-ui-browser-results.json",
+      "sha256": "8fd5ead224cbce97dbab4888ce19940eb91410deed799a5a97f56b69e14e4eeb"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/miniapp-ui-browser.log",
+      "sha256": "024092a8bb7af2dcb5a515d8844e9335cd30259e4837c384bf4e1d304da5b22e"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/miniapp-ui-production-results.json",
+      "sha256": "69b46e905c1ca0db48c5d259daff688e8b62d06bda434605dbdba4164c044d18"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/miniapp-ui-production.log",
+      "sha256": "6c8ae975cbdf418ace9129c17a5a96e35d07c57fd07a62319aacbeb2ecab679f"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/miniapp-ui-server-results.json",
+      "sha256": "bcef89b2e7189e2a4c929a3077d29aa6809a9e385aa652bf3d1d628c43cba8ab"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/miniapp-ui-server.log",
+      "sha256": "fbcce172b803bf14ab37b1615464cca9115218088bd65a10b0fd6cc1d1124e3b"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/production-browser-outside.png",
+      "sha256": "f668e0af0bf068b1bfdc2302241cb8a56a785ebe72f4af1cbcd0bd0e7ef1644d"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/production-results.json",
+      "sha256": "24be5310085127539d02fb468a5033704404bc50ce43b561a88309312bb5aacd"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/regression-results.json",
+      "sha256": "8618b92b891dcf95e16bbf770e385b40f1b330b9a345a4567b6ab34be9dd6eee"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/regression.log",
+      "sha256": "03a07a290521eb9fac8284d5c146b73616b40ad88abc909acb590bf8f5d543c0"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/render-results.json",
+      "sha256": "6261990277428d14acf4c44038987aac8b9fb7ffc2063d40e3c002830cb9067f"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/render.log",
+      "sha256": "33075bd0036baf23dff7e5b59015b709dfc956704fbcfd8e9740ea63bece1c54"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/render/event-guest.html",
+      "sha256": "2b31777c4501db00f7180d9e87b2553d8d81d2092cdc1d4cb7ab57a4ad8bbe3f"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/render/event-header-guest.html",
+      "sha256": "2ee98b88750705313f23511a22114933ea849d2d9443bea391bc561a7ec370ac"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/render/home-header-guest.html",
+      "sha256": "bab22dfcb5b301df22d9b56d87ec42da38b8a781f4af41b9badbfa99f02caea3"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/render/register-giyur.html",
+      "sha256": "4d8a69150cc98ecc9de9a68d4024b359007d518cf201ab19d83761cafd1c9f35"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/render/register-initial.html",
+      "sha256": "e516da64b59e289daa670321e81c155c8d744b75e0e25217ea81f3013bb5e981"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/render/register-maternal.html",
+      "sha256": "3d6cb1c2bb18c3b916a18b32c8ce1657ce096ea7ea9da26424fcd0cc22e50aed"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/render/register-none.html",
+      "sha256": "27349366547462ee5ecfa044a82f080ad54772411c0626e6c246007d11fbfaac"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/screenshots.json",
+      "sha256": "0825bda0b57a21b7a2881b6a0837e60e30d211724b56603ef2bf2d760c000fe5"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/spec-results.json",
+      "sha256": "affb8b8ae0f413308e9150d0196dc664a5483ec54be20c2bdaac8bfe4b083c6e"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/spec-update.log",
+      "sha256": "8ddedcbf92a673cbaefbcea8a6caf51c6dab30dcc1ebfeb00ca28d284f07c81d"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/sso-callback.log",
+      "sha256": "c19d222f9319c3301381395aa9349982bfad2a46312158c14399a15ba6396f03"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/telegram-bundle.log",
+      "sha256": "b921d9c8a6ac1bf8cc949610aa9689b056dc86b5d4a539e4366f0a657c0286e7"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/telegram-migrations-results.json",
+      "sha256": "2c8a7b8bd37764a25875cc1c9ecb3ebbf88be9ea3122275f3b12fe995f6479b8"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/telegram-migrations.log",
+      "sha256": "b7fe83910ddd36d1ec9c02ec556908f8645bc1daefcd86cd174d6731b9abcb52"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/telegram-native-results.json",
+      "sha256": "3d4222f3acebd98497346c687eeb48d944354d3420541080e4ea99a90c194156"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/telegram-native.log",
+      "sha256": "1abe0acf7f848d2d9cc226f54e0b5bf0351504083da828bac89b6112506ace54"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/telegram-release-browser-results.json",
+      "sha256": "580b400e69970b1b131b704ef76b3979b434684160897fea9696f9354eec5216"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/telegram-release-browser.log",
+      "sha256": "01700e510f81b11b24d77640023ed95296ceaec92e6dadefca5cb30d233bc012"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/telegram-release-results.json",
+      "sha256": "9f9dbd65ddf20305a9094f50dbc3e0d5f4ad62fee1e8ab688082a6ece7f9c0b8"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/telegram-release.log",
+      "sha256": "bcc66999bf9aa8961e895355f1296bd1736667f76450bb15a1ec40dc48bc8cd9"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/telegram-tools-results.json",
+      "sha256": "76f57475b6e2815b58a049dd1d2f68541708e45ee924a823267b042f5bab7622"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/telegram-tools.log",
+      "sha256": "6c9952588a05c04cddb0f8b371760ae888e44c82cd803cc5d2da552c76cc4567"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/typecheck.log",
+      "sha256": "cb1f07e22b5eb32160d3ec1bb7a6c10365bb9eac5c62b73b775cd9eed8898f93"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/website-callback-browser.log",
+      "sha256": "329195f831d67992cdc99bdc83d54d688cff5485f866af3ec05acebb55d86d35"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/website-http.log",
+      "sha256": "c5edcb90fb02809726520457c8156bd03abcd85b86eb3a65fb27dc380d6271c6"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/website-production.log",
+      "sha256": "f62b638b58f63586758c4edc622555b918783f546115693af41a6f8a85021619"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/website-spec-browser.log",
+      "sha256": "b09c6f73bde23d6841099639e11c9f4bd7b46b0d41e4e1a2f3bcbfcde7e190f9"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/website-spec-browser/desktop-cards.png",
+      "sha256": "ca6eba267698f6e23a794fdf6656cc5c175d6d0c62ecd413c037a358c5150b73"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/website-spec-browser/desktop-iframe.png",
+      "sha256": "d34e374f354f2a7798e3890ff31cb918442d6f3c4988d299d4a9a45d65d6817c"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/website-spec-browser/desktop-person-card.png",
+      "sha256": "059fbb17065bac620cc4c7f7740861bae52f7ace95530f2a27fe0a9715fdd131"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/website-spec-browser/mobile-cards.png",
+      "sha256": "7266539b825d7e36c67e4d52d437da496479ff0f56fcedacddd41b9936238179"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/website-spec-browser/mobile-iframe.png",
+      "sha256": "8efdea76e5444f8bab9cc28e25ee8285998e58bb669a02c5ceb1e31ca42f79ef"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/website-spec-browser/mobile-person-card.png",
+      "sha256": "850891585dabf3beedad9c7a7e5ea57ea091b0ef2994da3a6ee5142c4b896310"
+    },
+    {
+      "path": "docs/production-candidate-telegram/evidence/website-spec-browser/results.json",
+      "sha256": "fe828ae6170af0b54de0519e5143e2375c04f4c12bfc4ff95f74393af914479c"
+    },
+    {
+      "path": "drizzle/0009_miniapp_identity_v1.sql",
+      "sha256": "68f34eb82d3bb73d79de89b059917c4eec98b2659441c172627fc2524b5444fd"
+    },
+    {
+      "path": "drizzle/0010_telegram_miniapp_sessions.sql",
+      "sha256": "5211f68e83569e9432e55f1c3b8e3931135415947b2060928d16dae2b9aab0eb"
+    },
+    {
+      "path": "drizzle/0011_telegram_release_candidate.sql",
+      "sha256": "98aa3d4e9defdb995fbe1ceb0adb5988037cb3bd2722e34a4d30eb77bdb48f44"
+    },
+    {
+      "path": "drizzle/0012_telegram_query_indexes.sql",
+      "sha256": "81ca1cd2549e4ef97e7e0889ab3e8b897f9cdfa9240c58f0e206b52ad681f47b"
+    },
+    {
+      "path": "drizzle/meta/0011_snapshot.json",
+      "sha256": "8350c6e11e7695c82ce512c00ea1cfa01f503af4fb75def979cf380d356bf839"
+    },
+    {
+      "path": "drizzle/meta/0012_snapshot.json",
+      "sha256": "c2d39516abfbacce30bc4a1909a9bd662a380b284ac8727a54d8902c288a3c04"
+    },
+    {
+      "path": "drizzle/meta/_journal.json",
+      "sha256": "61144e5fca4225efaab7eb903737a77eb64e6ddcfff20b6f17bb0d2e7d60ceda"
+    },
+    {
+      "path": "lib/community/event-checkout.ts",
+      "sha256": "84cd6aade29dfb476df891c30e7d96ea86755621b21d3bbdf3a5e27047be979d"
+    },
+    {
+      "path": "lib/community/profile-write.ts",
+      "sha256": "9cb587764be662b2ddf0d510f97f7a8e36d034a7cdff0707d6a85eb04ba6a8fd"
+    },
+    {
+      "path": "lib/community/registration.ts",
+      "sha256": "c3e9350c3ba699910c67b8610adebd83279b1078a559b6f5794b4bd9d830f04d"
+    },
+    {
+      "path": "lib/db/schema.ts",
+      "sha256": "929ef923e2347fd3a7d24ab2b0122f4e116640a868755ae010f7561da2664844"
+    },
+    {
+      "path": "lib/telegram/audience.ts",
+      "sha256": "0263a1a3d917f1dd8d67047b873de0a0f8064f83805dccdca7298223f98e47ac"
+    },
+    {
+      "path": "lib/telegram/bot-api.ts",
+      "sha256": "9679697c53c8e2f9d589c2b036ccd0e1b6a077bf40246f11aaa0e81db2debee8"
+    },
+    {
+      "path": "lib/telegram/bot.ts",
+      "sha256": "8804b2b0f85eaa0b8e6c3e0c5f00850f6a42ae7774bd5d0b384bb3423827ed24"
+    },
+    {
+      "path": "lib/telegram/broadcast.ts",
+      "sha256": "d20076ae9982085ea58b52d09411ca299da9edc31c6abfde6f5870f665da4cc0"
+    },
+    {
+      "path": "lib/telegram/event-copy.ts",
+      "sha256": "32bf4cf57b7e2ef548047f0ff3a3bb9d2e83e457b336d3dbb5112bb58e4b3851"
+    },
+    {
+      "path": "lib/telegram/miniapp-client.ts",
+      "sha256": "4c7123931df38683faf1b60c34fb84537f7aa47f4dc05c20ebcd3c2b43016def"
+    },
+    {
+      "path": "lib/telegram/miniapp-events.ts",
+      "sha256": "2bee67776a3ab690a2a04cf8e40e7019da4a61caaed06ab4ec1c1c4b7fc5aa70"
+    },
+    {
+      "path": "lib/telegram/miniapp-http.ts",
+      "sha256": "8e621165c1aad36187a96e17f70680b83dd3c236cef71f508ff33b1c75c02ee9"
+    },
+    {
+      "path": "lib/telegram/miniapp-i18n.ts",
+      "sha256": "5b19ec8228679621ca824090311b67bcd836fb4c0cbff18297a6e2ae122f87d5"
+    },
+    {
+      "path": "lib/telegram/miniapp-init-data.ts",
+      "sha256": "6ed74c2713998958a3c8b5edc0f6378014a459a1b072293bb41b287943e30310"
+    },
+    {
+      "path": "lib/telegram/miniapp-profile.ts",
+      "sha256": "4051deba22639c9af20d9f7ae4a360a1bd111f77ac75673b295e2e0c62d7455d"
+    },
+    {
+      "path": "lib/telegram/miniapp-session.ts",
+      "sha256": "fa6360d5e2b3410c858fe983aca638300d3cb6559297f2155a469ea2823fc985"
+    },
+    {
+      "path": "lib/telegram/miniapp-user.ts",
+      "sha256": "d4f02aee0dbe5fbc72484d7bbdd9cc93f428ea7a5be238f4becada660e254fb9"
+    },
+    {
+      "path": "lib/telegram/notifications.ts",
+      "sha256": "6c9ccc4780b92ed2c59f7c514bc206d7fc3ba70c698b71a6e6cf97fab76de7e4"
+    },
+    {
+      "path": "lib/telegram/safety.ts",
+      "sha256": "2cb1f7a6d40f2860b4454ccde5c4d4b0f9c536f3312933c7cae5b583b68eb575"
+    },
+    {
+      "path": "lib/telegram/subscription.ts",
+      "sha256": "2ee844e26be60a5cec3952626cdb4eabe5a760392474978ea4815d83aa9049e3"
+    },
+    {
+      "path": "middleware.ts",
+      "sha256": "b6e4d9d59b252f9f20c275cfb76ea74cbb29208648c851a038a0d5977b4c51d2"
+    },
+    {
+      "path": "package.json",
+      "sha256": "8c4e2e925352dfafd0b8b31e2a929edd61058554bafb844f0381f54f23a3f5e2"
+    },
+    {
+      "path": "scripts/build-miniapp-manual-sql.cjs",
+      "sha256": "b2ecc1e9dad36b790b424beeae516cea2830f98cfe28a5dd26485304bdcd433b"
+    },
+    {
+      "path": "scripts/check-production-env.cjs",
+      "sha256": "0bc3af2301c93b48c9983ff6fdf93656b5de9b943adda3aff844726fa9ca7287"
+    },
+    {
+      "path": "scripts/configure-telegram.cjs",
+      "sha256": "a675c9dd6731c60b836484ed6a74c4daf601e35019c57e31639f7d9a0b24cc78"
+    },
+    {
+      "path": "scripts/telegram-env.cjs",
+      "sha256": "c45ff9f354475bf5c55c831e3cb5f45b269f19c19f1380e7e3fb35d347ac1f05"
+    },
+    {
+      "path": "tests/community/README.md",
+      "sha256": "25260d04cffb2c57749e851ff45a5df2807a4cbee64d0479dd9a720d71fc86ee"
+    },
+    {
+      "path": "tests/community/http-fixture.cjs",
+      "sha256": "07f10440a8fdaab9b7bcdd4933e65480ceb7f00a3930a77305e959e4f490eda8"
+    },
+    {
+      "path": "tests/community/http.cjs",
+      "sha256": "d6c5bf124233e107739e95a4a952fbc771481bfe4fa849703038be1d04d5c2b6"
+    },
+    {
+      "path": "tests/community/migrations.cjs",
+      "sha256": "e88f16ae89546c22f6fca94d90c0ac9c2524a49464748b8de66e4e3343637545"
+    },
+    {
+      "path": "tests/community/miniapp-ui-bridge.cjs",
+      "sha256": "66cd62fb186ac8c7c2db83487ad18395894eaafbb2eacf971a026441d341fd78"
+    },
+    {
+      "path": "tests/community/miniapp-ui-browser.cjs",
+      "sha256": "2abaa1da26c7de6ddd401c3da50cdfab8600d452736f928639f961e93fea4d1d"
+    },
+    {
+      "path": "tests/community/miniapp-ui-fixture.cjs",
+      "sha256": "a0084cab9f85338c4ae6f1d271322e4dde4a6fc1e673107c992d8d668e8854d5"
+    },
+    {
+      "path": "tests/community/miniapp-ui-preview.cjs",
+      "sha256": "590fca8ee0b1ff3e320dfc8a9037705402a4d05b3593c99018a004119271d9e4"
+    },
+    {
+      "path": "tests/community/miniapp-ui-production.cjs",
+      "sha256": "aa470e3ad8e7c3403fb8138223d0fff2597242bb2711f6b476bb6dc314f9c337"
+    },
+    {
+      "path": "tests/community/miniapp-ui-sdk.cjs",
+      "sha256": "be9290c47d7069dbe38ef2bdfe872eff4850ddb2593df5ddc4cb4a3b9faeaf24"
+    },
+    {
+      "path": "tests/community/miniapp-ui-server.cjs",
+      "sha256": "ad2f455c618d96e3a096cfc7491066195ceeb1b25e84c504e3313399d8c05ae9"
+    },
+    {
+      "path": "tests/community/oauth-fixture.cjs",
+      "sha256": "8d4dcaf862d3ecaf3301bccddbfdc18ee98c8abcf4029b9ce1a90073c497296c"
+    },
+    {
+      "path": "tests/community/production.cjs",
+      "sha256": "02f45c56d42bbdc3d15245d3385f727c468d800455944ba5d78969a782f3d039"
+    },
+    {
+      "path": "tests/community/regression.cjs",
+      "sha256": "a24730fc2f8e14ebe299b5728340400752292bf042888856654bc8ef5f52735e"
+    },
+    {
+      "path": "tests/community/spec-browser.cjs",
+      "sha256": "9c35f1adbf4f0d630a1064dc72569243a3f40b279f2fe22a431e10a45f07af96"
+    },
+    {
+      "path": "tests/community/spec-update.cjs",
+      "sha256": "02b3b8f9f4f1a682748c6095c61d1918e76d70fbe9c138cf6ec799bfc1bd4271"
+    },
+    {
+      "path": "tests/community/telegram-bundle.cjs",
+      "sha256": "0a20d08f705a5daa8020833091aa02dbd8cb2d38767bef9e2067b051d50bb583"
+    },
+    {
+      "path": "tests/community/telegram-migrations.cjs",
+      "sha256": "bbe8c4024647666a7f1f3e84775558b53727cf6e4e08dd1853c7a75d04b4dbe3"
+    },
+    {
+      "path": "tests/community/telegram-native.cjs",
+      "sha256": "d49b919f8a60145d0a697059a20a6ae54eedefbb658872f1f33e4e82d23eea28"
+    },
+    {
+      "path": "tests/community/telegram-release-browser.cjs",
+      "sha256": "ae47d22daf9bc0708708309c414df5b12a11e97faee22a81e4ee2a667a027d30"
+    },
+    {
+      "path": "tests/community/telegram-release-fixture.cjs",
+      "sha256": "78a858f2d8595e2cfb05305527f5493b1cce5133e62c516bd6b207c6f88e3925"
+    },
+    {
+      "path": "tests/community/telegram-release.cjs",
+      "sha256": "71f4df9906b70d275102605bff97bda0eea80092f6f60e1364ce31f85747f8bf"
+    },
+    {
+      "path": "tests/community/telegram-tools.cjs",
+      "sha256": "08e671a4ad5172669065199b7d6ed1e347767deb2727fe650f4d16b8ae40c5e1"
+    }
+  ]
+}

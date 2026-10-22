@@ -118,3 +118,45 @@ COMMUNITY_BROWSER_BASE=http://127.0.0.1:3342 COMMUNITY_HEADLESS=1 COMMUNITY_BROW
 ```
 
 Evidence и границы: [REPORT](../../docs/miniapp-ui-v1/REPORT.md). Схема и SQL Шага 3 не изменялись.
+
+## Telegram production release candidate
+
+Release: [RELEASE.md](../../docs/production-candidate-telegram/RELEASE.md). All fixtures are local synthetic copies;
+never deploy them. No Bot API call uses a real token in tests. Browser fixture hard-disables outbound Bot API.
+
+```sh
+npm install --prefix /tmp/menora-pg17-runtime --save-exact --ignore-scripts --no-audit --no-fund @electric-sql/pglite@0.3.10
+COMMUNITY_TEST_OUTPUT=docs/production-candidate-telegram/evidence node tests/community/telegram-release.cjs
+COMMUNITY_TEST_OUTPUT=docs/production-candidate-telegram/evidence node tests/community/telegram-tools.cjs
+COMMUNITY_TEST_OUTPUT=docs/production-candidate-telegram/evidence node tests/community/telegram-migrations.cjs
+NODE_PATH=/tmp/menora-filter-test-runtime/node_modules node tests/community/telegram-release-fixture.cjs
+# In the generated /tmp/menora-miniapp-ui directory:
+NODE_PATH=/tmp/menora-filter-test-runtime/node_modules npm run dev -- --port 3342 --hostname 127.0.0.1
+# From the source repository, after the fixture is ready:
+COMMUNITY_TEST_OUTPUT=docs/production-candidate-telegram/evidence node tests/community/telegram-release-browser.cjs
+```
+
+Run browser cohorts sequentially; restart only the temporary server between suites if necessary.
+Current regression includes miniapp-auth, miniapp-ui-server, miniapp-ui-bridge, miniapp-ui-browser,
+miniapp-ui-production (production build on 3343), identity-schema, migrations, regression, render,
+production, spec-update, sso-callback, HTTP, callback-browser, spec-browser, telegram-bundle, and the three Telegram server/tool/migration suites.
+`spec-browser` also exercises a denied late notification request after changing synthetic account.
+The HTTP expectations now reflect the existing click-to-open child clarification and approved dashboard-events fallback.
+`production.cjs` uses a real historical NOT NULL email baseline for the legacy SQL checks and the current unified manual SQL after identity migration.
+Assertions were preserved, including rollback and rejection checks.
+
+Historical `browser.cjs`, `targeted-browser.cjs`, `browser-review.cjs` are one-off artifacts for superseded form layouts;
+their active journeys are covered by spec-browser/callback-browser. Remote diagnostic scripts (`check-environment`, `production-database-readonly`) are excluded under the local-only boundary. The historical `checkpoint.cjs` writes into an older report directory and is superseded here by the release manifest.
+
+Independent PostgreSQL connections (temporary native cluster, optional local test runtime):
+
+```sh
+npm install --prefix /tmp/menora-native-postgres-runtime --save-exact --no-audit --no-fund embedded-postgres@18.4.0-beta.17
+COMMUNITY_TEST_OUTPUT=docs/production-candidate-telegram/evidence node tests/community/telegram-native.cjs
+```
+
+The native runner reserves loopback port35432, creates a fresh `/tmp/menora-pg-*` cluster/database,
+uses the real postgres-js pool with max10 connections, runs the release suite, stops the cluster and deletes its data.
+It never accepts `DATABASE_URL`, never creates an OS user/service, and refuses to use an existing database.
+Postinstall of the test-only runtime creates its packaged binary symlinks; no project dependency/lockfile changes.
+The native suite verifies distinct backend PIDs, concurrent bootstrap/bot bootstrap, registration and worker idempotency.

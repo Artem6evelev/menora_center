@@ -1,0 +1,26 @@
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+PASS cold SDK load starts callback once after a stable Clerk instance becomes ready
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+PASS warm SDK load preserves all signup and signin continuation destinations
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+PASS external return targets, nested callbacks and invalid attempts cannot escape the server completion route
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+PASS missing event context uses dashboard events without inventing a registration attempt
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+PASS unloaded SDK gives recovery after 20 seconds with the entire original journey intact
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+PASS pending or resolved callback without navigation gives recovery without automatic retries or direct event navigation
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+PASS late SDK readiness still starts its callback after the recovery message appears
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+PASS a different callback journey remounts its handler with the correct event and attempt
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+PASS remount with a simulated active session keeps completion owned by Clerk and preserves the attempt
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+PASS unmount clears the watchdog instead of updating an abandoned callback
+Callback regression: 10/10 PASS. Real Google OAuth and database finalization are outside this isolated suite.

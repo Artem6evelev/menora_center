@@ -95,7 +95,7 @@ async function repeat(pg) {
     const legacy = structuredClone(current);
     delete legacy.tables['public.community_audit'];
     delete legacy.tables['public.community_registration_drafts'];
-    for (const table of ['user_identities', 'telegram_contacts', 'user_identity_link_attempts', 'user_identity_merge_log', 'telegram_miniapp_sessions']) delete legacy.tables['public.' + table];
+    for (const table of ['user_identities', 'telegram_contacts', 'user_identity_link_attempts', 'user_identity_merge_log', 'telegram_miniapp_sessions', 'event_payment_attempts', 'telegram_updates', 'telegram_campaigns', 'telegram_broadcasts', 'telegram_broadcast_deliveries']) delete legacy.tables['public.' + table];
     // The pre-identity schema required an email. New Telegram-first users do not.
     legacy.tables['public.users'].columns.email.notNull = true;
     for (const col of ['city_id', 'gender', 'affiliation', 'filter_version', 'filter_revision', 'giyur_stage', 'filter_completed_at', 'identity_disabled_at']) delete legacy.tables['public.users'].columns[col];

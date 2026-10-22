@@ -1,0 +1,33 @@
+PASS 320 home and four navigation tabs fit and remain touch accessible
+PASS 320 event list follows existing site community access and displays real event data
+PASS 320 event details and family participant selection display correctly
+PASS 320 displayed total changes only after backend calculation, including child price
+PASS 320 payment handoff opens official bridge link with server amount and remains pending
+PASS 320 reload and registrations show pending without paid promotion and support resume
+PASS 390 home and four navigation tabs fit and remain touch accessible
+PASS 390 event list follows existing site community access and displays real event data
+PASS 390 event details and family participant selection display correctly
+PASS 390 displayed total changes only after backend calculation, including child price
+PASS 390 payment handoff opens official bridge link with server amount and remains pending
+PASS 390 reload and registrations show pending without paid promotion and support resume
+PASS desktop home and four navigation tabs fit and remain touch accessible
+PASS desktop event list follows existing site community access and displays real event data
+PASS desktop event details and family participant selection display correctly
+PASS desktop displayed total changes only after backend calculation, including child price
+PASS desktop payment handoff opens official bridge link with server amount and remains pending
+PASS desktop reload and registrations show pending without paid promotion and support resume
+PASS male participant UI matches server child rights
+PASS giyur-unknown participant UI matches server child rights
+PASS giyur-advanced participant UI matches server child rights
+PASS giyur-completed participant UI matches server child rights
+PASS giyur-male participant UI matches server child rights
+PASS he 320 localized events/detail/total fit with correct direction
+PASS he 390 localized events/detail/total fit with correct direction
+PASS he 1000 localized events/detail/total fit with correct direction
+PASS en 320 localized events/detail/total fit with correct direction
+PASS en 390 localized events/detail/total fit with correct direction
+PASS en 1000 localized events/detail/total fit with correct direction
+PASS events network failure has retry and does not lose selected children on registration retry
+PASS free event confirms directly without payment UI
+PASS CRM select all filtered includes records past page one and preview/enqueue send nothing
+TOTAL 32 PASS

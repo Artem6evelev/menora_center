@@ -1,7 +1,7 @@
 /* Ordinary browser against actual production build, without Clerk runtime keys. */
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const {chromium}=require('/tmp/menora-browser-runtime/node_modules/playwright');
-const base='http://127.0.0.1:3343',out=path.resolve(__dirname,'../../docs/miniapp-ui-v1/evidence');let browser;
+const base='http://127.0.0.1:3343',out=process.env.COMMUNITY_TEST_OUTPUT||path.resolve(__dirname,'../../docs/miniapp-ui-v1/evidence');let browser;
 (async()=>{
  browser=await chromium.launch({headless:true});const context=await browser.newContext({viewport:{width:390,height:844},locale:'en-US'}),external=[],api=[],errors=[];
  await context.route('**/*',route=>{const url=new URL(route.request().url());if(url.origin===base)return route.continue();external.push(url.hostname);return route.abort()});

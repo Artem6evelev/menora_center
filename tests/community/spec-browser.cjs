@@ -82,6 +82,14 @@ async function addChild(page,name,gender){await page.getByRole('button',{name:'�
  await check(viewport+' administrative person card reads saved child gender and canonical city after resource choice',async()=>{
   await login(context,'fixture-admin');await page.goto(base+'/dashboard/users');await page.getByPlaceholder('Поиск (имя, тел, город)...').fill(member);await page.waitForFunction(()=>document.querySelectorAll('button[aria-label="Открыть карточку Browser Synthetic"]').length===1);await page.getByRole('button',{name:'Открыть карточку Browser Synthetic',exact:true}).click();const card=page.getByRole('region',{name:'Сохранённая анкета',exact:true});await card.waitFor();await card.getByText(member+'@example.invalid',{exact:true}).waitFor();await page.waitForFunction(()=>{const card=document.querySelector('[aria-label="Сохранённая анкета"]');return card&&card.getBoundingClientRect().right<=innerWidth+1;});assert.ok(await card.getByText('8300',{exact:true}).isVisible());assert.ok(await card.getByText('Fixture spouse',{exact:true}).isVisible());await card.getByText(/Second saved child.*Мальчик/).scrollIntoViewIfNeeded();assert.ok(await card.getByText(/Second saved child.*Мальчик/).isVisible());await card.getByText(/Edited child.*Девочка/).scrollIntoViewIfNeeded();assert.ok(await card.getByText(/Edited child.*Девочка/).isVisible());await noOverflow(page);await page.screenshot({path:path.join(out,viewport+'-person-card.png'),fullPage:true});
  });
+ await check(viewport+' late notification request after account switch is denied without an unhandled page error',async()=>{
+  await login(context,'fixture-admin');let held;
+  const handler=route=>{if(route.request().method()==='POST'&&(route.request().postData()||'').includes('fixture-admin')){held=route;return;}return route.continue();};
+  await context.route('**/dashboard/events',handler);await page.goto(base+'/dashboard/events');
+  for(let i=0;!held&&i<200;i++)await new Promise(resolve=>setTimeout(resolve,25));assert.ok(held,'notification request intercepted');
+  const observed=page.waitForResponse(response=>response.request()===held.request());await login(context,'fixture-father');await held.continue();assert.equal((await observed).status(),500);
+  await page.waitForTimeout(200);assert.equal(errors.filter(error=>error.viewport===viewport).length,0);await context.unroute('**/dashboard/events',handler);
+ });
  await context.close();
 }
 assert.deepEqual(errors,[]);for(const file of ['failure.json','failure.png','failure-page.txt'])fs.rmSync(path.join(out,file),{force:true});fs.writeFileSync(path.join(out,'results.json'),JSON.stringify({environment:base,identity:'mock Clerk, including SSO callback component; not genuine OAuth',database:'isolated PGlite',payments:'external request intercepted; no real payment',checks,errors},null,2));console.log(checks.length+'/'+checks.length+' browser checks passed');

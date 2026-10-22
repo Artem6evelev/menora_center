@@ -1,0 +1,19 @@
+{
+  "buildSourceParity": {
+    "base": "c166aaf",
+    "codeHead": "0fb18c258f51c50858b58de55d0a61217d48839b",
+    "productFiles": 42,
+    "mismatches": []
+  },
+  "clientBoundary": {
+    "searchedChunks": 120,
+    "forbiddenMarkers": []
+  },
+  "bundle": "bundle.json (actual loaded framework/shared/route JS)",
+  "review": {
+    "effects": "SDK, network and back handlers cleaned up; late campaign cancelled on manual navigation",
+    "accessibility": "touch controls, RTL, labels and error recovery verified in browser",
+    "data": "bounded events/CRM pages; server-only auth, amounts and queue; no client identity authority",
+    "scope": "Touched Telegram/Mini App/CRM/payment handoff only; not a whole-site audit"
+  }
+}

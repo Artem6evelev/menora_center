@@ -38,7 +38,7 @@ function source(file) {
     if (id === 'next/cache') return { revalidatePath() {} };
     if (id === 'next/navigation') return { redirect(location) { throw Object.assign(new Error('redirect'), { location }); } };
     if (id === 'next/server') return { after: fn => afterCallbacks.push(fn), NextResponse: { json: (body, init) => new Response(JSON.stringify(body), init) } };
-    if (id === '@/actions/telegram') return { sendEventRegistrationNotification: async () => {}, sendServiceRegistrationNotification: async () => {} };
+    if ((id === '@/actions/telegram' || id === '@/lib/telegram/notifications')) return { sendEventRegistrationNotification: async () => {}, sendServiceRegistrationNotification: async () => {} };
     if (id === 'nodemailer') return { createTransport: () => ({ sendMail: async () => { throw new Error('Delivery blocked by test'); } }) };
     if (id.startsWith('@/') || id.startsWith('.')) {
       const stem = id.startsWith('@/') ? id.slice(2) : path.relative(root, path.resolve(path.dirname(full), id));
@@ -67,6 +67,8 @@ async function row(id) { return (await db.select().from(schema.users).where(eq(s
 async function legacyDatabase() {
   const pg = new PGlite(); const baseline = structuredClone(current);
   delete baseline.tables['public.community_audit']; delete baseline.tables['public.community_registration_drafts'];
+  for (const table of ['user_identities','telegram_contacts','user_identity_link_attempts','user_identity_merge_log','telegram_miniapp_sessions','event_payment_attempts','telegram_updates','telegram_campaigns','telegram_broadcasts','telegram_broadcast_deliveries']) delete baseline.tables['public.'+table];
+  baseline.tables['public.users'].columns.email.notNull = true;
   for (const col of ['gender','affiliation','giyur_stage','filter_version','filter_revision','filter_completed_at','identity_disabled_at']) delete baseline.tables['public.users'].columns[col];
   baseline.tables['public.users'].checkConstraints = {};
   const empty = { ...baseline, tables: {}, schemas: {}, enums: {}, sequences: {}, roles: {}, policies: {}, views: {} };
@@ -237,8 +239,8 @@ async function clerkEvent(type, id) {
         browser='review-other-'+resource;jars.set(browser,copied);actor='other';assert.equal((await drafts.completeRegistrationDraft(id)).success,false);
       }
     });
-    await test('Manual SQL after actual form completion is repeatable and never resets v2 or saved fields', async () => {
-      const before = await pg.query('select id,to_jsonb(t) as value from users t order by id'); await pg.exec(manual);
+    await test('Current unified manual SQL after actual form completion is repeatable and never resets v2 or saved fields', async () => {
+      const before = await pg.query('select id,to_jsonb(t) as value from users t order by id'); await pg.exec(fs.readFileSync(path.join(root,'docs/miniapp-identity-v1/MANUAL_SQL.sql'),'utf8'));
       assert.deepEqual((await pg.query('select id,to_jsonb(t) as value from users t order by id')).rows, before.rows);
       assert.equal(policy.hasFilterProfile(await row('new-google')), true);
     });

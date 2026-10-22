@@ -1,0 +1,9 @@
+/* Disposable loopback PostgreSQL. Never accepts DATABASE_URL or touches existing clusters. */
+const fs=require('fs'),path=require('path'),cp=require('child_process'),net=require('net'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'../..');
+(async()=>{assert.notEqual(process.env.NODE_ENV,'production');const {default:EmbeddedPostgres}=await import('/tmp/menora-native-postgres-runtime/node_modules/embedded-postgres/dist/index.js');
+const port=35432;await new Promise((resolve,reject)=>{const probe=net.createServer();probe.once('error',reject);probe.listen(port,'127.0.0.1',()=>probe.close(resolve));});
+const directory=fs.mkdtempSync('/tmp/menora-pg-');const pg=new EmbeddedPostgres({databaseDir:directory,user:'menora_local_rc',password:'synthetic-local-only-password',port,persistent:false,createPostgresUser:false,initdbFlags:['--locale=C','--encoding=UTF8'],postgresFlags:['-h','127.0.0.1','-k',directory],onLog:()=>{},onError:()=>{}});
+let started=false;try{await pg.initialise();await pg.start();started=true;await pg.createDatabase('menora_release_synthetic');console.log('Native isolated PostgreSQL started on loopback; empty synthetic database; no system user or remote access.');
+const exitCode=await new Promise((resolve,reject)=>{const child=cp.spawn(process.execPath,[path.join(__dirname,'telegram-release.cjs')],{cwd:root,env:{...process.env,DATABASE_URL:'',MENORAH_NATIVE_PG_TEST:'1',MENORAH_NATIVE_PG_PORT:String(port)},stdio:'inherit'});child.once('error',reject);child.once('exit',resolve);});if(exitCode)process.exitCode=exitCode;
+}finally{if(started)await pg.stop();console.log('Disposable native PostgreSQL stopped.');}})().catch(error=>{console.error(error instanceof Error?error.message:'Local native fixture failed');process.exitCode=1;});

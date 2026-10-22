@@ -35,7 +35,7 @@ function source(file) {
     if (id === 'next/cache') return { revalidatePath() {} };
     if (id === 'next/navigation') return { redirect(location) { throw Object.assign(new Error('redirect'), { location }); } };
     if (id === 'next/server') return { after: callback => afterCallbacks.push(callback) };
-    if (id === '@/actions/telegram') return { sendEventRegistrationNotification: async (...args) => notifications.push(args) };
+    if ((id === '@/actions/telegram' || id === '@/lib/telegram/notifications')) return { sendEventRegistrationNotification: async (...args) => notifications.push(args) };
     if (id === 'nodemailer') return { createTransport: () => ({ sendMail: async () => { throw new Error('External delivery blocked by test'); } }) };
     if (id.startsWith('@/') || id.startsWith('.')) {
       const resolved = id.startsWith('@/') ? id.slice(2) : path.relative(ROOT, path.resolve(path.dirname(absolute), id));

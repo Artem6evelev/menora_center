@@ -38,7 +38,7 @@ function source(file) {
     if (id === 'next/cache') return { revalidatePath() {} };
     if (id === 'next/navigation') return { redirect(location) { throw Object.assign(new Error('redirect'), { location }); } };
     if (id === 'next/server') return { after: fn => afterCallbacks.push(fn), NextResponse: { json: (body, init) => new Response(JSON.stringify(body), init) } };
-    if (id === '@/actions/telegram') return { sendEventRegistrationNotification: async () => {}, sendServiceRegistrationNotification: async () => {} };
+    if ((id === '@/actions/telegram' || id === '@/lib/telegram/notifications')) return { sendEventRegistrationNotification: async () => {}, sendServiceRegistrationNotification: async () => {} };
     if (id === 'nodemailer') return { createTransport: () => ({ sendMail: async () => { throw new Error('Delivery blocked by test'); } }) };
     if (id.startsWith('@/') || id.startsWith('.')) {
       const stem = id.startsWith('@/') ? id.slice(2) : path.relative(root, path.resolve(path.dirname(full), id));

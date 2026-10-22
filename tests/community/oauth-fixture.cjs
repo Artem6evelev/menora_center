@@ -18,6 +18,7 @@ if(!g.__menoraSyntheticDb)g.__menoraSyntheticDb=(async()=>{const client=new PGli
 export const db=await g.__menoraSyntheticDb;
 `);
 write('actions/telegram.ts',`'use server';export async function sendEventRegistrationNotification(){return {success:true};}export async function sendServiceRegistrationNotification(){return {success:true};}export async function sendBroadcastMessage(){return {success:false};}export async function getBotSettings(){return null;}export async function updateBotSettings(){return {success:false};}\n`);
+ write('lib/telegram/notifications.ts',`import 'server-only';export async function sendEventRegistrationNotification(){return {success:true};}export async function sendServiceRegistrationNotification(){return {success:true};}\n`);
 write('lib/community/welcome.ts',`export async function sendCommunityWelcome(){return;}\n`);
 let config=fs.readFileSync(path.join(root,'next.config.mjs'),'utf8');config=config.replace('  images: {',()=>`  webpack(config) {config.externals.push(({request},callback)=>{if(request===${JSON.stringify(runtime)} || request==='drizzle-orm/pglite' || request==='drizzle-orm/pglite/migrator')return callback(null,'commonjs '+request);callback();});return config;},\n  images: {`);write('next.config.mjs',config);
 write('app/layout.tsx',fs.readFileSync(path.join(root,'app/layout.tsx'),'utf8').replace(/<Analytics\s*\/>/g,''));

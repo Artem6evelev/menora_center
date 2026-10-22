@@ -1,0 +1,109 @@
+
+> nextjs@0.1.0 build
+> next build --webpack
+
+⚠ `images.domains` is deprecated in favor of `images.remotePatterns`. Please update next.config.mjs to protect your application from malicious users.
+▲ Next.js 16.1.7 (webpack)
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+✓ Compiled successfully in 13.7s
+  Running TypeScript ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/42) ...
+  Generating static pages using 7 workers (10/42)
+  Generating static pages using 7 workers (20/42)
+Ошибка генерации Sitemap: Error: Failed query: select "id", "title", "slug", "content", "image_url", "is_published", "is_pinned", "views", "status", "rejection_reason", "author_id", "category_id", "created_at", "updated_at" from "news" "news" where "news"."is_published" = $1 order by "news"."is_pinned" desc, "news"."created_at" desc
+params: true
+    at av.queryWithCache (.next/server/chunks/9254.js:28:35048)
+    at async (.next/server/chunks/9254.js:28:37536)
+    at async t (.next/server/chunks/6465.js:1:5380)
+    at async x (.next/server/app/sitemap.xml/route.js:1:14055)
+    at async z (.next/server/app/sitemap.xml/route.js:1:14376) {
+  query: 'select "id", "title", "slug", "content", "image_url", "is_published", "is_pinned", "views", "status", "rejection_reason", "author_id", "category_id", "created_at", "updated_at" from "news" "news" where "news"."is_published" = $1 order by "news"."is_pinned" desc, "news"."created_at" desc',
+  params: [Array],
+  [cause]: Error: connect ECONNREFUSED 127.0.0.1:1
+      at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:1) {
+    errno: -61,
+    code: 'ECONNREFUSED',
+    syscall: 'connect',
+    address: '127.0.0.1',
+    port: 1
+  }
+}
+  Generating static pages using 7 workers (31/42)
+✓ Generating static pages using 7 workers (42/42) in 378.5ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ƒ /
+├ ○ /_not-found
+├ ƒ /about
+├ ○ /admin
+├ ƒ /api/community/cities
+├ ƒ /api/community/event-title
+├ ƒ /api/internal/telegram/broadcast-worker
+├ ƒ /api/telegram/miniapp/bootstrap
+├ ƒ /api/telegram/miniapp/events
+├ ƒ /api/telegram/miniapp/filter
+├ ƒ /api/telegram/miniapp/giyur
+├ ƒ /api/telegram/miniapp/logout
+├ ƒ /api/telegram/miniapp/profile
+├ ƒ /api/telegram/miniapp/registrations
+├ ƒ /api/telegram/miniapp/session
+├ ƒ /api/telegram/miniapp/subscription
+├ ƒ /api/telegram/remind
+├ ƒ /api/telegram/webhook
+├ ƒ /api/webhooks/clerk
+├ ƒ /api/webhooks/shutafim
+├ ƒ /auth/complete
+├ ƒ /authors
+├ ƒ /authors/[slug]
+├ ƒ /contact
+├ ƒ /dashboard
+├ ƒ /dashboard/applications
+├ ƒ /dashboard/author-profile
+├ ƒ /dashboard/authors
+├ ƒ /dashboard/chat
+├ ƒ /dashboard/events
+├ ƒ /dashboard/kanban
+├ ƒ /dashboard/kids
+├ ƒ /dashboard/kids-applications
+├ ƒ /dashboard/kids/manual
+├ ƒ /dashboard/moderation
+├ ƒ /dashboard/my-events
+├ ƒ /dashboard/my-services
+├ ƒ /dashboard/news
+├ ƒ /dashboard/news/create
+├ ƒ /dashboard/service-applications
+├ ƒ /dashboard/services
+├ ƒ /dashboard/team
+├ ƒ /dashboard/telegram
+├ ƒ /dashboard/users
+├ ƒ /dashboard/videos
+├ ƒ /events
+├ ƒ /events/[id]
+├ ƒ /kids
+├ ƒ /lessons
+├ ƒ /miniapp
+├ ƒ /news
+├ ƒ /news/[slug]
+├ ƒ /pricing
+├ ƒ /privacy
+├ ƒ /register
+├ ○ /robots.txt
+├ ƒ /rules
+├ ƒ /services
+├ ƒ /sign-in/[[...sign-in]]
+├ ƒ /sign-up/[[...sign-up]]
+├ ○ /sitemap.xml
+├ ○ /sso-callback
+├ ƒ /terms
+└ ƒ /welcome
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand

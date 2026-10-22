@@ -3,7 +3,7 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const {chromium}=require('/tmp/menora-browser-runtime/node_modules/playwright');
 const {installSdk}=require('./miniapp-ui-sdk.cjs');
-const base='http://127.0.0.1:3342',out=path.resolve(__dirname,'../../docs/miniapp-ui-v1/evidence');
+const base='http://127.0.0.1:3342',out=process.env.COMMUNITY_TEST_OUTPUT||path.resolve(__dirname,'../../docs/miniapp-ui-v1/evidence');
 const checks=[],errors=[],shots=[];let browser,id=760010;
 async function test(name,fn){await fn();checks.push({name,status:'PASS'});console.log('PASS '+name);}
 async function shot(page,name){await page.screenshot({path:path.join(out,name+'.png'),fullPage:true});shots.push(name+'.png');}

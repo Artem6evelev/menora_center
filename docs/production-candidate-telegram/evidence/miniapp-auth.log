@@ -1,0 +1,88 @@
+PASS independent Python HMAC fixture: decoded UTF-8, plus, future field and signature are signed
+PASS valid signed user supports ID string, optional Telegram fields and frozen proof
+PASS first_name tamper rejected before trust
+PASS user ID tamper rejected before trust
+PASS start_param tamper rejected before trust
+PASS wrong hash rejected before trust
+PASS additional signed field tamper rejected before trust
+PASS signature field tamper rejected before trust
+PASS missing hash malformed rejected
+PASS missing auth_date malformed rejected
+PASS short hash malformed rejected
+PASS nonhex hash malformed rejected
+PASS duplicate key malformed rejected
+PASS bad percent encoding malformed rejected
+PASS ambiguous canonical newline malformed rejected
+PASS malformed user JSON malformed rejected
+PASS missing user malformed rejected
+PASS array user malformed rejected
+PASS unsafe numeric ID malformed rejected
+PASS string ID malformed rejected
+PASS missing first name malformed rejected
+PASS untrusted boolean string malformed rejected
+PASS non-HTTPS photo malformed rejected
+PASS oversize initData malformed rejected
+PASS expired auth_date rejected
+PASS future auth_date over 60 seconds rejected
+PASS bounded future clock skew accepted
+PASS age env honors valid bound and invalid values retain secure 900 default
+PASS missing bot config fails closed
+PASS malformed signed start_param ignored without denying authentication
+PASS new Telegram subject creates exactly one opaque canonical user
+PASS new identity uses telegram primary verified subject, never username
+PASS new Telegram contact is backend-owned and has unknown marketing consent
+PASS new profile has NULL email, affiliation, gender, giyur and filter; no privacy consent
+PASS Mini App never derives private chat ID even from signed group chat or write permission
+PASS repeated bootstrap preserves canonical profile, family, filter, consent and account role
+PASS first attribution write-once, last valid launch updates and invalid launch does not erase
+PASS initially absent attribution records first later valid launch once
+PASS omitted optional Telegram metadata preserves known values and provenance
+PASS subscribed marketing state and delivery/chat metadata survive Telegram refresh
+PASS unsubscribed marketing state and delivery/chat metadata survive Telegram refresh
+PASS blocked marketing state and delivery/chat metadata survive Telegram refresh
+PASS legacy contact without identity keeps existing canonical user and creates one identity
+PASS exact legacy bot key created after migration is reused without inventing chat or rewriting email
+PASS identity without a contact recreates safe contact and retains current owner
+PASS disabled identity denies bootstrap without creating session or resetting disabled state
+PASS disabled canonical user denies bootstrap
+PASS identity/contact owner conflict fails closed with safe generic response and unchanged owners
+PASS unsafe DTO cannot bypass runtime proof and reach bootstrap
+PASS a failed session insert rolls back tentative user, identity and contact together
+PASS parallel bootstrap calls for the same subject converge without orphan users (PGlite serial transaction scheduler)
+PASS actual provider-subject unique violation rolls back tentative user then safely retries lookup
+PASS nextStep uses existing filter version and policy in filter/resources/profile/home order
+PASS bootstrap HTTP response contains only minimal profile, no-store and HttpOnly SameSite cookie
+PASS database stores SHA-256 only, token is 256-bit random, not provider token
+PASS valid cookie resolves canonical Mini App user independently of Clerk and updates last seen
+PASS missing or malformed cookie is unauthenticated
+PASS unknown well-formed cookie is unauthenticated
+PASS expired session is unauthenticated
+PASS revoked session is unauthenticated
+PASS live identity disable immediately rejects existing session
+PASS live user disable immediately rejects existing session
+PASS session FK prevents identity/user ownership mismatch and invalid hash/lifetime
+PASS Clerk identity cannot authenticate through a Mini App session
+PASS logout revokes only current session, clears cookie and preserves user/identity/marketing
+PASS logout without a session is idempotent
+PASS production cookie is host-only HttpOnly Secure SameSite=Lax with bounded TTL
+PASS cross-site bootstrap/logout denied without cookie issuance or session revocation
+PASS HTTP invalid JSON rejected with no-store and no cookie
+PASS HTTP array body rejected with no-store and no cookie
+PASS HTTP extra unsafe identity input rejected with no-store and no cookie
+PASS HTTP non-JSON rejected with no-store and no cookie
+PASS HTTP declared oversize rejected with no-store and no cookie
+PASS HTTP streamed oversize rejected with no-store and no cookie
+PASS HTTP invalid signature rejected with no-store and no cookie
+PASS stream limit counts bytes despite misleading Content-Length
+PASS unknown database errors are generic and never include driver details
+PASS production refuses absent or insecure origin configuration
+PASS sessions backend-only RLS/grants, duplicate hashes and FK postcheck are explicit
+PASS unified Step 2+3 rerun preserves existing sessions, revoked state and canonical data
+PASS unified repeat removes session table and column grants and restores RLS
+PASS session partial rollout fails atomically: nullable hash
+PASS session partial rollout fails atomically: wrong lifetime constraint
+PASS session partial rollout fails atomically: wrong owner FK
+PASS session partial rollout fails atomically: public policy
+PASS session partial rollout fails atomically: inherited grants
+PASS session partial rollout fails atomically: wrong owner unique index
+87/87 Mini App auth checks passed

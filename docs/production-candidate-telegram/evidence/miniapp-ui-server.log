@@ -1,0 +1,32 @@
+PASS profile and filter require Mini App cookie; Clerk/client identity fields cannot authenticate
+PASS own profile DTO contains editable fields only, no email/role/identity/stage/revision and an opaque version tag
+PASS resume rejects a cookie from another Telegram account before returning profile data
+PASS valid cookie may resume its own older signed launch without extending expiry or issuing a session
+PASS resume still rejects tampered raw proof and requires an active cookie
+PASS questionnaire cannot bypass current filter
+PASS maternal and giyur filter require gender server-side
+PASS filter strictly rejects extra identity/role/stage fields and unknown categories
+PASS maternal female filter stamps shared FILTER_VERSION and opens questionnaire with prospective child permission
+PASS shared validation rejects privacy consent without changing user
+PASS shared validation rejects canonical city mismatch without changing user
+PASS shared validation rejects unknown locality without changing user
+PASS shared validation rejects future birth date without changing user
+PASS shared validation rejects spouse required without changing user
+PASS child requires name, birth date and explicit gender; foreign child ID denied
+PASS Telegram-first full profile needs no email and saves own child, canonical city, consent and home
+PASS profile GET after save preserves data; repeat bootstrap never resets questionnaire
+PASS opaque stale version rejects overwrite and keeps current user
+PASS profile strictly forbids affiliation/gender/stage/role/email/owner injection
+PASS same-origin enforcement and bounded body protect both write routes
+PASS own child edit and delete preserve historical registration snapshot and paid status
+PASS maternal/male/null: server permits self questionnaire and enforces child editing
+PASS giyur/female/null: server permits self questionnaire and enforces child editing
+PASS giyur/female/advanced: server permits self questionnaire and enforces child editing
+PASS giyur/female/completed: server permits self questionnaire and enforces child editing
+PASS giyur/male/completed: server permits self questionnaire and enforces child editing
+PASS none requires no gender, remains resources and cannot POST full questionnaire
+PASS changing to none preserves old children, consent, history and profile fields
+PASS profile GET ignores untrusted target query and only uses current session owner
+PASS revoked cookie cannot write questionnaire or filter
+PASS disabled identity is rechecked before profile mutation
+31/31 Mini App UI server checks passed
