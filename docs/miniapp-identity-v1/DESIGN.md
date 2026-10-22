@@ -43,7 +43,7 @@ Initial providers:
 - `clerk`
 - `telegram`
 
-The same `users.id` can have one Clerk identity and one Telegram identity.
+The same `users.id` can have one active Clerk identity and multiple Telegram identities if the person genuinely uses more than one Telegram account. One Telegram contact is marked primary for navigation and broadcasts.
 
 ### `telegram_contacts`
 Telegram channel state for the canonical user:
@@ -54,6 +54,8 @@ Telegram channel state for the canonical user:
 - first/last acquisition start parameter.
 
 The questionnaire is NOT duplicated here. The current questionnaire remains in `users`.
+
+A user may have multiple Telegram contacts, but only one primary contact. This prevents an automatic profile merge from failing merely because both source profiles already had Telegram accounts.
 
 ### `user_identity_link_attempts`
 Short-lived, single-use hashed tokens for linking an authenticated website identity to a Telegram-first profile.
