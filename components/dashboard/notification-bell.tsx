@@ -22,8 +22,14 @@ export default function NotificationBell({ userId }: { userId: string }) {
   useEffect(() => {
     let active = true;
     const fetchNotifs = async () => {
-      const data = await getUserNotifications(userId);
-      if (active) setNotifications(data);
+      try {
+        const data = await getUserNotifications(userId);
+        if (active) setNotifications(data);
+      } catch {
+        // A late request may lose authorization during sign-out/account switch.
+        // Clear stale data and keep the rejected action out of the page error boundary.
+        if (active) setNotifications([]);
+      }
     };
     setNotifications([]);
     fetchNotifs();
