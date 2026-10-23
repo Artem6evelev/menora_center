@@ -23,6 +23,13 @@ import { cn } from "@/lib/utils";
 import MassWhatsAppModal from "../events/mass-whatsapp-modal";
 import dayjs from "dayjs";
 import "dayjs/locale/ru";
+import type { events as eventsTable } from "@/lib/db/schema";
+
+type ApplicationEvent = typeof eventsTable.$inferSelect & {
+  totalParticipants: number;
+  pendingParticipants: number;
+};
+type ParticipantRow = Awaited<ReturnType<typeof getEventParticipantsList>>[number];
 
 dayjs.locale("ru");
 
@@ -285,15 +292,18 @@ const StatusSelect = ({ currentStatus, onChange }: any) => {
 };
 
 // === 3. ГЛАВНЫЙ КОМПОНЕНТ СТРАНИЦЫ ===
-export default function ApplicationsClient({ events }: { events: any[] }) {
+export default function ApplicationsClient({ events }: { events: ApplicationEvent[] }) {
   const [eventsList, setEventsList] = useState(events);
   const [selectedEventId, setSelectedEventId] = useState<string>(
     eventsList[0]?.id || "",
   );
-  const [participants, setParticipants] = useState<any[]>([]);
+  const [participants, setParticipants] = useState<ParticipantRow[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [isReminderOpen, setIsReminderOpen] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deletingParticipantId, setDeletingParticipantId] = useState<string | null>(null);
+  const deletePending = useRef(false);
 
   useEffect(() => {
     const fetchParticipants = async () => {
@@ -348,34 +358,41 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
   };
 
   const handleDeleteParticipant = async (participantId: string) => {
-    if (!confirm("Вы уверены, что хотите безвозвратно удалить эту заявку?"))
-      return;
-
+    if (deletePending.current) return;
     const participantToRemove = participants.find(
       (p) => p.participant.id === participantId,
     );
     if (!participantToRemove) return;
     const oldStatus = participantToRemove.participant.status;
-
-    setParticipants((prev) =>
-      prev.filter((p) => p.participant.id !== participantId),
-    );
-    setEventsList((prev) =>
-      prev.map((e) => {
-        if (e.id === selectedEventId)
-          return {
-            ...e,
-            totalParticipants: Math.max(0, e.totalParticipants - 1),
-            pendingParticipants:
-              oldStatus === "pending"
-                ? Math.max(0, e.pendingParticipants - 1)
-                : e.pendingParticipants,
-          };
-        return e;
-      }),
-    );
-
-    await deleteEventParticipant(participantId);
+    const eventId = participantToRemove.participant.eventId;
+    const event = eventsList.find(item => item.id === eventId);
+    const message = oldStatus === "pending" && event?.isFree === false
+      ? "Заявка ожидает оплаты. После удаления ссылка на эту регистрацию больше не будет учитываться. Удалить?"
+      : "Удалить эту заявку?";
+    if (!confirm(message)) return;
+    deletePending.current = true;
+    setDeletingParticipantId(participantId);
+    setDeleteError(null);
+    try {
+      const result = await deleteEventParticipant(participantId);
+      if (!result.success) {
+        setDeleteError(result.error && result.error !== "Не удалось удалить заявку"
+          ? `Не удалось удалить заявку. ${result.error}` : "Не удалось удалить заявку");
+        return;
+      }
+      setParticipants(prev => prev.filter(row => row.participant.id !== participantId));
+      setEventsList(prev => prev.map(item => item.id === eventId ? {
+        ...item,
+        totalParticipants: Math.max(0, item.totalParticipants - 1),
+        pendingParticipants: oldStatus === "pending"
+          ? Math.max(0, item.pendingParticipants - 1) : item.pendingParticipants,
+      } : item));
+    } catch {
+      setDeleteError("Не удалось удалить заявку");
+    } finally {
+      deletePending.current = false;
+      setDeletingParticipantId(null);
+    }
   };
 
   const currentEventName =
@@ -398,11 +415,12 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
     )
     .map((row) => ({
       phone: row.participant.phone,
-      name: row.user?.name || row.user?.firstName || "Участник",
+      name: row.user?.firstName || "Участник",
     }));
 
   return (
     <div className="max-w-7xl mx-auto w-full pb-32">
+      {deleteError && <p role="alert" className="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-red-800">{deleteError}</p>}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -687,14 +705,18 @@ export default function ApplicationsClient({ events }: { events: any[] }) {
                                 }
                               />
                               <button
-                                disabled={row.participant.status === "paid"}
+                                disabled={row.participant.status === "paid" || deletingParticipantId !== null}
+                                aria-label="Удалить заявку"
+                                aria-busy={deletingParticipantId === row.participant.id}
                                 title={row.participant.status === "paid" ? "Историческая оплата доступна только для чтения" : "Удалить запись"}
                                 onClick={() =>
                                   handleDeleteParticipant(row.participant.id)
                                 }
                                 className="p-2 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
                               >
-                                <Trash2 size={16} />
+                                {deletingParticipantId === row.participant.id
+                                  ? <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+                                  : <Trash2 size={16} aria-hidden="true" />}
                               </button>
                             </div>
                           </td>

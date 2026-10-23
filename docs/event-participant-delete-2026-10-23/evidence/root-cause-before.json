@@ -1,0 +1,14 @@
+{
+  "exitCode": 1,
+  "sqlState": "23001",
+  "error": "restrict_violation",
+  "fk": "ON DELETE RESTRICT",
+  "participantRowsAfterFailure": 1,
+  "attemptRowsAfterFailure": 1,
+  "actionUnmodified": true,
+  "expectedRedRegression": true,
+  "baseCommit": "18112cfaa8d65336342f4d72a086f8b1f535f0aa",
+  "actionSha256": "0e0414c3194772cd6d64d4b6a09b93e4693a34325e3b2b2f649d5352f5769f44",
+  "regression": "staff deletes pending checkout registration with its real RESTRICT payment FK",
+  "expectedAfterFix": "Both rows removed atomically; unrelated registration and attempt unchanged"
+}

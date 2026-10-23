@@ -1,0 +1,36 @@
+{
+  "base": "18112cfaa8d65336342f4d72a086f8b1f535f0aa",
+  "productionChanges": [
+    "actions/event.ts",
+    "components/dashboard/applications/application-client.tsx",
+    "lib/community/payments.ts",
+    "lib/community/server.ts"
+  ],
+  "unchanged": [
+    "lib/db/schema.ts",
+    "lib/community/event-checkout.ts",
+    "lib/community/registration.ts",
+    "lib/community/validation.ts",
+    "lib/community/children.ts",
+    "app/api/webhooks/shutafim/route.ts",
+    "package.json",
+    "package-lock.json"
+  ],
+  "dbMigrationChanges": [],
+  "productionFilesCompared": 295,
+  "buildSourceMismatches": [],
+  "sourceSha256": "483e8b8e19253418b9d7612fe0af58c33fdc26aefe4e3ee51d42bbc05613c3ef",
+  "postBuildProductChanges": false,
+  "deleteAuthorization": "requireStaff(tx) in same transaction",
+  "lockOrder": [
+    "participant FOR UPDATE",
+    "all matching attempts FOR UPDATE"
+  ],
+  "deleteOrder": [
+    "event_payment_attempts",
+    "event_participants"
+  ],
+  "paidGuard": "participant paid OR any attempt paid -> existing readiness guard plus unconditional domain rejection",
+  "sourceSpecificCondition": false,
+  "legacyPaymentConfirmationRestricted": true
+}

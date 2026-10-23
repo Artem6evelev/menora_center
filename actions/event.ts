@@ -344,15 +344,26 @@ export async function updateEventParticipantStatus(id: string, newStatus: string
 }
 export async function deleteEventParticipant(id: string) {
   try {
-    await requireStaff();
     await db.transaction(async tx => {
+      await requireStaff(tx);
       const [participant] = await tx.select().from(eventParticipants).where(eq(eventParticipants.id, id)).for("update");
       if (!participant) throw new CommunityError("Запись не найдена");
-      if (participant.status === "paid") requirePaymentConfirmationReady();
+      const attempts = await tx.select().from(eventPaymentAttempts)
+        .where(eq(eventPaymentAttempts.registrationId, participant.id)).for("update");
+      if (participant.status === "paid" || attempts.some(attempt => attempt.status === "paid")) {
+        const message = "Оплаченную регистрацию нельзя удалить. Сначала необходимо корректно обработать платёж.";
+        requirePaymentConfirmationReady(message);
+        // Paid history remains protected even when confirmation becomes available.
+        throw new CommunityError(message);
+      }
+      if (attempts.some(attempt => attempt.status !== "pending" && attempt.status !== "cancelled"))
+        throw new CommunityError("Нельзя удалить регистрацию с неизвестным статусом платежа");
+      // Keep the RESTRICT FK: only this authorized transaction removes dependents.
+      await tx.delete(eventPaymentAttempts).where(eq(eventPaymentAttempts.registrationId, participant.id));
       await tx.delete(eventParticipants).where(eq(eventParticipants.id, id));
     });
-    revalidatePath("/dashboard/applications"); return { success: true };
-  } catch (error) { return { success: false, error: communityErrorMessage(error, "Не удалось удалить запись") }; }
+    revalidatePath("/dashboard/applications"); revalidatePath("/dashboard/my-events"); return { success: true };
+  } catch (error) { return { success: false, error: communityErrorMessage(error, "Не удалось удалить заявку") }; }
 }
 
 export async function getUserFamilyData(userId: string) {

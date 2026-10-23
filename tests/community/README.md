@@ -249,3 +249,35 @@ checks that viewing an event sends no quote before the signup CTA, then exercise
 Only the server quote supplies displayed totals; register submits participant selection only.
 The SDK/openLink and Clerk adapters are synthetic; this is not a genuine Telegram WebView,
 OAuth or payment confirmation acceptance.
+
+## Staff deletion of event registrations (23 October 2026)
+
+`deleteEventParticipant` authorizes staff through the same transaction executor,
+locks the registration and its payment attempts, then deletes unpaid attempts before
+the participant. The existing `ON DELETE RESTRICT` FK remains unchanged. Either a
+paid participant or a paid attempt blocks deletion; the confirmation readiness guard
+still runs, and paid history stays protected even if readiness later changes.
+Only `pending`/`cancelled` attempts may be removed. Failed deletion preserves the
+dashboard row and counters and reports a safe error; successful deletion needs no hard reload.
+
+`event-participant-delete-cases.cjs` runs in both `telegram-release.cjs` and the
+disposable native PostgreSQL suite: real Mini App checkout fixtures, no-attempt/free
+registrations, cancellation, paid history, staff/filter/identity checks, unrelated rows,
+dependent and parent-delete rollback, stale URLs/return hints and the disabled callback.
+The native run additionally serializes a concurrent paid-attempt writer against deletion.
+Rollback triggers exist only inside the disposable test database; no schema migration is added.
+
+```sh
+MINIAPP_UI_FIXTURE=/tmp/menora-event-delete-fixture node tests/community/event-participant-delete-fixture.cjs
+# Start that fixture on loopback3342 using the existing NODE_PATH test runtime above.
+COMMUNITY_BROWSER_BASE=http://127.0.0.1:3342 COMMUNITY_TEST_OUTPUT=/tmp/menora-event-delete-evidence/browser node tests/community/event-participant-delete-browser.cjs
+```
+
+The 10 Playwright cases exercise the real CRM page/action/SQL:390/1280 widths,
+both confirmation messages, cancellation, request deduplication, successful row removal,
+paid rejection, transport failure/retry, permission loss and a stale-row not-found error.
+The fixture route is generated only in `/tmp`; it refuses non-development/non-loopback
+or non-PGlite access. Identity is synthetic; no real payment or external service is used.
+The shared HTTP Clerk adapter now reports loading until client mount. This keeps
+SSR sign-in buttons disabled until their handlers hydrate, matching SDK readiness;
+the website spec assertions and production authentication remain unchanged.

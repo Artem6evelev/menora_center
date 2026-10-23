@@ -1,0 +1,5 @@
+{
+  "guestSignInSSRDisabled": true,
+  "productGoogleButtonAndWebsiteSpecUnchanged": true,
+  "fixtureOnlyChange": "isLoaded false on SSR/first render, true after client mount"
+}

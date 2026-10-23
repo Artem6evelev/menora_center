@@ -1,0 +1,550 @@
+{
+  "status": "PASS",
+  "groups": 37,
+  "checks": 966,
+  "counting": "Final supported runs only; native PostgreSQL and PGlite are distinct executions. Failed/partial/repeated attempts are excluded.",
+  "baselineChecks": 923,
+  "addedChecks": 43,
+  "addedCoverage": {
+    "sharedSqlCasesPerEngine": 16,
+    "additionalNativeConcurrencyCase": 1,
+    "dashboardBrowserCases": 10
+  },
+  "gates": {
+    "lint": {
+      "exitCode": 0,
+      "errors": 0,
+      "preExistingWarnings": 30
+    },
+    "typecheck": {
+      "suite": "typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "exitCode": 0,
+      "note": "Executed after all four production files were patched; later changes affect test files only"
+    },
+    "build": {
+      "command": "npm run build",
+      "exitCode": 0,
+      "copy": "/tmp/menora-event-delete-build-20261023",
+      "seconds": 45.85,
+      "realEnvCopied": false,
+      "database": "unavailable synthetic loopback 127.0.0.1:1",
+      "log": "build.log"
+    }
+  },
+  "results": [
+    {
+      "suite": "regression",
+      "checks": 36,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/regression.cjs"
+      ],
+      "seconds": 2.89,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/regression/regression-results.json",
+      "proofKey": "checks",
+      "proofSha256": "8618b92b891dcf95e16bbf770e385b40f1b330b9a345a4567b6ab34be9dd6eee"
+    },
+    {
+      "suite": "render",
+      "checks": 21,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/render.cjs"
+      ],
+      "seconds": 0.46,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/render/render-results.json",
+      "proofKey": "checks",
+      "proofSha256": "6261990277428d14acf4c44038987aac8b9fb7ffc2063d40e3c002830cb9067f"
+    },
+    {
+      "suite": "migrations",
+      "checks": 8,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/migrations.cjs"
+      ],
+      "seconds": 5.11,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/migrations/migration-results.json",
+      "proofKey": "checks",
+      "proofSha256": "874d47c66efe8ba04c81442f6114aff9da90caad6a5951854947b2e7f77803d4"
+    },
+    {
+      "suite": "production",
+      "checks": 28,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/production.cjs"
+      ],
+      "seconds": 15.44,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/production/production-results.json",
+      "proofKey": "checks",
+      "proofSha256": "24be5310085127539d02fb468a5033704404bc50ce43b561a88309312bb5aacd"
+    },
+    {
+      "suite": "sso-callback",
+      "checks": 10,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/sso-callback.cjs"
+      ],
+      "seconds": 0.5,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/sso-callback/command.log",
+      "proofKey": "stdout PASS lines",
+      "proofSha256": "c19d222f9319c3301381395aa9349982bfad2a46312158c14399a15ba6396f03"
+    },
+    {
+      "suite": "identity-schema",
+      "checks": 23,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/identity-schema.cjs"
+      ],
+      "seconds": 17.55,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/identity-schema/identity-results.json",
+      "proofKey": "checks",
+      "proofSha256": "b0193e895212a9e1cc6c345f9e99ba388b7b604b8f77890e05a45de6a8ac24d7"
+    },
+    {
+      "suite": "miniapp-auth",
+      "checks": 87,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/miniapp-auth.cjs"
+      ],
+      "seconds": 13.81,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/miniapp-auth/miniapp-auth-results.json",
+      "proofKey": "checks",
+      "proofSha256": "29f2ae9e3c1fbccb504e52a2c8bef21aafd0fd54fda3ec57c373e72d8180b41b"
+    },
+    {
+      "suite": "miniapp-ui-server",
+      "checks": 57,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/miniapp-ui-server.cjs"
+      ],
+      "seconds": 3.46,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/miniapp-ui-server/miniapp-ui-server-results.json",
+      "proofKey": "checks",
+      "proofSha256": "66792ec6ef42c9a3cbf875082f9dd88faf0e7c1ddfbfb26807fbf78ce247be2b"
+    },
+    {
+      "suite": "miniapp-ui-bridge",
+      "checks": 8,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/miniapp-ui-bridge.cjs"
+      ],
+      "seconds": 0.23,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/miniapp-ui-bridge/miniapp-ui-bridge-results.json",
+      "proofKey": "checks",
+      "proofSha256": "82e821edb0f20313a69e04e3eee4db2828bbbaeda6be7ccbbb56ea4ed6c8d0da"
+    },
+    {
+      "suite": "miniapp-cache",
+      "checks": 6,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/miniapp-cache.cjs"
+      ],
+      "seconds": 0.22,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/miniapp-cache/results.json",
+      "proofKey": "checks",
+      "proofSha256": "d21e8c08f2ee50f52f243301450909b2674c6d023787a0a6d166918cc4b2ca1f"
+    },
+    {
+      "suite": "miniapp-query-plans",
+      "checks": 2,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/miniapp-query-plans.cjs"
+      ],
+      "seconds": 1.92,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/miniapp-query-plans/results.json",
+      "proofKey": "checks",
+      "proofSha256": "4b8f8e94930076d8d9baba25265eabfba40c51b93808595fd2d25f6ebf99ff45"
+    },
+    {
+      "suite": "event-share",
+      "checks": 3,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/event-share.cjs"
+      ],
+      "seconds": 0.21,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/event-share/event-share-results.json",
+      "proofKey": "checks",
+      "proofSha256": "f215915dd119741e50cb7ecbe7687fab313ecdb4fcb573ebf37daac93307e4f6"
+    },
+    {
+      "suite": "telegram-migrations",
+      "checks": 10,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/telegram-migrations.cjs"
+      ],
+      "seconds": 3.48,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/telegram-migrations/telegram-migrations-results.json",
+      "proofKey": "checks",
+      "proofSha256": "2c8a7b8bd37764a25875cc1c9ecb3ebbf88be9ea3122275f3b12fe995f6479b8"
+    },
+    {
+      "suite": "telegram-tools",
+      "checks": 5,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/telegram-tools.cjs"
+      ],
+      "seconds": 0.07,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/telegram-tools/telegram-tools-results.json",
+      "proofKey": "checks",
+      "proofSha256": "76f57475b6e2815b58a049dd1d2f68541708e45ee924a823267b042f5bab7622"
+    },
+    {
+      "suite": "spec-update",
+      "checks": 17,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/spec-update.cjs"
+      ],
+      "seconds": 5.71,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/spec-update/spec-results.json",
+      "proofKey": "checks",
+      "proofSha256": "affb8b8ae0f413308e9150d0196dc664a5483ec54be20c2bdaac8bfe4b083c6e"
+    },
+    {
+      "suite": "telegram-release",
+      "checks": 169,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/telegram-release.cjs"
+      ],
+      "seconds": 6.51,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/telegram-release/telegram-release-results.json",
+      "proofKey": "checks",
+      "proofSha256": "04b1987fc7465bab0b119f11eaf1a13022a2ff755e6c67b31c14b8dd55ebf98c"
+    },
+    {
+      "suite": "telegram-native",
+      "checks": 171,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/telegram-native.cjs"
+      ],
+      "seconds": 6.64,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/telegram-native/telegram-native-results.json",
+      "proofKey": "checks",
+      "proofSha256": "14fdb7e25f2dfdb8e94fcf7ebee363902f6ee6b08327d109c8579509d45a1495"
+    },
+    {
+      "suite": "adoption-native",
+      "checks": 28,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/adoption-native.cjs"
+      ],
+      "seconds": 5.31,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/adoption-native/adoption-native-results.json",
+      "proofKey": "checks",
+      "proofSha256": "c4d97711057aff9f1e5cb7240972e0faa357fafa5f502c0d8980df9503861c1d"
+    },
+    {
+      "suite": "event-participant-delete-browser",
+      "checks": 10,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-event-delete-browser-runner-20261023.cjs",
+        "event-participant-delete-browser"
+      ],
+      "seconds": 27.23,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/event-participant-delete-browser/event-participant-delete-browser-results.json",
+      "proofKey": "checks",
+      "proofSha256": "11c3f8faa553f210f3229ea9206e6194359d97590a15bc8e535f04d5b6345b80"
+    },
+    {
+      "suite": "telegram-release-browser",
+      "checks": 32,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-event-delete-browser-runner-20261023.cjs",
+        "telegram-release-browser"
+      ],
+      "seconds": 49.34,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/telegram-release-browser/telegram-release-browser-results.json",
+      "proofKey": "checks",
+      "proofSha256": "287f6a202576c7dd89aeb32b701d3c1e329b333e4313279dba7762ce32dece53"
+    },
+    {
+      "suite": "miniapp-payment-ux-browser",
+      "checks": 15,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-event-delete-browser-runner-20261023.cjs",
+        "miniapp-payment-ux-browser"
+      ],
+      "seconds": 43.58,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/miniapp-payment-ux-browser/miniapp-payment-ux-browser-results.json",
+      "proofKey": "checks",
+      "proofSha256": "0abf2c268aec589886de032d8f80379e30d1c07365f505526117ea7d000bf293"
+    },
+    {
+      "suite": "miniapp-performance-browser",
+      "checks": 14,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-event-delete-browser-runner-20261023.cjs",
+        "miniapp-performance-browser"
+      ],
+      "seconds": 26.8,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/miniapp-performance-browser/results.json",
+      "proofKey": "checks",
+      "proofSha256": "fb350b3fd68b7f6c7eff846442d96478b1e1cdc78f00b8de5aae4e92a3f9a7c2"
+    },
+    {
+      "suite": "miniapp-ui-browser",
+      "checks": 39,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-event-delete-browser-runner-20261023.cjs",
+        "miniapp-ui-browser"
+      ],
+      "seconds": 51.71,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/miniapp-ui-browser/miniapp-ui-browser-results.json",
+      "proofKey": "checks",
+      "proofSha256": "e6ec7dd39bc31fa7f4bc9fd106f22b4e01ce783160c5f80cd536b743f1776e7a"
+    },
+    {
+      "suite": "miniapp-polish-browser",
+      "checks": 14,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-event-delete-browser-runner-20261023.cjs",
+        "miniapp-polish-browser"
+      ],
+      "seconds": 35.53,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/miniapp-polish-browser/miniapp-polish-browser-results.json",
+      "proofKey": "checks",
+      "proofSha256": "e66da70b3ae38696db246836b456f2db58ff52112cdfd0e7b44c5925310d339f"
+    },
+    {
+      "suite": "miniapp-image-share-browser",
+      "checks": 21,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-event-delete-browser-runner-20261023.cjs",
+        "miniapp-image-share-browser"
+      ],
+      "seconds": 31.39,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/miniapp-image-share-browser/miniapp-image-share-browser-results.json",
+      "proofKey": "checks",
+      "proofSha256": "3615009df218862098b8a776c14d6e1cbde34bf04ddddccbcfb4dfe2bdb3ca76"
+    },
+    {
+      "suite": "miniapp-russian-ux-browser",
+      "checks": 10,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-event-delete-browser-runner-20261023.cjs",
+        "miniapp-russian-ux-browser"
+      ],
+      "seconds": 15.25,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/miniapp-russian-ux-browser/miniapp-russian-ux-browser-results.json",
+      "proofKey": "checks",
+      "proofSha256": "cf52f842a542b0b8c6231253f76deb651262fcb8b1871f49b27e8cfb85c15bcc"
+    },
+    {
+      "suite": "miniapp-onboarding-browser",
+      "checks": 4,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-event-delete-browser-runner-20261023.cjs",
+        "miniapp-onboarding-browser"
+      ],
+      "seconds": 12.02,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/miniapp-onboarding-browser/miniapp-onboarding-browser-results.json",
+      "proofKey": "checks",
+      "proofSha256": "7175e8e72dc7472ba2c789fbfcdd47ae4d6b1f678793f3e6244fa0e746969a3b"
+    },
+    {
+      "suite": "miniapp-kids-browser",
+      "checks": 21,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-event-delete-browser-runner-20261023.cjs",
+        "miniapp-kids-browser"
+      ],
+      "seconds": 48.64,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/miniapp-kids-browser/miniapp-kids-browser-results.json",
+      "proofKey": "checks",
+      "proofSha256": "567cd16debdc0f59ace8ad7908bb678a8e0bdd04e68f72d47a8a68319f409c41"
+    },
+    {
+      "suite": "miniapp-kids-entry-browser",
+      "checks": 16,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-event-delete-browser-runner-20261023.cjs",
+        "miniapp-kids-entry-browser"
+      ],
+      "seconds": 43.66,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/miniapp-kids-entry-browser/miniapp-kids-entry-browser-results.json",
+      "proofKey": "checks",
+      "proofSha256": "d3911df09c1c1096106fcbe2d55dd115df92e56ec7a248c187c8c5073664d398"
+    },
+    {
+      "suite": "miniapp-bottom-nav-browser",
+      "checks": 15,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-event-delete-browser-runner-20261023.cjs",
+        "miniapp-bottom-nav-browser"
+      ],
+      "seconds": 26.27,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/miniapp-bottom-nav-browser/miniapp-bottom-nav-browser-results.json",
+      "proofKey": "checks",
+      "proofSha256": "87ec79094fd16380a089f441db22301374363dea3c83561c68c40ed1e9af9a53"
+    },
+    {
+      "suite": "miniapp-images-browser",
+      "checks": 4,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-event-delete-browser-runner-20261023.cjs",
+        "miniapp-images-browser"
+      ],
+      "seconds": 5.28,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/miniapp-images-browser/results.json",
+      "proofKey": "checks",
+      "proofSha256": "ab6be64e915956cd21a9f16a2fde17566b4e4444acbfecf436e49f0c53a6df34"
+    },
+    {
+      "suite": "callback-browser",
+      "checks": 10,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-event-delete-browser-runner-20261023.cjs",
+        "callback-browser"
+      ],
+      "seconds": 34.42,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/callback-browser/callback-browser.json",
+      "proofKey": "checks",
+      "proofSha256": "6063ccd383c4cf909eabd90356c3704bc02a1d479ee2737d1f35550a70945b87"
+    },
+    {
+      "suite": "spec-browser",
+      "checks": 32,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-event-delete-browser-runner-20261023.cjs",
+        "spec-browser"
+      ],
+      "seconds": 129.43,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/spec-browser/results.json",
+      "proofKey": "checks",
+      "proofSha256": "c6819b36e4a66f920aea29e21451b169a35c9fa81b5fb43941892b1cf0c6f378"
+    },
+    {
+      "suite": "miniapp-participant-parity-browser",
+      "checks": 11,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-event-delete-browser-runner-20261023.cjs",
+        "miniapp-participant-parity-browser"
+      ],
+      "seconds": 31.27,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/miniapp-participant-parity-browser/results.json",
+      "proofKey": "checks",
+      "proofSha256": "96822b613f6e2a8290065cc11e020a6dcdf7c1696e1eafcf35cf078e240f75e5"
+    },
+    {
+      "suite": "miniapp-ui-production",
+      "checks": 2,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-event-delete-browser-runner-20261023.cjs",
+        "miniapp-ui-production"
+      ],
+      "seconds": 11.08,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/miniapp-ui-production/miniapp-ui-production-results.json",
+      "proofKey": "checks",
+      "proofSha256": "69b46e905c1ca0db48c5d259daff688e8b62d06bda434605dbdba4164c044d18"
+    },
+    {
+      "suite": "telegram-bundle",
+      "checks": 1,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-event-delete-browser-runner-20261023.cjs",
+        "telegram-bundle"
+      ],
+      "seconds": 11.02,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/bundle/bundle.json",
+      "proofKey": "checks",
+      "proofSha256": "0a041da8039d0faaacb511a335f924f8ad4ee187cdd1e2b1738b82959ce0612f"
+    },
+    {
+      "suite": "miniapp-performance-bundle",
+      "checks": 6,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-event-delete-browser-runner-20261023.cjs",
+        "miniapp-performance-bundle"
+      ],
+      "seconds": 0.13,
+      "proof": "/tmp/menora-event-delete-evidence-20261023/bundle/performance-bundle.json",
+      "proofKey": "checks",
+      "proofSha256": "93b0a4aff1ad6a2b45356bac3b021862e7e4c8363464cf5e6e997c86adf98fef"
+    }
+  ],
+  "testOnlyFixtureCorrection": "Mock SDK isLoaded=false on SSR, true after client mount. Original website spec assertions and production GoogleButton unchanged. Entire browser matrix rerun.",
+  "intermediateEvidence": [
+    "root-cause-before.log",
+    "native-targeted.log",
+    "browser-initial-development-failure.json",
+    "spec-initial-failure",
+    "spec-second-failure",
+    "spec-fixture-correction.json"
+  ]
+}

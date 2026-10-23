@@ -6,10 +6,11 @@ import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { communityAccess, isStaff, hasFilterProfile } from "./policy";
 import { redirect } from "next/navigation";
-export async function currentCommunityUser() {
+type CommunityReader = Pick<typeof db, "select">;
+export async function currentCommunityUser(connection: CommunityReader = db) {
   const { userId } = await auth();
   if (!userId) return null;
-  const [profile] = await db.select().from(users).where(eq(users.id, userId));
+  const [profile] = await connection.select().from(users).where(eq(users.id, userId));
   return profile && !profile.identityDisabledAt ? profile : null;
 }
 export async function requireCommunityUser(targetId?: string) {
@@ -17,8 +18,8 @@ export async function requireCommunityUser(targetId?: string) {
   if (!profile || (targetId && targetId !== profile.id)) throw new CommunityError("Нет доступа к этому профилю");
   return profile;
 }
-export async function requireStaff() {
-  const profile = await currentCommunityUser();
+export async function requireStaff(connection: CommunityReader = db) {
+  const profile = await currentCommunityUser(connection);
   if (!isStaff(profile)) throw new CommunityError("Действие доступно только администратору");
   if (!hasFilterProfile(profile)) throw new CommunityError("Сначала пройдите актуальный фильтр");
   return profile!;
