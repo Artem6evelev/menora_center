@@ -41,6 +41,7 @@ export function botWelcome({ firstName, language, campaign, event, status }: { f
       [{ text: event ? c.openEvent : c.open, web_app: { url: launch.toString() } }],
       [{ text: event ? c.home : c.events, web_app: { url: event ? home : eventsUrl.toString() } }],
       [{ text: "Детские программы", web_app: { url: kidsUrl.toString() } }],
+      [{ text: "📣 Telegram-канал Menorah Center", url: "https://t.me/menorah_rishon" }],
       [{ text: c.contact, url: communityContact.url }],
     ] } };
 }

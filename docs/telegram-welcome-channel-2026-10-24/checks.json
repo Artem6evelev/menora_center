@@ -1,0 +1,87 @@
+{
+  "status": "PASS",
+  "base": "ec0029768ea22b710fd6dd8db40e0541c9f3d9da",
+  "branch": "feat/payment-intent-crm-20261023",
+  "newSharedCases": 5,
+  "results": [
+    {
+      "suite": "telegram-release",
+      "checks": 216,
+      "exitCode": 0,
+      "channelChecks": [
+        {
+          "name": "welcome channel: generic start preserves the exact five-button Russian order for every locale",
+          "status": "PASS"
+        },
+        {
+          "name": "welcome channel: exact Telegram URL button never becomes a web_app or callback button",
+          "status": "PASS"
+        },
+        {
+          "name": "welcome channel: event start keeps the event/campaign Mini App CTA first and channel secondary",
+          "status": "PASS"
+        },
+        {
+          "name": "welcome channel: generic bot response retains working Home Events and Kids Mini App buttons",
+          "status": "PASS"
+        },
+        {
+          "name": "welcome channel: existing final WhatsApp contact keeps its exact phone and prefilled RU text",
+          "status": "PASS"
+        }
+      ],
+      "proof": "/tmp/menora-welcome-channel-evidence-20261024/telegram-release/telegram-release-results.json",
+      "sha256": "94708924659af6108d81bb3d8ead804afc8a2a50177b8f8e7f42c9459000727c"
+    },
+    {
+      "suite": "telegram-native",
+      "checks": 218,
+      "exitCode": 0,
+      "channelChecks": [
+        {
+          "name": "welcome channel: generic start preserves the exact five-button Russian order for every locale",
+          "status": "PASS"
+        },
+        {
+          "name": "welcome channel: exact Telegram URL button never becomes a web_app or callback button",
+          "status": "PASS"
+        },
+        {
+          "name": "welcome channel: event start keeps the event/campaign Mini App CTA first and channel secondary",
+          "status": "PASS"
+        },
+        {
+          "name": "welcome channel: generic bot response retains working Home Events and Kids Mini App buttons",
+          "status": "PASS"
+        },
+        {
+          "name": "welcome channel: existing final WhatsApp contact keeps its exact phone and prefilled RU text",
+          "status": "PASS"
+        }
+      ],
+      "proof": "/tmp/menora-welcome-channel-evidence-20261024/telegram-native/telegram-native-results.json",
+      "sha256": "743e81c79bf257ff57166625a12b93ee20f843e3572bd374e0f7a80406af6013"
+    }
+  ],
+  "lint": {
+    "exitCode": 0,
+    "errors": 0,
+    "existingWarnings": 30
+  },
+  "typecheck": {
+    "command": "npm run typecheck",
+    "exitCode": 0
+  },
+  "build": {
+    "command": "npm run build",
+    "exitCode": 0,
+    "copy": "/tmp/menora-welcome-channel-build-20261024",
+    "seconds": 44.37,
+    "realEnvCopied": false,
+    "database": "unavailable synthetic loopback 127.0.0.1:1",
+    "log": "build.log"
+  },
+  "realBotApiCalls": 0,
+  "productionChangedByWelcomePatch": false,
+  "pushDeploy": false
+}
