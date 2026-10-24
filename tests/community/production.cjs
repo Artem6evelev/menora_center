@@ -239,8 +239,8 @@ async function clerkEvent(type, id) {
         browser='review-other-'+resource;jars.set(browser,copied);actor='other';assert.equal((await drafts.completeRegistrationDraft(id)).success,false);
       }
     });
-    await test('Current unified manual SQL after actual form completion is repeatable and never resets v2 or saved fields', async () => {
-      const before = await pg.query('select id,to_jsonb(t) as value from users t order by id'); await pg.exec(fs.readFileSync(path.join(root,'docs/miniapp-identity-v1/MANUAL_SQL.sql'),'utf8'));
+    await test('Frozen adoption SQL rejects the current future ledger and never resets v2 or saved fields', async () => {
+      const before = await pg.query('select id,to_jsonb(t) as value from users t order by id'); await assert.rejects(pg.exec(fs.readFileSync(path.join(root,'docs/miniapp-identity-v1/MANUAL_SQL.sql'),'utf8')),/Adoption history mismatch/); await pg.exec('ROLLBACK');
       assert.deepEqual((await pg.query('select id,to_jsonb(t) as value from users t order by id')).rows, before.rows);
       assert.equal(policy.hasFilterProfile(await row('new-google')), true);
     });

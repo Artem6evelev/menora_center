@@ -350,7 +350,13 @@ function request(body, headers = {}, url = '/api/telegram/miniapp/bootstrap') {
   } finally { await pg.close(); }
   // Exercise the exact unified owner artifact, not just generated ORM DDL.
   const manual = fs.readFileSync(path.join(root, 'docs/miniapp-identity-v1/MANUAL_SQL.sql'), 'utf8');
-  async function migrated() { const database = new PGlite(); await migrate(drizzle(database), { migrationsFolder: path.join(root, 'drizzle') });
+  // Frozen owner adoption tests use its exact historical release. Auth/session
+  // behavior above still runs the complete CURRENT native migration chain.
+  const historicalFolder=fs.mkdtempSync('/tmp/menora-auth-adoption-');fs.mkdirSync(historicalFolder+'/meta');
+  const historicalJournal=JSON.parse(fs.readFileSync(root+'/drizzle/meta/_journal.json'));historicalJournal.entries=historicalJournal.entries.slice(0,14);
+  fs.writeFileSync(historicalFolder+'/meta/_journal.json',JSON.stringify(historicalJournal));
+  for(const entry of historicalJournal.entries)fs.copyFileSync(root+'/drizzle/'+entry.tag+'.sql',historicalFolder+'/'+entry.tag+'.sql');
+  async function migrated() { const database = new PGlite(); await migrate(drizzle(database), { migrationsFolder: historicalFolder });
     await database.exec('CREATE ROLE anon NOLOGIN; CREATE ROLE authenticated NOLOGIN;'); return database; }
   async function applyManual(database) { try { await database.exec(manual); } catch (error) { await database.exec('ROLLBACK'); throw error; } }
   await test('unified Step 2+3 rerun preserves existing sessions, revoked state and canonical data', async () => {
@@ -385,6 +391,7 @@ function request(body, headers = {}, url = '/api/telegram/miniapp/bootstrap') {
     try { await database.exec(sql); await assert.rejects(applyManual(database), pattern); }
     finally { await database.close(); }
   });
+  fs.rmSync(historicalFolder,{recursive:true,force:true});
   fs.mkdirSync(output, { recursive: true }); fs.writeFileSync(path.join(output, 'miniapp-auth-results.json'), JSON.stringify({ environment: 'Node crypto, real NextResponse, native Drizzle migrations, isolated PGlite 0.5.10; synthetic data', remoteDatabaseTouched: false, realTelegramLaunch: false, concurrency: 'Promise.all on PGlite serial scheduler plus actual unique-violation rollback/retry fault injection; no independent PostgreSQL connections', checks }, null, 2) + '\n');
   console.log(`${checks.length}/${checks.length} Mini App auth checks passed`);
 })().catch(error => { console.error(error); process.exitCode = 1; });

@@ -71,6 +71,7 @@ function storedRegistration(
   const extra = row.extraData as { amountAgorot?: unknown } | null;
   const amount = attempt?.amountAgorot ?? extra?.amountAgorot;
   return {
+    registrationId: row.id,
     status: row.status,
     amountAgorot: typeof amount === "number" && Number.isSafeInteger(amount) && amount >= 0 ? amount : null,
     // Resume only an existing immutable handoff, never invent a legacy price/URL.

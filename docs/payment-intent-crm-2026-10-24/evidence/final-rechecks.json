@@ -1,0 +1,59 @@
+[
+  {
+    "suite": "miniapp-auth",
+    "command": [
+      "node",
+      "tests/community/miniapp-auth.cjs"
+    ],
+    "exitCode": 0,
+    "observed": "Completed tool process exit 0 after final changes to that suite/source",
+    "log": "/tmp/menora-payment-intent-evidence-20261024/miniapp-auth/command.log",
+    "sha256": "d11803607edee3580c094a101ea3d176264ddcf846735278d096ed7e47787715"
+  },
+  {
+    "suite": "telegram-release",
+    "command": [
+      "node",
+      "tests/community/telegram-release.cjs"
+    ],
+    "exitCode": 0,
+    "observed": "Completed tool process exit 0 after final changes to that suite/source",
+    "log": "/tmp/menora-payment-intent-evidence-20261024/telegram-release/command.log",
+    "sha256": "2226046b756a7e30f1ce436d843dfe10987850430da2cab984332be2db247a6f"
+  },
+  {
+    "suite": "telegram-native",
+    "command": [
+      "node",
+      "tests/community/telegram-native.cjs"
+    ],
+    "exitCode": 0,
+    "observed": "Completed tool process exit 0 after final changes to that suite/source",
+    "log": "/tmp/menora-payment-intent-evidence-20261024/telegram-native/command.log",
+    "sha256": "d3e9d55cd4a943f831468f661c7f01942883abe7e3e0a61191454ce9ad616eb7"
+  },
+  {
+    "suite": "typecheck",
+    "command": [
+      "npm",
+      "run",
+      "typecheck"
+    ],
+    "exitCode": 0,
+    "observed": "Completed tool process exit 0 after final changes to that suite/source",
+    "log": "/tmp/menora-payment-intent-evidence-20261024/typecheck-final.log",
+    "sha256": "c587c0f7b20efba6d9e78038ef6e1afcc70e5a66a2289fd554e3183c10522e6f"
+  },
+  {
+    "suite": "lint",
+    "command": [
+      "npm",
+      "run",
+      "lint"
+    ],
+    "exitCode": 0,
+    "observed": "Completed tool process exit 0 after final changes to that suite/source",
+    "log": "/tmp/menora-payment-intent-evidence-20261024/lint-final.log",
+    "sha256": "f93d912437d396609e216b3e6c913550c752b2cb8fb264eb3b4cc373446deb3a"
+  }
+]

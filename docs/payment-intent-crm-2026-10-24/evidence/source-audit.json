@@ -1,0 +1,19 @@
+{
+  "buildSourceMatches": 318,
+  "mismatches": [],
+  "unchanged": [
+    "canonical calculateEvent/checkoutEvent",
+    "staff deletion/payment confirmation guards",
+    "frozen adoption SQL/history",
+    "pricing validation"
+  ],
+  "productTestRoutes": [],
+  "deleteActionUnchangedSha256": "697feccdba532e6fa38a0a33df328bb81d81e32fed46feff02079fa082b63ce7",
+  "unchangedFiles": [
+    "app/api/webhooks/shutafim/route.ts",
+    "lib/community/event-return.ts",
+    "package.json",
+    "package-lock.json"
+  ],
+  "statsFilterAlignment": "Cancelled pending opened attempts agree with derived CRM filter; paid attempts excluded; covered on both SQL engines."
+}

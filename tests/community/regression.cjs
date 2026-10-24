@@ -232,7 +232,7 @@ const profilePayload = (override = {}) => ({ affiliation: 'maternal', gender: 'f
     assert.equal((await kids.submitKidsApplication({programTitle:'Synthetic',childIds:['child-other']})).success,false);
     const application=(await db.select().from(kidsApplications).where(eq(kidsApplications.userId,actor)))[0]; assert.equal(application.children[0].parentId,'mom'); assert.notEqual(application.parentFirstName,'Forged name');
   });
-  await test('Shutafim uses server prices and ignores client amount; changed selection reprices one pending record', async () => {
+  await test('Shutafim uses server prices and ignores client amount; changed selection cannot mutate the canonical pending attempt', async () => {
     actor='mom';
     const profile=(await db.select().from(users).where(eq(users.id,actor)))[0];
     const paid=(await db.select().from(events).where(eq(events.id,'event-paid')))[0];
@@ -245,7 +245,7 @@ const profilePayload = (override = {}) => ({ affiliation: 'maternal', gender: 'f
     const [pending] = await db.select().from(eventParticipants).where(and(eq(eventParticipants.eventId,'event-paid'),eq(eventParticipants.userId,actor)));
     assert.equal(pending.status,'pending'); assert.equal(url.searchParams.get('custom1'),pending.id);
     const again = await event.registerForEvent('event-paid',actor,undefined,{extraAdults:2},undefined,0.01);
-    assert.equal(again.success,true); assert.equal(new URL(again.paymentUrl).searchParams.get('price'),'300');
+    assert.equal(again.success,false); const unchanged=await event.registerForEvent('event-paid',actor,undefined,{family:{self:true},childIds:['child-mom']}); assert.equal(unchanged.success,true); assert.equal(new URL(unchanged.paymentUrl).searchParams.get('price'),'125');
     const rows = await db.select().from(eventParticipants).where(and(eq(eventParticipants.eventId,'event-paid'),eq(eventParticipants.userId,actor)));
     assert.equal(rows.length,1); assert.equal(rows[0].id,pending.id); assert.equal(rows[0].status,'pending');
     actor='admin'; assert.equal((await event.updateEventParticipantStatus(pending.id,'paid')).success,false);

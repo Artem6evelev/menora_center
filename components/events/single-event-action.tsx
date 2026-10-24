@@ -1,4 +1,5 @@
 "use client";
+import { openCurrentUserEventPayment } from "@/actions/event-payment";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -75,9 +76,13 @@ export default function SingleEventActions({
 
     const res = await registerForEvent(event.id, userId!, extraData);
 
-    if (res.success && res.paymentUrl) {
-      // Перекидываем на оплату Shutafim
-      window.location.href = res.paymentUrl;
+    if (res.success && res.paymentUrl && res.registrationId) {
+      try {
+        const payment = await openCurrentUserEventPayment(res.registrationId);
+        if (!payment.success) { alert(payment.error); return; }
+        window.location.href = payment.paymentUrl;
+      } catch { alert("Не удалось открыть оплату. Попробуйте ещё раз."); }
+      finally { setIsLoading(false); }
     } else {
       alert("Ошибка: " + res.message);
       setIsLoading(false);

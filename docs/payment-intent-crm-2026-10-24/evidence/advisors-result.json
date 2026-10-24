@@ -1,0 +1,7 @@
+{
+  "target": "fresh disposable native PostgreSQL on loopback 35434, canonical migrations",
+  "cliVersion": "2.122.0",
+  "exitCode": 0,
+  "signal": null,
+  "productionConnected": false
+}

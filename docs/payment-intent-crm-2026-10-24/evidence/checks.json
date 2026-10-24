@@ -1,0 +1,535 @@
+{
+  "status": "PASS",
+  "groups": 39,
+  "checks": 1074,
+  "baselineChecks": 966,
+  "addedChecks": 108,
+  "addedCoverage": {
+    "paymentIntentCasesPerSqlEngine": 42,
+    "migrationCasesPg17Pg18": 8,
+    "newBrowserCases": 14,
+    "additionalHistoricalToCurrentMigrationChecks": 2
+  },
+  "counting": "Final successful supported executions only. Failed/partial/repeated runs excluded. PGlite/native runs count as distinct SQL-engine executions.",
+  "gates": {
+    "lint": {
+      "exitCode": 0,
+      "errors": 0,
+      "preExistingWarnings": 30
+    },
+    "typecheck": {
+      "exitCode": 0,
+      "command": "npm run typecheck"
+    },
+    "build": {
+      "command": "npm run build",
+      "exitCode": 0,
+      "copy": "/tmp/menora-payment-intent-build-20261024",
+      "seconds": 39.85,
+      "realEnvCopied": false,
+      "database": "unavailable synthetic loopback 127.0.0.1:1",
+      "log": "build.log"
+    },
+    "advisors": {
+      "target": "fresh disposable native PostgreSQL on loopback 35434, canonical migrations",
+      "cliVersion": "2.122.0",
+      "exitCode": 0,
+      "signal": null,
+      "productionConnected": false
+    }
+  },
+  "results": [
+    {
+      "suite": "regression",
+      "checks": 36,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/regression.cjs"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/regression/regression-results.json",
+      "proofKey": "checks",
+      "proofSha256": "1588632186e75eacd5a40f7e766a65776aa7fecc3e6c0f75f5635e43697b9693"
+    },
+    {
+      "suite": "render",
+      "checks": 21,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/render.cjs"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/render/render-results.json",
+      "proofKey": "checks",
+      "proofSha256": "6261990277428d14acf4c44038987aac8b9fb7ffc2063d40e3c002830cb9067f"
+    },
+    {
+      "suite": "migrations",
+      "checks": 8,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/migrations.cjs"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/migrations/migration-results.json",
+      "proofKey": "checks",
+      "proofSha256": "5fa5266412cf56576389df558a1e91e6f7d9277a1a0879c3aba4a31546a28b3a"
+    },
+    {
+      "suite": "production",
+      "checks": 28,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/production.cjs"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/production/production-results.json",
+      "proofKey": "checks",
+      "proofSha256": "24be5310085127539d02fb468a5033704404bc50ce43b561a88309312bb5aacd"
+    },
+    {
+      "suite": "sso-callback",
+      "checks": 10,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/sso-callback.cjs"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/sso-callback/command.log",
+      "proofKey": "stdout PASS lines",
+      "proofSha256": "c19d222f9319c3301381395aa9349982bfad2a46312158c14399a15ba6396f03"
+    },
+    {
+      "suite": "identity-schema",
+      "checks": 23,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/identity-schema.cjs"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/identity-schema/identity-results.json",
+      "proofKey": "checks",
+      "proofSha256": "26a843078c2a85557e5efa8a14db360d3092cc5f3afe22e15020d09513863dab"
+    },
+    {
+      "suite": "miniapp-auth",
+      "checks": 87,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/miniapp-auth.cjs"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/miniapp-auth/miniapp-auth-results.json",
+      "proofKey": "checks",
+      "proofSha256": "29f2ae9e3c1fbccb504e52a2c8bef21aafd0fd54fda3ec57c373e72d8180b41b"
+    },
+    {
+      "suite": "miniapp-ui-server",
+      "checks": 57,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/miniapp-ui-server.cjs"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/miniapp-ui-server/miniapp-ui-server-results.json",
+      "proofKey": "checks",
+      "proofSha256": "66792ec6ef42c9a3cbf875082f9dd88faf0e7c1ddfbfb26807fbf78ce247be2b"
+    },
+    {
+      "suite": "miniapp-ui-bridge",
+      "checks": 8,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/miniapp-ui-bridge.cjs"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/miniapp-ui-bridge/miniapp-ui-bridge-results.json",
+      "proofKey": "checks",
+      "proofSha256": "82e821edb0f20313a69e04e3eee4db2828bbbaeda6be7ccbbb56ea4ed6c8d0da"
+    },
+    {
+      "suite": "miniapp-cache",
+      "checks": 6,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/miniapp-cache.cjs"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/miniapp-cache/results.json",
+      "proofKey": "checks",
+      "proofSha256": "d21e8c08f2ee50f52f243301450909b2674c6d023787a0a6d166918cc4b2ca1f"
+    },
+    {
+      "suite": "miniapp-query-plans",
+      "checks": 2,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/miniapp-query-plans.cjs"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/miniapp-query-plans/results.json",
+      "proofKey": "checks",
+      "proofSha256": "4b8f8e94930076d8d9baba25265eabfba40c51b93808595fd2d25f6ebf99ff45"
+    },
+    {
+      "suite": "event-share",
+      "checks": 3,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/event-share.cjs"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/event-share/event-share-results.json",
+      "proofKey": "checks",
+      "proofSha256": "f215915dd119741e50cb7ecbe7687fab313ecdb4fcb573ebf37daac93307e4f6"
+    },
+    {
+      "suite": "telegram-migrations",
+      "checks": 12,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/telegram-migrations.cjs"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/telegram-migrations/telegram-migrations-results.json",
+      "proofKey": "checks",
+      "proofSha256": "9b8f32cb9787476ab4a98450659b5a2009f5f22ff83c1fa67ab805f270883705"
+    },
+    {
+      "suite": "telegram-tools",
+      "checks": 5,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/telegram-tools.cjs"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/telegram-tools/telegram-tools-results.json",
+      "proofKey": "checks",
+      "proofSha256": "76f57475b6e2815b58a049dd1d2f68541708e45ee924a823267b042f5bab7622"
+    },
+    {
+      "suite": "spec-update",
+      "checks": 17,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/spec-update.cjs"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/spec-update/spec-results.json",
+      "proofKey": "checks",
+      "proofSha256": "affb8b8ae0f413308e9150d0196dc664a5483ec54be20c2bdaac8bfe4b083c6e"
+    },
+    {
+      "suite": "telegram-release",
+      "checks": 211,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/telegram-release.cjs"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/telegram-release/telegram-release-results.json",
+      "proofKey": "checks",
+      "proofSha256": "1229929e57d72041d2686a93e3c7504abdf0e4b63beb40346ed31249587304fb"
+    },
+    {
+      "suite": "telegram-native",
+      "checks": 213,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/telegram-native.cjs"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/telegram-native/telegram-native-results.json",
+      "proofKey": "checks",
+      "proofSha256": "38a4b7c20f73487ebbf8f94d22ceb0ce7837219a0d202cea9e13bb66a9beb653"
+    },
+    {
+      "suite": "adoption-native",
+      "checks": 28,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/adoption-native.cjs"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/adoption-native/adoption-native-results.json",
+      "proofKey": "checks",
+      "proofSha256": "c4d97711057aff9f1e5cb7240972e0faa357fafa5f502c0d8980df9503861c1d"
+    },
+    {
+      "suite": "event-participant-delete-browser",
+      "checks": 10,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-payment-intent-browser-runner.cjs",
+        "event-participant-delete-browser"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/event-participant-delete-browser/event-participant-delete-browser-results.json",
+      "proofKey": "checks",
+      "proofSha256": "11c3f8faa553f210f3229ea9206e6194359d97590a15bc8e535f04d5b6345b80"
+    },
+    {
+      "suite": "telegram-release-browser",
+      "checks": 32,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-payment-intent-browser-runner.cjs",
+        "telegram-release-browser"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/telegram-release-browser/telegram-release-browser-results.json",
+      "proofKey": "checks",
+      "proofSha256": "287f6a202576c7dd89aeb32b701d3c1e329b333e4313279dba7762ce32dece53"
+    },
+    {
+      "suite": "miniapp-payment-ux-browser",
+      "checks": 15,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-payment-intent-browser-runner.cjs",
+        "miniapp-payment-ux-browser"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/miniapp-payment-ux-browser/miniapp-payment-ux-browser-results.json",
+      "proofKey": "checks",
+      "proofSha256": "0abf2c268aec589886de032d8f80379e30d1c07365f505526117ea7d000bf293"
+    },
+    {
+      "suite": "miniapp-performance-browser",
+      "checks": 14,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-payment-intent-browser-runner.cjs",
+        "miniapp-performance-browser"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/miniapp-performance-browser/results.json",
+      "proofKey": "checks",
+      "proofSha256": "5f4b5a1d8b31ad50820b58866a5a02d1243ba303aac1a19ac37408470a8d4664"
+    },
+    {
+      "suite": "miniapp-ui-browser",
+      "checks": 39,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-payment-intent-browser-runner.cjs",
+        "miniapp-ui-browser"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/miniapp-ui-browser/miniapp-ui-browser-results.json",
+      "proofKey": "checks",
+      "proofSha256": "e6ec7dd39bc31fa7f4bc9fd106f22b4e01ce783160c5f80cd536b743f1776e7a"
+    },
+    {
+      "suite": "miniapp-polish-browser",
+      "checks": 14,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-payment-intent-browser-runner.cjs",
+        "miniapp-polish-browser"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/miniapp-polish-browser/miniapp-polish-browser-results.json",
+      "proofKey": "checks",
+      "proofSha256": "e66da70b3ae38696db246836b456f2db58ff52112cdfd0e7b44c5925310d339f"
+    },
+    {
+      "suite": "miniapp-image-share-browser",
+      "checks": 21,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-payment-intent-browser-runner.cjs",
+        "miniapp-image-share-browser"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/miniapp-image-share-browser/miniapp-image-share-browser-results.json",
+      "proofKey": "checks",
+      "proofSha256": "3615009df218862098b8a776c14d6e1cbde34bf04ddddccbcfb4dfe2bdb3ca76"
+    },
+    {
+      "suite": "miniapp-russian-ux-browser",
+      "checks": 10,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-payment-intent-browser-runner.cjs",
+        "miniapp-russian-ux-browser"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/miniapp-russian-ux-browser/miniapp-russian-ux-browser-results.json",
+      "proofKey": "checks",
+      "proofSha256": "cf52f842a542b0b8c6231253f76deb651262fcb8b1871f49b27e8cfb85c15bcc"
+    },
+    {
+      "suite": "miniapp-onboarding-browser",
+      "checks": 4,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-payment-intent-browser-runner.cjs",
+        "miniapp-onboarding-browser"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/miniapp-onboarding-browser/miniapp-onboarding-browser-results.json",
+      "proofKey": "checks",
+      "proofSha256": "7175e8e72dc7472ba2c789fbfcdd47ae4d6b1f678793f3e6244fa0e746969a3b"
+    },
+    {
+      "suite": "miniapp-kids-browser",
+      "checks": 21,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-payment-intent-browser-runner.cjs",
+        "miniapp-kids-browser"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/miniapp-kids-browser/miniapp-kids-browser-results.json",
+      "proofKey": "checks",
+      "proofSha256": "567cd16debdc0f59ace8ad7908bb678a8e0bdd04e68f72d47a8a68319f409c41"
+    },
+    {
+      "suite": "miniapp-kids-entry-browser",
+      "checks": 16,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-payment-intent-browser-runner.cjs",
+        "miniapp-kids-entry-browser"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/miniapp-kids-entry-browser/miniapp-kids-entry-browser-results.json",
+      "proofKey": "checks",
+      "proofSha256": "d3911df09c1c1096106fcbe2d55dd115df92e56ec7a248c187c8c5073664d398"
+    },
+    {
+      "suite": "miniapp-bottom-nav-browser",
+      "checks": 15,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-payment-intent-browser-runner.cjs",
+        "miniapp-bottom-nav-browser"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/miniapp-bottom-nav-browser/miniapp-bottom-nav-browser-results.json",
+      "proofKey": "checks",
+      "proofSha256": "87ec79094fd16380a089f441db22301374363dea3c83561c68c40ed1e9af9a53"
+    },
+    {
+      "suite": "miniapp-images-browser",
+      "checks": 4,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-payment-intent-browser-runner.cjs",
+        "miniapp-images-browser"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/miniapp-images-browser/results.json",
+      "proofKey": "checks",
+      "proofSha256": "ab6be64e915956cd21a9f16a2fde17566b4e4444acbfecf436e49f0c53a6df34"
+    },
+    {
+      "suite": "callback-browser",
+      "checks": 10,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-payment-intent-browser-runner.cjs",
+        "callback-browser"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/callback-browser/callback-browser.json",
+      "proofKey": "checks",
+      "proofSha256": "6063ccd383c4cf909eabd90356c3704bc02a1d479ee2737d1f35550a70945b87"
+    },
+    {
+      "suite": "spec-browser",
+      "checks": 32,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-payment-intent-browser-runner.cjs",
+        "spec-browser"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/spec-browser/results.json",
+      "proofKey": "checks",
+      "proofSha256": "c6819b36e4a66f920aea29e21451b169a35c9fa81b5fb43941892b1cf0c6f378"
+    },
+    {
+      "suite": "miniapp-participant-parity-browser",
+      "checks": 11,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-payment-intent-browser-runner.cjs",
+        "miniapp-participant-parity-browser"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/miniapp-participant-parity-browser/results.json",
+      "proofKey": "checks",
+      "proofSha256": "96822b613f6e2a8290065cc11e020a6dcdf7c1696e1eafcf35cf078e240f75e5"
+    },
+    {
+      "suite": "miniapp-ui-production",
+      "checks": 2,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-payment-intent-browser-runner.cjs",
+        "miniapp-ui-production"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/miniapp-ui-production/miniapp-ui-production-results.json",
+      "proofKey": "checks",
+      "proofSha256": "69b46e905c1ca0db48c5d259daff688e8b62d06bda434605dbdba4164c044d18"
+    },
+    {
+      "suite": "telegram-bundle",
+      "checks": 1,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-payment-intent-browser-runner.cjs",
+        "telegram-bundle"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/bundle/bundle.json",
+      "proofKey": "checks",
+      "proofSha256": "3ed7a71fed2a2d594ceec513f913860f4bf16812c75f575a432edeb3489b62ff"
+    },
+    {
+      "suite": "miniapp-performance-bundle",
+      "checks": 6,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "/tmp/menora-payment-intent-browser-runner.cjs",
+        "miniapp-performance-bundle"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/bundle/performance-bundle.json",
+      "proofKey": "checks",
+      "proofSha256": "cfc4552a79ea2e83b5af4b2745a8904485bf7ae3035e1b0725cc20ecc314f43e"
+    },
+    {
+      "suite": "payment-intent-migrations",
+      "checks": 8,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/payment-intent-migrations.cjs"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/payment-intent-migrations/payment-intent-migrations-results.json",
+      "proofKey": "checks",
+      "proofSha256": "5113320ac27041f0b462b265d52c4390b47f5af897f26efb1620639566a5714b"
+    },
+    {
+      "suite": "payment-intent-browser",
+      "checks": 14,
+      "exitCode": 0,
+      "command": [
+        "node",
+        "tests/community/payment-intent-browser.cjs"
+      ],
+      "proof": "/tmp/menora-payment-intent-evidence-20261024/payment-intent-browser/payment-intent-browser-results.json",
+      "proofKey": "checks",
+      "proofSha256": "3dc99d18c7e2db86eea845810423136fd24c3bc3583502f34137be946eee4e5d"
+    }
+  ],
+  "productionTouched": false,
+  "realMessageDeliveries": 0,
+  "realPayments": 0,
+  "nativeTelegramWebViewVerified": false,
+  "privateEvidence": "/tmp/menora-payment-intent-evidence-20261024"
+}

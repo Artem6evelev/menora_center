@@ -652,6 +652,10 @@ export const eventPaymentAttempts = pgTable(
       .defaultNow()
       .notNull(),
     confirmedAt: timestamp("confirmed_at", { withTimezone: true }),
+    openedAt: timestamp("opened_at", { withTimezone: true }),
+    lastOpenedAt: timestamp("last_opened_at", { withTimezone: true }),
+    openCount: integer("open_count").default(0).notNull(),
+    lastOpenedSource: text("last_opened_source", { enum: ["telegram", "website"] }),
   },
   (t) => ({
     amountCheck: check(
@@ -662,6 +666,8 @@ export const eventPaymentAttempts = pgTable(
       "event_payment_attempts_status_check",
       sql`${t.status} IN ('pending','paid','cancelled') AND ${t.selectionHash} ~ '^[0-9a-f]{64}$'`,
     ),
+    openCountCheck: check("event_payment_attempts_open_count_check", sql`${t.openCount} >= 0`),
+    openSourceCheck: check("event_payment_attempts_open_source_check", sql`${t.lastOpenedSource} IS NULL OR ${t.lastOpenedSource} IN ('telegram', 'website')`),
     ownerIdx: index("event_payment_attempts_owner_idx").on(t.userId, t.eventId),
   }),
 ).enableRLS();

@@ -41,7 +41,7 @@ async function pending(page) {
       const { context, page, subject } = await setup(width); try {
         await register(page, true); await pending(page);
         assert.match(await page.locator('#miniapp-receipt .miniapp-total').innerText(), /125[,.]35/);
-        await page.getByRole('button', { name: 'Оплатить участие', exact: true }).click();
+        await page.getByRole('button', { name: 'Оплатить участие', exact: true }).click(); await page.waitForFunction(() => window.__miniappFixture.calls.links.length > 0);
         const url = new URL(await page.evaluate(() => window.__miniappFixture.calls.links.at(-1)));
         assert.equal(url.protocol, 'https:'); assert.equal(url.hostname, 'shutaf.im'); assert.equal(url.searchParams.get('price'), '125.35');
         const s = await state(context, subject); assert.equal(s.registrations[0].status, 'pending'); assert.equal(s.attempts[0].confirmed_at, null);
@@ -71,7 +71,7 @@ async function pending(page) {
   });
   await test('return/paid query flags and activation/reload never promote pending or remove payment CTA', async () => {
     const { context, page, subject } = await setup(); try {
-      await register(page); await page.getByRole('button', { name: 'Оплатить участие', exact: true }).click();
+      await register(page); await page.getByRole('button', { name: 'Оплатить участие', exact: true }).click(); await page.waitForFunction(() => window.__miniappFixture.calls.links.length > 0);
       await page.evaluate(() => window.__miniappFixture.emit('activated'));
       await page.goto(base + '/miniapp?event=fixture-paid&paid=true&return=success'); await pending(page);
       await page.getByRole('button', { name: 'Оплатить участие', exact: true }).waitFor();
@@ -93,7 +93,7 @@ async function pending(page) {
       const paid = rows.filter({ has: page.getByRole('heading', { name: 'SYNTHETIC_PAID_EVENT', exact: true }) });
       const free = rows.filter({ has: page.getByRole('heading', { name: 'PRIVATE_SYNTHETIC_EVENT_TITLE', exact: true }) });
       await paid.getByText('🟡 Ожидает оплаты', { exact: true }).waitFor(); assert.match(await paid.innerText(), /К оплате:.*100[,.]10/);
-      await paid.getByRole('button', { name: 'Оплатить', exact: true }).click(); assert.equal(new URL(await page.evaluate(() => window.__miniappFixture.calls.links.at(-1))).searchParams.get('price'), '100.1');
+      await paid.getByRole('button', { name: 'Оплатить', exact: true }).click(); await page.waitForFunction(() => window.__miniappFixture.calls.links.length > 0); assert.equal(new URL(await page.evaluate(() => window.__miniappFixture.calls.links.at(-1))).searchParams.get('price'), '100.1');
       await free.getByText('✅ Зарегистрирован', { exact: true }).waitFor(); assert.equal(await free.getByRole('button', { name: 'Оплатить', exact: true }).count(), 0);
       await state(context, subject, 'paid'); await page.reload(); await page.locator('.miniapp-nav button').nth(2).click();
       await paid.getByText('✅ Подтверждено', { exact: true }).waitFor(); assert.equal(await paid.getByRole('button', { name: 'Оплатить', exact: true }).count(), 0);
@@ -123,7 +123,7 @@ async function pending(page) {
         window.__paymentOpens = []; window.open = (...args) => { window.__paymentOpens.push(args); return null; };
         if (sdk === 'missing') delete window.Telegram.WebApp.openLink; else window.Telegram.WebApp.openLink = () => { throw new Error('Unsupported method'); };
       }, sdk);
-      await page.getByRole('button', { name: 'Оплатить участие', exact: true }).click(); const calls = await page.evaluate(() => window.__paymentOpens);
+      await page.getByRole('button', { name: 'Оплатить участие', exact: true }).click(); await page.waitForFunction(() => window.__paymentOpens.length > 0); const calls = await page.evaluate(() => window.__paymentOpens);
       assert.equal(calls.length, 1); assert.equal(new URL(calls[0][0]).protocol, 'https:'); assert.equal(calls[0][1], '_blank'); assert.equal(calls[0][2], 'noopener,noreferrer');
       await pending(page); assert.equal((await state(context, subject)).registrations[0].status, 'pending');
     } finally { await context.close(); }

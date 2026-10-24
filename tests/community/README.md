@@ -281,3 +281,40 @@ or non-PGlite access. Identity is synthetic; no real payment or external service
 The shared HTTP Clerk adapter now reports loading until client mount. This keeps
 SSR sign-in buttons disabled until their handlers hydrate, matching SDK readiness;
 the website spec assertions and production authentication remain unchanged.
+
+
+## Payment intent and warm event applications (24 October 2026)
+
+The additive CLI-generated migration is mirrored byte-for-byte in the canonical
+`drizzle/` journal under the same timestamped basename. Historical migrations and
+owner adoption artifacts are frozen. Apply the new migration once through the
+reviewed canonical runner, before deploying the application; no production rollout
+is part of this change. See [report](../../docs/payment-intent-crm-2026-10-24/REPORT.md).
+
+```sh
+COMMUNITY_TEST_OUTPUT=/tmp/menora-intent-sql node tests/community/payment-intent-migrations.cjs
+COMMUNITY_TEST_OUTPUT=/tmp/menora-intent-release node tests/community/telegram-release.cjs
+COMMUNITY_TEST_OUTPUT=/tmp/menora-intent-native node tests/community/telegram-native.cjs
+MINIAPP_UI_FIXTURE=/tmp/menora-payment-intent-fixture-20261024 node tests/community/payment-intent-fixture.cjs
+# Start that disposable fixture on loopback3372; match its synthetic NEXT_PUBLIC_APP_URL.
+COMMUNITY_BROWSER_BASE=http://127.0.0.1:3372 COMMUNITY_TEST_OUTPUT=/tmp/menora-intent-browser node tests/community/payment-intent-browser.cjs
+```
+
+`payment-intent-cases.cjs` is shared by both real SQL engines. It covers default
+unopened state, immutable first open, repeated/concurrent openings, strict inputs,
+session/origin/account isolation, deleted and paid targets, unsafe stored URLs,
+rollback, honest CRM states and cutoff, canonical Telegram reminders, transport
+blocks, unchanged consent and manual encoded WhatsApp links. Browser cases use the
+actual dashboard and event components/actions/routes/SQL with synthetic identity,
+SDK, Bot API and intercepted provider pages. No real message or payment is sent.
+Run browser cohorts sequentially because their synthetic database resets are shared.
+
+The existing payment browser assertions now wait for the new asynchronous server
+open response before inspecting SDK/fallback links. The website regression now
+expects immutable pending selections: a changed composition fails instead of
+repricing a handed-off attempt. The no-attempt deletion fixture explicitly models
+a legacy website row; new website checkout creates the common attempt. All existing
+deletion safety assertions remain. Frozen adoption-SQL compatibility checks run on
+the exact historical prefix, while current-ledger cases prove that the frozen tool
+fails closed and preserves data. Native future-migration probes use the latest
+journal timestamp rather than the historical adoption marker timestamp.

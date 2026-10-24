@@ -71,7 +71,7 @@ async function paymentState(context, id) {
       await page.getByRole('heading', { name: 'Осталось оплатить участие', exact: true }).waitFor();
       const state = await paymentState(context, id); assert.equal(state.attempts[0].amount_agorot, 45090); assert.equal(state.registrations[0].extra_data.extraAdults, 2);
       assert.equal(state.registrations[0].extra_data.extraKids, 0); assert.equal(state.registrations[0].extra_data.childIds.length, 2);
-      await page.getByRole('button', { name: 'Оплатить участие', exact: true }).click();
+      await page.getByRole('button', { name: 'Оплатить участие', exact: true }).click(); await page.waitForFunction(() => window.__miniappFixture.calls.links.length > 0);
       const url = new URL(await page.evaluate(() => window.__miniappFixture.calls.links.at(-1)));
       for (const [key, value] of Object.entries({ price: '450.9', quantity: '1', cur: 'ILS', payments: '1', lang: 'ru', custom1: state.registrations[0].id })) assert.equal(url.searchParams.get(key), value);
     } finally { await context.close(); }

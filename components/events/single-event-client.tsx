@@ -1,4 +1,5 @@
 "use client";
+import { openCurrentUserEventPayment } from "@/actions/event-payment";
 
 import { useState, useEffect } from "react";
 import ChildEditor from "@/components/community/child-editor";
@@ -198,9 +199,11 @@ export default function SingleEventClient({
 
     if (res.success) {
       if (res.paymentUrl) {
-        // 🔥 ОТКРЫВАЕМ IFRAME ВМЕСТО РЕДИРЕКТА 🔥
+        if (!res.registrationId) throw new Error("Missing registration");
+        const payment = await openCurrentUserEventPayment(res.registrationId);
+        if (!payment.success) { alert(payment.error); return; }
         setIsRegModalOpen(false);
-        setIframeUrl(res.paymentUrl);
+        setIframeUrl(payment.paymentUrl);
         setIsLoading(false);
       } else {
         setIsRegistered(true);

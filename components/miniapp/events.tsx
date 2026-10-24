@@ -188,11 +188,17 @@ export default function MiniAppEvents({
     "Статус уточняется";
   const pendingPayment = !!receipt && !detail?.event.isFree && receipt.status === "pending";
   const confirmed = !!receipt && ["paid", "confirmed"].includes(receipt.status);
-  function pay(url: string) {
+  async function pay(registrationId: string) {
+    if (requestPending.current) return;
+    requestPending.current = true;
+    setBusy(true); setError(false);
     try {
+      const { data } = await miniAppRequest<{ paymentUrl: string }>("payments/open", { body: { registrationId } });
+      if (!alive.current) return;
       cache.invalidate("registrations", `events?id=${encodeURIComponent(eventId)}`);
-      openPayment(url);
-    } catch { setError(true); }
+      openPayment(data.paymentUrl);
+    } catch { if (alive.current) setError(true); }
+    finally { requestPending.current = false; if (alive.current) setBusy(false); }
   }
   return (
     <div className="space-y-5" data-miniapp-events={mode}>
@@ -255,7 +261,8 @@ export default function MiniAppEvents({
                   {receipt.paymentUrl ? (
                     <button
                       className="miniapp-primary w-full"
-                      onClick={() => pay(receipt.paymentUrl!)}
+                      disabled={busy}
+                      onClick={() => void pay(receipt.registrationId)}
                     >
                       {c.pay}
                     </button>
@@ -329,7 +336,7 @@ export default function MiniAppEvents({
                       <p>{row.status === "pending" ? `${c.total}: ` : ""}{money(row.amountAgorot, language)}</p>
                     )}
                     {row.status === "pending" && !row.event.isFree && (row.paymentUrl
-                      ? <button className="miniapp-primary w-full" onClick={() => pay(row.paymentUrl!)}>Оплатить</button>
+                      ? <button className="miniapp-primary w-full" disabled={busy} onClick={() => void pay(row.id)}>Оплатить</button>
                       : <><p>Регистрация создана, но ссылка на оплату временно недоступна.</p><MiniAppContact label="Связаться с Menorah Center" /></>)}
                   </section>
                 ))}

@@ -54,17 +54,12 @@ module.exports = async ({ test, source, db, pg, login, get, post, setActor }) =>
     assert.equal((await remove(fixture.registrationId)).success, true);
     assert.deepEqual(await rows(fixture.registrationId), { participants: [], attempts: [] });
   });
-  await test('staff deletes website-created pending registration without a payment attempt through the same action', async () => {
-    const eventId = await event();
-    setActor(owner.id);
-    try {
-      const result = await actions.registerForEvent(eventId, owner.id, null, { family: { self: true }, childIds: [], extraAdults: 0, extraKids: 0 });
-      assert.equal(result.success, true); assert.ok(result.paymentUrl);
-    } finally { setActor(null); }
-    const [participant] = (await pg.query('select * from event_participants where event_id=$1', [eventId])).rows;
-    assert.equal(participant.status, 'pending'); assert.equal((await rows(participant.id)).attempts.length, 0);
-    assert.equal((await remove(participant.id)).success, true);
-    assert.deepEqual(await rows(participant.id), { participants: [], attempts: [] });
+  await test('staff deletes legacy website pending registration without a payment attempt through the same action', async () => {
+    const eventId = await event(), id = 'delete-legacy-website';
+    await pg.query("insert into event_participants(id,event_id,user_id,status) values($1,$2,$3,'pending')", [id,eventId,owner.id]);
+    assert.equal((await rows(id)).attempts.length, 0);
+    assert.equal((await remove(id)).success, true);
+    assert.deepEqual(await rows(id), { participants: [], attempts: [] });
   });
   await test('staff deletes pending registration and cancelled attempt together', async () => {
     const fixture = await registration();

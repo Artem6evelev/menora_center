@@ -24,10 +24,14 @@ import MassWhatsAppModal from "../events/mass-whatsapp-modal";
 import dayjs from "dayjs";
 import "dayjs/locale/ru";
 import type { events as eventsTable } from "@/lib/db/schema";
+import { applicationComposition, applicationFilters, matchesPaymentFilter, paymentIntentState, type ApplicationFilter } from "@/lib/community/payment-intent";
+import PaymentIntentStatus from "./payment-intent-status";
+import EventPaymentReminderModal from "./event-payment-reminder-modal";
 
-type ApplicationEvent = typeof eventsTable.$inferSelect & {
+type ApplicationEvent = Omit<typeof eventsTable.$inferSelect, "paymentUrl"> & {
   totalParticipants: number;
   pendingParticipants: number;
+  paymentOpenedParticipants: number;
 };
 type ParticipantRow = Awaited<ReturnType<typeof getEventParticipantsList>>[number];
 
@@ -50,7 +54,7 @@ const getAge = (dob: string) => {
 };
 
 // === 1. КАСТОМНЫЙ КОМПОНЕНТ ВЫБОРА СОБЫТИЯ ===
-const CustomEventSelect = ({ events, selectedId, onChange }: any) => {
+const CustomEventSelect = ({ events, selectedId, onChange }: { events: ApplicationEvent[]; selectedId: string; onChange: (id: string) => void }) => {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -64,7 +68,7 @@ const CustomEventSelect = ({ events, selectedId, onChange }: any) => {
   }, []);
 
   const selectedEvent =
-    events.find((e: any) => e.id === selectedId) || events[0];
+    events.find((e) => e.id === selectedId) || events[0];
 
   return (
     <div className="relative w-full md:w-[450px]" ref={ref}>
@@ -92,6 +96,7 @@ const CustomEventSelect = ({ events, selectedId, onChange }: any) => {
             >
               {selectedEvent ? selectedEvent.title : "Выберите событие"}
             </span>
+            {!!selectedEvent?.paymentOpenedParticipants && <span className="shrink-0 text-xs font-bold text-orange-600">🔥 {selectedEvent.paymentOpenedParticipants}</span>}
             {selectedEvent?.pendingParticipants > 0 && (
               <span className="bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-md animate-pulse shrink-0 uppercase tracking-widest">
                 {selectedEvent.pendingParticipants} новых
@@ -122,7 +127,7 @@ const CustomEventSelect = ({ events, selectedId, onChange }: any) => {
                 Нет доступных событий
               </div>
             )}
-            {events.map((ev: any) => (
+            {events.map((ev) => (
               <button
                 key={ev.id}
                 onClick={() => {
@@ -155,6 +160,7 @@ const CustomEventSelect = ({ events, selectedId, onChange }: any) => {
                   </span>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
+                  {ev.paymentOpenedParticipants > 0 && <span className="text-xs text-orange-600">🔥 {ev.paymentOpenedParticipants} открыли оплату</span>}
                   {ev.pendingParticipants > 0 && (
                     <span className="bg-amber-100 text-amber-600 text-[10px] font-black px-2 py-1 rounded-md uppercase tracking-widest">
                       {ev.pendingParticipants} ожидает
@@ -174,7 +180,7 @@ const CustomEventSelect = ({ events, selectedId, onChange }: any) => {
 };
 
 // === 2. КАСТОМНЫЙ КОМПОНЕНТ СТАТУСА ДЛЯ ТАБЛИЦЫ ===
-const StatusSelect = ({ currentStatus, onChange }: any) => {
+const StatusSelect = ({ currentStatus, onChange }: { currentStatus: string; onChange: (status: string) => void }) => {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -301,61 +307,51 @@ export default function ApplicationsClient({ events }: { events: ApplicationEven
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [isReminderOpen, setIsReminderOpen] = useState(false);
+  const [paymentFilter, setPaymentFilter] = useState<ApplicationFilter>("all");
+  const [reminderId, setReminderId] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const statusPending = useRef(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deletingParticipantId, setDeletingParticipantId] = useState<string | null>(null);
   const deletePending = useRef(false);
 
   useEffect(() => {
-    const fetchParticipants = async () => {
-      if (!selectedEventId) return;
-      setIsLoading(true);
-      const data = await getEventParticipantsList(selectedEventId);
-      setParticipants(data);
-      setIsLoading(false);
-    };
-    fetchParticipants();
+    let active = true;
+    if (!selectedEventId) return;
+    setIsLoading(true); setActionError(null); setParticipants([]);
+    getEventParticipantsList(selectedEventId).then(data => {
+      if (active) setParticipants(data);
+    }).catch(() => { if (active) setActionError("Не удалось загрузить заявки"); })
+      .finally(() => { if (active) setIsLoading(false); });
+    return () => { active = false; };
   }, [selectedEventId]);
 
-  const handleStatusChange = async (
-    participantId: string,
-    newStatus: string,
-  ) => {
-    const participantToUpdate = participants.find(
-      (p) => p.participant.id === participantId,
-    );
-    if (!participantToUpdate) return;
-    const oldStatus = participantToUpdate.participant.status;
-
-    setParticipants((prev) =>
-      prev.map((p) =>
-        p.participant.id === participantId
-          ? { ...p, participant: { ...p.participant, status: newStatus } }
-          : p,
-      ),
-    );
-
-    if (oldStatus === "pending" && newStatus !== "pending") {
-      setEventsList((prev) =>
-        prev.map((e) =>
-          e.id === selectedEventId
-            ? {
-                ...e,
-                pendingParticipants: Math.max(0, e.pendingParticipants - 1),
-              }
-            : e,
-        ),
-      );
-    } else if (oldStatus !== "pending" && newStatus === "pending") {
-      setEventsList((prev) =>
-        prev.map((e) =>
-          e.id === selectedEventId
-            ? { ...e, pendingParticipants: e.pendingParticipants + 1 }
-            : e,
-        ),
-      );
-    }
-    await updateEventParticipantStatus(participantId, newStatus);
+  const handleStatusChange = async (participantId: string, newStatus: string) => {
+    if (statusPending.current) return;
+    const row = participants.find(p => p.participant.id === participantId);
+    if (!row) return;
+    statusPending.current = true; setActionError(null);
+    try {
+      const result = await updateEventParticipantStatus(participantId, newStatus);
+      if (!result.success) { setActionError(result.error || "Не удалось изменить запись"); return; }
+      const oldStatus = row.participant.status;
+      setParticipants(prev => prev.map(p => p.participant.id === participantId
+        ? { ...p, participant: { ...p.participant, status: newStatus } } : p));
+      const wasOpened = paymentIntentState(oldStatus, row.paymentAttempt) === "opened";
+      const isOpened = paymentIntentState(newStatus, row.paymentAttempt) === "opened";
+      setEventsList(prev => prev.map(e => e.id === row.participant.eventId ? { ...e,
+        pendingParticipants: Math.max(0, e.pendingParticipants + Number(newStatus === "pending") - Number(oldStatus === "pending")),
+        paymentOpenedParticipants: Math.max(0, e.paymentOpenedParticipants + Number(isOpened) - Number(wasOpened)),
+      } : e));
+    } catch { setActionError("Не удалось изменить запись"); }
+    finally { statusPending.current = false; }
   };
+
+  async function copyRegistrationId(id: string) {
+    try { await navigator.clipboard.writeText(id); setCopiedId(id); }
+    catch { setActionError("Не удалось скопировать ID. Выделите его и скопируйте вручную."); }
+  }
 
   const handleDeleteParticipant = async (participantId: string) => {
     if (deletePending.current) return;
@@ -384,6 +380,8 @@ export default function ApplicationsClient({ events }: { events: ApplicationEven
       setEventsList(prev => prev.map(item => item.id === eventId ? {
         ...item,
         totalParticipants: Math.max(0, item.totalParticipants - 1),
+        paymentOpenedParticipants: paymentIntentState(oldStatus, participantToRemove.paymentAttempt) === "opened"
+          ? Math.max(0, item.paymentOpenedParticipants - 1) : item.paymentOpenedParticipants,
         pendingParticipants: oldStatus === "pending"
           ? Math.max(0, item.pendingParticipants - 1) : item.pendingParticipants,
       } : item));
@@ -402,10 +400,8 @@ export default function ApplicationsClient({ events }: { events: ApplicationEven
     const q = search.toLowerCase();
     const name =
       `${p.user?.firstName || ""} ${p.user?.lastName || ""}`.toLowerCase();
-    return (
-      name.includes(q) ||
-      p.participant.phone.includes(q) ||
-      (p.user?.email && p.user.email.toLowerCase().includes(q))
+    return matchesPaymentFilter(paymentFilter, p.participant.status, p.paymentAttempt) && (
+      name.includes(q) || p.participant.phone.includes(q) || !!p.user?.email?.toLowerCase().includes(q)
     );
   });
 
@@ -420,6 +416,7 @@ export default function ApplicationsClient({ events }: { events: ApplicationEven
 
   return (
     <div className="max-w-7xl mx-auto w-full pb-32">
+      {actionError && <p role="alert" className="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-red-800">{actionError}</p>}
       {deleteError && <p role="alert" className="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-red-800">{deleteError}</p>}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
         <motion.div
@@ -469,6 +466,12 @@ export default function ApplicationsClient({ events }: { events: ApplicationEven
         </div>
       </div>
 
+      <div className="mb-5 flex flex-wrap gap-2" role="group" aria-label="Фильтр заявок">
+        {applicationFilters.map(filter => <button key={filter.id} type="button" aria-pressed={paymentFilter === filter.id}
+          onClick={() => setPaymentFilter(filter.id)} className={cn("rounded-xl border px-3 py-2 text-sm font-bold", paymentFilter === filter.id ? "border-amber-400 bg-amber-50 text-amber-900" : "border-neutral-200 bg-white text-neutral-600 dark:bg-neutral-900 dark:text-neutral-300")}>
+          {filter.label} <span className="ml-1 text-xs">{participants.filter(row => matchesPaymentFilter(filter.id, row.participant.status, row.paymentAttempt)).length}</span>
+        </button>)}
+      </div>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -568,6 +571,8 @@ export default function ApplicationsClient({ events }: { events: ApplicationEven
                       const extraKids = extra?.extraKids || 0;
                       const legacyKids = extra?.kidsCount || 0; // Для старых записей
 
+                      const composition = applicationComposition(row.participant.extraData);
+                      const channel = row.paymentAttempt?.lastOpenedSource;
                       return (
                         <motion.tr
                           key={row.participant.id}
@@ -602,6 +607,14 @@ export default function ApplicationsClient({ events }: { events: ApplicationEven
                                   {row.user?.firstName} {row.user?.lastName}
                                 </div>
 
+                                <p className="mt-2 text-sm font-medium text-neutral-600 dark:text-neutral-300" data-participant-composition>{composition.summary}</p>
+                                <p className="mt-1 text-xs text-neutral-500">Вы · {composition.spouse ? "супруг/а · " : ""}детей: {composition.children} · доп. взрослых: {composition.extraAdults}</p>
+                                {channel && <span className="mt-1 text-xs font-bold text-neutral-500">{channel === "telegram" ? "Telegram" : "Website"}</span>}
+                                <details className="mt-2 text-xs text-neutral-500">
+                                  <summary className="cursor-pointer">Данные регистрации</summary>
+                                  <p className="mt-2 break-all">Registration ID: <code>{row.participant.id}</code></p>
+                                  <button type="button" className="mt-1 rounded-lg border px-2 py-1" onClick={() => void copyRegistrationId(row.participant.id)}>{copiedId === row.participant.id ? "Скопировано" : "Copy"}</button>
+                                </details>
                                 {/* 🌟 БЕЙДЖИКИ ГОСТЕЙ (Обертка flex-wrap) 🌟 */}
                                 <div className="flex flex-wrap items-center gap-1.5 mt-2">
                                   {row.user?.email === "Гость" ? (
@@ -671,6 +684,8 @@ export default function ApplicationsClient({ events }: { events: ApplicationEven
                                   </a>
                                 )}
                               </div>
+                              {row.telegram?.username && /^[A-Za-z0-9_]{5,32}$/.test(row.telegram.username) && <a href={`https://t.me/${row.telegram.username}`} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-blue-600">Telegram · @{row.telegram.username}</a>}
+                              {row.telegram?.available && !row.telegram.username && <span className="text-xs text-blue-600">Telegram связан</span>}
                               <div className="flex items-center gap-2 text-xs font-medium text-neutral-400">
                                 <Mail size={14} />
                                 {row.user?.email || "—"}
@@ -694,10 +709,12 @@ export default function ApplicationsClient({ events }: { events: ApplicationEven
                           </td>
 
                           <td className="py-5 px-8 text-right align-top">
+                            <PaymentIntentStatus status={row.participant.status} attempt={row.paymentAttempt} />
+                            {row.participant.status === "pending" && row.paymentAttempt?.status === "pending" && <button type="button" className="mb-3 rounded-xl border px-3 py-2 text-sm font-bold" onClick={() => setReminderId(row.participant.id)}>Напомнить</button>}
                             <div className="flex items-center justify-end gap-3 mt-1">
                               <StatusSelect
-                                currentStatus={row.participant.status}
-                                onChange={(newStatus: any) =>
+                                currentStatus={row.paymentAttempt?.status === "paid" ? "paid" : row.participant.status}
+                                onChange={(newStatus) =>
                                   handleStatusChange(
                                     row.participant.id,
                                     newStatus,
@@ -731,6 +748,7 @@ export default function ApplicationsClient({ events }: { events: ApplicationEven
         </div>
       </motion.div>
 
+      {reminderId && <EventPaymentReminderModal key={reminderId} registrationId={reminderId} onClose={() => setReminderId(null)} />}
       <MassWhatsAppModal
         isOpen={isReminderOpen}
         onClose={() => setIsReminderOpen(false)}

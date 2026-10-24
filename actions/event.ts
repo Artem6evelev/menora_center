@@ -12,7 +12,6 @@ import {
 import { eq, desc, and, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { sendEventRegistrationNotification } from "@/lib/telegram/notifications";
-import { randomUUID } from "node:crypto";
 import { canReadEvents, canManageEvents, currentCommunityUser, requireCommunityUser, requirePrivateScope, requireStaff } from "@/lib/community/server";
 import { communityAccess, isStaff } from "@/lib/community/policy";
 import { requirePaymentConfirmationReady } from "@/lib/community/payments";
@@ -21,6 +20,7 @@ import { checkoutEvent } from "@/lib/community/event-checkout";
 import { prepareEventRegistration } from "@/lib/community/registration";
 import { preserveChildHistory } from "@/lib/community/history";
 import { auth } from "@clerk/nextjs/server";
+import { readEventPaymentParticipants } from "@/lib/community/event-payment-crm";
 
 // 🔥 Функция: Транслитерация и создание красивой ссылки (Slug)
 function generateSlug(title: string) {
@@ -315,14 +315,9 @@ export async function getUserRegisteredEvents(userId: string) {
 export async function getEventParticipantsList(eventId: string) {
   try {
     await requireStaff();
-    return await db
-      .select({ participant: eventParticipants, user: users })
-      .from(eventParticipants)
-      .leftJoin(users, eq(eventParticipants.userId, users.id))
-      .where(eq(eventParticipants.eventId, eventId))
-      .orderBy(desc(eventParticipants.createdAt));
+    return await readEventPaymentParticipants(db, eventId);
   } catch (error) {
-    return [];
+    throw new CommunityError(communityErrorMessage(error, "Не удалось загрузить заявки"));
   }
 }
 
@@ -390,38 +385,25 @@ export async function registerForEvent(
       // Fresh admission and ownership checks happen before payment/deduplication or family writes.
       const prepared = prepareEventRegistration(profile, event, extraData, profileUpdates);
       const existing = await tx.select().from(eventParticipants).where(and(eq(eventParticipants.eventId, eventId), eq(eventParticipants.userId, userId)));
-      if (existing.some(item => item.status === "paid" || item.status === "confirmed")) return { paymentUrl: null, alreadyRegistered: true, notify: null };
+      const settled = existing.find(item => item.status === "paid" || item.status === "confirmed");
+      if (settled) return { registrationId: settled.id, paymentUrl: null, alreadyRegistered: true, notify: null };
       const pending = existing.find(item => item.status === "pending");
-      if (pending) {
-        const [attempt] = await tx.select().from(eventPaymentAttempts).where(eq(eventPaymentAttempts.registrationId,pending.id));
-        if (attempt) {
-          const checkout = await checkoutEvent(tx,profile,eventId,extraData);
-          return { paymentUrl:checkout.paymentUrl,alreadyRegistered:checkout.alreadyRegistered,notify:null };
-        }
-      }
-      const id = pending?.id || `part_${randomUUID()}`;
-      let paymentUrl: string | null = null;
-      // Keep Shutafim and the existing iframe flow; only validate/price before entering it.
-      if (prepared.totalAmount > 0) {
-        if (!event.paymentUrl) throw new CommunityError("Ссылка на оплату пока недоступна. Обратитесь к администратору.");
-        const url = new URL(event.paymentUrl);
-        if (url.protocol !== "https:") throw new CommunityError("Ссылка на оплату недоступна");
-        Object.entries({ price: String(prepared.totalAmount), quantity: "1", cur: "ILS", payments: "1", lang: "ru", custom1: id }).forEach(([key, value]) => url.searchParams.set(key, value));
-        paymentUrl = url.toString();
-      }
       if (prepared.profileUpdate.newChild || prepared.profileUpdate.newSpouseName) {
         await preserveChildHistory(tx, userId, profile.childrenData);
         await tx.update(users).set({ ...(prepared.profileUpdate.newChild ? { childrenData: prepared.children, hasChildren: true } : {}),
           ...(prepared.profileUpdate.newSpouseName ? { spouseName: prepared.spouseName, maritalStatus: "married" } : {}) }).where(eq(users.id, userId));
       }
-      const participant = { eventId, userId, phone: profile.phone || phone?.slice(0, 25) || "Не указан",
-        status: prepared.totalAmount > 0 ? "pending" : "confirmed", extraData: prepared.extraData };
-      if (pending) await tx.update(eventParticipants).set(participant).where(eq(eventParticipants.id, id));
-      else await tx.insert(eventParticipants).values({ id, ...participant });
-      return { paymentUrl, alreadyRegistered: false, notify: pending ? null : { title: event.title, firstName: profile.firstName || "", lastName: profile.lastName || "", email: profile.email ?? "", phone: participant.phone } };
+      // The same calculator/immutable attempt as Mini App, after website family updates.
+      const canonicalProfile = { ...profile, childrenData: prepared.children, spouseName: prepared.spouseName,
+        phone: profile.phone || phone?.slice(0, 25) || "Не указан" };
+      const checkout = await checkoutEvent(tx, canonicalProfile, eventId, {
+        family: { self: true, ...(prepared.extraData.family.spouse ? { spouse: true } : {}) },
+        childIds: prepared.extraData.childIds, extraAdults: prepared.extraData.extraAdults, extraKids: 0,
+      });
+      return { ...checkout, notify: pending ? null : { title: event.title, firstName: profile.firstName || "", lastName: profile.lastName || "", email: profile.email ?? "", phone: canonicalProfile.phone } };
     });
     if (result.notify) { try { const { title, ...person } = result.notify; await sendEventRegistrationNotification(title, person); } catch { /* Registration remains saved if delivery fails. */ } }
     revalidatePath("/dashboard/my-events"); revalidatePath("/dashboard/applications");
-    return { success: true, paymentUrl: result.paymentUrl, message: result.alreadyRegistered ? "already_registered" : "registered" };
+    return { success: true, registrationId: result.registrationId, paymentUrl: result.paymentUrl, message: result.alreadyRegistered ? "already_registered" : "registered" };
   } catch (error) { return { success: false, paymentUrl: null, message: communityErrorMessage(error, "Не удалось выполнить запись. Попробуйте ещё раз.") }; }
 }
