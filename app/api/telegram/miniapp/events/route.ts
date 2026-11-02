@@ -30,6 +30,7 @@ export async function GET(request: Request) {
                   1000,
                   Math.max(1, Number(url.searchParams.get("page")) || 1),
                 ),
+                url.searchParams.get("open") === "1",
               )),
               campaignEventId: await campaignEvent(tx, user),
             }),

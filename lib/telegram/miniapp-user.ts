@@ -64,7 +64,7 @@ async function bootstrap(
   tx: LockedTransaction,
   data: TelegramIdentityData,
   source = "telegram_miniapp",
-  subscribeUnknown = source === "telegram_miniapp",
+  subscribeUnknown = false,
 ): Promise<MiniAppPrincipal> {
   const tg = data.user;
   // Serialize our writers for one verified subject; the unique index also covers other writers.

@@ -8,6 +8,7 @@ import {
 } from "@/lib/db/schema";
 import { prepareEventRegistration } from "./registration";
 import { communityAccess } from "./policy";
+import { isPublicEvent } from "@/lib/events/eligibility";
 import { CommunityError } from "./errors";
 import type {
   MiniAppTransaction,
@@ -19,9 +20,9 @@ export class EventSelectionConflictError extends CommunityError {}
 
 export function eventVisible(
   user: MiniAppUser,
-  _event: typeof events.$inferSelect,
+  event: typeof events.$inferSelect,
 ) {
-  return communityAccess(user).canViewEvents;
+  return !user.identityDisabledAt && isPublicEvent(event);
 }
 export function shutafimUrl(
   base: string | null,

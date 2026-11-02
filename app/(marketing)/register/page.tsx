@@ -1,3 +1,5 @@
+import { cookies } from 'next/headers';
+import { getEventById } from '@/actions/event';
 import { SignOutButton } from '@clerk/nextjs';
 import OnboardingForm from '@/components/dashboard/main/onboarding-form';
 import { currentCommunityUser } from '@/lib/community/server';
@@ -10,11 +12,15 @@ export const dynamic = 'force-dynamic';
 export default async function RegisterPage({ searchParams }: { searchParams: Promise<{ returnTo?: string; resume?: string; draft?: string }> }) {
   const query = await searchParams, { userId } = await auth(), profile = await currentCommunityUser();
   const { draft, target } = await readJourney(query, userId);
+  const event = target.startsWith("/events/") ? await getEventById(target.slice(8)) : null;
+  const openRegistration = event?.admissionPolicy === "open";
+  const preference = (await cookies()).get("menorah_event_language")?.value;
+  const language = preference === "he" || preference === "en" ? preference : "ru";
   const candidate = draft && !draft.consumedAt ? draftForm(draft.payload) : null;
   const initialDraft = candidate && Object.keys(candidate).length ? candidate : null;
   return <main className="min-h-screen bg-neutral-50 dark:bg-neutral-950 px-4 pt-32 pb-16"><OnboardingForm key={userId || 'guest'} userId={userId}
     initialProfile={profile ? { ...profile, childrenData: profileChildren(profile.id, profile.childrenData) } : null}
-    initialDraft={initialDraft} draftId={draft?.consumedAt ? undefined : draft?.id} returnTo={target} resumeReady={!!userId && !!draft && !draft.consumedAt && draftReady(draft.payload) && query.resume === '1'} />
+    language={language} openRegistration={openRegistration} initialDraft={initialDraft} draftId={draft?.consumedAt ? undefined : draft?.id} returnTo={target} resumeReady={!!userId && !!draft && !draft.consumedAt && draftReady(draft.payload) && query.resume === '1'} />
     {userId && <SignOutButton><button className="block mx-auto mt-6 underline">Выйти из аккаунта</button></SignOutButton>}
   </main>;
 }

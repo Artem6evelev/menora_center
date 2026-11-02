@@ -11,7 +11,7 @@ import {
   telegramBroadcastDeliveries as deliveries,
 } from "@/lib/db/schema";
 import { hasFilterProfile, isStaff } from "@/lib/community/policy";
-import { eventVisible } from "@/lib/community/event-checkout";
+import { evaluateEventEligibility } from "@/lib/events/eligibility";
 import { CommunityError } from "@/lib/community/errors";
 import { audienceSelection, audienceWhere, primaryContact } from "./audience";
 import type { MiniAppTransaction, MiniAppUser } from "./miniapp-user";
@@ -180,7 +180,7 @@ async function claim() {
         .select()
         .from(events)
         .where(eq(events.id, broadcast.eventId));
-      permitted = !!event && eventVisible(user as MiniAppUser, event);
+      permitted = !!event && evaluateEventEligibility(event, user as MiniAppUser).decision === "eligible";
       eventId = event?.id ?? null;
     }
     if (!permitted) {

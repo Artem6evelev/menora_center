@@ -6,9 +6,9 @@ export const filterFieldCopy = { title: "Пожалуйста, укажите В
 export type FilterFieldCopy = typeof filterFieldCopy;
 
 /** Presentation only. Both adapters use the same categories and server policy. */
-export default function FilterFields({ affiliation, gender, onAffiliation, onGender, disabled = false, copy = filterFieldCopy }: {
+export default function FilterFields({ affiliation, gender, onAffiliation, onGender, disabled = false, copy = filterFieldCopy, requireGender = false }: {
   affiliation: Affiliation | ""; gender: Gender | ""; onAffiliation: (value: Affiliation) => void;
-  onGender: (value: Gender) => void; disabled?: boolean; copy?: FilterFieldCopy;
+  onGender: (value: Gender) => void; disabled?: boolean; copy?: FilterFieldCopy; requireGender?: boolean;
 }) {
   return <>
     <fieldset disabled={disabled} className="space-y-4">
@@ -18,7 +18,7 @@ export default function FilterFields({ affiliation, gender, onAffiliation, onGen
         <span>{copy.categories[value]}</span>
       </label>)}
     </fieldset>
-    {(affiliation === "maternal" || affiliation === "giyur") && <fieldset disabled={disabled}>
+    {(affiliation === "maternal" || affiliation === "giyur" || (requireGender && affiliation === "none")) && <fieldset disabled={disabled}>
       <legend className="font-bold mb-3">{copy.gender}</legend><div className="flex flex-wrap gap-5">
         {(["male", "female"] as const).map(value => <label key={value} className="flex items-center gap-2 min-h-11">
           <input type="radio" required name="gender" value={value} checked={gender === value} onChange={() => onGender(value)} className="accent-[#FFB800]" />{copy[value]}</label>)}

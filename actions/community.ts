@@ -9,6 +9,9 @@ import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { openProfileEvent } from "@/lib/events/open-profile";
+import { interestVisitor } from "@/lib/events/http";
+import { linkVisitorInterests } from "@/lib/events/interests";
 import { writeCommunityProfile } from "@/lib/community/profile-write";
 import { hasFilterProfile } from "@/lib/community/policy";
 
@@ -24,7 +27,14 @@ async function saveProfile(targetId: string, raw: unknown, resourceOnly: boolean
     if (!userId || targetId !== userId) return { success: false as const, message: "Войдите в свой аккаунт" };
     const identity = await currentUser();
     if (!identity || identity.id !== userId) throw new CommunityError("Повторите вход в аккаунт");
-    const result = await db.transaction(tx => writeCommunityProfile(tx, identity, raw, resourceOnly));
+    const visitor = await interestVisitor();
+    const result = await db.transaction(async tx => {
+      const target = raw && typeof raw === "object" && "returnTo" in raw ? raw.returnTo : undefined;
+      const openEventId = resourceOnly ? undefined : await openProfileEvent(raw, target, tx);
+      const saved = await writeCommunityProfile(tx, identity, raw, resourceOnly, undefined, openEventId);
+      if (visitor.hash) { const [canonical] = await tx.select().from(users).where(eq(users.id, userId)); await linkVisitorInterests(tx, visitor.hash, canonical); }
+      return saved;
+    });
     if (result.welcome) after(() => sendCommunityWelcome(result.email, identity.firstName || ""));
     revalidatePath("/", "layout"); revalidatePath("/dashboard", "layout");
     return { success: true as const, revision: result.revision, access: result.access, redirectTo: result.redirectTo };

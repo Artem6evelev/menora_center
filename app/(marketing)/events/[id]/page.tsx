@@ -1,4 +1,4 @@
-import PrivateSession from "@/components/community/private-session";
+import { cookies } from "next/headers";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
@@ -7,17 +7,23 @@ import SingleEventClient from "@/components/events/single-event-client";
 import AccessScreen from "@/components/community/access-screen";
 import { currentCommunityUser } from "@/lib/community/server";
 import { communityAccess } from "@/lib/community/policy";
+import { canRegisterEvent } from "@/lib/events/eligibility";
 interface Props { params: Promise<{ id: string }> }
 export const dynamic = "force-dynamic";
-export async function generateMetadata(): Promise<Metadata> {
-  // Public sharing reveals no event data, independently of the caller's session/cache.
-  return { title: "Событие общины | Menorah Center", description: "Войдите в аккаунт или зарегистрируйтесь в общине, чтобы продолжить.", robots: { index: false, follow: false }, openGraph: { title: "Событие общины | Menorah Center", description: "Вход и регистрационная анкета общины", images: [] } };
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const event = await getEventById((await params).id);
+  return event ? { title: event.title, description: event.description?.replace(/<[^>]*>/g, "").slice(0, 160),
+    openGraph: { title: event.title, images: event.imageUrl ? [event.imageUrl] : [] } } :
+    { title: "Menorah Center", robots: { index: false, follow: false } };
 }
 export default async function SingleEventPage({ params }: Props) {
-  const { id } = await params; const { userId } = await auth();
-  const profile = await currentCommunityUser(); const access = communityAccess(profile);
-  if (!access.canViewEvents) return <AccessScreen reason={userId ? access.reason : "guest"} returnTo={`/events/${id}`} />;
-  const eventData = await getEventById(id);
+  const { id } = await params;
+  const [eventData, profile] = await Promise.all([getEventById(id), currentCommunityUser()]);
+  const access = communityAccess(profile);
+  const preference = (await cookies()).get("menorah_event_language")?.value;
+  const language = preference === "he" || preference === "en" ? preference : "ru";
   if (!eventData) notFound();
-  return <PrivateSession key={profile!.id} expectedUserId={profile!.id}><SingleEventClient eventData={eventData} userId={userId} canRegisterChildren={access.canRegisterChildren} canRegisterSelf={access.canRegisterSelf} canClarifyChildren={profile?.affiliation === "giyur" && profile?.gender === "female" && !access.canManageChildren} /></PrivateSession>;
+  return <SingleEventClient key={profile?.id ?? "public"} eventData={eventData} initialLanguage={language} userId={profile?.id ?? null}
+    canRegisterChildren={access.canRegisterChildren} canRegisterSelf={canRegisterEvent(eventData, profile)}
+    canClarifyChildren={profile?.affiliation === "giyur" && profile?.gender === "female" && !access.canManageChildren} />;
 }

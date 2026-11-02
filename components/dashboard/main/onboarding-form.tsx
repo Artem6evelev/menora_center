@@ -13,21 +13,25 @@ import { saveCommunityProfile, saveResourceChoice } from "@/actions/community";
 import { prepareRegistrationDraft, completeRegistrationDraft } from "@/actions/community-drafts";
 import { Affiliation, communityAccess, Gender, FILTER_VERSION, hasFilterProfile } from "@/lib/community/policy";
 import { WELCOME_PARAGRAPHS, FORM_EXPLANATION } from "@/lib/community/copy";
+import { miniAppDictionaries, type MiniAppLanguage } from "@/lib/telegram/miniapp-i18n";
+import { openEventProfileInput } from "@/lib/community/validation";
 import { fullProfileInput } from "@/lib/community/validation";
 import ResourceMessage from "@/components/community/resource-message";
 
 type Child = ChildValue;
 type Fields = CommunityFields;
 const dateValue = (value: unknown) => { const date = new Date(String(value)); return value && Number.isFinite(date.getTime()) ? date.toISOString().slice(0, 10) : ""; };
-export default function OnboardingForm({ userId = null, initialProfile = null, initialDraft = null, draftId, returnTo = "/dashboard/events", resumeReady = false, onSaved }: {
+export default function OnboardingForm({ userId = null, initialProfile = null, initialDraft = null, draftId, returnTo = "/dashboard/events", resumeReady = false, onSaved, openRegistration = false, language = "ru" }: {
   userId?: string | null; initialProfile?: any; initialDraft?: any; draftId?: string;
-  returnTo?: string; resume?: boolean; resumeReady?: boolean; onSaved?: () => void;
+  language?: MiniAppLanguage; openRegistration?: boolean; returnTo?: string; resume?: boolean; resumeReady?: boolean; onSaved?: () => void;
 }) {
   const router = useRouter(); const clerk = useClerk();
+  const copy = miniAppDictionaries[language];
   const current = hasFilterProfile(initialProfile);
   const answers = initialDraft || (current ? initialProfile : null);
   const ordinary = initialDraft || initialProfile;
   const [affiliation, setAffiliation] = useState<Affiliation | "">(answers?.affiliation || "");
+  const [filterEditing, setFilterEditing] = useState(!current || !!initialDraft);
   const [gender, setGender] = useState<Gender | "">(answers?.gender || "");
   const giyurStage = initialProfile?.giyurStage || null;
   const [cityId, setCityId] = useState<string | null>(ordinary?.cityId || null);
@@ -44,16 +48,16 @@ export default function OnboardingForm({ userId = null, initialProfile = null, i
   useEffect(() => { if (pendingChildren.current && JSON.stringify(pendingChildren.current) === JSON.stringify(children)) pendingChildren.current = null; }, [children]);
   const [agreed, setAgreed] = useState((initialDraft?.agreedToPrivacy ?? initialProfile?.agreedToPrivacy) === true);
   const [pending, setPending] = useState(false); const [error, setError] = useState("");
-  const [saved, setSaved] = useState(current && initialProfile?.affiliation === "none");
+  const [saved, setSaved] = useState(current && initialProfile?.affiliation === "none" && !openRegistration);
   const resumed = useRef(false);
   const departing = useRef(false);
   const attempt = useRef<{ id: string; payload: string } | null>(null);
-  const canEditChildren = communityAccess({ affiliation, gender, giyurStage, filterVersion: FILTER_VERSION, filterCompletedAt: new Date(), isProfileComplete: true }).canManageChildren;
-  const expanded = affiliation === "maternal" || affiliation === "giyur";
+  const canEditChildren = communityAccess(openRegistration ? { ...initialProfile, gender, isProfileComplete: true } : { affiliation, gender, giyurStage, filterVersion: FILTER_VERSION, filterCompletedAt: new Date(), isProfileComplete: true }).canManageChildren;
+  const expanded = affiliation === "maternal" || affiliation === "giyur" || openRegistration;
   function payload() {
     const list = pendingChildren.current || children;
     return { ...fields, spouseName: fields.maritalStatus === "married" ? fields.spouseName : null,
-      affiliation, gender, cityId, returnTo: eventReturnTo(returnTo), expectedRevision: revision, agreedToPrivacy: agreed,
+      ...(!openRegistration ? { affiliation } : {}), gender, cityId, returnTo: eventReturnTo(returnTo), expectedRevision: revision, agreedToPrivacy: agreed,
       ...(canEditChildren && (fields.hasChildren || (childrenChanged && !list.length)) ? { childrenData: list.filter(child => child.name.trim() || child.dateOfBirth) } : {}),
     };
   }
@@ -89,7 +93,7 @@ export default function OnboardingForm({ userId = null, initialProfile = null, i
     if (nextChildren !== undefined) pendingChildren.current = nextChildren;
     const data = { ...latest.current, ...(nextChildren ? { childrenData: nextChildren } : {}) };
     const { returnTo: target, ...progress } = data;
-    const clean = progress.affiliation === 'none' ? { affiliation: 'none', expectedRevision: progress.expectedRevision } : progress;
+    const clean = progress.affiliation === 'none' && !openRegistration ? { affiliation: 'none', expectedRevision: progress.expectedRevision } : progress;
     setDraftStatus('Сохраняем черновик…'); setDraftError('');
     const request = queue.current.catch(() => {}).then(() => saveRegistrationProgress(clean, id, target));
     queue.current = request;
@@ -98,7 +102,7 @@ export default function OnboardingForm({ userId = null, initialProfile = null, i
     catch { if (nextChildren !== undefined) pendingChildren.current = null; setDraftStatus(''); throw new Error('Не удалось сохранить черновик. Повторите сохранение.'); }
     if (!result.success) { if (nextChildren !== undefined) pendingChildren.current = null; setDraftStatus(''); throw new Error(result.message); }
     setDraftStatus('Черновик сохранён'); setDraftError(''); return id;
-  }, []);
+  }, [openRegistration]);
   const serializedProgress = JSON.stringify(payload());
   useEffect(() => {
     if (!hydrated || pending || childrenPending || saved || resumeReady || departing.current) return;
@@ -112,7 +116,7 @@ export default function OnboardingForm({ userId = null, initialProfile = null, i
     sessionStorage.removeItem(storageKey);
     sessionStorage.removeItem(`menora-attempt:guest:${eventReturnTo(returnTo)}`);
     onSaved?.();
-    if (result.access.canViewEvents) router.replace(result.redirectTo || "/dashboard/events");
+    if (result.redirectTo) router.replace(result.redirectTo || "/dashboard/events");
     router.refresh();
   }, [onSaved, router, storageKey, returnTo]);
   useEffect(() => {
@@ -124,7 +128,7 @@ export default function OnboardingForm({ userId = null, initialProfile = null, i
   }, [draftId, userId, hydrated, resumeReady, finish]);
   async function submit(event: React.FormEvent) {
     event.preventDefault(); setError(""); setSaved(false);
-    const checked = fullProfileInput.safeParse(payload());
+    const checked = (openRegistration ? openEventProfileInput : fullProfileInput).safeParse(payload());
     if (!checked.success) { setError(checked.error.issues[0]?.message || "Проверьте обязательные поля"); return; }
     if (!cityId && (!initialProfile?.city || initialProfile.cityId || fields.city !== initialProfile.city)) { setError("Выберите город из справочника"); return; }
     setPending(true);
@@ -154,27 +158,30 @@ export default function OnboardingForm({ userId = null, initialProfile = null, i
     } catch { setError("Не удалось сохранить выбор. Попробуйте ещё раз."); }
     finally { setPending(false); }
   }
-  return <div className="w-full max-w-3xl mx-auto rounded-[32px] md:rounded-[40px] border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 sm:p-8 md:p-12 shadow-xl">
-    <div className="space-y-4 mb-8">{WELCOME_PARAGRAPHS.slice(0, 3).map((text, index) => index === 0
+  return <div lang={language} dir={language === "he" ? "rtl" : "ltr"} className="w-full max-w-3xl mx-auto rounded-[32px] md:rounded-[40px] border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 sm:p-8 md:p-12 shadow-xl">
+    {!openRegistration && language === "ru" ? <>    <div className="space-y-4 mb-8">{WELCOME_PARAGRAPHS.slice(0, 3).map((text, index) => index === 0
       ? <h1 key={text} className="text-2xl md:text-3xl font-black leading-tight">{text}</h1>
       : <p key={text} className="leading-relaxed text-neutral-600 dark:text-neutral-300">{text}</p>)}</div>
     <div className="rounded-3xl bg-sky-100 text-slate-900 p-5 sm:p-6 flex gap-4 mb-4"><p className="leading-relaxed min-w-0"><strong>Наша миссия</strong>{WELCOME_PARAGRAPHS[3].slice('Наша миссия'.length)}</p><span aria-hidden="true" className="text-blue-700 text-4xl shrink-0 self-center">✡</span></div>
     <div className="rounded-3xl bg-blue-700 text-white font-bold p-5 sm:p-6 leading-relaxed mb-8">{WELCOME_PARAGRAPHS[4]}</div>
+</> : <div className="space-y-4 mb-8"><h1 className="text-2xl font-bold">{copy.stepProfile}</h1><p>{copy.profileIntro}</p>{openRegistration && <p>{language === "he" ? "לא נדרש מעמד דתי כדי להירשם לאירוע הפתוח הזה." : language === "en" ? "Religious status is not required for this open event." : "Для записи на это открытое мероприятие религиозный статус не требуется."}</p>}</div>}
     <form onSubmit={submit} className="space-y-6">
-      <FilterFields affiliation={affiliation} gender={gender} disabled={pending || childrenPending || !hydrated}
+      {!openRegistration && (!current || filterEditing) && <FilterFields copy={copy.filter} requireGender={openRegistration} affiliation={affiliation} gender={gender} disabled={pending || childrenPending || !hydrated}
         onAffiliation={value => { setAffiliation(value); setSaved(false); setError(""); }}
-        onGender={value => { setGender(value); setSaved(false); }} />
+        onGender={value => { setGender(value); setSaved(false); }} />}
+      {!openRegistration && current && !filterEditing && <button type="button" className="underline" onClick={() => setFilterEditing(true)}>{copy.changeFilter}</button>}
+      {openRegistration && <fieldset><legend className="font-bold">{copy.filter.gender}</legend>{(["male", "female"] as const).map(value => <label className="inline-flex gap-2 p-3" key={value}><input required type="radio" name="open-profile-gender" checked={gender === value} onChange={() => setGender(value)} />{copy.filter[value]}</label>)}</fieldset>}
       {expanded && <fieldset disabled={pending || childrenPending || !hydrated} className="space-y-6 min-w-0">
         <div className="space-y-3 rounded-2xl bg-amber-50 dark:bg-amber-950/20 p-5">{FORM_EXPLANATION.map(text => <p key={text} className="leading-relaxed">{text}</p>)}</div>
-        <ProfileFields fields={fields} onChange={setFields} cityId={cityId}
+        <ProfileFields copy={copy.fields} cityCopy={copy.city} fields={fields} onChange={setFields} cityId={cityId}
           onCityChange={(city, id) => { setFields(previous => ({ ...previous, city })); setCityId(id); }} />
-        {canEditChildren && fields.hasChildren && <ChildEditor items={children} disabled={pending || childrenPending} onSave={async next => { setChildrenPending(true); try { await flushProgress(next); setChildren(next); setChildrenChanged(true); if (!next.length) setFields(previous => ({ ...previous, hasChildren: false })); } finally { setChildrenPending(false); } }} />}
+        {canEditChildren && fields.hasChildren && <ChildEditor copy={copy.children} items={children} disabled={pending || childrenPending} onSave={async next => { setChildrenPending(true); try { await flushProgress(next); setChildren(next); setChildrenChanged(true); if (!next.length) setFields(previous => ({ ...previous, hasChildren: false })); } finally { setChildrenPending(false); } }} />}
         {affiliation === "giyur" && gender === "female" && !canEditChildren && current && initialProfile?.isProfileComplete && initialProfile.affiliation === "giyur" && userId && <a className="block font-bold underline" href="/dashboard/kids">Добавить или записать ребёнка — перейти в детский раздел</a>}
-        <label className="flex gap-3 items-start"><input type="checkbox" required checked={agreed} onChange={event => setAgreed(event.target.checked)} className="mt-1 accent-[#FFB800]" /><span>Я соглашаюсь с <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline">Политикой конфиденциальности</a>.</span></label>
+        <label className="flex gap-3 items-start"><input type="checkbox" required checked={agreed} onChange={event => setAgreed(event.target.checked)} className="mt-1 accent-[#FFB800]" /><span>{copy.privacy} <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline">{copy.privacyLink}</a>.</span></label>
         <div id="clerk-captcha" />
-        <button type="submit" className="w-full py-4 rounded-2xl bg-[#FFB800] text-black font-black disabled:opacity-60" disabled={pending || !gender || saved}>{pending ? "Сохраняем…" : userId ? "Сохранить анкету" : "Продолжить с Google"}</button>
+        <button type="submit" className="w-full py-4 rounded-2xl bg-[#FFB800] text-black font-black disabled:opacity-60" disabled={pending || !gender || saved}>{pending ? copy.saving : userId ? copy.saveEdit : language === "he" ? "המשך עם Google" : language === "en" ? "Continue with Google" : "Продолжить с Google"}</button>
       </fieldset>}
-      {affiliation === "none" && <><ResourceMessage />{userId && <button type="button" onClick={saveChoice} disabled={pending || saved} className="w-full py-4 rounded-2xl border border-[#FFB800] font-bold disabled:opacity-50">{pending ? "Сохраняем…" : "Сохранить выбор"}</button>}</>}
+      {affiliation === "none" && !openRegistration && <><ResourceMessage paragraphs={copy.resourceParagraphs} labels={copy.resourceLabels} title={copy.resourcesLabel} external={copy.external} />{userId && <button type="button" onClick={saveChoice} disabled={pending || saved} className="w-full py-4 rounded-2xl border border-[#FFB800] font-bold disabled:opacity-50">{pending ? "Сохраняем…" : "Сохранить выбор"}</button>}</>}
       {draftStatus && <p role="status" className="text-sm text-neutral-500">{draftStatus}</p>}
       {draftError && <p role="alert" className="text-red-600 text-sm">{draftError}</p>}
       {error && <p role="alert" className="rounded-xl bg-red-50 text-red-700 p-4">{error}</p>}

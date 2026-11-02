@@ -2,14 +2,18 @@
 import { CommunityError, communityErrorMessage } from "@/lib/community/errors";
 
 import { db } from "@/lib/db";
+import { publicEventCondition, publicEventFields } from "@/lib/events/public";
+import { z } from "zod";
+import { canonicalTelegramEventShareLink } from "@/lib/telegram/event-share-server";
 import {
   events,
   eventCategories,
   eventParticipants,
+  eventInterests,
   eventPaymentAttempts,
   users,
 } from "@/lib/db/schema";
-import { eq, desc, and, inArray } from "drizzle-orm";
+import { eq, desc, and, inArray, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { sendEventRegistrationNotification } from "@/lib/telegram/notifications";
 import { canReadEvents, canManageEvents, currentCommunityUser, requireCommunityUser, requirePrivateScope, requireStaff } from "@/lib/community/server";
@@ -77,7 +81,6 @@ function generateSlug(title: string) {
 
 // === 1. КАТЕГОРИИ ===
 export async function getEventCategories() {
-  if (!(await canReadEvents()) && !(await canManageEvents())) return [];
   try {
     return await db
       .select()
@@ -117,12 +120,13 @@ export async function deleteEventCategory(id: string) {
 
 // === 2. СОБЫТИЯ ===
 export async function getEvents() {
-  if (!(await canReadEvents()) && !(await canManageEvents())) return [];
+  const staff = await canManageEvents();
   try {
     return await db
-      .select({ event: events, category: eventCategories })
+      .select({ event: staff ? events : publicEventFields, category: eventCategories })
       .from(events)
       .leftJoin(eventCategories, eq(events.categoryId, eventCategories.id))
+      .where(staff ? ne(events.status, "deleted") : publicEventCondition())
       .orderBy(desc(events.date));
   } catch (error) {
     return [];
@@ -132,7 +136,11 @@ export async function getEvents() {
 export async function deleteEvent(id: string) {
   try {
     await requireStaff();
-    await db.delete(events).where(eq(events.id, id));
+    const [interest] = await db.select({ id: eventInterests.id }).from(eventInterests).where(eq(eventInterests.eventId, id)).limit(1);
+    // A source with enquiries is archived so its CRM evidence and historical
+    // registrations remain attributable. It disappears from every public path.
+    if (interest) await db.update(events).set({ status: "deleted", isRegistrationClosed: true }).where(eq(events.id, id));
+    else await db.delete(events).where(eq(events.id, id));
     revalidatePath("/dashboard/events");
     return { success: true };
   } catch (error) {
@@ -141,13 +149,12 @@ export async function deleteEvent(id: string) {
 }
 
 export async function getLatestEvents() {
-  if (!(await canReadEvents())) return [];
   try {
     return await db
-      .select({ event: events, category: eventCategories })
+      .select({ event: publicEventFields, category: eventCategories })
       .from(events)
       .leftJoin(eventCategories, eq(events.categoryId, eventCategories.id))
-      .where(eq(events.status, "planned"))
+      .where(publicEventCondition())
       .orderBy(desc(events.createdAt))
       .limit(4);
   } catch (error) {
@@ -161,6 +168,9 @@ export async function createEvent(data: any) {
     const newId = generateSlug(data.title);
     const preparedData = {
       ...data,
+      admissionPolicy: z.enum(["restricted", "open"]).parse(data.admissionPolicy ?? "restricted"),
+      visibility: z.enum(["public", "invite_only"]).parse(data.visibility ?? "public"),
+      audience: z.enum(["all", "men", "women", "kids"]).parse(data.audience ?? "all"),
       categoryId: data.categoryId || null,
       price: data.price || null,
       childPrice: data.childPrice || null,
@@ -173,6 +183,7 @@ export async function createEvent(data: any) {
       isRegistrationClosed: data.isRegistrationClosed || false,
     };
     await db.insert(events).values({ id: newId, ...preparedData });
+    await canonicalTelegramEventShareLink(db, newId);
     revalidatePath("/dashboard/events");
     revalidatePath("/events");
     revalidatePath("/");
@@ -187,6 +198,9 @@ export async function updateEvent(id: string, data: any) {
     await requireStaff();
     const preparedData = {
       ...data,
+      ...(data.admissionPolicy !== undefined ? { admissionPolicy: z.enum(["restricted", "open"]).parse(data.admissionPolicy) } : {}),
+      ...(data.visibility !== undefined ? { visibility: z.enum(["public", "invite_only"]).parse(data.visibility) } : {}),
+      ...(data.audience !== undefined ? { audience: z.enum(["all", "men", "women", "kids"]).parse(data.audience) } : {}),
       categoryId: data.categoryId || null,
       price: data.price || null,
       childPrice: data.childPrice || null,
@@ -209,12 +223,11 @@ export async function updateEvent(id: string, data: any) {
 }
 
 export async function getActivePublicCategories() {
-  if (!(await canReadEvents())) return [];
   try {
     const activeEvents = await db
       .select({ categoryId: events.categoryId })
       .from(events)
-      .where(eq(events.status, "planned"));
+      .where(publicEventCondition());
     const activeCategoryIds = Array.from(
       new Set(activeEvents.map((e) => e.categoryId).filter(Boolean)),
     );
@@ -233,18 +246,20 @@ export async function getPublicEventsPaginated(
   limit = 12,
   categoryId?: string | null,
   dateString?: string | null,
+  openOnly = false,
 ) {
-  if (!(await canReadEvents())) return { events: [], hasMore: false };
   try {
+    page = Math.min(1000, Math.max(1, Math.floor(page) || 1));
+    limit = Math.min(50, Math.max(1, Math.floor(limit) || 12));
     const offset = (page - 1) * limit;
-    let conditions = eq(events.status, "planned");
+    let conditions = and(publicEventCondition(), openOnly ? eq(events.admissionPolicy, "open") : undefined);
     if (categoryId)
       conditions = and(conditions, eq(events.categoryId, categoryId)) as any;
     if (dateString)
       conditions = and(conditions, eq(events.date, dateString)) as any;
 
     const data = await db
-      .select({ event: events, category: eventCategories })
+      .select({ event: publicEventFields, category: eventCategories })
       .from(events)
       .leftJoin(eventCategories, eq(events.categoryId, eventCategories.id))
       .where(conditions)
@@ -258,12 +273,12 @@ export async function getPublicEventsPaginated(
 }
 
 export async function getEventById(id: string) {
-  if (!(await canReadEvents())) return null;
+  if (!/^[A-Za-z0-9_-]{1,150}$/.test(id)) return null;
   try {
     const data = await db
-      .select()
+      .select(publicEventFields)
       .from(events)
-      .where(eq(events.id, id))
+      .where(and(eq(events.id, id), publicEventCondition()))
       .limit(1);
     return data[0] || null;
   } catch (error) {
@@ -276,7 +291,7 @@ export async function getEventById(id: string) {
 // 🔥 ИСПРАВЛЕНА ПРОВЕРКА РЕГИСТРАЦИИ (ТОЛЬКО PAID)
 export async function checkRegistration(eventId: string, userId: string) {
   try {
-    await requirePrivateScope(userId);
+    await requireCommunityUser(userId);
     const existing = await db
       .select()
       .from(eventParticipants)
@@ -295,7 +310,7 @@ export async function checkRegistration(eventId: string, userId: string) {
 
 export async function getUserRegisteredEvents(userId: string) {
   try {
-    await requirePrivateScope(userId);
+    await requireCommunityUser(userId);
     return await db
       .select({
         event: events,
@@ -363,7 +378,7 @@ export async function deleteEventParticipant(id: string) {
 
 export async function getUserFamilyData(userId: string) {
   try {
-    const user = await requirePrivateScope(userId);
+    const user = await requireCommunityUser(userId);
     return { firstName: user.firstName, lastName: user.lastName, phone: user.phone, email: user.email,
       spouseName: user.spouseName, childrenData: profileChildren(user.id, user.childrenData),
       canManageChildren: communityAccess(user).canManageChildren };

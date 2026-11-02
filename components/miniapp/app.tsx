@@ -65,11 +65,11 @@ export function MiniAppSplash({
 function FilterForm({
   data,
   copy,
-  onSave,
+  onSave, requireGender = false,
 }: {
   data: MiniAppProfileData;
   copy: MiniAppCopy;
-  onSave: (input: unknown) => Promise<void>;
+  onSave: (input: unknown) => Promise<void>; requireGender?: boolean;
 }) {
   const [affiliation, setAffiliation] = useState<Affiliation | "">(
     data.summary.filterCompleted ? (data.profile.affiliation ?? "") : "",
@@ -86,7 +86,7 @@ function FilterForm({
     try {
       await onSave({
         affiliation,
-        ...(affiliation === "none" ? {} : { gender }),
+        ...(affiliation === "none" && !requireGender ? {} : { gender }),
       });
     } catch (failure) {
       setError(requestMessage(failure, copy));
@@ -98,6 +98,7 @@ function FilterForm({
     <form onSubmit={submit} className="space-y-6" data-miniapp-form="filter">
       <FilterFields
         affiliation={affiliation}
+        requireGender={requireGender}
         gender={gender}
         copy={copy.filter}
         disabled={pending}
@@ -116,7 +117,7 @@ function FilterForm({
         type="submit"
         className="miniapp-primary w-full"
         disabled={
-          pending || !affiliation || (affiliation !== "none" && !gender)
+          pending || !affiliation || ((affiliation !== "none" || requireGender) && !gender)
         }
       >
         {pending ? copy.saving : copy.next}
@@ -137,6 +138,8 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
   }, []);
   const [launchEvent, setLaunchEvent] = useState<MiniAppLaunch["event"]>(null);
   const [entryGate, setEntryGate] = useState(false), [onboardingStarted, setOnboardingStarted] = useState(false);
+  const [openProfile, setOpenProfile] = useState(false), [entryApproved, setEntryApproved] = useState(false);
+  const [onlyOpenEvents, setOnlyOpenEvents] = useState(false);
   const [initialEvent, setInitialEvent] = useState<string>();
   // Navigation hint only: profile completion and Kids permissions still apply.
   const intendedSection = useRef<"kids" | null>(null);
@@ -148,7 +151,10 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
   }, []);
   const activeSequence = bootSequence.current;
   const [instanceCache] = useState(() => createMiniAppCache());
-  const language: MiniAppLanguage = miniAppLanguage();
+  const [language, setLanguage] = useState<MiniAppLanguage>("ru");
+  const chooseLanguage = (next: MiniAppLanguage) => {
+    setLanguage(next); const url = new URL(window.location.href); url.searchParams.set("lang", next); window.history.replaceState(window.history.state, "", url);
+  };
   const [status, setStatus] = useState<
       "loading" | "ready" | "outside" | "error" | "logout"
     >("loading");
@@ -162,11 +168,13 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
   const [actionError, setActionError] = useState(""),
     [busy, setBusy] = useState(false),
     [saved, setSaved] = useState(false);
-  const copy = miniAppDictionaries.ru, nextStep = data?.summary.nextStep;
+  const copy = miniAppDictionaries[language], nextStep = data?.summary.nextStep;
   // Visible navigation is not admission: incomplete/none profiles keep their gate.
-  const admittedScreen = nextStep !== "home" && view !== "filter" ? nextStep : view ?? nextStep;
-  const screen = launchEvent && !onboardingStarted && nextStep !== "home" && nextStep !== "resources" ? "entry" : admittedScreen;
-  const uiCopy = miniAppUiCopy.ru;
+  const protectedView = view === "kids" || (view === "registrations" && !data?.summary.profileComplete);
+  const admittedScreen = onboardingStarted ? view === "filter" ? "filter" : openProfile ? (!data?.summary.profileComplete || !data?.profile.gender ? "profile" : view ?? "events") : !data?.summary.filterCompleted ? "filter" : !data?.summary.profileComplete ? (openProfile || nextStep !== "resources" ? "profile" : "resources") : view ?? "home"
+    : protectedView && nextStep !== "home" ? nextStep : view ?? "home";
+  const screen = launchEvent && !entryApproved && !onboardingStarted && nextStep !== "home" && !(launchEvent.admissionPolicy === "open" && data?.summary.profileComplete && data.profile.gender) ? "entry" : admittedScreen;
+  const uiCopy = miniAppUiCopy[language];
   const accept = useCallback(
     (result: { data: ProfileResponse; tag?: string }) => {
       tag.current = result.tag;
@@ -189,7 +197,7 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
     const previousLang = document.documentElement.lang,
       previousDir = document.documentElement.dir;
     document.documentElement.lang = language;
-    document.documentElement.dir = "ltr";
+    document.documentElement.dir = language === "he" ? "rtl" : "ltr";
     return () => {
       document.documentElement.lang = previousLang;
       document.documentElement.dir = previousDir;
@@ -206,7 +214,7 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
         setData(null);
         setLaunchEvent(null);
         setEntryGate(false);
-        setOnboardingStarted(false);
+        setOnboardingStarted(false); setOpenProfile(false); setEntryApproved(false); setOnlyOpenEvents(false);
         setInitialEvent(undefined);
         intendedSection.current = null;
         setStatus("loading");
@@ -234,6 +242,7 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
         });
         setBridgeVersion((previous) => previous + 1);
         const params = new URL(window.location.href).searchParams;
+        const selectedLanguage = params.get("lang"); if (selectedLanguage === "ru" || selectedLanguage === "he" || selectedLanguage === "en") setLanguage(selectedLanguage);
         const hints = Object.fromEntries(["event", "campaign", "section", "view"].flatMap(key => {
           const value = params.get(key);
           return value && (key !== "section" || value === "kids") && (key !== "view" || value === "events") ? [[key, value]] : [];
@@ -250,15 +259,13 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
             const url = new URL(window.location.href); url.searchParams.set("event", launch.id);
             window.history.replaceState(window.history.state, "", url);
           }
-          if (result.data.destination === "home" && result.data.summary.nextStep === "home") instanceCache.seed("events?preview=home", {events:result.data.homeEvents});
+          if (result.data.destination === "home") instanceCache.seed("events?preview=home", {events:result.data.homeEvents});
           if (controller.signal.aborted || sequence !== bootSequence.current) return;
           accept(result);
           setLaunchEvent(launch);
           setInitialEvent(launch?.id);
           intendedSection.current = !launch && kidsRequested ? "kids" : null;
-          setView(result.data.summary.nextStep === "home"
-            ? launch ? "events" : intendedSection.current ?? (params.get("view") === "events" ? "events" : null)
-            : intendedSection.current);
+          setView(launch ? "events" : intendedSection.current ?? (params.get("view") === "events" ? "events" : null));
           if (result.data.eventUnavailable) setActionError("event_unavailable");
           markMiniApp("ready");
           setStatus("ready");
@@ -290,6 +297,7 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
   const navigate = useCallback(
     (next: "profile" | "filter" | "events" | "registrations" | "kids" | null) => {
       if (busy || (dirty && !window.confirm(copy.unsaved))) return;
+      const preserveOnboarding = onboardingStarted && (next === "filter" || next === "profile");
       if (next === "kids") {
         intendedSection.current = "kids";
         const url = new URL(window.location.href);
@@ -306,19 +314,26 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
           window.history.replaceState(window.history.state, "", url);
         }
       }
+      if (next === null || next === "events" || next === "registrations") {
+        const url = new URL(window.location.href);
+        url.searchParams.delete("event"); url.searchParams.delete("campaign");
+        if (next === "events") url.searchParams.set("view", "events"); else url.searchParams.delete("view");
+        window.history.replaceState(window.history.state, "", url);
+      }
       // Editing/backtracking inside onboarding must retain the ad destination.
-      if (!launchEvent || data?.summary.nextStep === "home" ||
+      if (next === null || (next === "profile" && !preserveOnboarding) || !launchEvent || data?.summary.nextStep === "home" ||
         (next !== "filter" && next !== "profile" && next !== null)) {
         setInitialEvent(undefined);
         setLaunchEvent(null);
       }
-      setDirty(false);
+      setDirty(false); if (!preserveOnboarding) setEntryApproved(false);
+      setOnboardingStarted(preserveOnboarding || next === "profile"); setOpenProfile(preserveOnboarding ? openProfile : next === "profile");
       setView(next);
       setSaved(false);
       setActionError("");
       window.scrollTo({ top: 0, behavior: "instant" });
     },
-    [busy, dirty, copy.unsaved, launchEvent, data?.summary.nextStep],
+    [busy, dirty, copy.unsaved, launchEvent, data?.summary.nextStep, onboardingStarted, openProfile],
   );
   const canGoBack = status === "ready" && !!view;
   useEffect(
@@ -354,7 +369,7 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
     try {
       const persist = () =>
         miniAppRequest<ProfileResponse>(filterOnly ? "filter" : "profile", {
-          body: input,
+          body: !filterOnly && openProfile ? { ...(input as object), ...(launchEvent ? { openEventId: launchEvent.id } : { ordinaryProfile: true }) } : input,
           tag: tag.current,
           signal: controller.signal,
         });
@@ -379,10 +394,11 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
       }
       assertCurrentMutation(controller);
       accept(result);
+      if (!filterOnly) setOnboardingStarted(false);
       instanceCache.invalidate("events", "registrations", "kids");
       setDirty(false);
-      if (launchEvent && result.data.summary.nextStep === "home") { setInitialEvent(launchEvent.id); setView("events"); }
-      else setView(result.data.summary.nextStep === "home" ? intendedSection.current : null);
+      if (launchEvent && result.data.summary.profileComplete && (openProfile || result.data.summary.nextStep === "home")) { setInitialEvent(launchEvent.id); setView("events"); setOnboardingStarted(false); }
+      else setView(intendedSection.current ?? null);
       setSaved(!filterOnly || !!launchEvent && result.data.summary.nextStep === "home");
       window.scrollTo({ top: 0, behavior: "instant" });
     } finally {
@@ -438,11 +454,12 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
       className="miniapp"
       data-menorah-surface="miniapp"
       data-screen={status === "ready" ? screen : status}
-      lang="ru"
-      dir="ltr"
+      lang={language}
+      dir={language === "he" ? "rtl" : "ltr"}
     >
       <div className="miniapp-frame">
         <MiniAppHeader />
+        <select aria-label="Language / שפה / Язык" value={language} onChange={e => chooseLanguage(e.target.value as MiniAppLanguage)} className="self-start p-2 rounded-lg border bg-white text-neutral-900 max-w-full"><option value="ru">Русский</option><option value="he">עברית</option><option value="en">English</option></select>
         {preview && <p className="miniapp-preview">{copy.preview}</p>}
         <main className="miniapp-content miniapp-enter" key={status === "ready" ? screen : status}>
           {status === "loading" ? (
@@ -479,17 +496,22 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
               <MiniAppContact />
             </section>
           ) : data && screen === "entry" && launchEvent ? (
-            <><WelcomeCard language={language} /><EventEntry event={launchEvent} language={language} gate={entryGate} onRegister={() => setEntryGate(true)} onContinue={() => { setOnboardingStarted(true); window.scrollTo({ top: 0, behavior: "instant" }); }} /></>
+            <><WelcomeCard language={language} /><EventEntry event={launchEvent} language={language} gate={entryGate} onProceed={(assessment) => {
+              if (activeSequence !== bootSequence.current) return;
+              setEntryApproved(true); setOpenProfile(assessment.reason === "open"); setOnboardingStarted(true);
+              if (!assessment.profileRequired) { setInitialEvent(launchEvent.id); setView("events"); }
+              window.scrollTo({ top: 0, behavior: "instant" });
+            }} onLanguageChange={chooseLanguage} onOpenEvents={() => { setOnlyOpenEvents(true); navigate("events"); }} /></>
           ) : data && screen === "home" ? (
             <>
               <WelcomeCard language={language} firstName={data.profile.firstName} />
               <EventListSection initialEvents={instanceCache.peek<{events:MiniAppEvent[]}>("events?preview=home")?.events ?? null} cache={instanceCache} language={language} onSelect={id => { setInitialEvent(id); setView("events"); window.scrollTo({ top: 0, behavior: "instant" }); }} onAll={() => navigate("events")} />
               <MenorahKidsEntry onOpen={() => navigate("kids")} />
               {saved && <p role="status" className="miniapp-success">{copy.saved}</p>}
-              <ProfileStatusCard language={language} childrenAllowed={data.permissions.canEditChildren} />
+              {data.summary.nextStep === "home" && <ProfileStatusCard language={language} childrenAllowed={data.permissions.canEditChildren} />}
               <div className="miniapp-actions">
                 <ActionCard icon={UserRound} onClick={() => navigate("profile")}>{copy.profile}</ActionCard>
-                <ActionCard icon={Ticket} onClick={() => navigate("registrations")}>{eventCopy.ru.registrations}</ActionCard>
+                <ActionCard icon={Ticket} onClick={() => navigate("registrations")}>{eventCopy[language].registrations}</ActionCard>
               </div>
               <Subscription language={language} status={data.announcementStatus} />
               <MiniAppContact card />
@@ -505,12 +527,22 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
               key={screen}
               initialEvent={initialEvent}
               initialPreview={launchEvent}
+              initialOpenOnly={onlyOpenEvents}
+              initialRegistrationOpen={entryApproved && data.summary.profileComplete && !!initialEvent}
+              onLanguageChange={chooseLanguage}
               language={language}
               mode={screen}
               onNested={onNested}
               openPayment={(url) => bridge.current?.openLink(url)}
               cache={instanceCache}
               onProfileChanged={updateProfile}
+              onRequireProfile={(event) => {
+                if (activeSequence !== bootSequence.current) return;
+                const url = new URL(window.location.href); url.searchParams.set("event", event.id); url.searchParams.delete("section"); url.searchParams.delete("campaign"); window.history.replaceState(window.history.state, "", url);
+                setEntryApproved(true); setLaunchEvent({ ...event, lead: event.description?.replace(/<[^>]*>/g, "").slice(0, 280) ?? "" });
+                setInitialEvent(event.id); setOpenProfile(event.admissionPolicy === "open"); setOnboardingStarted(true);
+                setView(!data.summary.filterCompleted ? "filter" : "profile");
+              }}
             /></Suspense>
             </>
           ) : data ? (
@@ -546,6 +578,7 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
               {screen === "filter" ? (
                 <FilterForm
                   data={data}
+                  requireGender={openProfile}
                   copy={copy}
                   onSave={(input) => save(input, true)}
                 />
@@ -553,6 +586,7 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
                 <>
                   <MiniAppProfileForm
                     data={data}
+                    openRegistration={openProfile}
                     copy={copy}
                     onDirty={setDirty}
                     onSave={(input) => save(input, false)}
@@ -601,7 +635,7 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
           )}
         </main>
         {status === "ready" && data && (
-          <BottomNav language={language} view={view === "filter" ? "profile" : view ?? intendedSection.current ?? (nextStep === "filter" || nextStep === "profile" ? "profile" : null)} navigate={navigate} />
+          <BottomNav language={language} view={view === "filter" ? "profile" : view ?? intendedSection.current} navigate={navigate} />
         )}
       </div>
     </div>

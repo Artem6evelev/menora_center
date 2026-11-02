@@ -43,7 +43,7 @@ async function metadata(pg) {
 async function fingerprint(pg) {
   const result = {};
   for (const table of ['users', 'events', 'event_participants', 'kids_applications', 'service_participants', 'news', 'videos']) {
-    result[table] = (await pg.query(`select md5(coalesce(string_agg((to_jsonb(t)-'city_id'-'gender'-'affiliation'-'filter_version'-'filter_revision'-'giyur_stage'-'filter_completed_at'-'identity_disabled_at')::text,'' order by id),'')) as hash,count(*)::int as count from public."${table}" t`)).rows[0];
+    result[table] = (await pg.query(`select md5(coalesce(string_agg((to_jsonb(t)-'city_id'-'gender'-'affiliation'-'filter_version'-'filter_revision'-'giyur_stage'-'filter_completed_at'-'identity_disabled_at'-'admission_policy'-'visibility')::text,'' order by id),'')) as hash,count(*)::int as count from public."${table}" t`)).rows[0];
   }
   return result;
 }
@@ -95,6 +95,12 @@ async function repeat(pg) {
     const legacy = structuredClone(current);
     delete legacy.tables['public.community_audit'];
     delete legacy.tables['public.community_registration_drafts'];
+    delete legacy.tables['public.event_interests'];
+    delete legacy.tables['public.event_interest_limits'];
+    delete legacy.tables['public.events'].columns.admission_policy;
+    delete legacy.tables['public.events'].columns.visibility;
+    delete legacy.tables['public.events'].checkConstraints.events_admission_policy_check;
+    delete legacy.tables['public.events'].checkConstraints.events_visibility_check;
     for (const table of ['user_identities', 'telegram_contacts', 'user_identity_link_attempts', 'user_identity_merge_log', 'telegram_miniapp_sessions', 'event_payment_attempts', 'telegram_updates', 'telegram_campaigns', 'telegram_broadcasts', 'telegram_broadcast_deliveries']) delete legacy.tables['public.' + table];
     // The pre-identity schema required an email. New Telegram-first users do not.
     legacy.tables['public.users'].columns.email.notNull = true;

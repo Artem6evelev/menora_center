@@ -8,6 +8,7 @@ import type { MiniAppLanguage } from "@/lib/telegram/miniapp-i18n";
 import { eventCopy } from "@/lib/telegram/event-copy";
 import { miniAppRequest, MiniAppRequestError } from "@/lib/telegram/miniapp-client";
 import type { eventPreviewDto, miniAppEventDetail, MiniAppEventSelection } from "@/lib/telegram/miniapp-events";
+import EventAccessFlow from "@/components/events/event-access-flow";
 import { EventRegistrationForm } from "./event-registration-form";
 import type { MiniAppCache } from "@/lib/telegram/miniapp-cache";
 import type { MiniAppProfileData } from "@/lib/telegram/miniapp-profile";
@@ -32,8 +33,10 @@ export default function MiniAppEvents({
   onNested,
   openPayment,
   initialEvent,
-  onProfileChanged, cache, initialPreview,
+  onProfileChanged, cache, initialPreview, onRequireProfile, initialOpenOnly = false, onLanguageChange, initialRegistrationOpen = false,
 }: {
+  onRequireProfile: (event: Omit<NonNullable<MiniAppLaunch["event"]>, "lead">) => void;
+  initialRegistrationOpen?: boolean; initialOpenOnly?: boolean; onLanguageChange: (language: MiniAppLanguage) => void;
   language: MiniAppLanguage;
   mode: "events" | "registrations";
   onNested: (back: (() => void) | null) => void;
@@ -43,7 +46,8 @@ export default function MiniAppEvents({
   onProfileChanged: (snapshot: MiniAppProfileData & { ok: true }) => boolean;
   cache: MiniAppCache;
 }) {
-  const c = eventCopy.ru, u = miniAppUiCopy.ru;
+  const c = eventCopy[language], u = miniAppUiCopy[language];
+  const [onlyOpen, setOnlyOpen] = useState(initialOpenOnly);
   const [list, setList] = useState<Event[]>(cache.peek<{events: Event[]}>("events?page=1")?.events ?? []),
     [registrations, setRegistrations] = useState<Registration[]>(cache.peek<{registrations:Registration[]}>("registrations?page=1")?.registrations ?? []),
     [detail, setDetail] = useState<Detail | null>(initialEvent ? cache.peek<Detail>(`events?id=${encodeURIComponent(initialEvent)}`) ?? null : null);
@@ -55,7 +59,7 @@ export default function MiniAppEvents({
       ? !cache.peek(`events?id=${encodeURIComponent(initialEvent)}`)
       : !cache.peek(`${mode}?page=1`));
   const [selectionConflict, setSelectionConflict] = useState(false);
-  const [registrationOpen, setRegistrationOpen] = useState(false);
+  const [registrationOpen, setRegistrationOpen] = useState(initialRegistrationOpen);
   const [receipt, setReceipt] = useState<Detail["registration"]>(initialEvent ? cache.peek<Detail>(`events?id=${encodeURIComponent(initialEvent)}`)?.registration ?? null : null),
     [clarify, setClarify] = useState(false),
     [stage, setStage] = useState<"advanced" | "completed" | "">("");
@@ -86,7 +90,7 @@ export default function MiniAppEvents({
           const data = await cache.read<{
             events: Event[];
             hasMore: boolean;
-          }>(`events?page=${next}`, signal);
+          }>(`events?page=${next}${onlyOpen ? "&open=1" : ""}`, signal);
           if (signal?.aborted) return;
           setList((old) =>
             next === 1 ? data.events : [...old, ...data.events],
@@ -110,7 +114,7 @@ export default function MiniAppEvents({
         if (!signal?.aborted) setLoading(false);
       }
     },
-    [mode, cache],
+    [mode, cache, onlyOpen],
   );
   useEffect(() => {
     if (eventId) return;
@@ -240,7 +244,11 @@ export default function MiniAppEvents({
             <h1>{detail.event.title}</h1>
             <EventMeta event={detail.event} language={language} />
             <EventShareButton key={detail.event.id} event={detail.event} language={language} />
-            {(receipt || !detail.event.isRegistrationClosed) && <a className="miniapp-primary w-full" href={receipt ? "#miniapp-receipt" : "#miniapp-participants"} onClick={() => { if (!receipt) setRegistrationOpen(true); }}>{pendingPayment ? "Осталось оплатить" : receipt ? u.myRegistration : u.join}</a>}
+            {receipt ? <a className="miniapp-primary w-full" href="#miniapp-receipt">{pendingPayment ? "Осталось оплатить" : u.myRegistration}</a> : !registrationOpen && <EventAccessFlow key={detail.event.id} eventId={detail.event.id} source="telegram" language={language} onLanguageChange={onLanguageChange}
+              onOpenEvents={() => { setOnlyOpen(true); back(); }} onProceed={assessment => {
+                if (assessment.profileRequired || assessment.authenticationRequired) onRequireProfile(detail.event);
+                else setRegistrationOpen(true);
+              }} />}
             {pendingPayment && <p className="miniapp-status miniapp-status-pending">🟡 Регистрация создана</p>}
             {detail.event.description && <details className="miniapp-description" open>
               <summary>{u.about}</summary><p>{detail.event.description.replace(/<\/(?:p|div)>|<br\s*\/?>/gi, "\n").replace(/<[^>]*>/g, "")}</p>
@@ -315,6 +323,7 @@ export default function MiniAppEvents({
       ) : (
         !eventId && (
           <div className="space-y-4">
+            {mode === "events" && <label className="flex items-center gap-3"><input type="checkbox" checked={onlyOpen} onChange={e => setOnlyOpen(e.target.checked)} />Только открытые мероприятия</label>}
             {mode === "events"
               ? list.map((event) => (
                   <EventCard key={event.id} event={event} language={language} onSelect={id => { setEventId(id); window.scrollTo({ top: 0, behavior: "instant" }); }} />

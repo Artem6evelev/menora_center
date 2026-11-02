@@ -30,9 +30,9 @@ export async function POST(request: Request) {
     const hasLaunch=!!body.event||!!body.campaign||body.section!=="kids"&&!!signedStart;
     const launch=hasLaunch ? await miniAppLaunch(db,user,{event:body.event??null,campaign:body.campaign??signedStart??null}) : {event:null};
     const destination=launch.event?"events":body.section??body.view??"home";
-    const homeEvents=profile.summary.nextStep==="home"&&destination==="home"?await homeMiniAppEvents(db,user):[];
+    const homeEvents=destination==="home"?await homeMiniAppEvents(db,user):[];
     const response=miniAppResponse({ok:true,...profile,launchEvent:launch.event,homeEvents,destination,sessionCreated:!!opened,
-      eventUnavailable:hasLaunch&&!launch.event&&(!!body.event||(body.campaign??signedStart??"").startsWith("event_"))&&profile.summary.nextStep!=="resources"});
+      eventUnavailable:hasLaunch&&!launch.event&&(!!body.event||(body.campaign??signedStart??"").startsWith("event_"))});
     if(opened)response.cookies.set(miniAppCookieName(),opened.token,miniAppCookieOptions(opened.ttl));
     return response;
   } catch(error) {return miniAppErrorResponse(error);}

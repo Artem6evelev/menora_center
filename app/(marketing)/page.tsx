@@ -65,12 +65,12 @@ const getYoutubeThumbnail = (url: string) => {
 
 export default async function Home() {
   const { userId } = await auth();
-  const canViewEvents = communityAccess(await currentCommunityUser()).canViewEvents;
+  const canViewEvents = true;
 
   // 1. ПАРАЛЛЕЛЬНО ЗАПРАШИВАЕМ 3 ТИПА ДАННЫХ
   const [allNews, eventsData, videosData] = await Promise.all([
     getPublicNews(),
-    canViewEvents ? getPublicEventsPaginated(1, 3, null) : Promise.resolve({ events: [], hasMore: false }),
+    getPublicEventsPaginated(1, 3, null),
     getVideos(),
   ]);
 

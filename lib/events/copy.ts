@@ -1,0 +1,36 @@
+export type EventLanguage = "ru" | "en" | "he";
+export const eventAccessCopy = {
+  ru: {
+    join: "Хочу прийти", question: "Какой вариант лучше описывает вашу ситуацию?",
+    choices: ["Еврейство по материнской линии.", "Гиюр завершён или нахожусь на продвинутом этапе.", "Прохожу гиюр на другом этапе.", "Есть еврейские корни или хочу уточнить свой статус.", "Другой статус / нет галахического еврейства."],
+    next: "Продолжить", wait: "Проверяем…", close: "Продолжить просмотр", open: "Открытые мероприятия", contact: "Связаться с Menorah Center · WhatsApp",
+    denied: "Спасибо за интерес к нашему мероприятию!\n\nВ Menorah Center проходят разные программы. Для некоторых встреч действуют определённые условия участия, а другие открыты для более широкой аудитории.\n\nСейчас мы не можем оформить вашу запись на это мероприятие, но будем рады оставаться с вами на связи и приглашать на подходящие события.",
+    review: "Спасибо за интерес!\n\nДля участия в этом мероприятии нам необходимо уточнить некоторые детали. Вы можете оставить контакт, и представитель Menorah Center поможет разобраться с возможностью участия.\n\nТакже мы будем рады приглашать вас на наши открытые программы.",
+    name: "Имя", phone: "Телефон", email: "Email", details: "Оставить контакт", consent: "Разрешаю связаться со мной по этому запросу. Я ознакомился с политикой конфиденциальности.",
+    invitations: "Хочу получать будущие приглашения Menorah Center (необязательно).", save: "Отправить контакт", saving: "Сохраняем…", saved: "Спасибо! Ваш запрос сохранён. Это не регистрация на мероприятие.",
+    contactRequired: "Укажите телефон или email. В Telegram также подходит доступный чат с ботом.", error: "Не удалось завершить действие. Данные остаются на экране — попробуйте ещё раз.",
+    limit: "Слишком много запросов. Пожалуйста, попробуйте через 15 минут.", privacy: "Политика конфиденциальности", unsubscribe: "Отказаться от будущих приглашений", unsubscribed: "Будущие приглашения по этому запросу отключены.",
+  },
+  en: {
+    join: "I'd like to attend", question: "Which option best describes your situation?",
+    choices: ["Jewish through my maternal line.", "I have completed conversion or am at an advanced stage.", "I am at another stage of conversion.", "I have Jewish roots or would like to clarify my status.", "Another status / no halachic Jewish status."],
+    next: "Continue", wait: "Checking…", close: "Keep browsing", open: "Events open to everyone", contact: "Contact Menorah Center · WhatsApp",
+    denied: "Thank you for your interest in our event!\n\nMenorah Center offers a variety of programs. Some gatherings have specific participation requirements, while others welcome a broader audience.\n\nWe cannot complete your registration for this particular event at the moment, but we would be happy to stay in touch and invite you to suitable events.",
+    review: "Thank you for your interest!\n\nWe need to clarify a few details before you can attend this event. You may leave your contact details, and a Menorah Center representative will help you explore the options.\n\nWe would also be happy to invite you to our open programs.",
+    name: "Name", phone: "Phone", email: "Email", details: "Leave contact details", consent: "I agree to be contacted about this request and have read the privacy policy.",
+    invitations: "I would like future invitations from Menorah Center (optional).", save: "Send contact details", saving: "Saving…", saved: "Thank you! Your enquiry has been saved. This is not an event registration.",
+    contactRequired: "Provide a phone number or email. An available bot chat can also be used in Telegram.", error: "We could not complete the action. Your entries remain on screen — please try again.",
+    limit: "Too many requests. Please try again in 15 minutes.", privacy: "Privacy policy", unsubscribe: "Opt out of future invitations", unsubscribed: "Future invitations for this enquiry have been turned off.",
+  },
+  he: {
+    join: "אשמח להגיע", question: "איזו אפשרות מתארת בצורה הטובה ביותר את מצבך?",
+    choices: ["יהדות מצד האם.", "סיימתי גיור או שאני בשלב מתקדם.", "אני בשלב אחר בתהליך הגיור.", "יש לי שורשים יהודיים או שברצוני לברר את מעמדי.", "מעמד אחר / ללא יהדות על פי ההלכה."],
+    next: "המשך", wait: "בודקים…", close: "להמשיך לגלוש", open: "אירועים הפתוחים לכולם", contact: "יצירת קשר עם Menorah Center · WhatsApp",
+    denied: "תודה על ההתעניינות באירוע שלנו!\n\nב־Menorah Center מתקיימות תוכניות מגוונות. לחלק מהמפגשים יש תנאי השתתפות מסוימים, ואחרים פתוחים לקהל רחב יותר.\n\nכרגע לא נוכל להשלים את הרשמתך לאירוע הזה, אך נשמח לשמור על קשר ולהזמין אותך לאירועים מתאימים.",
+    review: "תודה על ההתעניינות!\n\nלצורך השתתפות באירוע הזה עלינו לברר כמה פרטים. אפשר להשאיר פרטי קשר, ונציג של Menorah Center יעזור לברר את אפשרויות ההשתתפות.\n\nנשמח גם להזמין אותך לתוכניות הפתוחות שלנו.",
+    name: "שם", phone: "טלפון", email: "אימייל", details: "השארת פרטי קשר", consent: "אני מסכים שיצרו איתי קשר בנוגע לפנייה זו וקראתי את מדיניות הפרטיות.",
+    invitations: "אשמח לקבל הזמנות עתידיות מ־Menorah Center (לא חובה).", save: "שליחת פרטי קשר", saving: "שומרים…", saved: "תודה! פנייתך נשמרה. זו אינה הרשמה לאירוע.",
+    contactRequired: "יש להזין טלפון או אימייל. בטלגרם אפשר גם להשתמש בצ׳אט זמין עם הבוט.", error: "לא הצלחנו להשלים את הפעולה. הפרטים נשארו על המסך — אפשר לנסות שוב.",
+    limit: "נשלחו יותר מדי בקשות. אפשר לנסות שוב בעוד 15 דקות.", privacy: "מדיניות פרטיות", unsubscribe: "ביטול הזמנות עתידיות", unsubscribed: "הזמנות עתידיות בנוגע לפנייה זו בוטלו.",
+  },
+};

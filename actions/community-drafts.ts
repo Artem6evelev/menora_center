@@ -1,4 +1,8 @@
 "use server";
+import { openProfileEvent } from "@/lib/events/open-profile";
+import { openEventProfileInput } from "@/lib/community/validation";
+import { interestVisitor } from "@/lib/events/http";
+import { linkVisitorInterests } from "@/lib/events/interests";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { cookies } from "next/headers";
 import { randomBytes } from "node:crypto";
@@ -20,7 +24,9 @@ export async function prepareRegistrationDraft(raw: unknown, attemptId: string, 
   try {
     if ((await auth()).userId) throw new CommunityError("Вы уже вошли. Обновите страницу перед сохранением.");
     if (!validAttemptId(attemptId)) throw new CommunityError("Повторите отправку анкеты");
-    const payload = fullProfileInput.parse(raw);
+    const candidateTarget = returnTo ?? (raw && typeof raw === "object" && "returnTo" in raw ? raw.returnTo : undefined);
+    const openEventId = await openProfileEvent(raw, candidateTarget);
+    const payload = openEventId ? openEventProfileInput.parse(raw) : fullProfileInput.parse(raw);
     if (payload.childrenData?.some(child => child.id || !child.gender)) throw new CommunityError("Для нового ребёнка укажите пол. Существующие дети доступны только после входа в свой профиль");
     if (JSON.stringify(payload).length > 25000) throw new CommunityError("Анкета слишком велика");
     const existingHash = await registrationAttemptToken(attemptId);
@@ -61,12 +67,16 @@ export async function completeRegistrationDraft(id: string, reviewedInput?: unkn
         const [profile] = await tx.select().from(users).where(eq(users.id, userId));
         const access = communityAccess(profile);
         return { revision: profile?.filterRevision || 0, access, welcome: false, email: "",
-          redirectTo: access.canViewEvents ? await eventDestination((draft.payload as any)?.returnTo, tx) : "/register?result=resources" };
+          redirectTo: await eventDestination((draft.payload as any)?.returnTo, tx) };
       }
-      const resourceOnly = typeof reviewedInput === "object" && reviewedInput !== null && "affiliation" in reviewedInput && reviewedInput.affiliation === "none";
+      const resourceOnly = typeof reviewedInput === "object" && reviewedInput !== null && "affiliation" in reviewedInput && reviewedInput.affiliation === "none" && !("firstName" in reviewedInput);
       if (reviewedInput === undefined && !draftReady(draft.payload)) throw new CommunityError("Проверьте обязательные поля и сохраните анкету");
       const form = reviewedInput === undefined ? draftForm(draft.payload) : reviewedInput;
-      const saved = await writeCommunityProfile(tx, identity, { ...(form as object), returnTo: eventReturnTo((draft.payload as any)?.returnTo) }, resourceOnly, reviewedInput === undefined ? draft.createdAt : undefined);
+      const destination = eventReturnTo((draft.payload as any)?.returnTo);
+      const openEventId = resourceOnly ? undefined : await openProfileEvent(form, destination, tx);
+      const saved = await writeCommunityProfile(tx, identity, { ...(form as object), returnTo: destination }, resourceOnly, reviewedInput === undefined ? draft.createdAt : undefined, openEventId);
+      const visitor = await interestVisitor();
+      if (visitor.hash) { const [canonical] = await tx.select().from(users).where(eq(users.id, userId)); await linkVisitorInterests(tx, visitor.hash, canonical); }
       // Claim, profile/children/history and the server completion stamp commit together.
       await tx.update(drafts).set({ ownerId: userId, consumedAt: new Date(), payload: { returnTo: (draft.payload as any)?.returnTo } }).where(eq(drafts.id, id));
       return saved;

@@ -23,14 +23,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function PublicEventsPage() {
+export default async function PublicEventsPage({ searchParams }: { searchParams: Promise<{ open?: string }> }) {
+  const query = await searchParams;
+  const openOnly = query.open === "1";
   const { userId } = await auth();
-  const access = communityAccess(await currentCommunityUser());
-  if (!access.canViewEvents) return <AccessScreen reason={userId ? access.reason : "guest"} returnTo="/events" />;
 
   // Параллельный фетчинг данных
   const [initialData, categories] = await Promise.all([
-    getPublicEventsPaginated(1, 12, null),
+    getPublicEventsPaginated(1, 12, null, null, openOnly),
     getActivePublicCategories(),
   ]);
 
@@ -38,7 +38,7 @@ export default async function PublicEventsPage() {
     process.env.NEXT_PUBLIC_APP_URL || "https://menorah-rishon.com";
 
   return (
-    <PrivateSession key={userId!} expectedUserId={userId!}><main className="min-h-screen bg-white dark:bg-neutral-950 pt-32 pb-20 relative overflow-hidden">
+    <main className="min-h-screen bg-white dark:bg-neutral-950 pt-32 pb-20 relative overflow-hidden">
       {/* 2. JSON-LD СХЕМА: ИНДЕКСАЦИЯ СПИСКА МЕРОПРИЯТИЙ (ItemList) */}
       {initialData.events.length > 0 && (
         <script
@@ -64,7 +64,7 @@ export default async function PublicEventsPage() {
                   },
                 },
               })),
-            }),
+            }).replace(/</g, "\\u003c"),
           }}
         />
       )}
@@ -88,12 +88,13 @@ export default async function PublicEventsPage() {
         </div>
 
         <EventsPageClient
+          initialOpenOnly={openOnly}
           initialEvents={initialData.events}
           initialHasMore={initialData.hasMore}
           categories={categories}
           userId={userId}
         />
       </div>
-    </main></PrivateSession>
+    </main>
   );
 }

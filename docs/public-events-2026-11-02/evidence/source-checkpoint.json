@@ -1,0 +1,372 @@
+{
+  "branch": "main",
+  "baseHead": "908d73ce385e53822e59ebedec040fac1108e3c2",
+  "verifiedUncommittedWorkingCopy": true,
+  "productionBuildRuntimeSourceMatches": true,
+  "files": [
+    {
+      "file": "actions/event-interests.ts",
+      "sha256": "00794d471d579b26e72798adf70f0357e77eb960b916db52574ebd3881cdc939"
+    },
+    {
+      "file": "app/(marketing)/event-interest/unsubscribe/page.tsx",
+      "sha256": "c20240c29bc2d0a7c2862037604662394b0e3544724065b70ecfb718e5d375a3"
+    },
+    {
+      "file": "app/api/events/intake/route.ts",
+      "sha256": "c0c6a2ad7b3fde9a7e134d1c53206d8d57d216dc87a918f36e2f29a8eae0cba7"
+    },
+    {
+      "file": "app/api/events/interests/route.ts",
+      "sha256": "b7b95acc63432888e95afafb6e82d4e6cb203990bd55202b7c251b5b6b3dda8c"
+    },
+    {
+      "file": "app/api/events/interests/unsubscribe/route.ts",
+      "sha256": "bbe749b9e0912d677ecaacafcf3ff779d8a30973304b5b24e8717e580f7b04a7"
+    },
+    {
+      "file": "app/api/events/route.ts",
+      "sha256": "137b3c4901121fc55f8a0e550577c9d64d95efaa8954e86ec0fb5ad6c38c7006"
+    },
+    {
+      "file": "app/api/events/share/route.ts",
+      "sha256": "1a674558cc57de4bbb821b09e67602c7673df381e6d5636f4da4b3bb6b7ad408"
+    },
+    {
+      "file": "app/api/telegram/miniapp/intake/route.ts",
+      "sha256": "9a7f27ebbb05c737f67d9789e63fb7d3ca53214a2b82deb3acd236bb67290dea"
+    },
+    {
+      "file": "app/api/telegram/miniapp/interests/route.ts",
+      "sha256": "71a1db63cb710a09208af8d86b557c25a49be9c42afbf4d7b4f42060cb168614"
+    },
+    {
+      "file": "components/dashboard/users/event-interests.tsx",
+      "sha256": "a1bd93150526bc8f8119fd6dcad299dc7b548af178a0bbada190c4c5e9b63c61"
+    },
+    {
+      "file": "components/events/event-access-flow.tsx",
+      "sha256": "58fa500ee955f60c2a9ea67c32b1f820a15218e0f045349bf976d8974b654026"
+    },
+    {
+      "file": "components/events/interest-unsubscribe.tsx",
+      "sha256": "f0e0c3e48403cbe62f9be5198b5a715a2487a7d4a6829c1647238d105042f4a6"
+    },
+    {
+      "file": "docs/public-events-2026-11-02/DECISIONS.md",
+      "sha256": "b3a16452c8c3e1145001cec21262aed2220d32951c1eb11cdedeef0dac6070e5"
+    },
+    {
+      "file": "docs/public-events-2026-11-02/MANUAL_SQL.sql",
+      "sha256": "34705ff4edf625a4648f5738f2d19b158d14b9ee99fb75a5541ee7212c6d1d7c"
+    },
+    {
+      "file": "docs/public-events-2026-11-02/READ_ONLY_PRECHECK.sql",
+      "sha256": "1881afd1bedf4254192ba9a340a553d3b760eb72f3f7269cce2124f26beaf67e"
+    },
+    {
+      "file": "docs/public-events-2026-11-02/REPORT.md",
+      "sha256": "14d75c8e4132ba333d3379443fbebd8da373781daa03e598608f0a52f152252f"
+    },
+    {
+      "file": "drizzle/20261102190245_public_event_intake.sql",
+      "sha256": "13e37a8f32869ce2b62c48f5ed2b064e84f25eaffff24058205795a3a5117d17"
+    },
+    {
+      "file": "drizzle/meta/0015_snapshot.json",
+      "sha256": "d0651354680470c89b309f7195c99f178e523729aa3149229e7e1306217f0064"
+    },
+    {
+      "file": "lib/events/copy.ts",
+      "sha256": "f739504f2b4fc8460a18ec2adaafd9a245fabdb0cc2654c290dd5cc36aacbeae"
+    },
+    {
+      "file": "lib/events/eligibility.ts",
+      "sha256": "32a2a5df6e1805bcfbece240a13656649c94d58e14471298c49289a9aeab468c"
+    },
+    {
+      "file": "lib/events/http.ts",
+      "sha256": "9dafd2584e3528afa5f06feaef3cee4098b93f60ba54db86b99007845c46595b"
+    },
+    {
+      "file": "lib/events/intake.ts",
+      "sha256": "4c230f1d6e2e8baba4164beb311c82f300ac5faa667d54bed385a555bb8810d3"
+    },
+    {
+      "file": "lib/events/interests.ts",
+      "sha256": "6498cef68756a8414bcd6375ae06f18fc7ec256f1514a125920d5805155de0ed"
+    },
+    {
+      "file": "lib/events/open-profile.ts",
+      "sha256": "03bb7cd8b18a9f34a934bada5e28acf1f5a81bbb3097641e40a9c906379f57e6"
+    },
+    {
+      "file": "lib/events/public.ts",
+      "sha256": "3c0363306f7586f7c33b8478bbf69422cba41267ce13348cc3f91690bee7fb8d"
+    },
+    {
+      "file": "scripts/build-public-event-sql.cjs",
+      "sha256": "40e4f73a189738a06602de6cbed13052eab0609f8385537b45fa71ade457eaa1"
+    },
+    {
+      "file": "supabase/migrations/20261102190245_public_event_intake.sql",
+      "sha256": "13e37a8f32869ce2b62c48f5ed2b064e84f25eaffff24058205795a3a5117d17"
+    },
+    {
+      "file": "tests/community/public-event-access.cjs",
+      "sha256": "4eb0eaf38b8c66df41c503aa38b545192589e6ff4589221fcd8a3073b57dd8d6"
+    },
+    {
+      "file": "tests/community/public-event-browser.cjs",
+      "sha256": "560479c0f9b0ef0b9d97dfa1d88b803ecfac7869460adff5813b4176c449f8b8"
+    },
+    {
+      "file": "tests/community/public-event-fixture.cjs",
+      "sha256": "c9ea5331015ab7d205dc1f0a17f28bc17fab3382cb2684fb51073b265fab93c8"
+    },
+    {
+      "file": "tests/community/public-event-harness.cjs",
+      "sha256": "0c1d26b28643556f6d74ab324449bb63da36bc91f62b5c0eb03cf8f7745109ef"
+    },
+    {
+      "file": "tests/community/public-event-journeys.cjs",
+      "sha256": "fd3c190c924de84254e23ce819a6c5dc66d20b44e471d70b869d5ff9f0e600b7"
+    },
+    {
+      "file": "tests/community/public-event-performance.cjs",
+      "sha256": "8f4dd229a9986044a70b28d68791c76e85c956792cce4ccf2119ff68229bb6d9"
+    },
+    {
+      "file": "actions/community-drafts.ts",
+      "sha256": "e2e99da12678a896b6f12b662d28e01ca8d2afc9fa2df87a7e3807d26ed0aac4"
+    },
+    {
+      "file": "actions/community.ts",
+      "sha256": "bd523ea168bafc0fdb860472ad32f877d00d65fe57f2b593016da498ee9d6768"
+    },
+    {
+      "file": "actions/event.ts",
+      "sha256": "bcf4340897e79dcbf9803fcc319880bc715f7900c64a16711f1200ec69f4b860"
+    },
+    {
+      "file": "app/(marketing)/contact/page.tsx",
+      "sha256": "89578ca7d4aec343c68aa65f6012cf7536286b702252842ce2d21353717778ce"
+    },
+    {
+      "file": "app/(marketing)/events/[id]/page.tsx",
+      "sha256": "f81433da6070f8e9afeacdebcc2bcb526929840d5185bfdd84df8fa1cf005410"
+    },
+    {
+      "file": "app/(marketing)/events/page.tsx",
+      "sha256": "fb874982c28948c3831f90de84f69070f934a1be7717410ba311b1ea0664fd0d"
+    },
+    {
+      "file": "app/(marketing)/layout.tsx",
+      "sha256": "c3df9a56689ba76675d0ee04af179ead5fecd96bd62ed90009020743d1ac484e"
+    },
+    {
+      "file": "app/(marketing)/page.tsx",
+      "sha256": "aeb319b7519d9dd624d179082e32f0eac0afb6f8a5e84abbc11c1f3bd26924ea"
+    },
+    {
+      "file": "app/(marketing)/register/page.tsx",
+      "sha256": "8da8cbcfa0e35d42687daea4fe0a657a1ca7b48f318800c6f4ece50d181c4ca7"
+    },
+    {
+      "file": "app/api/telegram/miniapp/events/route.ts",
+      "sha256": "f2e4da2a6423473c4743cdaf4c012357353dbe0bcee764f18b80e28fea35f22c"
+    },
+    {
+      "file": "app/api/telegram/miniapp/start/route.ts",
+      "sha256": "42e8bcc1c610d0433445192d128176ed90ae0976dd3675327537b39492a73e0d"
+    },
+    {
+      "file": "app/auth/complete/page.tsx",
+      "sha256": "5f6d0e798162e9b690ab8dd5947203e82091738bf4d766bb837c2bcddedf9a18"
+    },
+    {
+      "file": "app/dashboard/events/page.tsx",
+      "sha256": "2ffc94238311c13705d847a68357e5c4773472257be4b02f15eae4163cf52589"
+    },
+    {
+      "file": "app/dashboard/layout.tsx",
+      "sha256": "5d25a8aa5bf0223fd6aeefdc37749efde91bcb7a75bb1902178c539ee2905711"
+    },
+    {
+      "file": "app/dashboard/users/page.tsx",
+      "sha256": "c422f3c6428ec9d7cd31468c2875cfc4de5ebac5cfbef7cd53df71733bebe091"
+    },
+    {
+      "file": "app/sitemap.ts",
+      "sha256": "c2da32bc8f5bbbd221b587b1e4c32f7fb8d26b378cbed864c00e0100114046d2"
+    },
+    {
+      "file": "components/community/filter-fields.tsx",
+      "sha256": "226166a51d9d119971317557b9eeff20ce3db3764f4968181549e4bcbdd04811"
+    },
+    {
+      "file": "components/contact.tsx",
+      "sha256": "8adf8b7633b7b2d556b25f65ac4fa77339472d686890187c89fa59f2239a2b46"
+    },
+    {
+      "file": "components/dashboard/events/event-modal.tsx",
+      "sha256": "7759d5743da98e07b500c132b07a67e2ec7e079b8092dda2716b01f758323f8b"
+    },
+    {
+      "file": "components/dashboard/main/onboarding-form.tsx",
+      "sha256": "40265488ca4a44e871e600083481d349081700e2d8f3dd3cccb3bb0940875d62"
+    },
+    {
+      "file": "components/events/events-page-client.tsx",
+      "sha256": "b13da62919777f41256ff639c5b86178e6dbb9a2763607a182a26e14426849ea"
+    },
+    {
+      "file": "components/events/single-event-client.tsx",
+      "sha256": "04affb397d4bc658f25170d8264c83eded08676fb8f6995f1448f56eb7507f40"
+    },
+    {
+      "file": "components/footer.tsx",
+      "sha256": "d32942c481f957013fb20cab37485dd84b4deca144b1a2e4afe7eea216a2807a"
+    },
+    {
+      "file": "components/miniapp/app.tsx",
+      "sha256": "86fc4ce1a534eb537aceed76f80779d0e3689334c5c792a8d97bc41c31633fcb"
+    },
+    {
+      "file": "components/miniapp/event-card.tsx",
+      "sha256": "102454b03989681385d9efd30817590f48d4b1becc284811123b682cc86520ee"
+    },
+    {
+      "file": "components/miniapp/event-entry.tsx",
+      "sha256": "301fc3e2ef995048258331d4e20a7bcf66428137a6f42ec3e334a86d3f2b6c8c"
+    },
+    {
+      "file": "components/miniapp/event-list-section.tsx",
+      "sha256": "2b029dd2534bad52a966a439ba38757e822448a25fa92791533de6e3c9bce4b4"
+    },
+    {
+      "file": "components/miniapp/event-share.tsx",
+      "sha256": "994f55a9b9ffec59aa3541781b857a6144fa1de46941f208faedc5074bde1ac2"
+    },
+    {
+      "file": "components/miniapp/events.tsx",
+      "sha256": "0316348793975b3dfe7226af8c80f0c009ad76e33e74aa392a536743bb136060"
+    },
+    {
+      "file": "components/miniapp/profile-form.tsx",
+      "sha256": "ce9bfe058a23eb35c3dd0a4346f8b3c04cc2ded87d05e269a932e0bf2205a736"
+    },
+    {
+      "file": "components/miniapp/subscription.tsx",
+      "sha256": "4774538039d05971e7a7e0fa952343a7a4ca86b914d10c9e07a80fb431366280"
+    },
+    {
+      "file": "components/miniapp/ui.tsx",
+      "sha256": "42325308dc3a77888c667459f07a49e5d4e5142f185b62c41a633d523279c63e"
+    },
+    {
+      "file": "components/navbar/index.tsx",
+      "sha256": "52ab810775381d3da83bc7cf0ca0a2b1735ed9b7f3ba74de099d04a0c03802dc"
+    },
+    {
+      "file": "components/navbar/route-navbar.tsx",
+      "sha256": "2937cc30211cfdff9ef8f86900dc493492148aeeea75c0294f861f2ae00824c8"
+    },
+    {
+      "file": "drizzle/meta/_journal.json",
+      "sha256": "84a3d8cb83184dcdc5d93aecf727b437f7a49266db3c365b647dd7dd1770549a"
+    },
+    {
+      "file": "lib/community/event-checkout.ts",
+      "sha256": "d9a372a4e0b8200698f5908efc3635fc5cf5266986f155333b28cb6f63e99711"
+    },
+    {
+      "file": "lib/community/event-payment-open.ts",
+      "sha256": "3d99db4dbfc8ebd8c0f62b65ec381891036be447674e7f62a06ebe6bc5244580"
+    },
+    {
+      "file": "lib/community/event-return.ts",
+      "sha256": "4af09deb9763f21627806de69c4a6c0b92ef9ced5c3f49fef7511ae9e267e430"
+    },
+    {
+      "file": "lib/community/profile-write.ts",
+      "sha256": "7765e0d15e659bf271499c4e384ca05572d4368169c853420f69e8491f474652"
+    },
+    {
+      "file": "lib/community/registration.ts",
+      "sha256": "09d33cd2470ecbc831b526a6515f70abc1cb323af208d15735c01c43da325f00"
+    },
+    {
+      "file": "lib/community/server.ts",
+      "sha256": "2b8d2bb5896e13aca2ce78165e270b2dc8bd3416eb11a13e4df2d9076e9d3c03"
+    },
+    {
+      "file": "lib/community/validation.ts",
+      "sha256": "863e7987468e097de00e58977cecb5d8f6714e8cc7ce4ba3cbff5884b0b0187e"
+    },
+    {
+      "file": "lib/db/schema.ts",
+      "sha256": "4dc9d67d94ed8746300de0788606262ab87d74872dd120a89f6c38323fd72bf1"
+    },
+    {
+      "file": "lib/telegram/bot-welcome.ts",
+      "sha256": "2c5bc31d1cafbffe46dfa9cd5bff6d7d5b0bd23fd5977d2c018b565adec11fe6"
+    },
+    {
+      "file": "lib/telegram/bot.ts",
+      "sha256": "9b93a1197ad39adda0cf8a8dadd88b9cd418ac772fd05b9746b22c0a620e8554"
+    },
+    {
+      "file": "lib/telegram/broadcast.ts",
+      "sha256": "26dd8fb569d620715c07d5b48ac2252886e6fc8872649ce3e43b4e4cf82050cf"
+    },
+    {
+      "file": "lib/telegram/event-launch.ts",
+      "sha256": "61a4159e7c96cc954527ca694b9fad39fd157469b0234950ae7b26962446565c"
+    },
+    {
+      "file": "lib/telegram/event-share-server.ts",
+      "sha256": "43bb90ceea3ed56950f014f39ade64e2063d48a7d5aa4cad5c10837505baee52"
+    },
+    {
+      "file": "lib/telegram/miniapp-events.ts",
+      "sha256": "8098f3439a8e5bdf4c179e896d000c469ee1d81568c74a3dcc101b3ce0f601e3"
+    },
+    {
+      "file": "lib/telegram/miniapp-i18n.ts",
+      "sha256": "c2948e6353c26f9fd4a79cf1b828d7c38a4de147bd84d1ebf039e85a78e2e84f"
+    },
+    {
+      "file": "lib/telegram/miniapp-profile.ts",
+      "sha256": "7615949f1c00a71ee616bbcfead94710064dc5e0362cc495f2e52838e4a34d98"
+    },
+    {
+      "file": "lib/telegram/miniapp-user.ts",
+      "sha256": "318a7d20b15cb7faf21b0544fe1e0640908d0e539766963e3ef95d20bdff16a3"
+    },
+    {
+      "file": "lib/telegram/subscription.ts",
+      "sha256": "902be82c2c69cf3e9969e6dbeea91e4d0961e93e45efada3e608c134a2bd1a74"
+    },
+    {
+      "file": "tests/community/README.md",
+      "sha256": "13bf6a17de0d70a2ff9f112bb3ab2d94f04b58c49adf7fef9197689fe3dd80bd"
+    },
+    {
+      "file": "tests/community/migrations.cjs",
+      "sha256": "fcff7b1c7b434c8e6cc1605f5a3462bc187db67452dea1712ee9ae9f590afd3f"
+    },
+    {
+      "file": "tests/community/miniapp-auth.cjs",
+      "sha256": "139bad4a74187ad61a1a2d32cd69928e7bb9b8002693eab68bda545460669b4c"
+    },
+    {
+      "file": "tests/community/telegram-bundle.cjs",
+      "sha256": "a274869033d5e4fc96cb4a230047cfcbb899c38efd8a491c09b1fac4079b5640"
+    },
+    {
+      "file": "tests/community/telegram-release.cjs",
+      "sha256": "1011af127bc25091b93cd343c71d4b33f9afa8ba7ea8622ead5b086b80b5a3b3"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 import "server-only";
+import { eventInterests } from "@/lib/db/schema";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/lib/db";
@@ -119,6 +120,7 @@ export async function handleTelegramUpdate(raw: unknown) {
             : {}),
         })
         .where(eq(telegramContacts.id, contact.id));
+      if (action === "unsubscribed") await tx.update(eventInterests).set({ invitationConsent: false, invitationWithdrawnAt: now }).where(eq(eventInterests.userId, user.id));
       return {
         contactId: contact.id,
         status: action === "subscribed" ? "subscribed" : contact.marketingStatus === "blocked" || contact.blockedAt ? "blocked" : action ?? contact.marketingStatus,
@@ -126,7 +128,7 @@ export async function handleTelegramUpdate(raw: unknown) {
       };
     },
     String(u.update_id),
-    !!start,
+    false,
   );
   if (!result) return { duplicate: true };
   // A persisted block is never cleared by /start/bootstrap or a welcome retry.

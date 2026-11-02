@@ -318,3 +318,24 @@ deletion safety assertions remain. Frozen adoption-SQL compatibility checks run 
 the exact historical prefix, while current-ledger cases prove that the frozen tool
 fails closed and preserves data. Native future-migration probes use the latest
 journal timestamp rather than the historical adoption marker timestamp.
+
+## Публичные мероприятия и мягкий вход, 02.11.2026
+
+[Актуальный отчёт](../../docs/public-events-2026-11-02/REPORT.md) заменяет старые предположения о закрытом просмотре. Новая предварительная оценка не переписывает постоянный фильтр. Согласие на будущие приглашения явное, /start/bootstrap не подписывают автоматически.
+
+```sh
+COMMUNITY_TEST_OUTPUT=/tmp/menora-public-event-evidence/server node tests/community/public-event-access.cjs
+COMMUNITY_TEST_OUTPUT=/tmp/menora-public-event-evidence/release node tests/community/telegram-release.cjs
+```
+
+Новый browser fixture — `node tests/community/public-event-fixture.cjs`, по умолчанию `/tmp/menora-public-event-ui`; запускайте только локально с синтетическими env. Затем:
+
+```sh
+node tests/community/public-event-browser.cjs
+node tests/community/public-event-journeys.cjs
+node tests/community/public-event-performance.cjs
+```
+
+Скрипты проверяют `isolated-pglite`; `PUBLIC_EVENT_BROWSER_BASE` задаёт URL (по умолчанию127.0.0.1:3378). Внешние запросы заблокированы. Fixture заменяет Clerk/SDK только вне Git; это не настоящий OAuth/Telegram smoke. При повторе всего browser suite используйте свежий процесс disposable fixture: регистрации сохраняются в его памяти намеренно. Playwright 1.58.2 и соответствующий Chromium1208 установлены вне проекта в `/tmp/menora-browser-runtime`. Bundle test принимает `COMMUNITY_PRODUCTION_BASE` (по умолчанию3343) для сопоставления одинаковых production build.
+
+`node scripts/build-public-event-sql.cjs` детерминированно пересобирает manual/precheck из новой миграции и известной истории. Скрипт не подключается к БД. Ничего из этих команд не применять к production автоматически.

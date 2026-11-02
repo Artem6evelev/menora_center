@@ -32,10 +32,16 @@ export const fullProfileInput = z.object({
   if (value.hasChildren && communityAccess({ ...value, filterVersion: FILTER_VERSION, filterCompletedAt: new Date(), isProfileComplete: true }).canManageChildren && !value.childrenData?.length) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["childrenData"], message: "Добавьте данные ребёнка или снимите отметку «Есть дети»" });
   if (!value.hasChildren && value.childrenData?.length) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["childrenData"], message: "Скрытый блок детей не отправляется при ответе «Нет»" });
   if (value.affiliation !== "giyur" && value.giyurStage) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["giyurStage"], message: "Уточнение этапа относится только к гиюру" });
-  if (value.affiliation === "none") ctx.addIssue({ code: z.ZodIssueCode.custom, message: "В этой ветке полная анкета не отправляется" });
+  if (value.affiliation === "none") ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Для обычного профиля используйте форму без изменения религиозного статуса" });
   if (value.maritalStatus === "married" && !value.spouseName?.trim()) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["spouseName"], message: "Укажите имя супруга или супруги" });
 });
 export type ProfileInput = z.infer<typeof fullProfileInput>;
+// An open-event profile collects ordinary required fields, without inventing or
+// requiring a religious category or completing the restricted-event filter.
+export const openEventProfileInput = fullProfileInput.innerType().omit({ affiliation: true, giyurStage: true }).superRefine((value, ctx) => {
+  if (value.maritalStatus === "married" && !value.spouseName?.trim()) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["spouseName"], message: "Укажите имя супруга или супруги" });
+  if (!value.hasChildren && value.childrenData?.length) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["childrenData"], message: "Скрытый блок детей не отправляется" });
+});
 export const registrationInput = z.object({
   family: z.record(z.boolean()).default({ self: true }),
   childIds: z.array(z.string().min(1).max(150)).max(20).optional(),

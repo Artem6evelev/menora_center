@@ -1,0 +1,29 @@
+{
+  "environment": "production cache module with controllable transport",
+  "checks": [
+    {
+      "name": "instance caches are isolated; TTL returns only fresh data and never uses browser/global storage",
+      "status": "PASS"
+    },
+    {
+      "name": "parallel StrictMode readers share one fetch; canceling a consumer does not cancel its replacement",
+      "status": "PASS"
+    },
+    {
+      "name": "logout/account-switch clear aborts old transport and late responses cannot enter another session",
+      "status": "PASS"
+    },
+    {
+      "name": "mutation invalidates matching detail/registration entries, preserves public list and rejects stale in-flight data",
+      "status": "PASS"
+    },
+    {
+      "name": "Kids deduplicates concurrent readers but reopens with a fresh editable profile snapshot",
+      "status": "PASS"
+    },
+    {
+      "name": "failed requests are retryable; aborted consumers cannot consume even a cached private response",
+      "status": "PASS"
+    }
+  ]
+}

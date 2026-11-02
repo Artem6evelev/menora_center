@@ -6,9 +6,11 @@ import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { getUsersPaginated } from "@/actions/user";
 import Link from "next/link";
+import EventInterestsCrm from "@/components/dashboard/users/event-interests";
+import { getEventInterests } from "@/actions/event-interests";
 import CrmTableClient from "@/components/dashboard/users/crm-table.client";
 
-export default async function CrmPage() {
+export default async function CrmPage({ searchParams }: { searchParams: Promise<{ interestUser?: string }> }) {
   await requireDashboardFilter();
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
@@ -19,7 +21,9 @@ export default async function CrmPage() {
   }
 
   // Грузим только 1-ю страницу при первой загрузке (остальное будет грузить клиент)
-  const initialData = await getUsersPaginated(1, 20, "");
+  const query = await searchParams;
+  const interestUser = query.interestUser?.slice(0, 150);
+  const [initialData, interests] = await Promise.all([getUsersPaginated(1, 20, ""), getEventInterests({ userId: interestUser })]);
 
   return (
     <div className="space-y-4">
@@ -29,6 +33,7 @@ export default async function CrmPage() {
       >
         Telegram-аудитория и рассылки
       </Link>
+      <EventInterestsCrm initialData={interests} userId={interestUser} />
       <CrmTableClient initialData={initialData} currentUserRole={dbUser.role} />
     </div>
   );

@@ -5,7 +5,7 @@ import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import Sidebar from "@/components/dashboard/sidebar";
 import NotificationBell from "@/components/dashboard/notification-bell";
-import { hasFilterProfile } from "@/lib/community/policy";
+import { hasFilterProfile, isStaff } from "@/lib/community/policy";
 import PrivateSession from "@/components/community/private-session";
 
 export default async function DashboardLayout({
@@ -20,7 +20,7 @@ export default async function DashboardLayout({
   const userRole = user?.role || "client";
 
   // 🛑 БЛОКИРАТОР ДЛЯ НОВЫХ ПОЛЬЗОВАТЕЛЕЙ (ОНБОРДИНГ)
-  if (!hasFilterProfile(user) || (user?.affiliation !== "none" && !user?.isProfileComplete)) {
+  if (!user || user.identityDisabledAt || (isStaff(user) && !hasFilterProfile(user)) || (!user.isProfileComplete && !(hasFilterProfile(user) && user.affiliation === "none"))) {
     redirect("/register");
   }
 

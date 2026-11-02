@@ -3,10 +3,11 @@ import { childInput, registrationInput } from "./validation";
 import { communityAccess } from "./policy";
 import { prepareChildren, profileChildren } from "./children";
 import { z } from "zod";
+import { canRegisterEvent } from "@/lib/events/eligibility";
 const updatesInput = z.object({ newSpouseName: z.string().trim().min(2).max(150).optional(), newChild: childInput.omit({ id: true }).optional() }).strict();
 export function prepareEventRegistration(profile: any, event: any, raw: unknown, updates?: unknown) {
   const access = communityAccess(profile);
-  if (!access.canRegisterSelf) throw new CommunityError("Сначала заполните анкету и проверьте доступ к событиям");
+  if (!canRegisterEvent(event, profile)) throw new CommunityError("Для записи на это мероприятие необходимо уточнить условия участия и заполнить профиль");
   if (event.isRegistrationClosed || event.status !== "planned") throw new CommunityError("Запись на мероприятие закрыта");
   const input = registrationInput.parse(raw || {});
   const profileUpdate = updatesInput.parse(updates || {});

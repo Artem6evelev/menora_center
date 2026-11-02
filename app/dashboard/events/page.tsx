@@ -18,7 +18,7 @@ export default async function EventsPage({ searchParams }: { searchParams: Promi
 
   const profile = await currentCommunityUser();
   const access = communityAccess(profile);
-  if (!access.canViewEvents && !(hasFilterProfile(profile) && isStaff(profile))) return <AccessScreen reason={access.reason} returnTo="/events" />;
+  if (!(hasFilterProfile(profile) && isStaff(profile))) redirect("/events");
   const eventsData = await getEvents();
   const categories = await getEventCategories();
 

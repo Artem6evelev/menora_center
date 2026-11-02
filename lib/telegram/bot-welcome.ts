@@ -4,17 +4,17 @@ import type { MiniAppLanguage } from "./miniapp-i18n";
 import { communityContact } from "./contact";
 
 export const botWelcomeCopy = {
-  ru: { greeting: "Шалом", identity: "Еврейский общинный центр в Ришон-ле-Ционе.", intro: "Наша миссия — объединять еврейские семьи, укреплять связь с Торой, традицией и общиной. Вместе мы создаём пространство для еврейской жизни, учёбы, праздников и добрых дел.\n\nЧасть программ предназначена для галахических евреев и участников соответствующих программ гиюра. Поэтому при первом входе мы попросим заполнить короткую анкету.\n\n✅ Анкету нужно заполнить только один раз.\n\nДальше вы сможете быстро записываться на мероприятия и получать анонсы новых событий Menorah Center.",
+  ru: { greeting: "Шалом", identity: "Еврейский общинный центр в Ришон-ле-Ционе.", intro: "Наша миссия — объединять еврейские семьи, укреплять связь с Торой, традицией и общиной. Вместе мы создаём пространство для еврейской жизни, учёбы, праздников и добрых дел.\n\nЧасть программ предназначена для галахических евреев и участников соответствующих программ гиюра. Сначала можно посмотреть мероприятия. Условия участия и анкету мы уточним только при записи.\n\n✅ Анкету нужно заполнить только один раз.\n\nДальше вы сможете быстро записываться на мероприятия и получать анонсы новых событий Menorah Center.",
     event: "Вы перешли к нам, чтобы узнать подробнее о мероприятии. Нажмите кнопку ниже — откроется страница события с датой, местом, программой и записью.",
-    note: "Здесь вы также будете получать анонсы ближайших мероприятий Menorah Center. Отключить их можно в любой момент командой /unsubscribe.",
+    note: "Анонсы можно включить добровольно командой /subscribe. Отключить их можно в любой момент командой /unsubscribe.",
     offNote: "Анонсы отключены. Включить их снова можно командой /subscribe.", open: "Открыть Menorah Center", openEvent: "🎟 Открыть мероприятие", events: "Мероприятия", home: "🏠 Menorah Center", contact: "Связаться с нами", subscribed: "Анонсы Menorah Center включены. Отключить: /unsubscribe.", unsubscribed: "Анонсы отключены. Включить снова: /subscribe." },
   en: { greeting: "Shalom", identity: "Jewish community center in Rishon LeZion.", intro: "We're happy you're here! Explore events, register and manage your profile.",
     event: "You came to learn more about an event. Tap below to see the date, location, program and registration on the event page.",
-    note: "You'll also receive announcements about upcoming Menorah Center events here. You can turn them off at any time with /unsubscribe.",
+    note: "You can choose to receive announcements with /subscribe and turn them off at any time with /unsubscribe.",
     offNote: "Announcements are off. To enable them again, use /subscribe.", open: "Open Menorah Center", openEvent: "🎟 Open event", events: "Events", home: "🏠 Menorah Center", contact: "Contact us", subscribed: "Menorah Center announcements are on. To turn them off: /unsubscribe.", unsubscribed: "Announcements are off. To enable them again: /subscribe." },
   he: { greeting: "שלום", identity: "מרכז קהילתי יהודי בראשון לציון.", intro: "שמחים שאתם איתנו! כאן אפשר לגלות אירועים, להירשם ולנהל את הפרופיל שלכם.",
     event: "הגעתם כדי לשמוע עוד על אירוע. לחצו למטה לפתיחת עמוד האירוע עם התאריך, המקום, התוכנית וההרשמה.",
-    note: "כאן תקבלו גם הודעות על האירועים הקרובים של Menorah Center. אפשר להפסיק אותן בכל עת באמצעות /unsubscribe.",
+    note: "אפשר לבחור לקבל הודעות באמצעות /subscribe ולבטל בכל עת באמצעות /unsubscribe.",
     offNote: "הודעות כבויות. להפעלה מחדש השתמשו בפקודה /subscribe.", open: "פתיחת Menorah Center", openEvent: "🎟 פתיחת האירוע", events: "אירועים", home: "🏠 Menorah Center", contact: "יצירת קשר", subscribed: "הודעות Menorah Center הופעלו. לביטול: /unsubscribe.", unsubscribed: "ההודעות בוטלו. להפעלה מחדש: /subscribe." },
 } satisfies Record<MiniAppLanguage, Record<string, string>>;
 

@@ -4,7 +4,7 @@ import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { users, telegramContacts } from "@/lib/db/schema";
 import { communityAccess, FILTER_VERSION, hasFilterProfile } from "@/lib/community/policy";
-import { filterInput, fullProfileInput } from "@/lib/community/validation";
+import { filterInput, fullProfileInput, openEventProfileInput } from "@/lib/community/validation";
 import { writeCanonicalCommunityProfile } from "@/lib/community/profile-write";
 import { profileChildren } from "@/lib/community/children";
 import { CommunityError } from "@/lib/community/errors";
@@ -50,9 +50,19 @@ export async function saveMiniAppProfile(tx: LockedTransaction, user: MiniAppUse
     if (filterOnly) {
       const input = filterFields.parse(raw);
       if (input.affiliation !== "none" && !input.gender) throw new MiniAppAuthError(400, "gender_required");
-      await tx.update(users).set({ affiliation: input.affiliation, gender: input.affiliation === "none" ? user.gender : input.gender,
+      await tx.update(users).set({ affiliation: input.affiliation, gender: input.gender ?? user.gender,
         filterVersion: FILTER_VERSION, filterCompletedAt: new Date(), filterRevision: user.filterRevision + 1 })
         .where(eq(users.id, user.id));
+    } else if (raw && typeof raw === "object" && "ordinaryProfile" in raw) {
+      const { ordinaryProfile, ...fields } = raw as Record<string, unknown>;
+      if (ordinaryProfile !== true) throw new MiniAppAuthError(400, "invalid_profile");
+      const input = openEventProfileInput.parse({ ...fields, expectedRevision: user.filterRevision });
+      await writeCanonicalCommunityProfile(tx, user.id, input, false, undefined, undefined, undefined, true);
+    } else if (raw && typeof raw === "object" && "openEventId" in raw) {
+      const { openEventId, ...fields } = raw as Record<string, unknown>;
+      const eventId = z.string().regex(/^[A-Za-z0-9_-]{1,150}$/).parse(openEventId);
+      const input = openEventProfileInput.parse({ ...fields, expectedRevision: user.filterRevision });
+      await writeCanonicalCommunityProfile(tx, user.id, input, false, undefined, undefined, eventId);
     } else {
       if (!hasFilterProfile(user) || user.affiliation === "none") throw new MiniAppAuthError(403, "filter_required");
       const input = profileFields.parse(raw);

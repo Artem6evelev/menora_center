@@ -1,0 +1,89 @@
+{
+  "baselineHead": "908d73ce385e53822e59ebedec040fac1108e3c2",
+  "branch": "main",
+  "environment": "Local isolated PostgreSQL18/PGlite and Chromium; synthetic Clerk/Telegram SDK; external messaging/payment blocked",
+  "suites": [
+    {
+      "suite": "server",
+      "file": "server-results.json",
+      "passed": 56
+    },
+    {
+      "suite": "release",
+      "file": "release-results.json",
+      "passed": 216
+    },
+    {
+      "suite": "auth",
+      "file": "auth-results.json",
+      "passed": 87
+    },
+    {
+      "suite": "cache",
+      "file": "cache-results.json",
+      "passed": 6
+    },
+    {
+      "suite": "bridge",
+      "file": "bridge-results.json",
+      "passed": 8
+    },
+    {
+      "suite": "browser",
+      "file": "browser-results.json",
+      "passed": 17
+    },
+    {
+      "suite": "journeys",
+      "file": "journey-results.json",
+      "passed": 3
+    },
+    {
+      "suite": "performance",
+      "file": "performance-results.json",
+      "passed": 5
+    },
+    {
+      "suite": "migrations",
+      "file": "migration-results.json",
+      "passed": 8
+    },
+    {
+      "suite": "bundle",
+      "file": "current-bundle.json",
+      "passed": 1
+    }
+  ],
+  "totalPassed": 407,
+  "lint": {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "errors": 0,
+    "warnings": 30,
+    "existingWarnings": "@next/next/no-img-element"
+  },
+  "typecheck": {
+    "command": "npm run typecheck",
+    "exitCode": 0
+  },
+  "build": {
+    "command": "npm run build",
+    "exitCode": 0,
+    "copy": "/tmp/menora-production-build",
+    "currentWorkingTree": true,
+    "realEnvCopied": false,
+    "database": "unavailable synthetic 127.0.0.1:1, no remote writes",
+    "log": "build.log"
+  },
+  "bundle": {
+    "baselineBytes": 517336,
+    "currentBytes": 506261,
+    "deltaBytes": -11075,
+    "baselineEstimatedGzip": 161744,
+    "currentEstimatedGzip": 157910
+  },
+  "realGoogleOAuth": "NOT VERIFIED",
+  "realTelegramWebView": "NOT VERIFIED",
+  "realPayments": 0,
+  "productionChanged": false
+}

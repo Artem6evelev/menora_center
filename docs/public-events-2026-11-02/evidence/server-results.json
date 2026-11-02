@@ -1,0 +1,246 @@
+{
+  "environment": "Isolated PostgreSQL18/PGlite, actual migrations/routes/shared services; synthetic Clerk and signed Telegram SDK; no real OAuth or production access",
+  "checks": [
+    {
+      "name": "manual SQL accepts the exact adopted 17-row legacy history plus marker/payment, preserves it and repeats safely without Supabase roles",
+      "status": "PASS"
+    },
+    {
+      "name": "owner manual SQL upgrades the previous real ledger, preserves users/children/registrations/payments and defaults every old event to restricted",
+      "status": "PASS"
+    },
+    {
+      "name": "manual SQL repeat and native Drizzle runner are no-ops with exactly one new ledger row",
+      "status": "PASS"
+    },
+    {
+      "name": "unknown or changed ledger fails atomically without reconciling it",
+      "status": "PASS"
+    },
+    {
+      "name": "RLS and revoked direct grants protect interest/limits even with hostile Supabase default grants",
+      "status": "PASS"
+    },
+    {
+      "name": "anonymous public API returns full intended details, never payment links, contacts, families, participants or private events",
+      "status": "PASS"
+    },
+    {
+      "name": "public browsing and intake never create a lead, account, registration, payment or DB write",
+      "status": "PASS"
+    },
+    {
+      "name": "Web/Mini App parity mother → restricted = eligible",
+      "status": "PASS"
+    },
+    {
+      "name": "Web/Mini App parity mother → open = eligible",
+      "status": "PASS"
+    },
+    {
+      "name": "Web/Mini App parity father → restricted = eligible",
+      "status": "PASS"
+    },
+    {
+      "name": "Web/Mini App parity father → open = eligible",
+      "status": "PASS"
+    },
+    {
+      "name": "Web/Mini App parity advanced → restricted = eligible",
+      "status": "PASS"
+    },
+    {
+      "name": "Web/Mini App parity advanced → open = eligible",
+      "status": "PASS"
+    },
+    {
+      "name": "Web/Mini App parity completed → restricted = eligible",
+      "status": "PASS"
+    },
+    {
+      "name": "Web/Mini App parity completed → open = eligible",
+      "status": "PASS"
+    },
+    {
+      "name": "Web/Mini App parity unspecified → restricted = eligible",
+      "status": "PASS"
+    },
+    {
+      "name": "Web/Mini App parity unspecified → open = eligible",
+      "status": "PASS"
+    },
+    {
+      "name": "Web/Mini App parity none → restricted = not_eligible",
+      "status": "PASS"
+    },
+    {
+      "name": "Web/Mini App parity none → open = eligible",
+      "status": "PASS"
+    },
+    {
+      "name": "Web/Mini App parity old → restricted = needs_review",
+      "status": "PASS"
+    },
+    {
+      "name": "Web/Mini App parity old → open = eligible",
+      "status": "PASS"
+    },
+    {
+      "name": "Web/Mini App parity unfiltered → restricted = needs_review",
+      "status": "PASS"
+    },
+    {
+      "name": "Web/Mini App parity unfiltered → open = eligible",
+      "status": "PASS"
+    },
+    {
+      "name": "guest intake keeps early conversion/roots as needs_review and none as not_eligible without canonical category changes",
+      "status": "PASS"
+    },
+    {
+      "name": "all public title/navigation adapters reject invite-only, closed and unsafe return destinations",
+      "status": "PASS"
+    },
+    {
+      "name": "restricted registration rechecks current status; client intake/eligibility injection grants nothing",
+      "status": "PASS"
+    },
+    {
+      "name": "mother can register self on restricted; no completed giyur is inferred",
+      "status": "PASS"
+    },
+    {
+      "name": "advanced can register self on restricted; no completed giyur is inferred",
+      "status": "PASS"
+    },
+    {
+      "name": "completed can register self on restricted; no completed giyur is inferred",
+      "status": "PASS"
+    },
+    {
+      "name": "unspecified can register self on restricted; no completed giyur is inferred",
+      "status": "PASS"
+    },
+    {
+      "name": "father cannot register an existing child even on an open event",
+      "status": "PASS"
+    },
+    {
+      "name": "advanced cannot register an existing child even on an open event",
+      "status": "PASS"
+    },
+    {
+      "name": "unspecified cannot register an existing child even on an open event",
+      "status": "PASS"
+    },
+    {
+      "name": "none cannot register an existing child even on an open event",
+      "status": "PASS"
+    },
+    {
+      "name": "eligible mother/completed conversion retains canonical child calculation and immutable pending total",
+      "status": "PASS"
+    },
+    {
+      "name": "none may register on an explicitly open event; receipt and opening never confirm paid",
+      "status": "PASS"
+    },
+    {
+      "name": "new open-event profile completes without an affiliation/filter stamp or child rights; restricted registration still fails",
+      "status": "PASS"
+    },
+    {
+      "name": "real optimistic profile conflict is retained for open profiles and does not overwrite the new revision",
+      "status": "PASS"
+    },
+    {
+      "name": "ordinary Mini App first profile save uses the canonical optimistic token without assigning affiliation/filter/stage",
+      "status": "PASS"
+    },
+    {
+      "name": "an anonymous pre-auth draft cannot overwrite a completed ordinary profile even without a religious filter",
+      "status": "PASS"
+    },
+    {
+      "name": "mocked verified Clerk callback keeps the original open event after ordinary completion, repeats without duplicates and preserves parallel targets",
+      "status": "PASS"
+    },
+    {
+      "name": "current status is not re-asked; changed canonical status blocks reopening an old pending payment",
+      "status": "PASS"
+    },
+    {
+      "name": "intentional anonymous contact creates one CRM interest, no account/ticket; repetitions reuse it and invitations default off",
+      "status": "PASS"
+    },
+    {
+      "name": "consent, contact, strict status/IDOR validation, same-origin and body limits fail closed",
+      "status": "PASS"
+    },
+    {
+      "name": "foreign idempotency key never overwrites or discloses the original guest contact",
+      "status": "PASS"
+    },
+    {
+      "name": "guest capability links to a verified account only; neither a name nor supplied email merges identities",
+      "status": "PASS"
+    },
+    {
+      "name": "contact rate limit is persistent/atomic and duplicate submissions never create extra people",
+      "status": "PASS"
+    },
+    {
+      "name": "Mini App bootstrap unknown remains unknown without opt-in; explicit consent requires a real permitted chat",
+      "status": "PASS"
+    },
+    {
+      "name": "unsubscribed/blocked survive bootstrap; block is never cleared by an interest or display",
+      "status": "PASS"
+    },
+    {
+      "name": "capability unsubscribe is repeatable and explicit Mini App unsubscribe withdraws invitations",
+      "status": "PASS"
+    },
+    {
+      "name": "CRM staff sees separate guest/linked leads, filters, consent/history and derived registration; ordinary accounts cannot use its actions",
+      "status": "PASS"
+    },
+    {
+      "name": "new/returning Telegram startup gives public events in one request with HMAC and no returning read writes/locks",
+      "status": "PASS"
+    },
+    {
+      "name": "none and new Telegram ad entry receive full public event in startup; disabled campaign never launches it",
+      "status": "PASS"
+    },
+    {
+      "name": "public GET/share reads have zero writes; long aliases are created only by explicit Share POST and remain stable",
+      "status": "PASS"
+    },
+    {
+      "name": "verified guest-to-existing-interest consolidation preserves append-only history and never merges by name/email",
+      "status": "PASS"
+    },
+    {
+      "name": "admin removal archives an event with enquiries; public reads close while CRM/history remain intact",
+      "status": "PASS"
+    }
+  ],
+  "metrics": {
+    "returningHome": {
+      "apiRequests": 1,
+      "sql": 5,
+      "kinds": [
+        "SELECT",
+        "SELECT",
+        "SELECT",
+        "SELECT",
+        "SELECT"
+      ],
+      "locked": 0
+    }
+  },
+  "productionChanged": false,
+  "realMessages": 0,
+  "realPayments": 0
+}

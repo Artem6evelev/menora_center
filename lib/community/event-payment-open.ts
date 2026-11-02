@@ -1,7 +1,8 @@
 import "server-only";
 import { and, eq, sql } from "drizzle-orm";
 import { z } from "zod";
-import { eventParticipants, eventPaymentAttempts } from "@/lib/db/schema";
+import { eventParticipants, eventPaymentAttempts, events } from "@/lib/db/schema";
+import { canRegisterEvent } from "@/lib/events/eligibility";
 import type { LockedTransaction, MiniAppUser } from "@/lib/telegram/miniapp-user";
 import { CommunityError } from "./errors";
 
@@ -18,6 +19,8 @@ export async function openEventPaymentAttempt(tx: LockedTransaction, user: MiniA
   const [participant] = await tx.select().from(eventParticipants)
     .where(and(eq(eventParticipants.id, registrationId), eq(eventParticipants.userId, user.id))).for("update");
   if (!participant) throw missing();
+  const [event] = await tx.select().from(events).where(eq(events.id, participant.eventId));
+  if (!event || !canRegisterEvent(event, user)) throw new EventPaymentOpenError(409, "Для оплаты необходимо уточнить условия участия");
   const [attempt] = await tx.select().from(eventPaymentAttempts)
     .where(eq(eventPaymentAttempts.registrationId, participant.id)).for("update");
   if (!attempt || attempt.userId !== user.id || attempt.eventId !== participant.eventId) throw missing();

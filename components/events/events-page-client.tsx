@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEventsDiscovery } from "@/store/useEventsDiscovery";
 import { getPublicEventsPaginated } from "@/actions/event";
@@ -24,7 +24,7 @@ import { ru } from "date-fns/locale";
 export default function EventsPageClient({
   initialEvents,
   categories,
-  userId,
+  userId, initialOpenOnly = false, initialHasMore = false,
 }: any) {
   const {
     activeCategory,
@@ -39,20 +39,28 @@ export default function EventsPageClient({
     setWomenOnly,
   } = useEventsDiscovery();
 
+  const [openOnly, setOpenOnly] = useState(initialOpenOnly);
   const [events, setEvents] = useState(initialEvents || []);
+  const [page, setPage] = useState(1), [more, setMore] = useState(initialHasMore), [loading, setLoading] = useState(false), [error, setError] = useState(false);
+  const sequence = useRef(0);
 
   useEffect(() => {
-    const filterFromDB = async () => {
-      try {
-        const data = await getPublicEventsPaginated(1, 100, activeCategory);
-        setEvents(data?.events || []);
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    if (activeCategory !== null) filterFromDB();
-    else setEvents(initialEvents || []);
-  }, [activeCategory, initialEvents]);
+    const current = ++sequence.current;
+    setPage(1); setError(false);
+    if (activeCategory === null && openOnly === initialOpenOnly) { setEvents(initialEvents || []); setMore(initialHasMore); setLoading(false); return; }
+    setLoading(true);
+    void getPublicEventsPaginated(1, 12, activeCategory, null, openOnly).then(data => {
+      if (current === sequence.current) { setEvents(data.events); setMore(data.hasMore); }
+    }).catch(() => { if (current === sequence.current) setError(true); }).finally(() => { if (current === sequence.current) setLoading(false); });
+    return () => { sequence.current = current + 1; };
+  }, [activeCategory, initialEvents, openOnly, initialOpenOnly, initialHasMore]);
+  async function loadMore() {
+    const current = sequence.current; setLoading(true); setError(false);
+    try { const data = await getPublicEventsPaginated(page + 1, 12, activeCategory, null, openOnly);
+      if (current === sequence.current) { setEvents((old: any[]) => [...old, ...data.events]); setMore(data.hasMore); setPage(n => n + 1); }
+    } catch { if (current === sequence.current) setError(true); }
+    finally { if (current === sequence.current) setLoading(false); }
+  }
 
   // 1. УМНАЯ ГЕНЕРАЦИЯ ТОЧЕК ДЛЯ КАЛЕНДАРЯ
   // Рассчитывает даты для обычных и цикличных событий на год вперед
@@ -151,6 +159,7 @@ export default function EventsPageClient({
 
   return (
     <div className="max-w-7xl mx-auto px-6">
+      <label className="flex gap-3 items-center mb-6"><input type="checkbox" checked={openOnly} onChange={e => setOpenOnly(e.target.checked)} />Только открытые мероприятия</label>
       <div className="flex flex-col items-center text-center mb-12">
         <motion.h1
           className="text-6xl md:text-8xl font-black text-neutral-900 dark:text-white tracking-tighter"
@@ -308,6 +317,8 @@ export default function EventsPageClient({
           ))}
         </AnimatePresence>
       </motion.div>
+      {error && <p role="alert">Не удалось загрузить мероприятия. Попробуйте ещё раз.</p>}
+      {more && <button className="mt-8 rounded-xl border px-6 py-3" disabled={loading} onClick={() => void loadMore()}>{loading ? "Загружаем…" : "Показать ещё"}</button>}
     </div>
   );
 }

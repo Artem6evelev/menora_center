@@ -34,7 +34,10 @@ export async function requirePrivateScope(targetId: string) {
 export async function requireDashboardFilter() {
   const profile = await currentCommunityUser();
   if (!profile) redirect("/register");
-  if (!hasFilterProfile(profile) || (profile.affiliation !== "none" && !profile.isProfileComplete)) redirect("/register");
+  // Religious eligibility is checked at restricted actions, not at the door of
+  // a privately authenticated ordinary profile. Staff still need the current filter.
+  if (isStaff(profile) && !hasFilterProfile(profile)) redirect("/register");
+  if (!profile.isProfileComplete && !(hasFilterProfile(profile) && profile.affiliation === "none")) redirect("/register");
   return profile;
 }
 export async function canReadEvents() {

@@ -53,6 +53,7 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
   const [paymentUrl, setPaymentUrl] = useState("");
 
   const [audience, setAudience] = useState("all");
+  const [admissionPolicy, setAdmissionPolicy] = useState("restricted"), [visibility, setVisibility] = useState("public");
 
   const [isRecurring, setIsRecurring] = useState(false);
   const [recurringPattern, setRecurringPattern] = useState("weekly");
@@ -82,7 +83,7 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
       setPrice(ev.price || "");
       setChildPrice(ev.childPrice || ""); // 🔥
       setPaymentUrl(ev.paymentUrl || "");
-      setAudience(ev.audience || "all");
+      setAudience(ev.audience || "all"); setAdmissionPolicy(ev.admissionPolicy || "restricted"); setVisibility(ev.visibility || "public");
       setImagePreview(ev.imageUrl || null);
       setIsRegistrationClosed(ev.isRegistrationClosed || false);
       setIsRecurring(ev.isRecurring || false);
@@ -95,6 +96,7 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
       setImageFile(null);
       setIsCreatingCategory(false);
     } else {
+      setAdmissionPolicy("restricted"); setVisibility("public");
       setTitle("");
       setDescription("");
       setCategoryId("");
@@ -186,7 +188,7 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
       price: isFree ? "" : price,
       childPrice: isFree ? "" : childPrice, // 🔥 СОХРАНЯЕМ ЦЕНУ РЕБЕНКА
       paymentUrl: isFree ? "" : paymentUrl,
-      audience,
+      audience, admissionPolicy, visibility,
       imageUrl: finalImageUrl,
       isRegistrationClosed,
       isRecurring,
@@ -499,6 +501,14 @@ export default function EventModal({ isOpen, onClose, editData }: any) {
                 <option value="kids">Для детей</option>
               </select>
             </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="font-bold">Правила допуска<select aria-label="Правила допуска" value={admissionPolicy} onChange={e => setAdmissionPolicy(e.target.value)} className="block w-full border p-3 rounded-xl mt-2 font-normal">
+              <option value="restricted">Галахические ограничения</option><option value="open">Открыто для всех</option></select></label>
+            <label className="font-bold">Публикация<select aria-label="Публикация" value={visibility} onChange={e => setVisibility(e.target.value)} className="block w-full border p-3 rounded-xl mt-2 font-normal">
+              <option value="public">Публичное мероприятие</option><option value="invite_only">Только по приглашению</option></select></label>
+            <p className="text-sm text-neutral-500 sm:col-span-2">Все старые мероприятия сохраняют галахические ограничения. Публикация не означает разрешение на запись.</p>
           </div>
 
           <div className="bg-red-50/50 p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-red-100 transition-all duration-300">

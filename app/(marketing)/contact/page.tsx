@@ -1,3 +1,4 @@
+import { communityContact } from "@/lib/telegram/contact";
 import { Metadata } from "next";
 import { Background } from "@/components/background";
 import { HorizontalGradient } from "@/components/horizontal-gradient";
@@ -21,7 +22,7 @@ export default function ContactPage() {
   // Замените эти данные на реальные
   const contactInfo = {
     address: "ул. Ротшильд 1, Ришон ле-Цион, Израиль",
-    phone: "+972 50 123 4567",
+    phone: communityContact.phone,
     email: "shalom@menorahcenter.com",
     hours: "Вс-Чт: 09:00 - 19:00, Пт: до захода Шаббата",
   };

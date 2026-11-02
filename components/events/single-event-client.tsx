@@ -1,6 +1,7 @@
 "use client";
 import { openCurrentUserEventPayment } from "@/actions/event-payment";
 
+import { useAuth } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
 import ChildEditor from "@/components/community/child-editor";
 import { saveOwnChildren } from "@/actions/community-children";
@@ -24,7 +25,9 @@ import {
   getUserFamilyData,
   checkRegistration,
 } from "@/actions/event";
-import AccessScreen from "@/components/community/access-screen";
+import EventAccessFlow from "./event-access-flow";
+import { eventAccessCopy, type EventLanguage } from "@/lib/events/copy";
+import { registrationUrl } from "@/lib/community/policy";
 import dayjs from "dayjs";
 import "dayjs/locale/ru";
 
@@ -91,17 +94,22 @@ export default function SingleEventClient({
   userId,
   canRegisterChildren = false,
   canRegisterSelf = true,
-  canClarifyChildren = false,
+  canClarifyChildren = false, initialLanguage = "ru",
 }: {
   eventData: any;
   userId: string | null;
   canRegisterChildren?: boolean;
   canRegisterSelf?: boolean;
-  canClarifyChildren?: boolean;
+  canClarifyChildren?: boolean; initialLanguage?: EventLanguage;
 }) {
   const router = useRouter();
+  const [language, setLanguage] = useState<EventLanguage>(initialLanguage);
+  const { isLoaded, userId: liveUserId } = useAuth();
+  const ownSession = !!userId && isLoaded && liveUserId === userId;
+  useEffect(() => { if (isLoaded && liveUserId !== userId) { setIsRegModalOpen(false); setUserData(null); setIframeUrl(null); setIsRegistered(false); router.refresh(); } }, [isLoaded, liveUserId, userId, router]);
 
   const [isRegModalOpen, setIsRegModalOpen] = useState(false);
+  const [accessOpen, setAccessOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [userData, setUserData] = useState<any>(null);
@@ -173,8 +181,8 @@ export default function SingleEventClient({
   const totalAmount = calculateTotal();
 
   const handleRegisterClick = () => {
-    if (isClosed || isRegistered || !canRegisterSelf) return;
-    setIsRegModalOpen(true);
+    if (isClosed || isRegistered) return;
+    setAccessOpen(true);
   };
 
   const handleRegisterSubmit = async () => {
@@ -218,7 +226,6 @@ export default function SingleEventClient({
     finally { setIsLoading(false); }
   };
 
-  if (!userId) return <AccessScreen returnTo={`/events/${eventData.id}`} />;
 
   const formattedDate = eventData.date
     ? new Date(eventData.date).toLocaleDateString("ru-RU", {
@@ -239,7 +246,6 @@ export default function SingleEventClient({
   }
 
   const getButtonState = () => {
-    if (!canRegisterSelf) return { text: "Для записи заполните анкету", disabled: true, isSuccess: false, isClosed: false };
     if (isClosed)
       return {
         text: "Запись закрыта",
@@ -255,7 +261,7 @@ export default function SingleEventClient({
         isClosed: false,
       };
     return {
-      text: "Записаться на мероприятие",
+      text: eventAccessCopy[language].join,
       disabled: false,
       isSuccess: false,
       isClosed: false,
@@ -265,7 +271,7 @@ export default function SingleEventClient({
   const btnState = getButtonState();
 
   return (
-    <main className="min-h-screen bg-neutral-50 dark:bg-neutral-950 pt-24 md:pt-32 pb-20 relative">
+    <main lang={language} dir={language === "he" ? "rtl" : "ltr"} className="min-h-screen bg-neutral-50 dark:bg-neutral-950 pt-24 md:pt-32 pb-20 relative">
       <div className="max-w-4xl mx-auto px-4 md:px-6">
         <div className="bg-white dark:bg-neutral-900 rounded-[32px] shadow-xl overflow-hidden border border-neutral-200 dark:border-neutral-800 flex flex-col md:flex-row">
           <div className="w-full md:w-[45%] lg:w-[40%] bg-neutral-50 dark:bg-neutral-950 p-6 md:p-10 flex items-center justify-center shrink-0 border-b md:border-b-0 md:border-r border-neutral-100 dark:border-neutral-800 relative overflow-hidden">
@@ -285,13 +291,13 @@ export default function SingleEventClient({
             </div>
           </div>
 
-          <div className="w-full md:w-[55%] lg:w-[60%] flex flex-col p-6 md:p-10">
+          <div className="min-w-0 w-full md:w-[55%] lg:w-[60%] flex flex-col p-6 md:p-10">
             <div className="flex-1">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-50 text-orange-600 text-[10px] font-black uppercase tracking-widest mb-4 border border-orange-100">
                 <Calendar size={14} /> <span>{formattedDate}</span>
               </div>
 
-              <h1 className="text-3xl md:text-4xl font-black mb-6 tracking-tighter text-neutral-900 dark:text-white">
+              <h1 className="text-3xl md:text-4xl font-black mb-6 break-words min-w-0 tracking-tighter text-neutral-900 dark:text-white">
                 {eventData.title}
               </h1>
 
@@ -348,7 +354,7 @@ export default function SingleEventClient({
                 <div className="mb-8">
                   <ShinyButton
                     onClick={handleRegisterClick}
-                    text={btnState.isSuccess ? btnState.text : "Хочу пойти!"}
+                    text={btnState.text}
                     disabled={btnState.disabled}
                     isSuccess={btnState.isSuccess}
                     isClosed={btnState.isClosed}
@@ -364,9 +370,7 @@ export default function SingleEventClient({
 
               <ShinyButton
                 onClick={handleRegisterClick}
-                text={
-                  btnState.isSuccess ? btnState.text : "Забронировать место"
-                }
+                text={btnState.text}
                 disabled={btnState.disabled}
                 isSuccess={btnState.isSuccess}
                 isClosed={btnState.isClosed}
@@ -377,7 +381,7 @@ export default function SingleEventClient({
       </div>
 
       {/* МОДАЛКА РЕГИСТРАЦИИ (ВЫБОР СЕМЬИ) */}
-      {isRegModalOpen && (
+      {isRegModalOpen && ownSession && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
           onClick={() => setIsRegModalOpen(false)}
@@ -590,8 +594,19 @@ export default function SingleEventClient({
         </div>
       )}
 
+      {accessOpen && <div role="dialog" aria-modal="true" aria-label="Участие в мероприятии" className="fixed inset-0 z-[90] bg-black/60 p-4 flex items-center justify-center">
+        <div className="bg-white dark:bg-neutral-900 rounded-3xl p-5 sm:p-8 w-full max-w-xl max-h-[90dvh] overflow-y-auto min-w-0">
+          <button aria-label="Закрыть" onClick={() => setAccessOpen(false)} className="block ms-auto p-3"><X size={22} /></button>
+          <EventAccessFlow eventId={eventData.id} source="website" language={language} onLanguageChange={setLanguage} onProceed={assessment => {
+            setAccessOpen(false);
+            if (assessment.authenticationRequired || assessment.profileRequired) router.push(registrationUrl(`/events/${eventData.id}`));
+            else setIsRegModalOpen(true);
+          }} />
+        </div>
+      </div>}
+
       {/* 🔥 ВЕРНУЛАСЬ МОДАЛКА С IFRAME 🔥 */}
-      {iframeUrl && (
+      {iframeUrl && ownSession && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-300">
           <div className="relative w-full max-w-2xl h-[90vh] bg-white dark:bg-neutral-900 rounded-[32px] overflow-hidden shadow-2xl flex flex-col">
             <div className="p-4 md:p-5 bg-neutral-50 dark:bg-neutral-950 flex justify-between items-center border-b border-neutral-200 dark:border-neutral-800">

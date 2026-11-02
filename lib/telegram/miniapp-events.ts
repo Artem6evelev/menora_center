@@ -9,6 +9,7 @@ import {
   telegramContacts,
   telegramCampaigns,
 } from "@/lib/db/schema";
+import { publicEventCondition } from "@/lib/events/public";
 import { communityAccess } from "@/lib/community/policy";
 import { profileChildren } from "@/lib/community/children";
 import { registrationInput } from "@/lib/community/validation";
@@ -36,20 +37,19 @@ const input = z
   .strict();
 export type MiniAppEventSelection = Pick<z.output<typeof input>, "spouse" | "childIds" | "extraAdults">;
 export type MiniAppEventQuote = Awaited<ReturnType<typeof calculateEvent>>["breakdown"];
-const previewFields = { id: events.id, title: events.title, imageUrl: events.imageUrl, date: events.date, time: events.time, location: events.location, isFree: events.isFree, price: events.price, isRegistrationClosed: events.isRegistrationClosed, status: events.status };
+const previewFields = { id: events.id, title: events.title, imageUrl: events.imageUrl, date: events.date, time: events.time, location: events.location, isFree: events.isFree, price: events.price, isRegistrationClosed: events.isRegistrationClosed, status: events.status, admissionPolicy: events.admissionPolicy, visibility: events.visibility };
 type PreviewSource = Pick<typeof events.$inferSelect, keyof typeof previewFields>;
 export const eventPreviewDto = (event: PreviewSource, shareUrl: string | null = null) => ({
   id: event.id, title: event.title, imageUrl: event.imageUrl, date: event.date, time: event.time, location: event.location,
-  isFree: event.isFree, price: event.price, isRegistrationClosed: event.isRegistrationClosed || event.status !== "planned", shareUrl,
+  isFree: event.isFree, price: event.price, isRegistrationClosed: event.isRegistrationClosed || event.status !== "planned", shareUrl, admissionPolicy: event.admissionPolicy,
 });
 export const eventDetailDto = (event: typeof events.$inferSelect, shareUrl: string | null = null) => ({
-  ...eventPreviewDto(event, shareUrl), description: event.description, childPrice: event.childPrice, status: event.status,
+  ...eventPreviewDto(event, shareUrl), description: event.description, childPrice: event.childPrice, status: event.status, audience: event.audience,
 });
 export const eventDto = eventDetailDto;
 export async function homeMiniAppEvents(tx: MiniAppTransaction, user: MiniAppUser) {
-  admitted(user);
-  const rows = await tx.select(previewFields).from(events).where(eq(events.status, "planned")).orderBy(desc(events.createdAt), events.id).limit(2);
-  const links = await canonicalTelegramEventShareLinks(tx, rows.map(e => e.id));
+  const rows = await tx.select(previewFields).from(events).where(publicEventCondition()).orderBy(desc(events.createdAt), events.id).limit(2);
+  const links = await canonicalTelegramEventShareLinks(tx, rows.map(e => e.id), true);
   return rows.map(e => eventPreviewDto(e, links.get(e.id) ?? null));
 }
 
@@ -82,16 +82,16 @@ export async function listMiniAppEvents(
   tx: MiniAppTransaction,
   user: MiniAppUser,
   page: number,
+  openOnly = false,
 ) {
-  admitted(user);
   const rows = await tx
     .select(previewFields)
     .from(events)
-    .where(eq(events.status, "planned"))
+    .where(and(publicEventCondition(), openOnly ? eq(events.admissionPolicy, "open") : undefined))
     .orderBy(desc(events.createdAt), events.id)
     .limit(21)
     .offset((page - 1) * 20);
-  const shareLinks = await canonicalTelegramEventShareLinks(tx, rows.slice(0, 20).map(event => event.id));
+  const shareLinks = await canonicalTelegramEventShareLinks(tx, rows.slice(0, 20).map(event => event.id), true);
   return {
     events: rows.slice(0, 20).map(event => eventPreviewDto(event, shareLinks.get(event.id) ?? null)),
     hasMore: rows.length > 20,
@@ -103,7 +103,6 @@ export async function miniAppEventDetail(
   user: MiniAppUser,
   id: string,
 ) {
-  admitted(user);
   const [event] = await tx.select().from(events).where(eq(events.id, id));
   if (!event || !eventVisible(user, event))
     throw new MiniAppAuthError(404, "event_unavailable");
@@ -133,7 +132,7 @@ export async function miniAppEventDetail(
       : null;
 
   return {
-    event: eventDto(event, await canonicalTelegramEventShareLink(tx, event.id)),
+    event: eventDto(event, await canonicalTelegramEventShareLink(tx, event.id, true)),
     registration,
     firstName: user.firstName,
     spouseName: user.spouseName,
@@ -189,7 +188,6 @@ export async function miniAppRegistrations(
   user: MiniAppUser,
   page: number,
 ) {
-  admitted(user);
   const rows = await tx
     .select({
       registration: eventParticipants,
@@ -210,7 +208,7 @@ export async function miniAppRegistrations(
   return {
     registrations: rows
       .slice(0, 20)
-      .filter((row) => eventVisible(user, row.event))
+
       .map((row) => ({
         id: row.registration.id,
         event: eventPreviewDto(row.event),
@@ -246,7 +244,6 @@ export async function clarifyMiniAppGiyur(
   return updated;
 }
 export async function campaignEvent(tx: MiniAppTransaction, user: MiniAppUser) {
-  if (!communityAccess(user).canViewEvents) return null;
   const [contact] = await tx
     .select()
     .from(telegramContacts)

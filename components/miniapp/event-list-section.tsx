@@ -10,7 +10,7 @@ import { EmptyState, EventSkeleton } from "./ui";
 /** Mounted only after the server profile admits the user. No global/account cache. */
 export function EventListSection({ language, onSelect, onAll, initialEvents, cache }: { initialEvents: MiniAppEvent[] | null; cache: MiniAppCache; language: MiniAppLanguage; onSelect: (id: string) => void; onAll: () => void }) {
   const [events, setEvents] = useState<MiniAppEvent[]>(initialEvents ?? []), [loading, setLoading] = useState(initialEvents === null), [error, setError] = useState(false), [retry, setRetry] = useState(0);
-  const u = miniAppUiCopy.ru, c = eventCopy.ru;
+  const u = miniAppUiCopy[language], c = eventCopy[language];
   useEffect(() => {
     if (initialEvents !== null && retry === 0) { setEvents(initialEvents); setLoading(false); markMiniApp("home-content"); return; }
     const controller = new AbortController();

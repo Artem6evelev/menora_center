@@ -263,13 +263,61 @@ export const events = pgTable("events", {
   childPrice: text("child_price"), // 🔥 ДОБАВИЛИ ЭТУ СТРОКУ
   paymentUrl: text("payment_url"),
   audience: text("audience").default("all").notNull(),
+  admissionPolicy: text("admission_policy", { enum: ["restricted", "open"] }).default("restricted").notNull(),
+  visibility: text("visibility", { enum: ["public", "invite_only"] }).default("public").notNull(),
   isRegistrationClosed: boolean("is_registration_closed").default(false),
   status: text("status").default("planned").notNull(),
   categoryId: text("category_id").references(() => eventCategories.id),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
-}, t => ({ listIdx: index("events_status_created_idx").on(t.status, t.createdAt, t.id) })).enableRLS();
+}, t => ({ listIdx: index("events_status_created_idx").on(t.status, t.createdAt, t.id),
+  admissionCheck: check("events_admission_policy_check", sql`${t.admissionPolicy} IN ('restricted','open')`),
+  visibilityCheck: check("events_visibility_check", sql`${t.visibility} IN ('public','invite_only')`),
+})).enableRLS();
+
+// Contacts deliberately submitted after an event CTA. These rows are never tickets
+// or Clerk accounts; only server-authenticated staff can read the CRM collection.
+export const eventInterests = pgTable("event_interests", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  eventId: text("event_id").notNull().references(() => events.id, { onDelete: "restrict" }),
+  userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
+  ownerKey: text("owner_key").notNull(),
+  visitorHash: text("visitor_hash"),
+  submissionId: uuid("submission_id").notNull().unique(),
+  source: text("source", { enum: ["website", "telegram"] }).notNull(),
+  intakeStatus: text("intake_status", { enum: ["maternal", "giyur", "other_giyur", "roots", "none"] }),
+  decision: text("decision", { enum: ["eligible", "needs_review", "not_eligible"] }).notNull(),
+  processingStatus: text("processing_status", { enum: ["new", "contacted", "reviewing", "closed"] }).default("new").notNull(),
+  name: text("name").notNull(), phone: text("phone"), email: text("email"),
+  attribution: jsonb("attribution").default({}).notNull(),
+  contactConsentAt: timestamp("contact_consent_at", { withTimezone: true }).notNull(),
+  invitationConsent: boolean("invitation_consent").default(false).notNull(),
+  invitationConsentAt: timestamp("invitation_consent_at", { withTimezone: true }),
+  invitationWithdrawnAt: timestamp("invitation_withdrawn_at", { withTimezone: true }),
+  policyVersion: text("policy_version").notNull(),
+  unsubscribeHash: text("unsubscribe_hash").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+}, t => ({
+  ownerEventIdx: uniqueIndex("event_interests_owner_event_idx").on(t.eventId, t.ownerKey),
+  userIdx: index("event_interests_user_idx").on(t.userId, t.createdAt),
+  visitorIdx: index("event_interests_visitor_idx").on(t.visitorHash),
+  crmIdx: index("event_interests_crm_idx").on(t.processingStatus, t.createdAt),
+  unsubscribeIdx: uniqueIndex("event_interests_unsubscribe_idx").on(t.unsubscribeHash),
+  sourceCheck: check("event_interests_source_check", sql`${t.source} IN ('website','telegram')`),
+  intakeCheck: check("event_interests_intake_check", sql`${t.intakeStatus} IS NULL OR ${t.intakeStatus} IN ('maternal','giyur','other_giyur','roots','none')`),
+  decisionCheck: check("event_interests_decision_check", sql`${t.decision} IN ('eligible','needs_review','not_eligible')`),
+  processingCheck: check("event_interests_processing_check", sql`${t.processingStatus} IN ('new','contacted','reviewing','closed')`),
+  consentCheck: check("event_interests_consent_check", sql`NOT ${t.invitationConsent} OR ${t.invitationConsentAt} IS NOT NULL`),
+})).enableRLS();
+
+export const eventInterestLimits = pgTable("event_interest_limits", {
+  key: text("key").primaryKey(), count: integer("count").notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+}, t => ({ expiryIdx: index("event_interest_limits_expiry_idx").on(t.expiresAt),
+  countCheck: check("event_interest_limits_count_check", sql`${t.count} BETWEEN 1 AND 10`),
+})).enableRLS();
 
 export const eventParticipants = pgTable("event_participants", {
   id: text("id")

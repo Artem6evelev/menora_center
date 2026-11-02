@@ -1,3 +1,4 @@
+import { communityContact } from "@/lib/telegram/contact";
 import Link from "next/link";
 import React from "react";
 import { Logo } from "./Logo";
@@ -21,7 +22,7 @@ export const Footer = () => {
 
   const socials = [
     { name: "Telegram-канал", href: "#" },
-    { name: "WhatsApp", href: "#" },
+    { name: "WhatsApp", href: communityContact.url },
     { name: "YouTube", href: "#" },
   ];
 

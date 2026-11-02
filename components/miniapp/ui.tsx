@@ -13,7 +13,7 @@ export function MiniAppHeader() {
   </header>;
 }
 export function WelcomeCard({ language, firstName }: { language: MiniAppLanguage; firstName?: string }) {
-  const c = miniAppDictionaries.ru, u = miniAppUiCopy.ru;
+  const c = miniAppDictionaries[language], u = miniAppUiCopy[language];
   return <div className="miniapp-intro miniapp-welcome-compact">
     <h1>{firstName ? <>{c.greeting}, <bdi>{firstName}</bdi> <span aria-hidden="true">👋</span></> : "Menorah Center"}</h1>
     <p className="miniapp-muted">{firstName ? u.local : u.identity}</p>
@@ -23,7 +23,7 @@ export function WelcomeCard({ language, firstName }: { language: MiniAppLanguage
 export function ProfileStatusCard({ language, childrenAllowed }: { language: MiniAppLanguage; childrenAllowed: boolean }) {
   return <section className="miniapp-panel miniapp-profile-status" data-profile-status>
     <span className="miniapp-icon miniapp-icon-success"><Check aria-hidden="true" /></span>
-    <div><h2>{miniAppDictionaries.ru.status}</h2><p className="miniapp-helper">{miniAppUiCopy.ru[childrenAllowed ? "family" : "selfOnly"]}</p></div>
+    <div><h2>{miniAppDictionaries[language].status}</h2><p className="miniapp-helper">{miniAppUiCopy[language][childrenAllowed ? "family" : "selfOnly"]}</p></div>
   </section>;
 }
 export function ActionCard({ icon: Icon, children, onClick, href }: { icon: LucideIcon; children: ReactNode; onClick?: () => void; href?: string }) {
@@ -40,9 +40,9 @@ export function EventSkeleton({ label, detail = false }: { label: string; detail
 }
 export type MiniAppTab = "profile" | "filter" | "events" | "registrations" | "kids" | null;
 export function BottomNav({ language, view, navigate }: { language: MiniAppLanguage; view: MiniAppTab; navigate: (tab: MiniAppTab) => void }) {
-  const c = miniAppDictionaries.ru, e = eventCopy.ru;
+  const c = miniAppDictionaries[language], e = eventCopy[language];
   const tabs = [{ id: null, label: c.home, Icon: Home }, { id: "events", label: e.events, Icon: CalendarDays },
     { id: "registrations", label: e.registrations, Icon: Ticket }, { id: "kids", label: "Menorah Kids", Icon: Baby },
-    { id: "profile", label: "Профиль", Icon: UserRound }] as const;
+    { id: "profile", label: language === "ru" ? "Профиль" : language === "en" ? "Profile" : "פרופיל", Icon: UserRound }] as const;
   return <nav className="miniapp-nav" aria-label={c.account}>{tabs.map(({ id, label, Icon }) => <button key={id ?? "home"} type="button" aria-current={view === id ? "page" : undefined} onClick={() => navigate(id)}><span className="miniapp-nav-icon"><Icon size={21} aria-hidden="true" /></span><span>{label}</span></button>)}</nav>;
 }

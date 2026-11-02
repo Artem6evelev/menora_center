@@ -6,17 +6,18 @@ import type { MiniAppCopy } from "@/lib/telegram/miniapp-i18n";
 import type { MiniAppProfileData } from "@/lib/telegram/miniapp-profile";
 import { requestMessage } from "./request-message";
 
-export default function MiniAppProfileForm({ data, copy, onSave, onDirty }: {
-  data: MiniAppProfileData; copy: MiniAppCopy; onSave: (input: unknown) => Promise<void>; onDirty: (value: boolean) => void;
+export default function MiniAppProfileForm({ data, copy, onSave, onDirty, openRegistration = false }: {
+  data: MiniAppProfileData; copy: MiniAppCopy; onSave: (input: unknown) => Promise<void>; onDirty: (value: boolean) => void; openRegistration?: boolean;
 }) {
   const initial = data.profile;
+  const [gender, setGender] = useState(initial.gender ?? "");
   const [fields, setFields] = useState<CommunityFields>({ ...initial, maritalStatus: initial.maritalStatus as CommunityFields['maritalStatus'] });
   const [cityId, setCityId] = useState(initial.cityId);
   const [children, setChildren] = useState<ChildValue[]>(initial.childrenData);
   const [childrenChanged, setChildrenChanged] = useState(false), [childEditing, setChildEditing] = useState(false);
   const [agreed, setAgreed] = useState(initial.agreedToPrivacy), [pending, setPending] = useState(false), [error, setError] = useState("");
-  const baseline = useRef(JSON.stringify({ fields, cityId, children, agreed }));
-  const dirty = baseline.current !== JSON.stringify({ fields, cityId, children, agreed }) || childEditing;
+  const baseline = useRef(JSON.stringify({ fields, cityId, children, agreed, gender }));
+  const dirty = baseline.current !== JSON.stringify({ fields, cityId, children, agreed, gender }) || childEditing;
   useEffect(() => { onDirty(dirty); return () => onDirty(false); }, [dirty, onDirty]);
   async function submit(event: React.FormEvent) {
     event.preventDefault(); setError("");
@@ -27,13 +28,14 @@ export default function MiniAppProfileForm({ data, copy, onSave, onDirty }: {
       await onSave({ firstName: fields.firstName, lastName: fields.lastName, phone: fields.phone,
         dateOfBirth: fields.dateOfBirth, city: fields.city, cityId, maritalStatus: fields.maritalStatus,
         spouseName: fields.maritalStatus === "married" ? fields.spouseName : null, hasChildren: fields.hasChildren,
-        agreedToPrivacy: agreed,
+        agreedToPrivacy: agreed, ...(openRegistration ? { gender } : {}),
         ...(data.permissions.canEditChildren && (fields.hasChildren || (childrenChanged && !children.length)) ? { childrenData: children } : {}) });
     } catch (failure) { setError(requestMessage(failure, copy)); }
     finally { setPending(false); }
   }
   return <form onSubmit={submit} className="space-y-6" data-miniapp-form="profile">
     <fieldset disabled={pending} className="space-y-6 min-w-0">
+      {openRegistration && <fieldset><legend>{copy.filter.gender}</legend>{(["male", "female"] as const).map(value => <label className="inline-flex gap-2 p-3" key={value}><input required type="radio" name="open-profile-gender" checked={gender === value} onChange={() => setGender(value)} />{copy.filter[value]}</label>)}</fieldset>}
       <ProfileFields fields={fields} onChange={setFields} cityId={cityId} copy={copy.fields} cityCopy={copy.city}
         onCityChange={(city, id) => { setFields(previous => ({ ...previous, city })); setCityId(id); }} />
       {data.permissions.canEditChildren && fields.hasChildren ? <>

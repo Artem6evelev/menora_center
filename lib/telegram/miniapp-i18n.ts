@@ -6,7 +6,7 @@ import { RESOURCE_PARAGRAPHS, COMMUNITY_RESOURCES } from "@/lib/community/copy";
 
 export type MiniAppLanguage = "ru" | "he" | "en";
 export function miniAppLanguage(): MiniAppLanguage {
-  // Telegram/Mini App is a Russian-only product; metadata is not a preference.
+  // Russian is the default; the public-entry UI supports an explicit language choice. Telegram/device metadata is not a preference.
   return "ru";
 }
 const ru = {

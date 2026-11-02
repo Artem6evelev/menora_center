@@ -1,7 +1,7 @@
 import "server-only";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
-import { telegramContacts } from "@/lib/db/schema";
+import { telegramContacts, eventInterests } from "@/lib/db/schema";
 import type { MiniAppTransaction, MiniAppUser } from "./miniapp-user";
 import { MiniAppAuthError } from "./miniapp-errors";
 export async function miniAppSubscription(
@@ -38,6 +38,7 @@ export async function miniAppSubscription(
       .update(telegramContacts)
       .set(values)
       .where(eq(telegramContacts.id, contact.id));
+    if (!input.data.subscribed) await tx.update(eventInterests).set({ invitationConsent: false, invitationWithdrawnAt: now }).where(eq(eventInterests.userId, user.id));
     return { status: values.marketingStatus };
   }
   return { status: contact.marketingStatus };

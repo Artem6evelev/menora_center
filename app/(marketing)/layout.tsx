@@ -5,6 +5,9 @@ import { cn } from "@/lib/utils";
 import { Footer } from "@/components/footer";
 import { AttemptProvider } from "@/components/community/attempt-context";
 
+// The public header includes current published content from the database.
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL || "https://menorah-rishon.com",

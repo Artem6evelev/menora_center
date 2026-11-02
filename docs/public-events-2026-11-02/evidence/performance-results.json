@@ -1,0 +1,107 @@
+{
+  "environment": "Warmed local development Chromium, signed synthetic Telegram SDK, isolated PostgreSQL; external requests blocked",
+  "checks": [
+    {
+      "name": "320 returning public Home: one startup, 5 SELECT, no locks/writes, five equal tabs",
+      "status": "PASS"
+    },
+    {
+      "name": "390 returning public Home: one startup, 5 SELECT, no locks/writes, five equal tabs",
+      "status": "PASS"
+    },
+    {
+      "name": "returning direct Kids stays two API attempts and no separate profile GET",
+      "status": "PASS"
+    },
+    {
+      "name": "screen returns use the 30 second cache; expired Home only refreshes compact preview",
+      "status": "PASS"
+    },
+    {
+      "name": "verified SDK account switch clears Kids/family cache before opening the next account",
+      "status": "PASS"
+    }
+  ],
+  "measurements": [
+    {
+      "scenario": "returning-home",
+      "width": 320,
+      "requests": [
+        {
+          "path": "start",
+          "method": "POST"
+        }
+      ],
+      "db": {
+        "testDatabase": "isolated-pglite",
+        "operations": 5,
+        "kinds": {
+          "SELECT": 5
+        },
+        "locked": 0
+      }
+    },
+    {
+      "scenario": "returning-home",
+      "width": 390,
+      "requests": [
+        {
+          "path": "start",
+          "method": "POST"
+        }
+      ],
+      "db": {
+        "testDatabase": "isolated-pglite",
+        "operations": 5,
+        "kinds": {
+          "SELECT": 5
+        },
+        "locked": 0
+      }
+    },
+    {
+      "scenario": "returning-direct-kids",
+      "requests": [
+        {
+          "path": "start",
+          "method": "POST"
+        },
+        {
+          "path": "kids",
+          "method": "GET"
+        },
+        {
+          "path": "events?preview=home",
+          "method": "GET"
+        }
+      ],
+      "db": {
+        "testDatabase": "isolated-pglite",
+        "operations": 5,
+        "kinds": {
+          "SELECT": 5
+        },
+        "locked": 0
+      }
+    },
+    {
+      "scenario": "cache-ttl",
+      "requests": [
+        {
+          "path": "start",
+          "method": "POST"
+        },
+        {
+          "path": "events?page=1",
+          "method": "GET"
+        },
+        {
+          "path": "events?preview=home",
+          "method": "GET"
+        }
+      ]
+    }
+  ],
+  "physicalTelegramLatency": "NOT VERIFIED",
+  "productionChanged": false
+}
