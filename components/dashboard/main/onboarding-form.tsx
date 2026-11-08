@@ -17,20 +17,22 @@ import { miniAppDictionaries } from "@/lib/telegram/miniapp-i18n";
 import { openEventProfileInput } from "@/lib/community/validation";
 import { fullProfileInput } from "@/lib/community/validation";
 import ResourceMessage from "@/components/community/resource-message";
+import ExistingAccountEntry from "@/components/community/existing-account-entry";
+import { rememberEventRegistration } from "@/lib/community/event-registration-intent";
 
 type Child = ChildValue;
 type Fields = CommunityFields;
 const dateValue = (value: unknown) => { const date = new Date(String(value)); return value && Number.isFinite(date.getTime()) ? date.toISOString().slice(0, 10) : ""; };
-export default function OnboardingForm({ userId = null, initialProfile = null, initialDraft = null, draftId, returnTo = "/dashboard/events", resumeReady = false, onSaved, openRegistration = false }: {
+export default function OnboardingForm({ userId = null, initialProfile = null, initialDraft = null, draftId, returnTo = "/dashboard/events", resumeReady = false, onSaved, openRegistration = false, eventTitle, initialAffiliation }: {
   userId?: string | null; initialProfile?: any; initialDraft?: any; draftId?: string;
-  openRegistration?: boolean; returnTo?: string; resume?: boolean; resumeReady?: boolean; onSaved?: () => void;
+  openRegistration?: boolean; returnTo?: string; resume?: boolean; resumeReady?: boolean; onSaved?: () => void; eventTitle?: string; initialAffiliation?: "maternal" | "giyur";
 }) {
   const router = useRouter(); const clerk = useClerk();
   const copy = miniAppDictionaries.ru;
   const current = hasFilterProfile(initialProfile);
   const answers = initialDraft || (current ? initialProfile : null);
   const ordinary = initialDraft || initialProfile;
-  const [affiliation, setAffiliation] = useState<Affiliation | "">(answers?.affiliation || "");
+  const [affiliation, setAffiliation] = useState<Affiliation | "">(answers?.affiliation || (!userId ? initialAffiliation : undefined) || "");
   const [filterEditing, setFilterEditing] = useState(!current || !!initialDraft);
   const [gender, setGender] = useState<Gender | "">(answers?.gender || "");
   const giyurStage = initialProfile?.giyurStage || null;
@@ -116,7 +118,7 @@ export default function OnboardingForm({ userId = null, initialProfile = null, i
     sessionStorage.removeItem(storageKey);
     sessionStorage.removeItem(`menora-attempt:guest:${eventReturnTo(returnTo)}`);
     onSaved?.();
-    if (result.redirectTo) router.replace(result.redirectTo || "/dashboard/events");
+    if (result.redirectTo) { rememberEventRegistration(result.redirectTo); router.replace(result.redirectTo || "/dashboard/events"); }
     router.refresh();
   }, [onSaved, router, storageKey, returnTo]);
   useEffect(() => {
@@ -141,6 +143,7 @@ export default function OnboardingForm({ userId = null, initialProfile = null, i
       if (!prepared.success) { setError(prepared.message); return; }
       if (!clerk.client) throw new Error("Вход ещё загружается");
       const suffix = `registration=1&draft=${encodeURIComponent(prepared.draftId)}`;
+      rememberEventRegistration(returnTo);
       departing.current = true;
       await clerk.client.signIn.authenticateWithRedirect({ strategy: "oauth_google",
         redirectUrl: `/sso-callback?${suffix}`, redirectUrlComplete: `/auth/complete?${suffix}` });
@@ -159,7 +162,8 @@ export default function OnboardingForm({ userId = null, initialProfile = null, i
     finally { setPending(false); }
   }
   return <div lang="ru" dir="ltr" className="w-full max-w-3xl mx-auto rounded-[32px] md:rounded-[40px] border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 sm:p-8 md:p-12 shadow-xl">
-    {!openRegistration ? <>    <div className="space-y-4 mb-8">{WELCOME_PARAGRAPHS.slice(0, 3).map((text, index) => index === 0
+    {!userId && <div className="mb-6"><ExistingAccountEntry returnTo={returnTo} /></div>}
+    {eventTitle ? <div className="space-y-2 mb-6"><h1 className="text-2xl font-bold">{userId ? "Завершите анкету для записи" : "Впервые с нами?"}</h1><p className="font-medium break-words">{eventTitle}</p><p className="text-slate-600">{userId ? "Проверьте сохранённые данные и заполните недостающее." : "Заполните анкету один раз, затем подтвердите вход через Google. После этого вы вернётесь к записи на мероприятие."}</p></div> : !openRegistration ? <>    <div className="space-y-4 mb-8">{WELCOME_PARAGRAPHS.slice(0, 3).map((text, index) => index === 0
       ? <h1 key={text} className="text-2xl md:text-3xl font-black leading-tight">{text}</h1>
       : <p key={text} className="leading-relaxed text-neutral-600 dark:text-neutral-300">{text}</p>)}</div>
     <div className="rounded-3xl bg-sky-100 text-slate-900 p-5 sm:p-6 flex gap-4 mb-4"><p className="leading-relaxed min-w-0"><strong>Наша миссия</strong>{WELCOME_PARAGRAPHS[3].slice('Наша миссия'.length)}</p><span aria-hidden="true" className="text-blue-700 text-4xl shrink-0 self-center">✡</span></div>

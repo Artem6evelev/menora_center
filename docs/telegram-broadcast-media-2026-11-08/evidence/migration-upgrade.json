@@ -1,0 +1,21 @@
+{
+  "environment": "isolated PGlite, no remote connections",
+  "checks": [
+    {
+      "name": "canonical additive upgrade, old data/grants preserved, repeat/native runner no-op",
+      "status": "PASS"
+    },
+    {
+      "name": "canonical unknown ledger rejected without changes",
+      "status": "PASS"
+    },
+    {
+      "name": "adopted-legacy additive upgrade, old data/grants preserved, repeat/native runner no-op",
+      "status": "PASS"
+    },
+    {
+      "name": "adopted-legacy unknown ledger rejected without changes",
+      "status": "PASS"
+    }
+  ]
+}

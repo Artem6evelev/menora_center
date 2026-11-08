@@ -11,7 +11,14 @@ import {
   telegramBroadcastDeliveries as deliveries,
 } from "@/lib/db/schema";
 import { hasFilterProfile, isStaff } from "@/lib/community/policy";
-import { evaluateEventEligibility } from "@/lib/events/eligibility";
+import {
+  evaluateEventEligibility,
+  isPublicEvent,
+} from "@/lib/events/eligibility";
+import {
+  BROADCAST_CAPTION_LIMIT,
+  isBroadcastImageUrl,
+} from "./broadcast-content";
 import { CommunityError } from "@/lib/community/errors";
 import { audienceSelection, audienceWhere, primaryContact } from "./audience";
 import type { MiniAppTransaction, MiniAppUser } from "./miniapp-user";
@@ -27,22 +34,65 @@ const canonical = (value: unknown): string =>
         )
       : item,
   );
-export const broadcastInput = z
+export const broadcastContentInput = z
   .object({
-    requestKey: z.string().uuid(),
     message: z.string().trim().min(1).max(3500),
+    imageUrl: z.string().url().max(2048).optional(),
     selection: audienceSelection,
     eventId: z.string().min(1).max(150).optional(),
     buttonLabel: z.string().trim().min(1).max(60).optional(),
   })
   .strict();
-export async function broadcastRecipients(
+export const broadcastInput = broadcastContentInput
+  .extend({ requestKey: z.string().uuid() })
+  .strict();
+export async function validateBroadcastContent(
   tx: MiniAppTransaction,
   raw: unknown,
 ) {
+  const body = broadcastContentInput.parse(raw);
+  if (
+    body.imageUrl &&
+    (!isBroadcastImageUrl(
+      body.imageUrl,
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+    ) ||
+      body.message.length > BROADCAST_CAPTION_LIMIT)
+  )
+    throw new CommunityError(
+      body.message.length > BROADCAST_CAPTION_LIMIT
+        ? "С картинкой можно отправить до 1024 символов. Сократите текст или уберите картинку"
+        : "Загрузите изображение через форму рассылки или выберите афишу мероприятия",
+    );
+  let event: typeof events.$inferSelect | undefined;
+  if (body.eventId) {
+    [event] = await tx.select().from(events).where(eq(events.id, body.eventId));
+    if (!isPublicEvent(event))
+      throw new CommunityError(
+        "Мероприятие недоступно для записи. Выберите опубликованное событие с открытой записью",
+      );
+  }
+  return { body, event };
+}
+export async function broadcastRecipients(
+  tx: MiniAppTransaction,
+  raw: unknown,
+  event?: typeof events.$inferSelect,
+) {
   const selection = audienceSelection.parse(raw);
   const rows = await tx
-    .select({ id: telegramContacts.id })
+    .select({
+      id: telegramContacts.id,
+      profile: {
+        id: users.id,
+        affiliation: users.affiliation,
+        gender: users.gender,
+        giyurStage: users.giyurStage,
+        filterVersion: users.filterVersion,
+        filterCompletedAt: users.filterCompletedAt,
+        isProfileComplete: users.isProfileComplete,
+      },
+    })
     .from(users)
     .innerJoin(telegramContacts, primaryContact)
     .where(audienceWhere(selection.filters, selection, true))
@@ -52,14 +102,20 @@ export async function broadcastRecipients(
     throw new CommunityError(
       "Разделите аудиторию: максимум 5000 получателей на рассылку",
     );
-  return rows;
+  return rows
+    .filter(
+      (row) =>
+        !event ||
+        evaluateEventEligibility(event, row.profile).decision === "eligible",
+    )
+    .map((row) => ({ id: row.id }));
 }
 export async function enqueueBroadcast(
   tx: MiniAppTransaction,
   actorId: string,
   raw: unknown,
 ) {
-  const body = broadcastInput.parse(raw),
+  const parsed = broadcastInput.parse(raw),
     [actor] = await tx
       .select()
       .from(users)
@@ -67,14 +123,17 @@ export async function enqueueBroadcast(
       .for("update");
   if (!isStaff(actor) || !hasFilterProfile(actor))
     throw new CommunityError("Недостаточно прав");
+  const { requestKey, ...content } = parsed;
+  const body = content;
   const [existing] = await tx
     .select()
     .from(broadcasts)
-    .where(eq(broadcasts.requestKey, body.requestKey));
+    .where(eq(broadcasts.requestKey, requestKey));
   if (existing) {
     if (
       existing.createdBy !== actorId ||
       existing.message !== body.message ||
+      existing.imageUrl !== (body.imageUrl ?? null) ||
       canonical(existing.audience) !== canonical(body.selection) ||
       existing.eventId !== (body.eventId ?? null) ||
       existing.buttonLabel !== (body.buttonLabel ?? null)
@@ -82,29 +141,22 @@ export async function enqueueBroadcast(
       throw new CommunityError("Неверный ключ операции");
     return { id: existing.id, count: existing.recipientCount, duplicate: true };
   }
-  if (body.eventId) {
-    const [event] = await tx
-      .select()
-      .from(events)
-      .where(eq(events.id, body.eventId));
-    if (!event) throw new CommunityError("Событие не найдено");
-  }
-  const recipients = await broadcastRecipients(tx, body.selection);
+  const { event } = await validateBroadcastContent(tx, content);
+  const recipients = await broadcastRecipients(tx, body.selection, event);
   if (!recipients.length)
     throw new CommunityError("Нет подписанных получателей с доступным чатом");
   const id = randomUUID();
-  await tx
-    .insert(broadcasts)
-    .values({
-      id,
-      requestKey: body.requestKey,
-      createdBy: actorId,
-      message: body.message,
-      eventId: body.eventId ?? null,
-      buttonLabel: body.buttonLabel ?? null,
-      audience: body.selection,
-      recipientCount: recipients.length,
-    });
+  await tx.insert(broadcasts).values({
+    id,
+    requestKey,
+    createdBy: actorId,
+    message: body.message,
+    imageUrl: body.imageUrl ?? null,
+    eventId: body.eventId ?? null,
+    buttonLabel: body.buttonLabel ?? null,
+    audience: body.selection,
+    recipientCount: recipients.length,
+  });
   for (let i = 0; i < recipients.length; i += 250)
     await tx
       .insert(deliveries)
@@ -180,7 +232,10 @@ async function claim() {
         .select()
         .from(events)
         .where(eq(events.id, broadcast.eventId));
-      permitted = !!event && evaluateEventEligibility(event, user as MiniAppUser).decision === "eligible";
+      permitted =
+        !!event &&
+        evaluateEventEligibility(event, user as MiniAppUser).decision ===
+          "eligible";
       eventId = event?.id ?? null;
     }
     if (!permitted) {
@@ -228,9 +283,20 @@ export async function drainBroadcasts() {
       }
       const url = new URL(telegramAppUrl());
       if (eventId) url.searchParams.set("event", eventId);
-      await telegramApi("sendMessage", {
+      if (
+        broadcast.imageUrl &&
+        (!isBroadcastImageUrl(
+          broadcast.imageUrl,
+          process.env.NEXT_PUBLIC_SUPABASE_URL,
+        ) ||
+          broadcast.message.length > BROADCAST_CAPTION_LIMIT)
+      )
+        throw new TelegramApiError("permanent");
+      await telegramApi(broadcast.imageUrl ? "sendPhoto" : "sendMessage", {
         chat_id: contact.telegramChatId,
-        text: broadcast.message,
+        ...(broadcast.imageUrl
+          ? { photo: broadcast.imageUrl, caption: broadcast.message }
+          : { text: broadcast.message }),
         ...(eventId
           ? {
               reply_markup: {

@@ -3,6 +3,8 @@ import { openCurrentUserEventPayment } from "@/actions/event-payment";
 
 import { useAuth } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
+import ExistingAccountEntry from "@/components/community/existing-account-entry";
+import { takeEventRegistration } from "@/lib/community/event-registration-intent";
 import ChildEditor from "@/components/community/child-editor";
 import { saveOwnChildren } from "@/actions/community-children";
 import Link from "next/link";
@@ -111,6 +113,10 @@ export default function SingleEventClient({
   const [accessOpen, setAccessOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
+  const [registrationChecked, setRegistrationChecked] = useState<string | null>(null);
+  useEffect(() => {
+    if (ownSession && registrationChecked === eventData.id && takeEventRegistration(`/events/${eventData.id}`) && !isRegistered && !eventData.isRegistrationClosed) setAccessOpen(true);
+  }, [ownSession, registrationChecked, isRegistered, eventData.id, eventData.isRegistrationClosed]);
   const [userData, setUserData] = useState<any>(null);
   const [familyError, setFamilyError] = useState(false);
 
@@ -132,9 +138,13 @@ export default function SingleEventClient({
   const isClosed = eventData.isRegistrationClosed;
 
   useEffect(() => {
+    let active = true;
+    setRegistrationChecked(null);
+    setIsRegistered(false);
     if (userId) {
-      checkRegistration(eventData.id, userId).then(setIsRegistered);
+      void checkRegistration(eventData.id, userId).then(value => { if (active) { setIsRegistered(value); setRegistrationChecked(eventData.id); } }).catch(() => { if (active) setRegistrationChecked(eventData.id); });
     }
+    return () => { active = false; };
   }, [userId, eventData.id]);
 
   useEffect(() => {
@@ -149,12 +159,12 @@ export default function SingleEventClient({
 
   // 🔥 БЛОКИРУЕМ СКРОЛЛ ПРИ ОТКРЫТОМ IFRAME 🔥
   useEffect(() => {
-    if (isRegModalOpen || iframeUrl) document.body.style.overflow = "hidden";
+    if (accessOpen || isRegModalOpen || iframeUrl) document.body.style.overflow = "hidden";
     else document.body.style.overflow = "unset";
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [isRegModalOpen, iframeUrl]);
+  }, [accessOpen, isRegModalOpen, iframeUrl]);
 
   const calculateTotal = () => {
     if (eventData.isFree) return 0;
@@ -596,9 +606,10 @@ export default function SingleEventClient({
       {accessOpen && <div role="dialog" aria-modal="true" aria-label="Участие в мероприятии" className="fixed inset-0 z-[90] bg-black/60 p-4 flex items-center justify-center">
         <div className="bg-white dark:bg-neutral-900 rounded-3xl p-5 sm:p-8 w-full max-w-xl max-h-[90dvh] overflow-y-auto min-w-0">
           <button aria-label="Закрыть" onClick={() => setAccessOpen(false)} className="block ms-auto p-3"><X size={22} /></button>
-          <EventAccessFlow key={eventData.id} eventId={eventData.id} source="website" startImmediately onDismiss={() => setAccessOpen(false)} onProceed={assessment => {
+          <EventAccessFlow key={eventData.id} eventId={eventData.id} source="website" startImmediately onDismiss={() => setAccessOpen(false)}
+            existingAccount={!userId ? <ExistingAccountEntry returnTo={`/events/${eventData.id}`} /> : undefined} onProceed={(assessment, intake) => {
             setAccessOpen(false);
-            if (assessment.authenticationRequired || assessment.profileRequired) router.push(registrationUrl(`/events/${eventData.id}`));
+            if (assessment.authenticationRequired || assessment.profileRequired) router.push(registrationUrl(`/events/${eventData.id}`) + (intake === "maternal" || intake === "giyur" ? `&affiliation=${intake}` : ""));
             else setIsRegModalOpen(true);
           }} />
         </div>

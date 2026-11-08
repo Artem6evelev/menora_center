@@ -3,8 +3,8 @@ const fs=require('node:fs'),path=require('node:path');
 const {readMigrationFiles}=require('drizzle-orm/migrator');
 const root=path.resolve(__dirname,'..'),baseline=require('./adoption-baseline.json');
 function buildPublicEventSql(){
- const migrations=readMigrationFiles({migrationsFolder:path.join(root,'drizzle')}),last=migrations.at(-1);
- const journal=JSON.parse(fs.readFileSync(path.join(root,'drizzle/meta/_journal.json'))),tag=journal.entries.at(-1).tag;
+ const journal=JSON.parse(fs.readFileSync(path.join(root,'drizzle/meta/_journal.json'))),entry=journal.entries.find(e=>e.tag==='20261102190245_public_event_intake'),tag=entry.tag;
+ const migrations=readMigrationFiles({migrationsFolder:path.join(root,'drizzle')}).slice(0,entry.idx+1),last=migrations.at(-1);
  if(!tag.endsWith('_public_event_intake'))throw new Error('Select the explicit public-event release before rebuilding this frozen artifact');
  const row=m=>({hash:m.hash,created_at:String(m.created_at??m.folderMillis)});
  const canonical=migrations.slice(0,-1).map(row),legacy=[...baseline.legacy.map(row),...migrations.slice(baseline.canonical.length,-1).map(row)];
@@ -13,7 +13,7 @@ function buildPublicEventSql(){
  const actual=`(SELECT coalesce(jsonb_agg(jsonb_build_object('hash',hash,'created_at',created_at::text) ORDER BY created_at,id),'[]'::jsonb) FROM drizzle.__drizzle_migrations)`;
  const match=chains=>chains.map(chain=>`${actual} = '${JSON.stringify(chain)}'::jsonb`).join(' OR ');
  const current=match(before),complete=match(after),body=fs.readFileSync(path.join(root,'drizzle',tag+'.sql'),'utf8');
- const snapshot=JSON.parse(fs.readFileSync(path.join(root,'drizzle/meta',String(journal.entries.at(-1).idx).padStart(4,'0')+'_snapshot.json')));
+ const snapshot=JSON.parse(fs.readFileSync(path.join(root,'drizzle/meta',String(entry.idx).padStart(4,'0')+'_snapshot.json')));
  function columnCheck(table,only){
   const expected=Object.values(snapshot.tables['public.'+table].columns).filter(c=>!only||only.includes(c.name))
    .map(c=>({name:c.name,type:c.type,not_null:c.notNull||c.primaryKey})).sort((a,b)=>a.name<b.name?-1:a.name>b.name?1:0);

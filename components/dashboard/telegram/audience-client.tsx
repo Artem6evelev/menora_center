@@ -3,7 +3,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   getTelegramAudience,
   previewTelegramBroadcast,
-  queueTelegramBroadcast,
   runTelegramQueue,
   getTelegramBroadcastHistory,
 } from "@/actions/telegram-broadcast";
@@ -13,6 +12,7 @@ import type {
 } from "@/lib/telegram/audience";
 import { updateBotSettings } from "@/actions/bot-settings";
 import CityPicker from "@/components/community/city-picker";
+import BroadcastComposer from "./broadcast-composer";
 type Audience = Awaited<ReturnType<typeof getTelegramAudience>>;
 export default function TelegramAudience({
   settings,
@@ -30,12 +30,7 @@ export default function TelegramAudience({
     [selected, setSelected] = useState<string[]>([]),
     [excluded, setExcluded] = useState<string[]>([]),
     [count, setCount] = useState(0);
-  const [message, setMessage] = useState(""),
-    [eventId, setEventId] = useState(""),
-    [buttonLabel, setButtonLabel] = useState("Открыть мероприятие"),
-    [preview, setPreview] = useState(false);
-  const [requestKey, setRequestKey] = useState(""),
-    [busy, setBusy] = useState(false),
+  const [busy, setBusy] = useState(false),
     [notice, setNotice] = useState(""),
     [error, setError] = useState("");
   const [history, setHistory] = useState<
@@ -66,8 +61,6 @@ export default function TelegramAudience({
     return () => clearTimeout(timer);
   }, [load]);
   useEffect(() => {
-    setPreview(false);
-    setRequestKey("");
     let active = true;
     const timer = setTimeout(() => {
       previewTelegramBroadcast({
@@ -110,44 +103,6 @@ export default function TelegramAudience({
         checked ? [...old, id] : old.filter((x) => x !== id),
       );
   }
-  async function showPreview() {
-    setBusy(true);
-    setError("");
-    try {
-      const current = await previewTelegramBroadcast(selection);
-      setCount(current.count);
-      if (!current.count)
-        throw new Error("Нет получателей с явной подпиской и доступным чатом");
-      if (!message.trim()) throw new Error("Введите сообщение");
-      setPreview(true);
-      setRequestKey(crypto.randomUUID());
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Ошибка предпросмотра");
-    } finally {
-      setBusy(false);
-    }
-  }
-  async function enqueue() {
-    setBusy(true);
-    setError("");
-    try {
-      const result = await queueTelegramBroadcast({
-        requestKey,
-        message,
-        selection,
-        ...(eventId ? { eventId, buttonLabel } : {}),
-      });
-      if (!result.success) throw new Error(result.error);
-      setNotice(`В очереди: ${result.count}. Сообщения ещё не отправлены.`);
-      setHistory(await getTelegramBroadcastHistory());
-      setPreview(false);
-      setRequestKey("");
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Ошибка очереди");
-    } finally {
-      setBusy(false);
-    }
-  }
   return (
     <fieldset
       disabled={busy}
@@ -155,7 +110,7 @@ export default function TelegramAudience({
       data-telegram-audience
     >
       <header>
-        <h1 className="text-3xl font-bold">Telegram · Community CRM</h1>
+        <h1 className="text-3xl font-bold">Telegram · Рассылки</h1>
         <p className="text-slate-600">
           Люди из общей базы. Отправка доступна только при явной подписке и
           известном чате.
@@ -380,76 +335,18 @@ export default function TelegramAudience({
           </button>
         </div>
       </section>
-      <section
-        className="rounded-3xl bg-white border p-5 space-y-4"
-        data-broadcast-composer
-      >
-        <h2 className="text-xl font-bold">Новое сообщение</h2>
-        <p>
-          Обычный текст, без HTML. Перед постановкой в очередь аудитория
-          проверяется повторно.
-        </p>
-        <label className="block">
-          Сообщение
-          <textarea
-            className="w-full border rounded-xl p-3 min-h-36"
-            maxLength={3500}
-            value={message}
-            onChange={(e) => {
-              setMessage(e.target.value);
-              setPreview(false);
-            }}
-          />
-        </label>
-        <div className="grid sm:grid-cols-2 gap-3">
-          <label>
-            ID события (необязательно)
-            <input
-              className="border rounded-xl p-3 w-full"
-              value={eventId}
-              onChange={(e) => {
-                setEventId(e.target.value);
-                setPreview(false);
-              }}
-            />
-          </label>
-          <label>
-            Текст кнопки
-            <input
-              className="border rounded-xl p-3 w-full"
-              maxLength={60}
-              value={buttonLabel}
-              onChange={(e) => {
-                setButtonLabel(e.target.value);
-                setPreview(false);
-              }}
-            />
-          </label>
-        </div>
-        <button
-          className="bg-[#020022] text-white rounded-xl px-5 py-3"
-          disabled={busy}
-          onClick={() => void showPreview()}
-        >
-          Предпросмотр
-        </button>
-        {preview && (
-          <div className="border rounded-2xl bg-slate-50 p-5 space-y-3">
-            <p className="whitespace-pre-wrap break-words">{message}</p>
-            {eventId && (
-              <p className="font-bold">{buttonLabel} → мероприятие</p>
-            )}
-            <p>Получателей: {count}</p>
-            <button
-              className="bg-[#020022] text-white rounded-xl px-5 py-3"
-              disabled={busy}
-              onClick={() => void enqueue()}
-            >
-              Поставить в очередь
-            </button>
-          </div>
-        )}
-      </section>
+      <BroadcastComposer
+        selection={selection}
+        count={count}
+        busy={busy}
+        onBusyChange={setBusy}
+        onQueued={(value) => {
+          setNotice(`В очереди: ${value}. Сообщения ещё не отправлены.`);
+          void getTelegramBroadcastHistory()
+            .then(setHistory)
+            .catch(() => {});
+        }}
+      />
       {error && (
         <p role="alert" className="text-red-700 p-4 bg-red-50 rounded-xl">
           {error}
@@ -463,8 +360,8 @@ export default function TelegramAudience({
       <section className="rounded-3xl bg-white border p-5 space-y-4">
         <h2 className="text-xl font-bold">Очередь</h2>
         <p>
-          Ручная обработка отправляет до 5 сообщений. Используйте после
-          отдельного разрешения на реальные отправки.
+          Ручная обработка отправляет до 5 сообщений из очереди. Проверьте
+          содержание и получателей перед запуском.
         </p>
         <button
           className="border rounded-xl p-3"

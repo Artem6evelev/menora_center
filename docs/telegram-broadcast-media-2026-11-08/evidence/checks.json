@@ -1,0 +1,65 @@
+{
+  "baseHead": "3b515ea8d61b4714588946368f956a7f731b64b7",
+  "environment": "Current working tree, isolated PGlite and Chromium, synthetic Clerk/storage/Bot API only",
+  "counts": [
+    {
+      "file": "server/telegram-release-results.json",
+      "pass": 228
+    },
+    {
+      "file": "public-server/results.json",
+      "pass": 56
+    },
+    {
+      "file": "db/migration-results.json",
+      "pass": 8
+    },
+    {
+      "file": "migrations/results.json",
+      "pass": 4
+    },
+    {
+      "file": "browser/results.json",
+      "pass": 12
+    },
+    {
+      "file": "public-browser/results.json",
+      "pass": 17
+    },
+    {
+      "file": "ru-browser/results.json",
+      "pass": 8
+    },
+    {
+      "file": "journeys/results.json",
+      "pass": 3
+    },
+    {
+      "file": "performance/results.json",
+      "pass": 5
+    },
+    {
+      "file": "bundle/bundle.json",
+      "pass": 1
+    },
+    {
+      "file": "bundle/performance-bundle.json",
+      "pass": 6
+    }
+  ],
+  "total": 348,
+  "lint": {
+    "exitCode": 0,
+    "errors": 0,
+    "warnings": 30
+  },
+  "typecheck": {
+    "exitCode": 0
+  },
+  "build": {
+    "exitCode": 0
+  },
+  "realOAuthVerified": false,
+  "realMessages": 0,
+  "rawEvidence": "/tmp/menora-broadcast-evidence/"
+}

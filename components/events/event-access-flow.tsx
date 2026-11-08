@@ -1,14 +1,14 @@
 "use client";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { INTAKE_CHOICES, type IntakeChoice, type evaluateEventEligibility } from "@/lib/events/eligibility";
 import { eventAccessCopy } from "@/lib/events/copy";
 import { communityContact } from "@/lib/telegram/contact";
 type Assessment = ReturnType<typeof evaluateEventEligibility>;
-export default function EventAccessFlow({ eventId, source, onProceed, onOpenEvents, startImmediately = false, onDismiss }: {
+export default function EventAccessFlow({ eventId, source, onProceed, onOpenEvents, startImmediately = false, onDismiss, existingAccount }: {
   eventId: string; source: "website" | "telegram";
   onProceed: (assessment: Assessment, intake: IntakeChoice | null) => void;
-  onOpenEvents?: () => void; startImmediately?: boolean; onDismiss?: () => void;
+  onOpenEvents?: () => void; startImmediately?: boolean; onDismiss?: () => void; existingAccount?: ReactNode;
 }) {
   const [phase, setPhase] = useState<"idle" | "checking" | "question" | "contact" | "saved">(startImmediately ? "checking" : "idle");
   const [intake, setIntake] = useState<IntakeChoice | null>(null), [assessment, setAssessment] = useState<Assessment>();
@@ -67,6 +67,7 @@ export default function EventAccessFlow({ eventId, source, onProceed, onOpenEven
     finally { locked.current = false; if (alive.current) setPending(false); }
   }
   return <section lang="ru" dir="ltr" className="space-y-4 text-start break-words" data-event-access={phase}>
+    {existingAccount && (!assessment || assessment.authenticationRequired) && existingAccount}
     {phase === "checking" && (error ? <button type="button" className="miniapp-primary w-full rounded-xl p-3 bg-[#FFB800] font-bold" disabled={pending} onClick={() => void check()}>{pending ? copy.wait : "Повторить проверку"}</button> : <p role="status" aria-live="polite">{copy.wait}</p>)}
     {phase === "idle" && <button className="miniapp-primary w-full rounded-2xl bg-[#FFB800] text-black p-4 font-bold" disabled={pending} onClick={() => void check()}>{pending ? copy.wait : copy.join}</button>}
     {phase === "question" && <fieldset className="space-y-3" disabled={pending}>

@@ -1,0 +1,56 @@
+{
+  "environment": "Chromium 320/390/1280; isolated SQL; synthetic Clerk/storage only",
+  "realOAuthVerified": false,
+  "realMessages": 0,
+  "runtimeErrors": [],
+  "checks": [
+    {
+      "name": "320 guest sees existing-account entry above status question; one login returns to original registration and preserves canonical profile",
+      "status": "PASS"
+    },
+    {
+      "name": "390 guest sees existing-account entry above status question; one login returns to original registration and preserves canonical profile",
+      "status": "PASS"
+    },
+    {
+      "name": "1280 guest sees existing-account entry above status question; one login returns to original registration and preserves canonical profile",
+      "status": "PASS"
+    },
+    {
+      "name": "preliminary answer prefills full questionnaire; top login never overwrites existing account from unfinished anonymous form",
+      "status": "PASS"
+    },
+    {
+      "name": "new identity using existing-account button still must complete mandatory profile/filter",
+      "status": "PASS"
+    },
+    {
+      "name": "old account via top login retains ordinary details and must refresh filter before original event registration",
+      "status": "PASS"
+    },
+    {
+      "name": "cancelled Google entry keeps current question and can retry, without an auth redirect loop",
+      "status": "PASS"
+    },
+    {
+      "name": "320 broadcast: image live preview with no recipients, event title selection, mobile fit and editable verified preview",
+      "status": "PASS"
+    },
+    {
+      "name": "390 broadcast: image live preview with no recipients, event title selection, mobile fit and editable verified preview",
+      "status": "PASS"
+    },
+    {
+      "name": "1280 broadcast: image live preview with no recipients, event title selection, mobile fit and editable verified preview",
+      "status": "PASS"
+    },
+    {
+      "name": "broadcast photo/event snapshot queues only after server preview, changes invalidate it; no deliveries are sent",
+      "status": "PASS"
+    },
+    {
+      "name": "upload route rejects anonymous image POST without disclosing storage configuration",
+      "status": "PASS"
+    }
+  ]
+}

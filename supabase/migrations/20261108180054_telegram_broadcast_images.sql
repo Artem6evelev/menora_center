@@ -1,0 +1,2 @@
+ALTER TABLE "telegram_broadcasts" ADD COLUMN "image_url" text;--> statement-breakpoint
+ALTER TABLE "telegram_broadcasts" ADD CONSTRAINT "telegram_broadcasts_image_check" CHECK ("telegram_broadcasts"."image_url" IS NULL OR (length("telegram_broadcasts"."image_url") BETWEEN 1 AND 2048 AND "telegram_broadcasts"."image_url" LIKE 'https://%' AND length("telegram_broadcasts"."message")<=1024));

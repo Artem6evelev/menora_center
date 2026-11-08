@@ -1,0 +1,1 @@
+{"projectRef":"gwuzekpkfrkmgluzblty","readOnly":true,"checks":[{"ledger_ready":false,"ledger_already_applied":true,"image_column_present":true,"image_schema_compatible":true,"broadcast_rls":true,"broadcasts":"0","deliveries":"0"}],"imagesBucket":{"public":true,"file_size_limit":null,"allowed_mime_types":null},"storageServiceKeyPresent":true}

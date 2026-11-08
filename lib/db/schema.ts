@@ -729,6 +729,7 @@ export const telegramBroadcasts = pgTable(
       .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
     message: text("message").notNull(),
+    imageUrl: text("image_url"),
     eventId: text("event_id").references(() => events.id, {
       onDelete: "set null",
     }),
@@ -746,6 +747,7 @@ export const telegramBroadcasts = pgTable(
       sql`${t.status} IN ('queued','completed','cancelled') AND ${t.recipientCount}>=0 AND length(${t.message}) BETWEEN 1 AND 3500`,
     ),
     createdIdx: index("telegram_broadcasts_created_idx").on(t.createdAt),
+    imageCheck: check("telegram_broadcasts_image_check", sql`${t.imageUrl} IS NULL OR (length(${t.imageUrl}) BETWEEN 1 AND 2048 AND ${t.imageUrl} LIKE 'https://%' AND length(${t.message})<=1024)`),
   }),
 ).enableRLS();
 

@@ -8,7 +8,7 @@ import { draftForm, draftReady } from '@/lib/community/draft-progress';
 import { profileChildren } from '@/lib/community/children';
 export const metadata = { title: 'Регистрационная анкета', robots: { index: false, follow: false } };
 export const dynamic = 'force-dynamic';
-export default async function RegisterPage({ searchParams }: { searchParams: Promise<{ returnTo?: string; resume?: string; draft?: string }> }) {
+export default async function RegisterPage({ searchParams }: { searchParams: Promise<{ returnTo?: string; resume?: string; draft?: string; affiliation?: string }> }) {
   const query = await searchParams, { userId } = await auth(), profile = await currentCommunityUser();
   const { draft, target } = await readJourney(query, userId);
   const event = target.startsWith("/events/") ? await getEventById(target.slice(8)) : null;
@@ -17,6 +17,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
   const initialDraft = candidate && Object.keys(candidate).length ? candidate : null;
   return <main className="min-h-screen bg-neutral-50 dark:bg-neutral-950 px-4 pt-32 pb-16"><OnboardingForm key={userId || 'guest'} userId={userId}
     initialProfile={profile ? { ...profile, childrenData: profileChildren(profile.id, profile.childrenData) } : null}
+    eventTitle={event?.title} initialAffiliation={!profile && (query.affiliation === "maternal" || query.affiliation === "giyur") ? query.affiliation : undefined}
     openRegistration={openRegistration} initialDraft={initialDraft} draftId={draft?.consumedAt ? undefined : draft?.id} returnTo={target} resumeReady={!!userId && !!draft && !draft.consumedAt && draftReady(draft.payload) && query.resume === '1'} />
     {userId && <SignOutButton><button className="block mx-auto mt-6 underline">Выйти из аккаунта</button></SignOutButton>}
   </main>;
