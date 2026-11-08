@@ -33,10 +33,10 @@ export default function MiniAppEvents({
   onNested,
   openPayment,
   initialEvent,
-  onProfileChanged, cache, initialPreview, onRequireProfile, initialOpenOnly = false, onLanguageChange, initialRegistrationOpen = false,
+  onProfileChanged, cache, initialPreview, onRequireProfile, initialOpenOnly = false, initialRegistrationOpen = false,
 }: {
   onRequireProfile: (event: Omit<NonNullable<MiniAppLaunch["event"]>, "lead">) => void;
-  initialRegistrationOpen?: boolean; initialOpenOnly?: boolean; onLanguageChange: (language: MiniAppLanguage) => void;
+  initialRegistrationOpen?: boolean; initialOpenOnly?: boolean;
   language: MiniAppLanguage;
   mode: "events" | "registrations";
   onNested: (back: (() => void) | null) => void;
@@ -244,7 +244,7 @@ export default function MiniAppEvents({
             <h1>{detail.event.title}</h1>
             <EventMeta event={detail.event} language={language} />
             <EventShareButton key={detail.event.id} event={detail.event} language={language} />
-            {receipt ? <a className="miniapp-primary w-full" href="#miniapp-receipt">{pendingPayment ? "Осталось оплатить" : u.myRegistration}</a> : !registrationOpen && <EventAccessFlow key={detail.event.id} eventId={detail.event.id} source="telegram" language={language} onLanguageChange={onLanguageChange}
+            {receipt ? <a className="miniapp-primary w-full" href="#miniapp-receipt">{pendingPayment ? "Осталось оплатить" : u.myRegistration}</a> : !registrationOpen && <EventAccessFlow key={detail.event.id} eventId={detail.event.id} source="telegram"
               onOpenEvents={() => { setOnlyOpen(true); back(); }} onProceed={assessment => {
                 if (assessment.profileRequired || assessment.authenticationRequired) onRequireProfile(detail.event);
                 else setRegistrationOpen(true);

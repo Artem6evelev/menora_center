@@ -1,0 +1,40 @@
+{
+  "environment": "Local Chromium/real UI routes/isolated PostgreSQL; synthetic identity only",
+  "checks": [
+    {
+      "name": "320 eligible website member: one click opens registration, one intake request, old HE cookie/URL ignored",
+      "status": "PASS"
+    },
+    {
+      "name": "390 eligible website member: one click opens registration, one intake request, old HE cookie/URL ignored",
+      "status": "PASS"
+    },
+    {
+      "name": "1280 eligible website member: one click opens registration, one intake request, old HE cookie/URL ignored",
+      "status": "PASS"
+    },
+    {
+      "name": "auto-start failure has a Russian retry; retry succeeds without a duplicate join step",
+      "status": "PASS"
+    },
+    {
+      "name": "closing while intake is in flight cannot open registration from a stale response; reopening remains usable",
+      "status": "PASS"
+    },
+    {
+      "name": "contact/unsubscribe and open-event questionnaire ignore legacy language state",
+      "status": "PASS"
+    },
+    {
+      "name": "Mini App stays Russian with he SDK/browser/URL language and retains single event CTA",
+      "status": "PASS"
+    },
+    {
+      "name": "Mini App stays Russian with en SDK/browser/URL language and retains single event CTA",
+      "status": "PASS"
+    }
+  ],
+  "realOAuthVerified": false,
+  "productionChanged": false,
+  "realPayments": 0
+}

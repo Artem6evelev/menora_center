@@ -18,14 +18,14 @@ export function EventLaunchPreview({ event, language }: { event: NonNullable<Min
   </article>;
 }
 
-export function EventEntry({ event, language, onProceed, onOpenEvents, onLanguageChange }: { event: NonNullable<MiniAppLaunch["event"]>; language: MiniAppLanguage; gate?: boolean; onProceed: (assessment: ReturnType<typeof evaluateEventEligibility>) => void; onOpenEvents: () => void; onLanguageChange: (language: MiniAppLanguage) => void }) {
+export function EventEntry({ event, language, onProceed, onOpenEvents }: { event: NonNullable<MiniAppLaunch["event"]>; language: MiniAppLanguage; gate?: boolean; onProceed: (assessment: ReturnType<typeof evaluateEventEligibility>) => void; onOpenEvents: () => void }) {
   const u = miniAppUiCopy[language];
   return <article className="miniapp-event-detail miniapp-enter" data-event-entry={event.id}>
     <EventMedia event={event} language={language} priority />
     <div className="miniapp-detail-summary"><p className="miniapp-eyebrow">{u.preview}</p><h1>{event.title}</h1><EventMeta event={event} language={language} />
       {event.description && <p className="miniapp-muted miniapp-event-lead whitespace-pre-line">{event.description.replace(/<\/(?:p|div)>|<br\s*\/?>/gi, "\n").replace(/<[^>]*>/g, "")}</p>}
       {!event.isFree && <p>{event.price || "0"} ₪ · {event.childPrice || "0"} ₪</p>}
-      <EventAccessFlow eventId={event.id} source="telegram" language={language} onProceed={onProceed} onOpenEvents={onOpenEvents} onLanguageChange={onLanguageChange} />
+      <EventAccessFlow eventId={event.id} source="telegram" onProceed={onProceed} onOpenEvents={onOpenEvents} />
     </div>
   </article>;
 }

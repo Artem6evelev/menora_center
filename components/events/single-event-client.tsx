@@ -26,7 +26,7 @@ import {
   checkRegistration,
 } from "@/actions/event";
 import EventAccessFlow from "./event-access-flow";
-import { eventAccessCopy, type EventLanguage } from "@/lib/events/copy";
+import { eventAccessCopy } from "@/lib/events/copy";
 import { registrationUrl } from "@/lib/community/policy";
 import dayjs from "dayjs";
 import "dayjs/locale/ru";
@@ -94,16 +94,15 @@ export default function SingleEventClient({
   userId,
   canRegisterChildren = false,
   canRegisterSelf = true,
-  canClarifyChildren = false, initialLanguage = "ru",
+  canClarifyChildren = false,
 }: {
   eventData: any;
   userId: string | null;
   canRegisterChildren?: boolean;
   canRegisterSelf?: boolean;
-  canClarifyChildren?: boolean; initialLanguage?: EventLanguage;
+  canClarifyChildren?: boolean;
 }) {
   const router = useRouter();
-  const [language, setLanguage] = useState<EventLanguage>(initialLanguage);
   const { isLoaded, userId: liveUserId } = useAuth();
   const ownSession = !!userId && isLoaded && liveUserId === userId;
   useEffect(() => { if (isLoaded && liveUserId !== userId) { setIsRegModalOpen(false); setUserData(null); setIframeUrl(null); setIsRegistered(false); router.refresh(); } }, [isLoaded, liveUserId, userId, router]);
@@ -261,7 +260,7 @@ export default function SingleEventClient({
         isClosed: false,
       };
     return {
-      text: eventAccessCopy[language].join,
+      text: eventAccessCopy.ru.join,
       disabled: false,
       isSuccess: false,
       isClosed: false,
@@ -271,7 +270,7 @@ export default function SingleEventClient({
   const btnState = getButtonState();
 
   return (
-    <main lang={language} dir={language === "he" ? "rtl" : "ltr"} className="min-h-screen bg-neutral-50 dark:bg-neutral-950 pt-24 md:pt-32 pb-20 relative">
+    <main lang="ru" dir="ltr" className="min-h-screen bg-neutral-50 dark:bg-neutral-950 pt-24 md:pt-32 pb-20 relative">
       <div className="max-w-4xl mx-auto px-4 md:px-6">
         <div className="bg-white dark:bg-neutral-900 rounded-[32px] shadow-xl overflow-hidden border border-neutral-200 dark:border-neutral-800 flex flex-col md:flex-row">
           <div className="w-full md:w-[45%] lg:w-[40%] bg-neutral-50 dark:bg-neutral-950 p-6 md:p-10 flex items-center justify-center shrink-0 border-b md:border-b-0 md:border-r border-neutral-100 dark:border-neutral-800 relative overflow-hidden">
@@ -597,7 +596,7 @@ export default function SingleEventClient({
       {accessOpen && <div role="dialog" aria-modal="true" aria-label="Участие в мероприятии" className="fixed inset-0 z-[90] bg-black/60 p-4 flex items-center justify-center">
         <div className="bg-white dark:bg-neutral-900 rounded-3xl p-5 sm:p-8 w-full max-w-xl max-h-[90dvh] overflow-y-auto min-w-0">
           <button aria-label="Закрыть" onClick={() => setAccessOpen(false)} className="block ms-auto p-3"><X size={22} /></button>
-          <EventAccessFlow eventId={eventData.id} source="website" language={language} onLanguageChange={setLanguage} onProceed={assessment => {
+          <EventAccessFlow key={eventData.id} eventId={eventData.id} source="website" startImmediately onDismiss={() => setAccessOpen(false)} onProceed={assessment => {
             setAccessOpen(false);
             if (assessment.authenticationRequired || assessment.profileRequired) router.push(registrationUrl(`/events/${eventData.id}`));
             else setIsRegModalOpen(true);
@@ -615,7 +614,7 @@ export default function SingleEventClient({
                   Оплата участия
                 </h3>
                 <p className="text-xs font-bold text-[#FFB800] uppercase tracking-widest">
-                  Secured by Shutafim
+                  Защищённая оплата Shutafim
                 </p>
               </div>
               <button

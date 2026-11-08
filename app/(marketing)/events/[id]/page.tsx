@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
@@ -20,10 +19,8 @@ export default async function SingleEventPage({ params }: Props) {
   const { id } = await params;
   const [eventData, profile] = await Promise.all([getEventById(id), currentCommunityUser()]);
   const access = communityAccess(profile);
-  const preference = (await cookies()).get("menorah_event_language")?.value;
-  const language = preference === "he" || preference === "en" ? preference : "ru";
   if (!eventData) notFound();
-  return <SingleEventClient key={profile?.id ?? "public"} eventData={eventData} initialLanguage={language} userId={profile?.id ?? null}
+  return <SingleEventClient key={profile?.id ?? "public"} eventData={eventData} userId={profile?.id ?? null}
     canRegisterChildren={access.canRegisterChildren} canRegisterSelf={canRegisterEvent(eventData, profile)}
     canClarifyChildren={profile?.affiliation === "giyur" && profile?.gender === "female" && !access.canManageChildren} />;
 }

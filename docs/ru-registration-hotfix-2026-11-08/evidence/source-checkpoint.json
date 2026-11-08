@@ -1,0 +1,75 @@
+{
+  "baseHead": "e61f8340e9886704d137b0ab18deb66ff724f6f8",
+  "verifiedWorkingCopy": true,
+  "productionBuildSourceMatches": true,
+  "files": [
+    {
+      "file": "docs/ru-registration-hotfix-2026-11-08/REPORT.md",
+      "sha256": "4f3337729e994f636aac59d5d3f280c06c3907f5125d6064534a8057ef8b3ed8"
+    },
+    {
+      "file": "tests/community/ru-registration-browser.cjs",
+      "sha256": "854cfac2827400f1de1622ed396ca69c9bab8db03bfed28148409d2a4bd53f5e"
+    },
+    {
+      "file": "app/(marketing)/events/[id]/page.tsx",
+      "sha256": "1aafce8453c9a6325de40e218ee38e80dc3d49bf637a079c6a2aae917685b69e"
+    },
+    {
+      "file": "app/(marketing)/register/page.tsx",
+      "sha256": "d4942ee1465ae5a62c88f7768970ec276b973fb06b325e7f2e3a2dba71d2918c"
+    },
+    {
+      "file": "components/contact.tsx",
+      "sha256": "15b3a3dc261e97a8dcb0cdf0f2757259ecee6d60f71094700aa802ae0d7dd02b"
+    },
+    {
+      "file": "components/dashboard/main/onboarding-form.tsx",
+      "sha256": "098e7f7dd2400af23b59896d3765317ba5a6e599d69004b53713e6c3ebe9cf93"
+    },
+    {
+      "file": "components/events/event-access-flow.tsx",
+      "sha256": "623c09aa437232dfd0e53e7ac4cc13e79cc81c475ce4accd6f0212f0585c7105"
+    },
+    {
+      "file": "components/events/interest-unsubscribe.tsx",
+      "sha256": "cef2d5e52a3cc69cdcf4ac954477af00287f2a1bd3c50dab9f3c096ce8244d81"
+    },
+    {
+      "file": "components/events/single-event-client.tsx",
+      "sha256": "92a8584c90fbeb1b68d2c403a351bb832024b6f56947a365422e18bc479dbabc"
+    },
+    {
+      "file": "components/miniapp/app.tsx",
+      "sha256": "544bf98b96dfa5a9151b122a2c9a3086f17b8d2d7c13ade96b13febb39d6d6dd"
+    },
+    {
+      "file": "components/miniapp/event-entry.tsx",
+      "sha256": "c3981635d3ca1964c26777e6a89a4d50ad5b01f2dfd1a0d3db649855d00764e1"
+    },
+    {
+      "file": "components/miniapp/events.tsx",
+      "sha256": "983ad484a4f7462a8d16bd981c9cc54269de6252d6ffd8621081b0f201c45b12"
+    },
+    {
+      "file": "lib/events/copy.ts",
+      "sha256": "a4c4ee7026ae8c999b8fd900c2ddaff0859068cca7352868fb8c7ef67efc2704"
+    },
+    {
+      "file": "lib/telegram/miniapp-i18n.ts",
+      "sha256": "274151338c0892222092b56c454e6c1f2f0e9b87ee0f786974eec3e11be06436"
+    },
+    {
+      "file": "tests/community/README.md",
+      "sha256": "077351c15b0ca726f430b75e626c80d4e75f41957b544567733b69b14fe6b4ba"
+    },
+    {
+      "file": "tests/community/public-event-browser.cjs",
+      "sha256": "0b8535fa5400d15eb493a5014d57f3a0e9c931b2488a3186fdad41526b7b19a8"
+    },
+    {
+      "file": "tests/community/public-event-journeys.cjs",
+      "sha256": "e3add0d08412c3e0c29d5d9224c2885746ec7fc786c4c43cdf3b70442693f747"
+    }
+  ]
+}

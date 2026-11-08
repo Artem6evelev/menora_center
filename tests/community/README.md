@@ -339,3 +339,13 @@ node tests/community/public-event-performance.cjs
 Скрипты проверяют `isolated-pglite`; `PUBLIC_EVENT_BROWSER_BASE` задаёт URL (по умолчанию127.0.0.1:3378). Внешние запросы заблокированы. Fixture заменяет Clerk/SDK только вне Git; это не настоящий OAuth/Telegram smoke. При повторе всего browser suite используйте свежий процесс disposable fixture: регистрации сохраняются в его памяти намеренно. Playwright 1.58.2 и соответствующий Chromium1208 установлены вне проекта в `/tmp/menora-browser-runtime`. Bundle test принимает `COMMUNITY_PRODUCTION_BASE` (по умолчанию3343) для сопоставления одинаковых production build.
 
 `node scripts/build-public-event-sql.cjs` детерминированно пересобирает manual/precheck из новой миграции и известной истории. Скрипт не подключается к БД. Ничего из этих команд не применять к production автоматически.
+
+## Русский интерфейс / один CTA — 08.11.2026
+
+Текущее решение владельца заменяет выбор RU/HE/EN: интерфейс всегда RU. `public-event-browser.cjs` проверяет игнорирование старых языковых cookie/URL вместо переключения языка. Web intake после первого CTA стартует автоматически; серверные правила допуска сохраняются.
+
+```sh
+COMMUNITY_TEST_OUTPUT=/tmp/menora-ru-hotfix-evidence/targeted node tests/community/ru-registration-browser.cjs
+```
+
+Используется тот же disposable `public-event-fixture.cjs` и локальный порт3378. Новый набор8 проверяет готовую форму после одного click, StrictMode request count, retry, late response после закрытия и RU при старых HE/EN настройках. Производственных аккаунтов/платежей нет. [Отчёт](../../docs/ru-registration-hotfix-2026-11-08/REPORT.md).

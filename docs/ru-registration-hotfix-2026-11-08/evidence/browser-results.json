@@ -1,0 +1,89 @@
+{
+  "environment": "Local Chromium actual Web/Mini App routes and isolated SQL; synthetic Clerk/Telegram SDK; external requests blocked",
+  "checks": [
+    {
+      "name": "320 anonymous website shows complete event before auth/filter and offers the short CTA without overflow",
+      "status": "PASS"
+    },
+    {
+      "name": "390 anonymous website shows complete event before auth/filter and offers the short CTA without overflow",
+      "status": "PASS"
+    },
+    {
+      "name": "1280 anonymous website shows complete event before auth/filter and offers the short CTA without overflow",
+      "status": "PASS"
+    },
+    {
+      "name": "unpublished/invite-only event remains 404 and its metadata/title never appears",
+      "status": "PASS"
+    },
+    {
+      "name": "ru legacy preference is ignored: Russian-only voluntary contact creates interest without account/ticket",
+      "status": "PASS"
+    },
+    {
+      "name": "he legacy preference is ignored: Russian-only voluntary contact creates interest without account/ticket",
+      "status": "PASS"
+    },
+    {
+      "name": "en legacy preference is ignored: Russian-only voluntary contact creates interest without account/ticket",
+      "status": "PASS"
+    },
+    {
+      "name": "known none website user is not re-asked and can keep browsing without submitting a contact",
+      "status": "PASS"
+    },
+    {
+      "name": "none website user registers on open event with existing server calculator/iframe; closing iframe stays pending",
+      "status": "PASS"
+    },
+    {
+      "name": "320 new Telegram ad sees full public details in one startup before any questionnaire",
+      "status": "PASS"
+    },
+    {
+      "name": "390 new Telegram ad sees full public details in one startup before any questionnaire",
+      "status": "PASS"
+    },
+    {
+      "name": "new Telegram Home has public previews and five tabs in one request; no forced onboarding",
+      "status": "PASS"
+    },
+    {
+      "name": "Telegram early conversion self-report offers review; contact save uses verified identity and preserves canonical category",
+      "status": "PASS"
+    },
+    {
+      "name": "new Telegram open registration skips religious question, completes ordinary profile and resumes server-priced registration",
+      "status": "PASS"
+    },
+    {
+      "name": "known advanced conversion can register self; existing child controls remain absent",
+      "status": "PASS"
+    },
+    {
+      "name": "Mini App ignores HE URL preference: Russian contact, no language selector, no overflow and public Back/Home",
+      "status": "PASS"
+    },
+    {
+      "name": "existing CRM displays guest enquiries, filters and authenticated processing history",
+      "status": "PASS"
+    }
+  ],
+  "metrics": [
+    {
+      "scenario": "new-ad",
+      "width": 320,
+      "requests": 1
+    },
+    {
+      "scenario": "new-ad",
+      "width": 390,
+      "requests": 1
+    }
+  ],
+  "realGoogleOAuthVerified": false,
+  "realTelegramWebViewVerified": false,
+  "realPayments": 0,
+  "productionChanged": false
+}

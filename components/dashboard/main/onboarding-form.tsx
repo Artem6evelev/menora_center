@@ -13,7 +13,7 @@ import { saveCommunityProfile, saveResourceChoice } from "@/actions/community";
 import { prepareRegistrationDraft, completeRegistrationDraft } from "@/actions/community-drafts";
 import { Affiliation, communityAccess, Gender, FILTER_VERSION, hasFilterProfile } from "@/lib/community/policy";
 import { WELCOME_PARAGRAPHS, FORM_EXPLANATION } from "@/lib/community/copy";
-import { miniAppDictionaries, type MiniAppLanguage } from "@/lib/telegram/miniapp-i18n";
+import { miniAppDictionaries } from "@/lib/telegram/miniapp-i18n";
 import { openEventProfileInput } from "@/lib/community/validation";
 import { fullProfileInput } from "@/lib/community/validation";
 import ResourceMessage from "@/components/community/resource-message";
@@ -21,12 +21,12 @@ import ResourceMessage from "@/components/community/resource-message";
 type Child = ChildValue;
 type Fields = CommunityFields;
 const dateValue = (value: unknown) => { const date = new Date(String(value)); return value && Number.isFinite(date.getTime()) ? date.toISOString().slice(0, 10) : ""; };
-export default function OnboardingForm({ userId = null, initialProfile = null, initialDraft = null, draftId, returnTo = "/dashboard/events", resumeReady = false, onSaved, openRegistration = false, language = "ru" }: {
+export default function OnboardingForm({ userId = null, initialProfile = null, initialDraft = null, draftId, returnTo = "/dashboard/events", resumeReady = false, onSaved, openRegistration = false }: {
   userId?: string | null; initialProfile?: any; initialDraft?: any; draftId?: string;
-  language?: MiniAppLanguage; openRegistration?: boolean; returnTo?: string; resume?: boolean; resumeReady?: boolean; onSaved?: () => void;
+  openRegistration?: boolean; returnTo?: string; resume?: boolean; resumeReady?: boolean; onSaved?: () => void;
 }) {
   const router = useRouter(); const clerk = useClerk();
-  const copy = miniAppDictionaries[language];
+  const copy = miniAppDictionaries.ru;
   const current = hasFilterProfile(initialProfile);
   const answers = initialDraft || (current ? initialProfile : null);
   const ordinary = initialDraft || initialProfile;
@@ -158,13 +158,13 @@ export default function OnboardingForm({ userId = null, initialProfile = null, i
     } catch { setError("Не удалось сохранить выбор. Попробуйте ещё раз."); }
     finally { setPending(false); }
   }
-  return <div lang={language} dir={language === "he" ? "rtl" : "ltr"} className="w-full max-w-3xl mx-auto rounded-[32px] md:rounded-[40px] border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 sm:p-8 md:p-12 shadow-xl">
-    {!openRegistration && language === "ru" ? <>    <div className="space-y-4 mb-8">{WELCOME_PARAGRAPHS.slice(0, 3).map((text, index) => index === 0
+  return <div lang="ru" dir="ltr" className="w-full max-w-3xl mx-auto rounded-[32px] md:rounded-[40px] border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 sm:p-8 md:p-12 shadow-xl">
+    {!openRegistration ? <>    <div className="space-y-4 mb-8">{WELCOME_PARAGRAPHS.slice(0, 3).map((text, index) => index === 0
       ? <h1 key={text} className="text-2xl md:text-3xl font-black leading-tight">{text}</h1>
       : <p key={text} className="leading-relaxed text-neutral-600 dark:text-neutral-300">{text}</p>)}</div>
     <div className="rounded-3xl bg-sky-100 text-slate-900 p-5 sm:p-6 flex gap-4 mb-4"><p className="leading-relaxed min-w-0"><strong>Наша миссия</strong>{WELCOME_PARAGRAPHS[3].slice('Наша миссия'.length)}</p><span aria-hidden="true" className="text-blue-700 text-4xl shrink-0 self-center">✡</span></div>
     <div className="rounded-3xl bg-blue-700 text-white font-bold p-5 sm:p-6 leading-relaxed mb-8">{WELCOME_PARAGRAPHS[4]}</div>
-</> : <div className="space-y-4 mb-8"><h1 className="text-2xl font-bold">{copy.stepProfile}</h1><p>{copy.profileIntro}</p>{openRegistration && <p>{language === "he" ? "לא נדרש מעמד דתי כדי להירשם לאירוע הפתוח הזה." : language === "en" ? "Religious status is not required for this open event." : "Для записи на это открытое мероприятие религиозный статус не требуется."}</p>}</div>}
+</> : <div className="space-y-4 mb-8"><h1 className="text-2xl font-bold">{copy.stepProfile}</h1><p>{copy.profileIntro}</p>{openRegistration && <p>Для записи на это открытое мероприятие религиозный статус не требуется.</p>}</div>}
     <form onSubmit={submit} className="space-y-6">
       {!openRegistration && (!current || filterEditing) && <FilterFields copy={copy.filter} requireGender={openRegistration} affiliation={affiliation} gender={gender} disabled={pending || childrenPending || !hydrated}
         onAffiliation={value => { setAffiliation(value); setSaved(false); setError(""); }}
@@ -179,7 +179,7 @@ export default function OnboardingForm({ userId = null, initialProfile = null, i
         {affiliation === "giyur" && gender === "female" && !canEditChildren && current && initialProfile?.isProfileComplete && initialProfile.affiliation === "giyur" && userId && <a className="block font-bold underline" href="/dashboard/kids">Добавить или записать ребёнка — перейти в детский раздел</a>}
         <label className="flex gap-3 items-start"><input type="checkbox" required checked={agreed} onChange={event => setAgreed(event.target.checked)} className="mt-1 accent-[#FFB800]" /><span>{copy.privacy} <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline">{copy.privacyLink}</a>.</span></label>
         <div id="clerk-captcha" />
-        <button type="submit" className="w-full py-4 rounded-2xl bg-[#FFB800] text-black font-black disabled:opacity-60" disabled={pending || !gender || saved}>{pending ? copy.saving : userId ? copy.saveEdit : language === "he" ? "המשך עם Google" : language === "en" ? "Continue with Google" : "Продолжить с Google"}</button>
+        <button type="submit" className="w-full py-4 rounded-2xl bg-[#FFB800] text-black font-black disabled:opacity-60" disabled={pending || !gender || saved}>{pending ? copy.saving : userId ? copy.saveEdit : "Продолжить с Google"}</button>
       </fieldset>}
       {affiliation === "none" && !openRegistration && <><ResourceMessage paragraphs={copy.resourceParagraphs} labels={copy.resourceLabels} title={copy.resourcesLabel} external={copy.external} />{userId && <button type="button" onClick={saveChoice} disabled={pending || saved} className="w-full py-4 rounded-2xl border border-[#FFB800] font-bold disabled:opacity-50">{pending ? "Сохраняем…" : "Сохранить выбор"}</button>}</>}
       {draftStatus && <p role="status" className="text-sm text-neutral-500">{draftStatus}</p>}

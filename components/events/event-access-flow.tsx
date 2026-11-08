@@ -2,21 +2,31 @@
 import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { INTAKE_CHOICES, type IntakeChoice, type evaluateEventEligibility } from "@/lib/events/eligibility";
-import { eventAccessCopy, type EventLanguage } from "@/lib/events/copy";
+import { eventAccessCopy } from "@/lib/events/copy";
 import { communityContact } from "@/lib/telegram/contact";
 type Assessment = ReturnType<typeof evaluateEventEligibility>;
-export default function EventAccessFlow({ eventId, source, onProceed, onOpenEvents, onLanguageChange, language = "ru" }: {
+export default function EventAccessFlow({ eventId, source, onProceed, onOpenEvents, startImmediately = false, onDismiss }: {
   eventId: string; source: "website" | "telegram";
   onProceed: (assessment: Assessment, intake: IntakeChoice | null) => void;
-  onOpenEvents?: () => void; onLanguageChange?: (language: EventLanguage) => void; language?: EventLanguage;
+  onOpenEvents?: () => void; startImmediately?: boolean; onDismiss?: () => void;
 }) {
-  const [locale, setLocale] = useState(language), [phase, setPhase] = useState<"idle" | "question" | "contact" | "saved">("idle");
+  const [phase, setPhase] = useState<"idle" | "checking" | "question" | "contact" | "saved">(startImmediately ? "checking" : "idle");
   const [intake, setIntake] = useState<IntakeChoice | null>(null), [assessment, setAssessment] = useState<Assessment>();
   const [pending, setPending] = useState(false), [error, setError] = useState(""), [token, setToken] = useState<string | null>(null);
   const id = useId(), submission = useRef<string>(), alive = useRef(true), locked = useRef(false);
   const controller = useRef<AbortController>();
   useEffect(() => { alive.current = true; return () => { alive.current = false; controller.current?.abort(); }; }, []);
-  const copy = eventAccessCopy[locale], root = source === "telegram" ? "/api/telegram/miniapp" : "/api/events";
+  const copy = eventAccessCopy.ru, root = source === "telegram" ? "/api/telegram/miniapp" : "/api/events";
+  const checkOnOpen = useRef(check);
+  checkOnOpen.current = check;
+  useEffect(() => {
+    if (!startImmediately) return;
+    let cancelled = false;
+    // Defer until after the StrictMode setup/cleanup probe so it starts one
+    // request, rather than aborting the only request while its lock is held.
+    queueMicrotask(() => { if (!cancelled) void checkOnOpen.current(); });
+    return () => { cancelled = true; };
+  }, [startImmediately]);
   async function request(path: string, body: unknown) {
     controller.current = new AbortController();
     const response = await fetch(root + path, { method: "POST", credentials: "same-origin", cache: "no-store", signal: controller.current.signal,
@@ -56,10 +66,8 @@ export default function EventAccessFlow({ eventId, source, onProceed, onOpenEven
     } catch (failure) { failed(failure); }
     finally { locked.current = false; if (alive.current) setPending(false); }
   }
-  return <section lang={locale} dir={locale === "he" ? "rtl" : "ltr"} className="space-y-4 text-start break-words" data-event-access={phase}>
-    <label className="block text-sm"><span className="sr-only">Language / שפה / Язык</span><select aria-label="Language / שפה / Язык" value={locale} onChange={e => { setLocale(e.target.value as EventLanguage); if (source === "website") document.cookie = `menorah_event_language=${e.target.value}; Path=/; SameSite=Lax; Max-Age=86400`; onLanguageChange?.(e.target.value as EventLanguage); setError(""); }} className="rounded-lg border p-2 max-w-full bg-white text-neutral-900">
-      <option value="ru">Русский</option><option value="he">עברית</option><option value="en">English</option>
-    </select></label>
+  return <section lang="ru" dir="ltr" className="space-y-4 text-start break-words" data-event-access={phase}>
+    {phase === "checking" && (error ? <button type="button" className="miniapp-primary w-full rounded-xl p-3 bg-[#FFB800] font-bold" disabled={pending} onClick={() => void check()}>{pending ? copy.wait : "Повторить проверку"}</button> : <p role="status" aria-live="polite">{copy.wait}</p>)}
     {phase === "idle" && <button className="miniapp-primary w-full rounded-2xl bg-[#FFB800] text-black p-4 font-bold" disabled={pending} onClick={() => void check()}>{pending ? copy.wait : copy.join}</button>}
     {phase === "question" && <fieldset className="space-y-3" disabled={pending}>
       <legend className="font-bold mb-3">{copy.question}</legend>
@@ -87,7 +95,7 @@ export default function EventAccessFlow({ eventId, source, onProceed, onOpenEven
     {(phase === "question" || phase === "contact" || phase === "saved") && <div className="flex flex-col gap-3">
       <a href={communityContact.url} target="_blank" rel="noopener noreferrer" className="miniapp-secondary underline">{copy.contact}</a>
       {onOpenEvents ? <button className="miniapp-text-action" onClick={onOpenEvents}>{copy.open}</button> : <Link href="/events?open=1" className="underline">{copy.open}</Link>}
-      <button className="miniapp-text-action underline" onClick={() => { setPhase("idle"); setError(""); }}>{copy.close}</button>
+      <button type="button" className="miniapp-text-action underline" onClick={() => { if (onDismiss) onDismiss(); else { setPhase("idle"); setError(""); } }}>{copy.close}</button>
     </div>}
     {error && <p role="alert" className="miniapp-error text-red-700">{error}</p>}
   </section>;

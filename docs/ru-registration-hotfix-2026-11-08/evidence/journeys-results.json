@@ -1,0 +1,19 @@
+{
+  "environment": "Local Chromium/isolated PostgreSQL; mock Clerk callback, signed synthetic Telegram SDK",
+  "checks": [
+    {
+      "name": "new website ordinary open-event profile survives mocked verified Clerk callback/reload without religious category or duplicate",
+      "status": "PASS"
+    },
+    {
+      "name": "old website account browses first and refreshes filter only on restricted registration, retaining original event",
+      "status": "PASS"
+    },
+    {
+      "name": "new direct Kids destination survives canonical filter/profile; active Kids and SDK Back return Home without profile waterfall",
+      "status": "PASS"
+    }
+  ],
+  "realGoogleOAuthVerified": false,
+  "productionChanged": false
+}

@@ -1,0 +1,42 @@
+{
+  "baseHead": "e61f8340e9886704d137b0ab18deb66ff724f6f8",
+  "branch": "main",
+  "suites": [
+    {
+      "suite": "targeted",
+      "passed": 8
+    },
+    {
+      "suite": "browser",
+      "passed": 17
+    },
+    {
+      "suite": "journeys",
+      "passed": 3
+    },
+    {
+      "suite": "performance",
+      "passed": 5
+    },
+    {
+      "suite": "release",
+      "passed": 216
+    }
+  ],
+  "totalPassed": 249,
+  "lint": {
+    "exitCode": 0,
+    "errors": 0,
+    "existingWarnings": 30
+  },
+  "typecheck": {
+    "exitCode": 0
+  },
+  "build": {
+    "exitCode": 0
+  },
+  "schemaChanged": false,
+  "productionDatabaseChanged": false,
+  "realPayments": 0,
+  "realOAuthVerified": false
+}

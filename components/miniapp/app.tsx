@@ -151,10 +151,7 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
   }, []);
   const activeSequence = bootSequence.current;
   const [instanceCache] = useState(() => createMiniAppCache());
-  const [language, setLanguage] = useState<MiniAppLanguage>("ru");
-  const chooseLanguage = (next: MiniAppLanguage) => {
-    setLanguage(next); const url = new URL(window.location.href); url.searchParams.set("lang", next); window.history.replaceState(window.history.state, "", url);
-  };
+  const language: MiniAppLanguage = "ru";
   const [status, setStatus] = useState<
       "loading" | "ready" | "outside" | "error" | "logout"
     >("loading");
@@ -197,7 +194,7 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
     const previousLang = document.documentElement.lang,
       previousDir = document.documentElement.dir;
     document.documentElement.lang = language;
-    document.documentElement.dir = language === "he" ? "rtl" : "ltr";
+    document.documentElement.dir = "ltr";
     return () => {
       document.documentElement.lang = previousLang;
       document.documentElement.dir = previousDir;
@@ -242,7 +239,6 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
         });
         setBridgeVersion((previous) => previous + 1);
         const params = new URL(window.location.href).searchParams;
-        const selectedLanguage = params.get("lang"); if (selectedLanguage === "ru" || selectedLanguage === "he" || selectedLanguage === "en") setLanguage(selectedLanguage);
         const hints = Object.fromEntries(["event", "campaign", "section", "view"].flatMap(key => {
           const value = params.get(key);
           return value && (key !== "section" || value === "kids") && (key !== "view" || value === "events") ? [[key, value]] : [];
@@ -455,11 +451,10 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
       data-menorah-surface="miniapp"
       data-screen={status === "ready" ? screen : status}
       lang={language}
-      dir={language === "he" ? "rtl" : "ltr"}
+      dir="ltr"
     >
       <div className="miniapp-frame">
         <MiniAppHeader />
-        <select aria-label="Language / שפה / Язык" value={language} onChange={e => chooseLanguage(e.target.value as MiniAppLanguage)} className="self-start p-2 rounded-lg border bg-white text-neutral-900 max-w-full"><option value="ru">Русский</option><option value="he">עברית</option><option value="en">English</option></select>
         {preview && <p className="miniapp-preview">{copy.preview}</p>}
         <main className="miniapp-content miniapp-enter" key={status === "ready" ? screen : status}>
           {status === "loading" ? (
@@ -501,7 +496,7 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
               setEntryApproved(true); setOpenProfile(assessment.reason === "open"); setOnboardingStarted(true);
               if (!assessment.profileRequired) { setInitialEvent(launchEvent.id); setView("events"); }
               window.scrollTo({ top: 0, behavior: "instant" });
-            }} onLanguageChange={chooseLanguage} onOpenEvents={() => { setOnlyOpenEvents(true); navigate("events"); }} /></>
+            }} onOpenEvents={() => { setOnlyOpenEvents(true); navigate("events"); }} /></>
           ) : data && screen === "home" ? (
             <>
               <WelcomeCard language={language} firstName={data.profile.firstName} />
@@ -529,7 +524,6 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
               initialPreview={launchEvent}
               initialOpenOnly={onlyOpenEvents}
               initialRegistrationOpen={entryApproved && data.summary.profileComplete && !!initialEvent}
-              onLanguageChange={chooseLanguage}
               language={language}
               mode={screen}
               onNested={onNested}
