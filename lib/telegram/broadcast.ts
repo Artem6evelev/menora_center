@@ -147,7 +147,7 @@ export async function enqueueBroadcast(
       );
   return { id, count: recipients.length, duplicate: false };
 }
-async function claim() {
+async function claim(broadcastId?: string) {
   return db.transaction(async (tx) => {
     await tx.execute(sql`select pg_advisory_xact_lock(72834021)`);
     const now = new Date();
@@ -178,6 +178,7 @@ async function claim() {
       .where(
         and(
           eq(deliveries.status, "queued"),
+          broadcastId ? eq(deliveries.broadcastId, broadcastId) : undefined,
           lte(deliveries.nextAttemptAt, now),
         ),
       )
@@ -227,13 +228,14 @@ async function claim() {
   });
 }
 /** At most one in-flight message globally. An uncertain send is never automatically retried. */
-export async function drainBroadcasts() {
+export async function drainBroadcasts(broadcastId?: string) {
+  if (broadcastId) z.string().uuid().parse(broadcastId);
   const counts = { processed: 0, delivered: 0, failed: 0 };
   if (!process.env.TELEGRAM_BOT_TOKEN)
     throw new CommunityError("Telegram не настроен");
   const deadline = Date.now() + 24000;
   for (let i = 0; i < 5 && Date.now() < deadline; i++) {
-    const claimed = await claim();
+    const claimed = await claim(broadcastId);
     if (!claimed) break;
     counts.processed++;
     if (claimed.skipped) continue;
@@ -354,21 +356,46 @@ export async function drainBroadcasts() {
     await new Promise((resolve) => setTimeout(resolve, 85));
   }
   await db.execute(
-    sql`update telegram_broadcasts b set status='completed' where b.status='queued' and not exists(select 1 from telegram_broadcast_deliveries d where d.broadcast_id=b.id and d.status in ('queued','sending'))`,
+    sql`update telegram_broadcasts b set status='completed' where b.status='queued' and ${broadcastId ? sql`b.id=${broadcastId}` : sql`true`} and not exists(select 1 from telegram_broadcast_deliveries d where d.broadcast_id=b.id and d.status in ('queued','sending'))`,
   );
   telegramLog("worker", counts);
   return counts;
 }
+// Keep the outer reference qualified: Drizzle strips Column qualifiers in a single-table projection.
+const broadcastReference = sql`${sql.identifier("telegram_broadcasts")}.${sql.identifier("id")}`;
+const deliveryCount = (status: string) =>
+  sql<number>`(select count(*)::integer from telegram_broadcast_deliveries d where d.broadcast_id=${broadcastReference} and d.status=${status})`;
+const progressFields = {
+  id: broadcasts.id,
+  status: broadcasts.status,
+  count: broadcasts.recipientCount,
+  createdAt: broadcasts.createdAt,
+  message: sql<string>`left(${broadcasts.message},120)`,
+  delivered: deliveryCount("delivered"),
+  queued: deliveryCount("queued"),
+  sending: deliveryCount("sending"),
+  failed: deliveryCount("failed"),
+  unknown: deliveryCount("unknown"),
+  skipped: deliveryCount("skipped"),
+  nextAttemptAt: sql<
+    string | null
+  >`(select (extract(epoch from min(d.next_attempt_at))*1000)::bigint from telegram_broadcast_deliveries d where d.broadcast_id=${broadcastReference} and d.status='queued')`,
+};
+export async function broadcastProgress(id: string) {
+  z.string().uuid().parse(id);
+  const [row] = await db
+    .select(progressFields)
+    .from(broadcasts)
+    .where(eq(broadcasts.id, id));
+  if (!row) throw new CommunityError("Рассылка не найдена");
+  return {
+    ...row,
+    nextAttemptAt: row.nextAttemptAt ? Number(row.nextAttemptAt) : null,
+  };
+}
 export async function broadcastHistory() {
   return db
-    .select({
-      id: broadcasts.id,
-      status: broadcasts.status,
-      count: broadcasts.recipientCount,
-      createdAt: broadcasts.createdAt,
-      delivered: sql<number>`(select count(*)::integer from telegram_broadcast_deliveries d where d.broadcast_id=${broadcasts.id} and d.status='delivered')`,
-      failed: sql<number>`(select count(*)::integer from telegram_broadcast_deliveries d where d.broadcast_id=${broadcasts.id} and d.status in ('failed','unknown'))`,
-    })
+    .select(progressFields)
     .from(broadcasts)
     .orderBy(desc(broadcasts.createdAt))
     .limit(20);

@@ -36,7 +36,7 @@ export default function BroadcastComposer({
   count: number;
   busy: boolean;
   onBusyChange: (value: boolean) => void;
-  onQueued: (count: number) => void;
+  onQueued: (id: string, count: number) => void;
 }) {
   const eventSelectId = useId();
   const messageInputId = useId();
@@ -50,10 +50,14 @@ export default function BroadcastComposer({
     [eventsError, setEventsError] = useState("");
   const [file, setFile] = useState<File | null>(null),
     [imageUrl, setImageUrl] = useState(""),
-    [localImage, setLocalImage] = useState(""),
+    [localImage, setLocalImage] = useState<{ file: File; url: string } | null>(
+      null,
+    ),
     [imageRevision, setImageRevision] = useState(0);
   const [prepared, setPrepared] = useState<Prepared | null>(null),
     [error, setError] = useState("");
+  const [sentSignature, setSentSignature] = useState<string | null>(null);
+  const pending = useRef(false);
   const alive = useRef(true),
     input = useRef<HTMLInputElement>(null);
   const signature = JSON.stringify({
@@ -73,11 +77,11 @@ export default function BroadcastComposer({
   }, []);
   useEffect(() => {
     if (!file) {
-      setLocalImage("");
+      setLocalImage(null);
       return;
     }
     const url = URL.createObjectURL(file);
-    setLocalImage(url);
+    setLocalImage({ file, url });
     return () => URL.revokeObjectURL(url);
   }, [file]);
   useEffect(() => {
@@ -106,8 +110,10 @@ export default function BroadcastComposer({
       clearTimeout(timer);
     };
   }, [search, reload]);
-  const previewImage = localImage || imageUrl,
-    limit = previewImage ? BROADCAST_CAPTION_LIMIT : BROADCAST_TEXT_LIMIT;
+  const previewImage =
+      (localImage && localImage.file === file ? localImage.url : "") ||
+      imageUrl,
+    limit = file || imageUrl ? BROADCAST_CAPTION_LIMIT : BROADCAST_TEXT_LIMIT;
   const ready = prepared?.signature === signature ? prepared : null;
   const choices =
     event && !events.some((e) => e.id === event.id)
@@ -124,46 +130,54 @@ export default function BroadcastComposer({
     if (input.current) input.current.value = "";
     invalidate();
   }
+  async function prepareMessage(): Promise<Prepared> {
+    const started = signature;
+    if (!message.trim()) throw new ComposerError("Введите текст сообщения");
+    if (message.trim().length > limit)
+      throw new ComposerError(
+        `С картинкой — до ${BROADCAST_CAPTION_LIMIT} символов. Сократите текст или уберите картинку`,
+      );
+    let uploaded = imageUrl;
+    if (file && !uploaded) {
+      const body = new FormData();
+      body.set("file", file);
+      const response = await fetch("/api/admin/telegram/broadcast-image", {
+        method: "POST",
+        body,
+        signal: AbortSignal.timeout(20000),
+      });
+      const result = await response.json();
+      if (!response.ok || !result.url)
+        throw new ComposerError(
+          result.error || "Не удалось загрузить изображение",
+        );
+      uploaded = result.url;
+      if (alive.current && current.current === started) setImageUrl(uploaded);
+    }
+    const result = await prepareTelegramBroadcastPreview({
+      message,
+      selection,
+      ...(uploaded ? { imageUrl: uploaded } : {}),
+      ...(event ? { eventId: event.id, buttonLabel } : {}),
+    });
+    if (!result.success) throw new ComposerError(result.error);
+    if (!alive.current || current.current !== started)
+      throw new ComposerError("Сообщение изменилось. Проверьте его ещё раз.");
+    const snapshot = {
+      ...result,
+      signature: started,
+      requestKey: crypto.randomUUID(),
+    };
+    setPrepared(snapshot);
+    return snapshot;
+  }
   async function preview() {
+    if (pending.current) return;
+    pending.current = true;
     onBusyChange(true);
     setError("");
-    const started = signature;
     try {
-      if (!message.trim()) throw new ComposerError("Введите текст сообщения");
-      if (message.trim().length > limit)
-        throw new ComposerError(
-          `С картинкой — до ${BROADCAST_CAPTION_LIMIT} символов. Сократите текст или уберите картинку`,
-        );
-      let uploaded = imageUrl;
-      if (file && !uploaded) {
-        const body = new FormData();
-        body.set("file", file);
-        const response = await fetch("/api/admin/telegram/broadcast-image", {
-          method: "POST",
-          body,
-          signal: AbortSignal.timeout(20000),
-        });
-        const result = await response.json();
-        if (!response.ok || !result.url)
-          throw new ComposerError(
-            result.error || "Не удалось загрузить изображение",
-          );
-        uploaded = result.url;
-        if (alive.current && current.current === started) setImageUrl(uploaded);
-      }
-      const result = await prepareTelegramBroadcastPreview({
-        message,
-        selection,
-        ...(uploaded ? { imageUrl: uploaded } : {}),
-        ...(event ? { eventId: event.id, buttonLabel } : {}),
-      });
-      if (!result.success) throw new ComposerError(result.error);
-      if (alive.current && current.current === started)
-        setPrepared({
-          ...result,
-          signature: started,
-          requestKey: crypto.randomUUID(),
-        });
+      await prepareMessage();
     } catch (failure) {
       if (alive.current)
         setError(
@@ -172,36 +186,50 @@ export default function BroadcastComposer({
             : "Не удалось подготовить предпросмотр",
         );
     } finally {
+      pending.current = false;
       if (alive.current) onBusyChange(false);
     }
   }
   async function enqueue() {
-    if (!ready || !ready.count) return;
+    if (pending.current || sentSignature === signature) return;
+    pending.current = true;
     onBusyChange(true);
     setError("");
     try {
+      const snapshot = ready ?? (await prepareMessage());
+      if (!snapshot.count)
+        throw new ComposerError(
+          "Выберите получателей с доступным Telegram-чатом",
+        );
+      if (
+        !window.confirm(
+          `Отправить это сообщение ${snapshot.count} получателям в Telegram? Это реальная рассылка.`,
+        )
+      )
+        return;
       const result = await queueTelegramBroadcast({
-        requestKey: ready.requestKey,
-        message: ready.message,
-        selection: ready.selection,
-        ...(ready.imageUrl ? { imageUrl: ready.imageUrl } : {}),
-        ...(ready.eventId
-          ? { eventId: ready.eventId, buttonLabel: ready.buttonLabel }
+        requestKey: snapshot.requestKey,
+        message: snapshot.message,
+        selection: snapshot.selection,
+        ...(snapshot.imageUrl ? { imageUrl: snapshot.imageUrl } : {}),
+        ...(snapshot.eventId
+          ? { eventId: snapshot.eventId, buttonLabel: snapshot.buttonLabel }
           : {}),
       });
       if (!result.success) throw new ComposerError(result.error);
       if (alive.current) {
-        setPrepared(null);
-        onQueued(result.count);
+        setSentSignature(snapshot.signature);
+        onQueued(result.id, result.count);
       }
     } catch (failure) {
       if (alive.current)
         setError(
           failure instanceof ComposerError
             ? failure.message
-            : "Не удалось поставить сообщение в очередь",
+            : "Не удалось подтвердить запуск. Проверьте историю рассылок и повторите попытку.",
         );
     } finally {
+      pending.current = false;
       if (alive.current) onBusyChange(false);
     }
   }
@@ -270,7 +298,7 @@ export default function BroadcastComposer({
             </label>
             <p className="text-sm text-slate-500">
               JPG или PNG до 4 МБ. Картинка видна в предпросмотре сразу;
-              загружается после нажатия «Предпросмотр».
+              загружается перед предпросмотром или отправкой.
             </p>
             {event?.imageUrl &&
               isBroadcastImageUrl(
@@ -382,7 +410,7 @@ export default function BroadcastComposer({
             disabled={busy}
             onClick={() => void preview()}
           >
-            {busy ? "Проверяем…" : "Предпросмотр"}
+            {busy ? "Подождите…" : "Предпросмотр"}
           </button>
         </div>
         <div className="space-y-3 min-w-0" data-broadcast-preview>
@@ -425,31 +453,40 @@ export default function BroadcastComposer({
             с доступным Telegram-чатом, независимо от прежней подписки.
           </p>
           {ready && (
-            <div
-              className="border rounded-xl p-3 space-y-3"
-              data-broadcast-validated
-            >
-              {ready.count ? (
-                <p>
-                  Сообщение проверено. Можно поставить в очередь для{" "}
-                  {ready.count} получателей.
-                </p>
-              ) : (
-                <p className="text-amber-800">
-                  Предпросмотр готов. Для отправки выберите получателей с
-                  доступным Telegram-чатом.
-                </p>
-              )}
-              <button
-                type="button"
-                disabled={busy || !ready.count}
-                className="bg-[#020022] text-white rounded-xl px-5 py-3 disabled:opacity-50"
-                onClick={() => void enqueue()}
-              >
-                Поставить в очередь
-              </button>
-            </div>
+            <p className="text-sm text-slate-600" data-broadcast-validated>
+              {ready.count
+                ? `Сообщение проверено: ${ready.count} получателей.`
+                : "Предпросмотр готов. Выберите получателей с доступным Telegram-чатом."}
+            </p>
           )}
+          <button
+            type="button"
+            disabled={
+              busy ||
+              !count ||
+              !message.trim() ||
+              message.trim().length > limit ||
+              sentSignature === signature
+            }
+            className="w-full rounded-xl bg-[#FFB800] text-[#020022] font-bold px-5 py-4 disabled:opacity-50"
+            onClick={() => void enqueue()}
+            data-broadcast-send
+          >
+            {sentSignature === signature
+              ? "Рассылка запущена — статус ниже"
+              : busy
+                ? "Подождите…"
+                : `Отправить всем выбранным — ${ready?.count ?? count} получателей`}
+          </button>
+          {message.trim().length > limit && (
+            <p className="text-red-700 text-sm">
+              Сократите подпись до {limit} символов перед отправкой.
+            </p>
+          )}
+          <p className="text-sm text-slate-600">
+            Кнопка запустит отправку всем выбранным получателям. Оставьте
+            страницу открытой до завершения — прогресс появится ниже.
+          </p>
         </div>
       </div>
       {error && (

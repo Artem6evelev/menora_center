@@ -12,6 +12,7 @@ import {
   enqueueBroadcast,
   drainBroadcasts,
   broadcastHistory,
+  broadcastProgress,
   validateBroadcastContent,
 } from "@/lib/telegram/broadcast";
 export async function getTelegramAudience(filters: unknown, page = 1) {
@@ -106,4 +107,39 @@ export async function runTelegramQueue() {
 export async function getTelegramBroadcastHistory() {
   await requireStaff();
   return broadcastHistory();
+}
+
+/** Scoped continuation: never starts unrelated queued campaigns. Every request rechecks staff. */
+export async function sendTelegramBroadcast(id: string) {
+  try {
+    await requireStaff();
+    const before = await broadcastProgress(id);
+    if (before.status === "cancelled")
+      return { success: true as const, progress: before };
+    if (before.status === "queued" && (before.queued || before.sending))
+      await drainBroadcasts(id);
+    return { success: true as const, progress: await broadcastProgress(id) };
+  } catch (error) {
+    return {
+      success: false as const,
+      error: communityErrorMessage(
+        error,
+        "Не удалось продолжить отправку. Откройте историю рассылок и повторите попытку.",
+      ),
+    };
+  }
+}
+export async function getTelegramBroadcastProgress(id: string) {
+  try {
+    await requireStaff();
+    return { success: true as const, progress: await broadcastProgress(id) };
+  } catch (error) {
+    return {
+      success: false as const,
+      error: communityErrorMessage(
+        error,
+        "Не удалось проверить состояние рассылки",
+      ),
+    };
+  }
 }

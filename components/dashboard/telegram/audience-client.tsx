@@ -3,7 +3,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   getTelegramAudience,
   previewTelegramBroadcast,
-  runTelegramQueue,
   getTelegramBroadcastHistory,
 } from "@/actions/telegram-broadcast";
 import type {
@@ -13,6 +12,7 @@ import type {
 import { updateBotSettings } from "@/actions/bot-settings";
 import CityPicker from "@/components/community/city-picker";
 import BroadcastComposer from "./broadcast-composer";
+import BroadcastDelivery from "./broadcast-delivery";
 type Audience = Awaited<ReturnType<typeof getTelegramAudience>>;
 export default function TelegramAudience({
   settings,
@@ -35,6 +35,9 @@ export default function TelegramAudience({
     [selected, setSelected] = useState<string[]>([]),
     [excluded, setExcluded] = useState<string[]>([]),
     [count, setCount] = useState(0);
+  const [sending, setSending] = useState(false),
+    [activeBroadcast, setActiveBroadcast] = useState<string | null>(null),
+    [deliveryAttempt, setDeliveryAttempt] = useState(0);
   const [busy, setBusy] = useState(false),
     [notice, setNotice] = useState(""),
     [error, setError] = useState("");
@@ -86,11 +89,14 @@ export default function TelegramAudience({
       clearTimeout(timer);
     };
   }, [filters, all, selected, excluded]);
-  useEffect(() => {
-    getTelegramBroadcastHistory()
+  const refreshHistory = useCallback(() => {
+    void getTelegramBroadcastHistory()
       .then(setHistory)
       .catch(() => {});
   }, []);
+  useEffect(() => {
+    refreshHistory();
+  }, [refreshHistory]);
   function filter(value: Partial<AudienceFilter>) {
     setFilters((old) => ({ ...old, ...value }));
     setPage(1);
@@ -110,7 +116,7 @@ export default function TelegramAudience({
   }
   return (
     <fieldset
-      disabled={busy}
+      disabled={busy || sending}
       className="min-w-0 space-y-6 text-slate-900"
       data-telegram-audience
     >
@@ -342,15 +348,26 @@ export default function TelegramAudience({
       <BroadcastComposer
         selection={selection}
         count={count}
-        busy={busy}
+        busy={busy || sending}
         onBusyChange={setBusy}
-        onQueued={(value) => {
-          setNotice(`В очереди: ${value}. Сообщения ещё не отправлены.`);
-          void getTelegramBroadcastHistory()
-            .then(setHistory)
-            .catch(() => {});
+        onQueued={(id, value) => {
+          setNotice(
+            `Рассылка создана для ${value} получателей. Отправка начинается.`,
+          );
+          setActiveBroadcast(id);
+          setDeliveryAttempt((n) => n + 1);
+          refreshHistory();
         }}
       />
+      {activeBroadcast && (
+        <BroadcastDelivery
+          key={`${activeBroadcast}:${deliveryAttempt}`}
+          id={activeBroadcast}
+          onSending={setSending}
+          onUpdate={refreshHistory}
+        />
+      )}
+
       {error && (
         <p role="alert" className="text-red-700 p-4 bg-red-50 rounded-xl">
           {error}
@@ -361,42 +378,61 @@ export default function TelegramAudience({
           {notice}
         </p>
       )}
-      <section className="rounded-3xl bg-white border p-5 space-y-4">
-        <h2 className="text-xl font-bold">Очередь</h2>
-        <p>
-          Ручная обработка отправляет до 5 сообщений из очереди. Проверьте
-          содержание и получателей перед запуском.
-        </p>
-        <button
-          className="border rounded-xl p-3"
-          disabled={busy}
-          onClick={async () => {
-            if (
-              !window.confirm("Отправить до 5 реальных сообщений из очереди?")
-            )
-              return;
-            setBusy(true);
-            try {
-              const result = await runTelegramQueue();
-              setNotice(
-                `Обработано: ${result.processed}; доставлено: ${result.delivered}`,
-              );
-              setHistory(await getTelegramBroadcastHistory());
-            } catch {
-              setError("Не удалось обработать очередь");
-            } finally {
-              setBusy(false);
-            }
-          }}
-        >
-          Обработать пачку
-        </button>
-        {history.map((row) => (
-          <p key={row.id}>
-            {new Date(row.createdAt).toLocaleString("ru-RU")} · {row.status} ·
-            получателей {row.count} · доставлено {row.delivered} · ошибки /
-            неопределённые {row.failed}
+      <section
+        className="rounded-3xl bg-white border p-5 space-y-4"
+        data-broadcast-history
+      >
+        <h2 className="text-xl font-bold">История рассылок</h2>
+        {!history.length && (
+          <p className="text-slate-600">
+            Здесь появятся отправленные и незавершённые рассылки.
           </p>
+        )}
+        {history.map((row) => (
+          <article
+            key={row.id}
+            data-broadcast-id={row.id}
+            className="rounded-2xl border p-4 space-y-2 min-w-0"
+          >
+            <p className="font-medium whitespace-pre-wrap break-words line-clamp-2">
+              {row.message}
+            </p>
+            <p className="text-sm text-slate-600">
+              {new Date(row.createdAt).toLocaleString("ru-RU")} ·{" "}
+              {row.status === "cancelled"
+                ? "Отменена"
+                : row.queued || row.sending
+                  ? "Не завершена"
+                  : "Завершена"}
+            </p>
+            <p>
+              Доставлено: {row.delivered} из {row.count}
+              {row.failed + row.unknown > 0
+                ? ` · не доставлено / требуют проверки: ${row.failed + row.unknown}`
+                : ""}
+              {row.skipped > 0 ? ` · пропущено: ${row.skipped}` : ""}
+            </p>
+            {row.status === "queued" && (row.queued > 0 || row.sending > 0) && (
+              <button
+                type="button"
+                className="rounded-xl border px-4 py-3 font-bold"
+                disabled={busy || sending}
+                onClick={() => {
+                  if (
+                    window.confirm(
+                      `Продолжить эту рассылку оставшимся получателям (${row.queued + row.sending})? Уже доставленные сообщения не будут отправлены повторно.`,
+                    )
+                  ) {
+                    setActiveBroadcast(row.id);
+                    setDeliveryAttempt((n) => n + 1);
+                    refreshHistory();
+                  }
+                }}
+              >
+                Продолжить отправку — осталось {row.queued + row.sending}
+              </button>
+            )}
+          </article>
         ))}
       </section>
       <section className="rounded-3xl bg-white border p-5 space-y-4">
