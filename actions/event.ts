@@ -412,7 +412,7 @@ export async function registerForEvent(
       const canonicalProfile = { ...profile, childrenData: prepared.children, spouseName: prepared.spouseName,
         phone: profile.phone || phone?.slice(0, 25) || "Не указан" };
       const checkout = await checkoutEvent(tx, canonicalProfile, eventId, {
-        family: { self: true, ...(prepared.extraData.family.spouse ? { spouse: true } : {}) },
+        family: { self: prepared.extraData.family.self !== false, ...(prepared.extraData.family.spouse ? { spouse: true } : {}) },
         childIds: prepared.extraData.childIds, extraAdults: prepared.extraData.extraAdults, extraKids: 0,
       });
       return { ...checkout, notify: pending ? null : { title: event.title, firstName: profile.firstName || "", lastName: profile.lastName || "", email: profile.email ?? "", phone: canonicalProfile.phone } };

@@ -11,17 +11,15 @@ import {
   telegramBroadcastDeliveries as deliveries,
 } from "@/lib/db/schema";
 import { hasFilterProfile, isStaff } from "@/lib/community/policy";
-import {
-  evaluateEventEligibility,
-  isPublicEvent,
-} from "@/lib/events/eligibility";
+import { isPublicEvent } from "@/lib/events/eligibility";
 import {
   BROADCAST_CAPTION_LIMIT,
   isBroadcastImageUrl,
 } from "./broadcast-content";
+import { telegramDeliveryAvailable } from "./delivery";
 import { CommunityError } from "@/lib/community/errors";
 import { audienceSelection, audienceWhere, primaryContact } from "./audience";
-import type { MiniAppTransaction, MiniAppUser } from "./miniapp-user";
+import type { MiniAppTransaction } from "./miniapp-user";
 import { telegramApi, TelegramApiError } from "./bot-api";
 import { telegramAppUrl, telegramLog } from "./safety";
 const canonical = (value: unknown): string =>
@@ -77,22 +75,10 @@ export async function validateBroadcastContent(
 export async function broadcastRecipients(
   tx: MiniAppTransaction,
   raw: unknown,
-  event?: typeof events.$inferSelect,
 ) {
   const selection = audienceSelection.parse(raw);
   const rows = await tx
-    .select({
-      id: telegramContacts.id,
-      profile: {
-        id: users.id,
-        affiliation: users.affiliation,
-        gender: users.gender,
-        giyurStage: users.giyurStage,
-        filterVersion: users.filterVersion,
-        filterCompletedAt: users.filterCompletedAt,
-        isProfileComplete: users.isProfileComplete,
-      },
-    })
+    .select({ id: telegramContacts.id })
     .from(users)
     .innerJoin(telegramContacts, primaryContact)
     .where(audienceWhere(selection.filters, selection, true))
@@ -102,13 +88,7 @@ export async function broadcastRecipients(
     throw new CommunityError(
       "Разделите аудиторию: максимум 5000 получателей на рассылку",
     );
-  return rows
-    .filter(
-      (row) =>
-        !event ||
-        evaluateEventEligibility(event, row.profile).decision === "eligible",
-    )
-    .map((row) => ({ id: row.id }));
+  return rows;
 }
 export async function enqueueBroadcast(
   tx: MiniAppTransaction,
@@ -141,10 +121,10 @@ export async function enqueueBroadcast(
       throw new CommunityError("Неверный ключ операции");
     return { id: existing.id, count: existing.recipientCount, duplicate: true };
   }
-  const { event } = await validateBroadcastContent(tx, content);
-  const recipients = await broadcastRecipients(tx, body.selection, event);
+  await validateBroadcastContent(tx, content);
+  const recipients = await broadcastRecipients(tx, body.selection);
   if (!recipients.length)
-    throw new CommunityError("Нет подписанных получателей с доступным чатом");
+    throw new CommunityError("Нет получателей с доступным Telegram-чатом");
   const id = randomUUID();
   await tx.insert(broadcasts).values({
     id,
@@ -221,10 +201,7 @@ async function claim() {
       !!contact &&
       !!user &&
       !user.identityDisabledAt &&
-      contact.isPrimary &&
-      contact.marketingStatus === "subscribed" &&
-      !!contact.telegramChatId &&
-      !contact.blockedAt &&
+      telegramDeliveryAvailable(contact) &&
       broadcast?.status === "queued";
     let eventId: string | null = null;
     if (permitted && broadcast.eventId) {
@@ -232,10 +209,7 @@ async function claim() {
         .select()
         .from(events)
         .where(eq(events.id, broadcast.eventId));
-      permitted =
-        !!event &&
-        evaluateEventEligibility(event, user as MiniAppUser).decision ===
-          "eligible";
+      permitted = isPublicEvent(event);
       eventId = event?.id ?? null;
     }
     if (!permitted) {
@@ -265,14 +239,13 @@ export async function drainBroadcasts() {
     if (claimed.skipped) continue;
     const { row, contact, broadcast, eventId } = claimed;
     try {
-      // Recheck unsubscribe/block immediately before outbound HTTP, after durable claim.
+      // Recheck transport availability immediately before outbound HTTP, after durable claim.
       const [fresh] = await db
         .select()
         .from(telegramContacts)
         .where(eq(telegramContacts.id, contact.id));
       if (
-        fresh.marketingStatus !== "subscribed" ||
-        fresh.blockedAt ||
+        !telegramDeliveryAvailable(fresh) ||
         fresh.telegramChatId !== contact.telegramChatId
       ) {
         await db

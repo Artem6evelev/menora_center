@@ -21,6 +21,7 @@ export const audienceFilter = z
     gender: z.enum(["male", "female"]).optional(),
     cityId: z.string().max(30).optional(),
     linked: z.boolean().optional(),
+    delivery: z.enum(["reachable", "unreachable"]).optional(),
     marketing: z
       .enum(["unknown", "subscribed", "unsubscribed", "blocked"])
       .optional(),
@@ -38,6 +39,8 @@ export const audienceSelection = z
   .strict();
 export type AudienceFilter = z.input<typeof audienceFilter>;
 export type AudienceSelection = z.input<typeof audienceSelection>;
+/** Transport availability only. Historical marketing choices are not a broadcast gate. */
+export const reachableTelegramContact = sql<boolean>`coalesce((${telegramContacts.telegramChatId} IS NOT NULL AND length(btrim(${telegramContacts.telegramChatId}))>0 AND ${telegramContacts.blockedAt} IS NULL AND ${telegramContacts.marketingStatus}<>'blocked'),false)`;
 export function audienceWhere(
   raw: unknown,
   selection?: z.output<typeof audienceSelection>,
@@ -62,7 +65,13 @@ export function audienceWhere(
     conditions.push(
       f.linked ? isNotNull(telegramContacts.id) : isNull(telegramContacts.id),
     );
-  if (f.marketing)
+  if (f.delivery)
+    conditions.push(
+      f.delivery === "reachable"
+        ? reachableTelegramContact
+        : sql`NOT ${reachableTelegramContact}`,
+    );
+  if (f.marketing && !eligible)
     conditions.push(
       sql`coalesce(${telegramContacts.marketingStatus},'unknown')=${f.marketing}`,
     );
@@ -86,12 +95,7 @@ export function audienceWhere(
     if (selection.excluded.length)
       conditions.push(notInArray(users.id, selection.excluded));
   }
-  if (eligible)
-    conditions.push(
-      eq(telegramContacts.marketingStatus, "subscribed"),
-      isNotNull(telegramContacts.telegramChatId),
-      isNull(telegramContacts.blockedAt),
-    );
+  if (eligible) conditions.push(reachableTelegramContact);
   return and(...conditions);
 }
 export const primaryContact = and(
@@ -105,7 +109,10 @@ export async function readAudience(
 ) {
   const where = audienceWhere(raw);
   const [total] = await tx
-    .select({ count: sql<number>`count(*)::integer` })
+    .select({
+      count: sql<number>`count(*)::integer`,
+      reachableTotal: sql<number>`count(*) FILTER (WHERE ${reachableTelegramContact})::integer`,
+    })
     .from(users)
     .leftJoin(telegramContacts, primaryContact)
     .where(where);
@@ -118,7 +125,7 @@ export async function readAudience(
       username: telegramContacts.username,
       linked: sql<boolean>`${telegramContacts.id} IS NOT NULL`,
       marketing: sql<string>`coalesce(${telegramContacts.marketingStatus},'unknown')`,
-      reachable: sql<boolean>`${telegramContacts.telegramChatId} IS NOT NULL AND ${telegramContacts.blockedAt} IS NULL`,
+      reachable: reachableTelegramContact,
       profileComplete: users.isProfileComplete,
       filterComplete: sql<boolean>`coalesce(${users.filterVersion}=${FILTER_VERSION} AND ${users.filterCompletedAt} IS NOT NULL,false)`,
     })
@@ -128,5 +135,10 @@ export async function readAudience(
     .orderBy(users.id)
     .limit(20)
     .offset((page - 1) * 20);
-  return { rows, total: total.count, page };
+  return {
+    rows,
+    total: total.count,
+    reachableTotal: total.reachableTotal,
+    page,
+  };
 }

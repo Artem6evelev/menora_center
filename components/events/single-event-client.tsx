@@ -172,7 +172,7 @@ export default function SingleEventClient({
     const adultPrice = parseFloat(eventData.price) || 0;
     const childPrice = parseFloat(eventData.childPrice) || 0;
 
-    let adultsCount = 1 + Number(isAddingSpouse && !!newSpouseName.trim());
+    let adultsCount = Number(selectedFamily.self !== false) + Number(isAddingSpouse && !!newSpouseName.trim());
     if (selectedFamily.spouse) adultsCount++;
     adultsCount += extraAdults;
 
@@ -188,6 +188,7 @@ export default function SingleEventClient({
   };
 
   const totalAmount = calculateTotal();
+  const hasParticipants = selectedFamily.self !== false || !!selectedFamily.spouse || (isAddingSpouse && !!newSpouseName.trim()) || extraAdults > 0 || Object.keys(selectedFamily).some(key => key.startsWith("child_") && selectedFamily[key]);
 
   const handleRegisterClick = () => {
     if (isClosed || isRegistered) return;
@@ -264,7 +265,7 @@ export default function SingleEventClient({
       };
     if (isRegistered)
       return {
-        text: "Вы успешно записаны",
+        text: "Регистрация оформлена",
         disabled: true,
         isSuccess: true,
         isClosed: false,
@@ -423,8 +424,8 @@ export default function SingleEventClient({
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input
                         type="checkbox"
-                        checked
-                        disabled
+                        checked={selectedFamily.self !== false}
+                        onChange={event => setSelectedFamily(current => ({ ...current, self: event.target.checked }))}
                         className="w-5 h-5 rounded accent-[#FFB800]"
                       />
                       <span className="text-sm font-medium">
@@ -515,7 +516,7 @@ export default function SingleEventClient({
                       const previous = new Set((userData.childrenData || []).map((child: any) => child.id));
                       setUserData({ ...userData, childrenData: result.children });
                       setSelectedFamily(current => {
-                        const selected = { self: true, ...(current.spouse ? { spouse: true } : {}) } as Record<string, boolean>;
+                        const selected = { self: current.self !== false, ...(current.spouse ? { spouse: true } : {}) } as Record<string, boolean>;
                         result.children.forEach(child => { selected[`child_${child.id}`] = !previous.has(child.id) || !!current[`child_${child.id}`]; });
                         return selected;
                       });
@@ -564,6 +565,7 @@ export default function SingleEventClient({
               </div>
             )}
 
+            {!hasParticipants && <p role="alert" className="text-red-600 mt-3">Выберите хотя бы одного участника.</p>}
             {/* ИТОГ И КНОПКИ */}
             <div className="pt-4 mt-4 border-t border-neutral-100 dark:border-neutral-800 shrink-0">
               {!eventData.isFree && totalAmount > 0 && (
@@ -586,7 +588,7 @@ export default function SingleEventClient({
                 </button>
                 <button
                   onClick={handleRegisterSubmit}
-                  disabled={isLoading || !userData || familyError}
+                  disabled={isLoading || !userData || familyError || !hasParticipants}
                   className="flex-[1.5] py-3.5 rounded-xl bg-gradient-to-r from-[#FFB800] to-orange-500 text-white font-black uppercase tracking-widest flex justify-center items-center shadow-lg active:scale-95 text-sm disabled:opacity-50"
                 >
                   {isLoading ? (

@@ -1,0 +1,58 @@
+{
+  "environment": "Chromium/isolated SQL/synthetic Telegram; 320/390/1280; real messages 0",
+  "checks": [
+    {
+      "name": "Home unknown: no announcement consent card, unsubscribe link or subscription waterfall",
+      "status": "PASS"
+    },
+    {
+      "name": "Home subscribed: no announcement consent card, unsubscribe link or subscription waterfall",
+      "status": "PASS"
+    },
+    {
+      "name": "Home unsubscribed: no announcement consent card, unsubscribe link or subscription waterfall",
+      "status": "PASS"
+    },
+    {
+      "name": "Home blocked: no announcement consent card, unsubscribe link or subscription waterfall",
+      "status": "PASS"
+    },
+    {
+      "name": "320 CRM counts all reachable chats, no subscription gate/filter, blocked row disabled, public event preview count unchanged",
+      "status": "PASS"
+    },
+    {
+      "name": "390 CRM counts all reachable chats, no subscription gate/filter, blocked row disabled, public event preview count unchanged",
+      "status": "PASS"
+    },
+    {
+      "name": "1280 CRM counts all reachable chats, no subscription gate/filter, blocked row disabled, public event preview count unchanged",
+      "status": "PASS"
+    },
+    {
+      "name": "320 join reveals payment after long description, selection edits do not steal scroll, pending receipt revealed",
+      "status": "PASS"
+    },
+    {
+      "name": "390 join reveals payment after long description, selection edits do not steal scroll, pending receipt revealed",
+      "status": "PASS"
+    },
+    {
+      "name": "new giyur male: mandatory questionnaire without stage, then automatic payment section reveal",
+      "status": "PASS"
+    },
+    {
+      "name": "Telegram review branch has no announcement opt-in or unsubscribe UI",
+      "status": "PASS"
+    },
+    {
+      "name": "Mini App spouse-only: self can be unchecked, empty composition blocked, one adult payment and stored owner absence survive reload",
+      "status": "PASS"
+    },
+    {
+      "name": "website spouse-only: unchecked self is not charged; admin sees one adult and owner not attending",
+      "status": "PASS"
+    }
+  ],
+  "errors": []
+}

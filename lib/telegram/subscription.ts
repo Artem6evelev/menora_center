@@ -39,7 +39,7 @@ export async function miniAppSubscription(
       .set(values)
       .where(eq(telegramContacts.id, contact.id));
     if (!input.data.subscribed) await tx.update(eventInterests).set({ invitationConsent: false, invitationWithdrawnAt: now }).where(eq(eventInterests.userId, user.id));
-    return { status: values.marketingStatus };
+    return { status: values.marketingStatus, broadcastPolicy: "all_reachable" as const };
   }
-  return { status: contact.marketingStatus };
+  return { status: contact.marketingStatus, broadcastPolicy: "all_reachable" as const };
 }

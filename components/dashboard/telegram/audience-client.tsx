@@ -24,7 +24,12 @@ export default function TelegramAudience({
   };
 }) {
   const [filters, setFilters] = useState<AudienceFilter>({ search: "" }),
-    [data, setData] = useState<Audience>({ rows: [], total: 0, page: 1 }),
+    [data, setData] = useState<Audience>({
+      rows: [],
+      total: 0,
+      reachableTotal: 0,
+      page: 1,
+    }),
     [page, setPage] = useState(1);
   const [all, setAll] = useState(false),
     [selected, setSelected] = useState<string[]>([]),
@@ -112,12 +117,16 @@ export default function TelegramAudience({
       <header>
         <h1 className="text-3xl font-bold">Telegram · Рассылки</h1>
         <p className="text-slate-600">
-          Люди из общей базы. Отправка доступна только при явной подписке и
-          известном чате.
+          Рассылка всем выбранным участникам с доступным Telegram-чатом. Прежний
+          статус подписки не ограничивает отправку.
         </p>
       </header>
       <section className="rounded-3xl bg-white border p-5 space-y-4">
         <h2 className="text-xl font-bold">Аудитория</h2>
+        <p className="text-sm text-slate-600" data-telegram-reachability>
+          В базе: {data.total}. Доступных Telegram-чатов: {data.reachableTotal}.
+          Без чата или при блокировке бота доставка невозможна.
+        </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <label>
             Имя / username
@@ -194,22 +203,20 @@ export default function TelegramAudience({
             </select>
           </label>
           <label>
-            Анонсы
+            Доставка
             <select
               className="border rounded-xl p-3 w-full"
-              value={filters.marketing || ""}
+              value={filters.delivery || ""}
               onChange={(e) =>
                 filter({
-                  marketing: (e.target.value ||
-                    undefined) as AudienceFilter["marketing"],
+                  delivery: (e.target.value ||
+                    undefined) as AudienceFilter["delivery"],
                 })
               }
             >
               <option value="">Все</option>
-              <option value="subscribed">Подписан</option>
-              <option value="unsubscribed">Отписан</option>
-              <option value="unknown">Не включены</option>
-              <option value="blocked">Заблокирован</option>
+              <option value="reachable">Доступна</option>
+              <option value="unreachable">Недоступна</option>
             </select>
           </label>
           {(["profileComplete", "filterComplete"] as const).map((key) => (
@@ -243,7 +250,7 @@ export default function TelegramAudience({
               setExcluded([]);
             }}
           >
-            Выбрать всех по фильтру ({data.total})
+            Выбрать все доступные чаты ({data.reachableTotal})
           </button>
           <button
             className="border rounded-xl p-3"
@@ -268,7 +275,7 @@ export default function TelegramAudience({
                 <th className="text-start">Человек</th>
                 <th className="text-start">Город</th>
                 <th className="text-start">Telegram</th>
-                <th className="text-start">Анонсы</th>
+                <th className="text-start">Доставка</th>
                 <th className="text-start">Анкета / фильтр</th>
               </tr>
             </thead>
@@ -279,10 +286,12 @@ export default function TelegramAudience({
                     <input
                       type="checkbox"
                       aria-label={`Выбрать ${row.firstName || "участника"}`}
+                      disabled={!row.reachable}
                       checked={
-                        all
+                        row.reachable &&
+                        (all
                           ? !excluded.includes(row.id)
-                          : selected.includes(row.id)
+                          : selected.includes(row.id))
                       }
                       onChange={(e) => toggle(row.id, e.target.checked)}
                     />
@@ -300,16 +309,11 @@ export default function TelegramAudience({
                     {row.linked && !row.reachable ? " · чат недоступен" : ""}
                   </td>
                   <td>
-                    {
-                      (
-                        {
-                          unknown: "Не включены",
-                          subscribed: "Подписан",
-                          unsubscribed: "Отписан",
-                          blocked: "Заблокирован",
-                        } as Record<string, string>
-                      )[row.marketing]
-                    }
+                    {row.reachable
+                      ? "Доступна"
+                      : row.linked
+                        ? "Чат недоступен"
+                        : "Нет Telegram-чата"}
                   </td>
                   <td>
                     {row.profileComplete ? "✓" : "—"} /{" "}

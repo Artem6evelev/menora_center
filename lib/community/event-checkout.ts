@@ -71,7 +71,7 @@ export async function calculateEvent(
     amountAgorot,
     breakdown: {
       adults:
-        1 +
+        Number(prepared.extraData.family.self !== false) +
         Number(!!prepared.extraData.family.spouse) +
         prepared.extraData.extraAdults,
       children,
@@ -114,6 +114,7 @@ export async function checkoutEvent(
       paymentUrl: null,
       amountAgorot: 0,
       breakdown,
+      selfIncluded: (settled.extraData as { family?: { self?: boolean } } | null)?.family?.self !== false,
       alreadyRegistered: true,
     };
   const selectionHash = createHash("sha256")
@@ -122,6 +123,8 @@ export async function checkoutEvent(
         childIds: [...prepared.extraData.childIds].sort(),
         spouse: !!prepared.extraData.family.spouse,
         extraAdults: prepared.extraData.extraAdults,
+        // Keep historical self-included hashes unchanged; false selects a different order.
+        ...(prepared.extraData.family.self === false ? { self: false } : {}),
       }),
     )
     .digest("hex");
@@ -150,6 +153,7 @@ export async function checkoutEvent(
         paymentUrl: attempt.paymentUrl,
         amountAgorot: attempt.amountAgorot,
         breakdown: { ...breakdown, amountAgorot: attempt.amountAgorot },
+        selfIncluded: prepared.extraData.family.self !== false,
         alreadyRegistered: true,
       };
     }
@@ -187,6 +191,7 @@ export async function checkoutEvent(
     paymentUrl,
     amountAgorot,
     breakdown,
+    selfIncluded: prepared.extraData.family.self !== false,
     alreadyRegistered: false,
   };
 }

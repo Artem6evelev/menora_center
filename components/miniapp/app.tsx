@@ -40,7 +40,6 @@ const MiniAppEvents = dynamic(() => import("./events"));
 const MiniAppKids = dynamic(() => import("./kids"), { loading: () => <EventSkeleton label="Загружаем Menorah Kids…" /> });
 const MiniAppProfileForm = dynamic(() => import("./profile-form"), { loading: () => <EventSkeleton label="Загружаем профиль…" /> });
 import { eventCopy } from "@/lib/telegram/event-copy";
-import Subscription from "./subscription";
 import { MiniAppContact } from "./contact";
 import { MenorahKidsEntry } from "./kids-entry";
 import type { ChildValue } from "@/components/community/child-editor";
@@ -508,7 +507,6 @@ export default function MiniApp({ preview = false }: { preview?: boolean }) {
                 <ActionCard icon={UserRound} onClick={() => navigate("profile")}>{copy.profile}</ActionCard>
                 <ActionCard icon={Ticket} onClick={() => navigate("registrations")}>{eventCopy[language].registrations}</ActionCard>
               </div>
-              <Subscription language={language} status={data.announcementStatus} />
               <MiniAppContact card />
               <button className="miniapp-text-action self-start" disabled={busy} onClick={() => void logout()}><LogOut size={17} aria-hidden="true" />{copy.logout}</button>
             </>

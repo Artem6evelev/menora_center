@@ -545,8 +545,8 @@ export default function ApplicationsClient({ events }: { events: ApplicationEven
 
                       // Имя супруги, если она отмечена
                       const spouseBadge =
-                        extra?.family?.spouse && row.user?.spouseName
-                          ? row.user.spouseName
+                        extra?.family?.spouse && (extra?.spouseName || row.user?.spouseName)
+                          ? extra?.spouseName || row.user?.spouseName
                           : null;
 
                       // Список выбранных детей (парсим из профиля пользователя)
@@ -608,7 +608,7 @@ export default function ApplicationsClient({ events }: { events: ApplicationEven
                                 </div>
 
                                 <p className="mt-2 text-sm font-medium text-neutral-600 dark:text-neutral-300" data-participant-composition>{composition.summary}</p>
-                                <p className="mt-1 text-xs text-neutral-500">Вы · {composition.spouse ? "супруг/а · " : ""}детей: {composition.children} · доп. взрослых: {composition.extraAdults}</p>
+                                <p className="mt-1 text-xs text-neutral-500">{composition.self ? "Оформитель участвует" : "Оформитель не участвует"} · {composition.spouse ? "супруг/а · " : ""}детей: {composition.children} · доп. взрослых: {composition.extraAdults}</p>
                                 {channel && <span className="mt-1 text-xs font-bold text-neutral-500">{channel === "telegram" ? "Telegram" : "Website"}</span>}
                                 <details className="mt-2 text-xs text-neutral-500">
                                   <summary className="cursor-pointer">Данные регистрации</summary>
@@ -630,7 +630,7 @@ export default function ApplicationsClient({ events }: { events: ApplicationEven
                                   {/* Супруга */}
                                   {spouseBadge && (
                                     <span className="text-[9px] font-black uppercase tracking-widest text-pink-600 bg-pink-100 border border-pink-200 px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
-                                      <Users size={10} /> + {spouseBadge}
+                                      <Users size={10} /> {composition.self ? "+ " : "Участвует: "}{spouseBadge}
                                     </span>
                                   )}
 

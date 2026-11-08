@@ -67,7 +67,7 @@ export async function prepareTelegramBroadcastPreview(raw: unknown) {
       return {
         success: true as const,
         ...body,
-        count: (await broadcastRecipients(tx, body.selection, event)).length,
+        count: (await broadcastRecipients(tx, body.selection)).length,
         eventTitle: event?.title ?? null,
         buttonUrl: event ? url.toString() : null,
       };

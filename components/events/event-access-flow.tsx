@@ -88,11 +88,11 @@ export default function EventAccessFlow({ eventId, source, onProceed, onOpenEven
         </label>)}
         <div hidden aria-hidden="true"><input name="website" tabIndex={-1} autoComplete="off" defaultValue="" /></div>
         <label className="flex items-start gap-3"><input type="checkbox" name="contactConsent" required className="mt-1" /><span>{copy.consent} <Link href="/privacy" className="underline" target="_blank" rel="noopener noreferrer">{copy.privacy}</Link></span></label>
-        <label className="flex items-start gap-3"><input type="checkbox" name="invitationConsent" className="mt-1" /><span>{copy.invitations}</span></label>
+        {source === "website" && <label className="flex items-start gap-3"><input type="checkbox" name="invitationConsent" className="mt-1" /><span>{copy.invitations}</span></label>}
         <button disabled={pending} className="miniapp-primary w-full rounded-xl p-3 bg-[#FFB800] font-bold">{pending ? copy.saving : copy.save}</button>
       </form>
     </>}
-    {phase === "saved" && <><p role="status" className="miniapp-success">{copy.saved}</p>{token && <Link href={`/event-interest/unsubscribe#${token}`} className="underline">{copy.unsubscribe}</Link>}</>}
+    {phase === "saved" && <><p role="status" className="miniapp-success">{copy.saved}</p>{source === "website" && token && <Link href={`/event-interest/unsubscribe#${token}`} className="underline">{copy.unsubscribe}</Link>}</>}
     {(phase === "question" || phase === "contact" || phase === "saved") && <div className="flex flex-col gap-3">
       <a href={communityContact.url} target="_blank" rel="noopener noreferrer" className="miniapp-secondary underline">{copy.contact}</a>
       {onOpenEvents ? <button className="miniapp-text-action" onClick={onOpenEvents}>{copy.open}</button> : <Link href="/events?open=1" className="underline">{copy.open}</Link>}

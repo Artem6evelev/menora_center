@@ -29,13 +29,14 @@ const input = z
   .object({
     action: z.enum(["quote", "register"]),
     eventId: z.string().min(1).max(150),
+    self: z.boolean().default(true),
     spouse: z.boolean().default(false),
     childIds: registrationInput.shape.childIds.unwrap().default([])
       .refine(ids => new Set(ids).size === ids.length),
     extraAdults: registrationInput.shape.extraAdults,
   })
   .strict();
-export type MiniAppEventSelection = Pick<z.output<typeof input>, "spouse" | "childIds" | "extraAdults">;
+export type MiniAppEventSelection = Pick<z.output<typeof input>, "self" | "spouse" | "childIds" | "extraAdults">;
 export type MiniAppEventQuote = Awaited<ReturnType<typeof calculateEvent>>["breakdown"];
 const previewFields = { id: events.id, title: events.title, imageUrl: events.imageUrl, date: events.date, time: events.time, location: events.location, isFree: events.isFree, price: events.price, isRegistrationClosed: events.isRegistrationClosed, status: events.status, admissionPolicy: events.admissionPolicy, visibility: events.visibility };
 type PreviewSource = Pick<typeof events.$inferSelect, keyof typeof previewFields>;
@@ -68,10 +69,11 @@ function storedRegistration(
   row: typeof eventParticipants.$inferSelect,
   attempt: typeof eventPaymentAttempts.$inferSelect | null,
 ) {
-  const extra = row.extraData as { amountAgorot?: unknown } | null;
+  const extra = row.extraData as { amountAgorot?: unknown; family?: { self?: boolean } } | null;
   const amount = attempt?.amountAgorot ?? extra?.amountAgorot;
   return {
     registrationId: row.id,
+    selfIncluded: extra?.family?.self !== false,
     status: row.status,
     amountAgorot: typeof amount === "number" && Number.isSafeInteger(amount) && amount >= 0 ? amount : null,
     // Resume only an existing immutable handoff, never invent a legacy price/URL.
@@ -159,7 +161,7 @@ export async function miniAppEventAction(
   if (!parsed.success) throw new MiniAppAuthError(400, "invalid_selection");
   const body = parsed.data,
     selection = {
-      family: { self: true, ...(body.spouse ? { spouse: true } : {}) },
+      family: { self: body.self, ...(body.spouse ? { spouse: true } : {}) },
       childIds: body.childIds,
       extraAdults: body.extraAdults,
       extraKids: 0,

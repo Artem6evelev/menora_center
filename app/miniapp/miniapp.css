@@ -484,7 +484,7 @@ body:has(.miniapp) {
 .miniapp-skeleton-lines span:nth-child(3) { inline-size: 45%; }
 .miniapp-splash { justify-content: flex-start; gap: 16px; }
 .miniapp-splash > .miniapp-event-skeleton { text-align: start; }
-#miniapp-participants, #miniapp-receipt { scroll-margin-block-start: 20px; }
+#miniapp-participants, #miniapp-receipt, [data-registration-payment] { scroll-margin-block-start: calc(20px + var(--tg-safe-top) + var(--tg-content-safe-top)); }
 @keyframes menorah-spin { to { transform: rotate(360deg); } }
 @keyframes menorah-enter { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes menorah-skeleton { to { background-position: -200% 0; } }

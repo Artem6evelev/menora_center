@@ -421,8 +421,8 @@ export default function BroadcastComposer({
             </p>
           )}
           <p className="text-sm">
-            Получателей: {ready ? ready.count : count}. Только подписанные
-            участники с доступным Telegram-чатом.
+            Получателей: {ready ? ready.count : count}. Все выбранные участники
+            с доступным Telegram-чатом, независимо от прежней подписки.
           </p>
           {ready && (
             <div
@@ -437,7 +437,7 @@ export default function BroadcastComposer({
               ) : (
                 <p className="text-amber-800">
                   Предпросмотр готов. Для отправки выберите получателей с
-                  включёнными анонсами и доступным чатом.
+                  доступным Telegram-чатом.
                 </p>
               )}
               <button

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useSectionReveal } from "./use-section-reveal";
 import { Minus, Plus } from "lucide-react";
 import { miniAppRequest } from "@/lib/telegram/miniapp-client";
 import type { miniAppEventDetail, MiniAppEventQuote, MiniAppEventSelection } from "@/lib/telegram/miniapp-events";
@@ -14,6 +15,7 @@ export function EventRegistrationForm({ detail, busy, onRegister }: {
   busy: boolean;
   onRegister: (selection: MiniAppEventSelection) => void;
 }) {
+  const [self, setSelf] = useState(true);
   const [spouse, setSpouse] = useState(false);
   const [childIds, setChildIds] = useState<string[]>([]);
   const [extraAdults, setExtraAdults] = useState(0);
@@ -22,6 +24,7 @@ export function EventRegistrationForm({ detail, busy, onRegister }: {
   const [retry, setRetry] = useState(0);
   const sequence = useRef(0);
   const selection: MiniAppEventSelection = {
+    self,
     spouse: spouse && !!detail.spouseName,
     childIds: detail.canRegisterChildren ? childIds.filter(id => detail.children.some(child => child.id === id)).sort() : [],
     extraAdults: Math.min(extraAdults, detail.extraAdultsLimit),
@@ -29,9 +32,12 @@ export function EventRegistrationForm({ detail, busy, onRegister }: {
   const requestKey = JSON.stringify({ eventId: detail.event.id, ...selection });
   const currentQuote = quote?.key === requestKey ? quote.value : null;
   const failed = failedKey === requestKey;
+  const empty = !selection.self && !selection.spouse && !selection.childIds.length && !selection.extraAdults;
+  const paymentSection = useSectionReveal(!!currentQuote || failed || empty);
 
   useEffect(() => {
     const controller = new AbortController(), current = ++sequence.current;
+    if (empty) return () => controller.abort();
     const timer = setTimeout(async () => {
       try {
         const { data } = await miniAppRequest<{ quote: MiniAppEventQuote }>("events", {
@@ -46,12 +52,13 @@ export function EventRegistrationForm({ detail, busy, onRegister }: {
       }
     }, 200);
     return () => { clearTimeout(timer); controller.abort(); };
-  }, [requestKey, retry]);
+  }, [requestKey, retry, empty]);
 
   return <section className="space-y-4" data-event-registration-form>
     <fieldset id="miniapp-participants" className="space-y-3" disabled={busy}>
-      <legend className="font-bold mb-3">Кто идёт?</legend>
-      <label className="miniapp-selection"><input type="checkbox" checked disabled />{detail.firstName || "Участник"} (Вы)</label>
+      <legend className="font-bold mb-3">Кто идёт?</legend><p className="miniapp-helper">Если идёт только супруг/супруга, снимите галочку с себя. Выберите хотя бы одного участника.</p>
+      <label className="miniapp-selection"><input type="checkbox" checked={self} onChange={event => setSelf(event.target.checked)} />{detail.firstName || "Участник"} (Вы)</label>
+      {!detail.spouseName && <p className="miniapp-helper">Имя супруга/супруги можно добавить во вкладке «Профиль». Также можно выбрать взрослого гостя ниже.</p>}
       {detail.spouseName && <label className="miniapp-selection">
         <input type="checkbox" checked={selection.spouse} onChange={event => setSpouse(event.target.checked)} />
         {detail.spouseName} (Супруг/а)
@@ -71,9 +78,9 @@ export function EventRegistrationForm({ detail, busy, onRegister }: {
         </div>
       </div>
     </fieldset>
-    <div className="miniapp-quote space-y-3" aria-busy={!currentQuote && !failed}>
+    <div ref={paymentSection} className="miniapp-quote space-y-3" data-registration-payment aria-busy={!currentQuote && !failed && !empty}>
       <h2>Стоимость участия</h2>
-      {failed ? <div role="alert" className="miniapp-error">
+      {empty ? <p role="alert" className="miniapp-error">Выберите хотя бы одного участника.</p> : failed ? <div role="alert" className="miniapp-error">
         Не удалось рассчитать стоимость. Проверьте подключение и повторите попытку.
         <button type="button" className="miniapp-text-action" disabled={busy} onClick={() => { setFailedKey(null); setRetry(value => value + 1); }}>Повторить расчёт</button>
       </div> : !currentQuote ? <p role="status">Рассчитываем стоимость…</p> : (

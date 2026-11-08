@@ -6,8 +6,8 @@ import { communityContact } from "./contact";
 export const botWelcomeCopy = {
   ru: { greeting: "Шалом", identity: "Еврейский общинный центр в Ришон-ле-Ционе.", intro: "Наша миссия — объединять еврейские семьи, укреплять связь с Торой, традицией и общиной. Вместе мы создаём пространство для еврейской жизни, учёбы, праздников и добрых дел.\n\nЧасть программ предназначена для галахических евреев и участников соответствующих программ гиюра. Сначала можно посмотреть мероприятия. Условия участия и анкету мы уточним только при записи.\n\n✅ Анкету нужно заполнить только один раз.\n\nДальше вы сможете быстро записываться на мероприятия и получать анонсы новых событий Menorah Center.",
     event: "Вы перешли к нам, чтобы узнать подробнее о мероприятии. Нажмите кнопку ниже — откроется страница события с датой, местом, программой и записью.",
-    note: "Анонсы можно включить добровольно командой /subscribe. Отключить их можно в любой момент командой /unsubscribe.",
-    offNote: "Анонсы отключены. Включить их снова можно командой /subscribe.", open: "Открыть Menorah Center", openEvent: "🎟 Открыть мероприятие", events: "Мероприятия", home: "🏠 Menorah Center", contact: "Связаться с нами", subscribed: "Анонсы Menorah Center включены. Отключить: /unsubscribe.", unsubscribed: "Анонсы отключены. Включить снова: /subscribe." },
+    note: "Здесь вы будете получать анонсы ближайших мероприятий Menorah Center. Отдельная подписка не требуется.",
+    offNote: "Здесь вы будете получать анонсы ближайших мероприятий Menorah Center. Отдельная подписка не требуется.", open: "Открыть Menorah Center", openEvent: "🎟 Открыть мероприятие", events: "Мероприятия", home: "🏠 Menorah Center", contact: "Связаться с нами", subscribed: "Анонсы Menorah Center приходят во все доступные чаты. Отдельная подписка не требуется.", unsubscribed: "Отдельная подписка на анонсы больше не используется. Общие объявления Menorah Center приходят во все доступные чаты. Остановить бота можно в меню Telegram." },
   en: { greeting: "Shalom", identity: "Jewish community center in Rishon LeZion.", intro: "We're happy you're here! Explore events, register and manage your profile.",
     event: "You came to learn more about an event. Tap below to see the date, location, program and registration on the event page.",
     note: "You can choose to receive announcements with /subscribe and turn them off at any time with /unsubscribe.",
@@ -36,7 +36,7 @@ export function botWelcome({ firstName, language, campaign, event, status }: { f
     } catch { /* Use the bundled branded banner. */ }
   }
   return { photo, brandedPhoto,
-    caption: `👋 ${c.greeting}, ${escapeTelegramHtml(Array.from(firstName).slice(0, 80).join(""))}!\n\n<b>Добро пожаловать в Menorah Center</b> —\n${c.identity}\n\n${event ? c.event : c.intro}\n\n${status === "unsubscribed" ? c.offNote : c.note}`,
+    caption: `👋 ${c.greeting}, ${escapeTelegramHtml(Array.from(firstName).slice(0, 80).join(""))}!\n\n<b>Добро пожаловать в Menorah Center</b> —\n${c.identity}\n\n${event ? c.event : c.intro}\n\n${c.note}`,
     keyboard: { inline_keyboard: [
       [{ text: event ? c.openEvent : c.open, web_app: { url: launch.toString() } }],
       [{ text: event ? c.home : c.events, web_app: { url: event ? home : eventsUrl.toString() } }],

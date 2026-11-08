@@ -41,9 +41,10 @@ export function applicationComposition(raw: unknown) {
   const childIds = Array.isArray(extra.childIds) ? new Set(extra.childIds.filter(id => typeof id === "string")).size : null;
   const children = Array.isArray(extra.childrenSnapshot) ? extra.childrenSnapshot.length : childIds ?? Object.keys(family).filter(key => key.startsWith("child_") && family[key] === true).length;
   const kids = children + (count(extra.extraKids) || count(extra.kidsCount));
-  const adults = 1 + Number(spouse) + extraAdults;
+  const self = family.self !== false;
+  const adults = Number(self) + Number(spouse) + extraAdults;
   const plural = (n: number, forms: [string, string, string]) => forms[n % 100 >= 11 && n % 100 <= 14 ? 2 : n % 10 === 1 ? 0 : n % 10 >= 2 && n % 10 <= 4 ? 1 : 2];
-  return { adults, children: kids, spouse, extraAdults,
+  return { adults, children: kids, self, spouse, extraAdults,
     summary: `${adults} ${plural(adults, ["взрослый", "взрослых", "взрослых"])}${kids ? ` + ${kids} ${plural(kids, ["ребёнок", "ребёнка", "детей"])}` : ""}` };
 }
 export function paymentReminderText(firstName: string | null, eventTitle: string) {

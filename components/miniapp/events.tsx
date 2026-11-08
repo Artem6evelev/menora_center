@@ -9,6 +9,7 @@ import { eventCopy } from "@/lib/telegram/event-copy";
 import { miniAppRequest, MiniAppRequestError } from "@/lib/telegram/miniapp-client";
 import type { eventPreviewDto, miniAppEventDetail, MiniAppEventSelection } from "@/lib/telegram/miniapp-events";
 import EventAccessFlow from "@/components/events/event-access-flow";
+import { useSectionReveal } from "./use-section-reveal";
 import { EventRegistrationForm } from "./event-registration-form";
 import type { MiniAppCache } from "@/lib/telegram/miniapp-cache";
 import type { MiniAppProfileData } from "@/lib/telegram/miniapp-profile";
@@ -60,10 +61,12 @@ export default function MiniAppEvents({
       : !cache.peek(`${mode}?page=1`));
   const [selectionConflict, setSelectionConflict] = useState(false);
   const [registrationOpen, setRegistrationOpen] = useState(initialRegistrationOpen);
+  const [revealReceipt, setRevealReceipt] = useState(initialRegistrationOpen);
   const [receipt, setReceipt] = useState<Detail["registration"]>(initialEvent ? cache.peek<Detail>(`events?id=${encodeURIComponent(initialEvent)}`)?.registration ?? null : null),
     [clarify, setClarify] = useState(false),
     [stage, setStage] = useState<"advanced" | "completed" | "">("");
   const [eventId, setEventId] = useState(initialEvent || "");
+  const receiptSection = useSectionReveal(!!receipt && revealReceipt, eventId);
   const requestPending = useRef(false);
   const alive = useRef(true);
   useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
@@ -71,6 +74,7 @@ export default function MiniAppEvents({
     if (requestPending.current) return;
     setEventId("");
     setRegistrationOpen(false);
+    setRevealReceipt(false);
     setDetail(null);
     setReceipt(null);
     setSelectionConflict(false);
@@ -158,6 +162,7 @@ export default function MiniAppEvents({
       if (!alive.current) return;
       if (data.registration) {
         setReceipt(data.registration);
+        setRevealReceipt(true);
         cache.invalidate("registrations", `events?id=${encodeURIComponent(eventId)}`);
       }
     } catch (error) {
@@ -247,7 +252,7 @@ export default function MiniAppEvents({
             {receipt ? <a className="miniapp-primary w-full" href="#miniapp-receipt">{pendingPayment ? "Осталось оплатить" : u.myRegistration}</a> : !registrationOpen && <EventAccessFlow key={detail.event.id} eventId={detail.event.id} source="telegram"
               onOpenEvents={() => { setOnlyOpen(true); back(); }} onProceed={assessment => {
                 if (assessment.profileRequired || assessment.authenticationRequired) onRequireProfile(detail.event);
-                else setRegistrationOpen(true);
+                else { setRegistrationOpen(true); setRevealReceipt(true); }
               }} />}
             {pendingPayment && <p className="miniapp-status miniapp-status-pending">🟡 Регистрация создана</p>}
             {detail.event.description && <details className="miniapp-description" open>
@@ -255,9 +260,10 @@ export default function MiniAppEvents({
             </details>}
             {!detail.event.isFree && <p className="miniapp-helper">{`${c.adult}: ${detail.event.price || 0} ₪ · ${c.child}: ${detail.event.childPrice || 0} ₪`}</p>}
           {receipt ? (
-            <div className="space-y-4" id="miniapp-receipt" data-payment-handoff>
-              <h2>{pendingPayment ? "Осталось оплатить участие" : confirmed ? detail.event.isFree ? "✅ Вы зарегистрированы" : "✅ Оплата подтверждена" : statusLabel(receipt.status)}</h2>
-              {confirmed && !detail.event.isFree && <p>Вы зарегистрированы</p>}
+            <div ref={receiptSection} className="space-y-4" id="miniapp-receipt" data-payment-handoff>
+              <h2>{pendingPayment ? "Осталось оплатить участие" : confirmed ? detail.event.isFree ? receipt.selfIncluded === false ? "✅ Регистрация подтверждена" : "✅ Вы зарегистрированы" : "✅ Оплата подтверждена" : statusLabel(receipt.status)}</h2>
+              {receipt.selfIncluded === false && <p className="miniapp-helper">Запись оформлена для выбранных участников. Вы сами не участвуете.</p>}
+              {confirmed && !detail.event.isFree && <p>{receipt.selfIncluded === false ? "Участие выбранных гостей подтверждено" : "Вы зарегистрированы"}</p>}
               {pendingPayment && (
                 <>
                   <p>Завершите оплату, чтобы подтвердить регистрацию на мероприятие.</p>

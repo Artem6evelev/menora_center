@@ -19,10 +19,13 @@ module.exports = async ({ test, source, db, pg, login, get, post, setActor }) =>
     await pg.query("insert into events(id,title,status,is_free,price,child_price,payment_url) values($1,'Synthetic parity','planned',$2,'100.25','40.10','https://pay.shutafim.org.il/synthetic?price=1&quantity=9&cur=USD')", [id, free]);
     return id;
   }
-  const canonicalSelection = selection => ({ family: { self: true, ...(selection.spouse ? { spouse: true } : {}) }, childIds: selection.childIds ?? [], extraAdults: selection.extraAdults ?? 0, extraKids: 0 });
+  const canonicalSelection = selection => ({ family: { self: selection.self !== false, ...(selection.spouse ? { spouse: true } : {}) }, childIds: selection.childIds ?? [], extraAdults: selection.extraAdults ?? 0, extraKids: 0 });
   const choices = [
     ['self only', {}, 1, 0, 10025],
     ['self and spouse', { spouse: true }, 2, 0, 20050],
+    ['spouse only without owner', { self: false, spouse: true }, 1, 0, 10025],
+    ['saved child only without mother', { self: false, childIds: [children[0].id] }, 0, 1, 4010],
+    ['adult guest only without owner', { self: false, extraAdults: 1 }, 1, 0, 10025],
     ['self and two adult guests', { extraAdults: 2 }, 3, 0, 30075],
     ['self spouse and two adult guests', { spouse: true, extraAdults: 2 }, 4, 0, 40100],
     ['one saved child', { childIds: [children[0].id] }, 1, 1, 14035],
@@ -77,7 +80,7 @@ module.exports = async ({ test, source, db, pg, login, get, post, setActor }) =>
     for (const [gender, affiliation, stage] of [['male', 'maternal', null], ['male', 'giyur', 'completed'], ['female', 'giyur', null], ['female', 'giyur', 'advanced']]) {
       await pg.query('update users set gender=$2,affiliation=$3,giyur_stage=$4 where id=$1', [owner.id, gender, affiliation, stage]);
       const detail = await get(route, '?id=' + id); assert.equal(detail.children.length, 0); assert.equal(detail.canRegisterChildren, false);
-      for (const action of ['quote', 'register']) await post(route, { action, eventId: id, childIds: [children[0].id] }, 409);
+      for (const action of ['quote', 'register']) for(const self of [true,false]) await post(route, { action, eventId: id, self, childIds: [children[0].id] }, 409);
       assert.equal((await post(route, { action: 'quote', eventId: id })).quote.adults, 1);
     }
     await pg.query("update users set gender='female',affiliation='giyur',giyur_stage='completed' where id=$1", [owner.id]);
@@ -92,7 +95,7 @@ module.exports = async ({ test, source, db, pg, login, get, post, setActor }) =>
   });
   await test('participant strict schema bounds extra adults and spouse without coercion', async () => {
     const id = await event();
-    for (const patch of [{ extraAdults: -1 }, { extraAdults: 21 }, { extraAdults: 1.5 }, { extraAdults: '2' }, { spouse: 'true' }, { childIds: [''] }, { childIds: Array.from({ length: 21 }, (_, n) => String(n)) }]) {
+    for (const patch of [{ self: 'false' }, { self: 0 }, { extraAdults: -1 }, { extraAdults: 21 }, { extraAdults: 1.5 }, { extraAdults: '2' }, { spouse: 'true' }, { childIds: [''] }, { childIds: Array.from({ length: 21 }, (_, n) => String(n)) }]) {
       for (const action of ['quote', 'register']) await post(route, { action, eventId: id, ...patch }, 400);
     }
     assert.equal((await post(route, { action: 'quote', eventId: id, extraAdults: 20 })).quote.adults, 21);
@@ -140,4 +143,27 @@ module.exports = async ({ test, source, db, pg, login, get, post, setActor }) =>
       }
     } finally { setActor(null); }
   });
+  await test('participant optional self: empty composition is rejected for quote/register and creates no registration/payment', async()=>{
+    const id=await event();for(const action of ['quote','register'])await post(route,{action,eventId:id,self:false},409);
+    assert.equal((await pg.query('select count(*)::int n from event_participants where event_id=$1',[id])).rows[0].n,0);
+    setActor(owner.id);try{assert.equal((await website.registerForEvent(id,owner.id,null,{family:{self:false},extraAdults:0,extraKids:0})).success,false);}finally{setActor(null);}
+  });
+  await test('participant optional self: legacy self-included selection hash still resumes unchanged',async()=>{
+    const id=await event(),first=(await post(route,{action:'register',eventId:id,spouse:true})).registration;
+    const expected=require('node:crypto').createHash('sha256').update(JSON.stringify({childIds:[],spouse:true,extraAdults:0})).digest('hex');
+    assert.equal((await pg.query('select selection_hash from event_payment_attempts where registration_id=$1',[first.registrationId])).rows[0].selection_hash,expected);
+    const before=(await pg.query('select * from event_payment_attempts where registration_id=$1',[first.registrationId])).rows;
+    const failed=await post(route,{action:'register',eventId:id,self:false,spouse:true},409);assert.equal(failed.error,'pending_selection_conflict');
+    assert.deepEqual((await pg.query('select * from event_payment_attempts where registration_id=$1',[first.registrationId])).rows,before);
+  });
+  await test('participant optional self: spouse-only snapshot, reload and admin composition exclude the owner',async()=>{
+    const id=await event(),selection={self:false,spouse:true},first=(await post(route,{action:'register',eventId:id,...selection})).registration;
+    assert.equal(first.selfIncluded,false);const row=(await pg.query('select * from event_participants where id=$1',[first.registrationId])).rows[0];
+    assert.equal(row.extra_data.family.self,false);assert.equal(row.extra_data.spouseName,'Synthetic spouse');
+    const composition=source('lib/community/payment-intent.ts').applicationComposition(row.extra_data);assert.equal(composition.self,false);assert.equal(composition.adults,1);
+    assert.equal((await get(route,'?id='+id)).registration.selfIncluded,false);
+    assert.equal((await post(route,{action:'register',eventId:id,...selection})).registration.registrationId,first.registrationId);
+    assert.equal((await get(source('app/api/telegram/miniapp/registrations/route.ts'))).registrations.find(r=>r.id===first.registrationId).selfIncluded,false);
+  });
+
 };

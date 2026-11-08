@@ -1,8 +1,9 @@
 /* Future rollout only. check is read-only; apply requires explicit production confirmation. */
 async function configure(mode, env = process.env, fetcher = fetch) {
-  if (!["check", "apply"].includes(mode))
+  const commandsOnly = ["commands-check", "commands-apply"].includes(mode);
+  if (!["check", "apply", "commands-check", "commands-apply"].includes(mode))
     throw new Error(
-      "Usage: configure-telegram.cjs check|apply --confirm-production",
+      "Usage: configure-telegram.cjs check|apply|commands-check|commands-apply --confirm-production",
     );
   const token = env.TELEGRAM_BOT_TOKEN,
     secret = env.TELEGRAM_WEBHOOK_SECRET,
@@ -19,7 +20,7 @@ async function configure(mode, env = process.env, fetcher = fetch) {
     app.hash
   )
     throw new Error("Production APP URL invalid");
-  if (!/^[A-Za-z0-9_-]{32,256}$/.test(secret || ""))
+  if (!commandsOnly && !/^[A-Za-z0-9_-]{32,256}$/.test(secret || ""))
     throw new Error("Webhook secret missing/invalid");
   async function api(method, body = {}) {
     let data;
@@ -44,6 +45,21 @@ async function configure(mode, env = process.env, fetcher = fetch) {
   const me = await api("getMe");
   if (me.username !== username || me.is_bot !== true)
     throw new Error("Bot username mismatch; nothing changed");
+  const commands = [
+    { command: "start", description: "Открыть Menorah Center" },
+  ];
+  if (commandsOnly) {
+    if (mode === "commands-apply") await api("setMyCommands", { commands });
+    const current = await api("getMyCommands");
+    return {
+      botMatches: true,
+      commands: current,
+      commandsMatch: JSON.stringify(current) === JSON.stringify(commands),
+      mutated: mode === "commands-apply",
+      webhookChanged: false,
+      menuChanged: false,
+    };
+  }
   const webhookUrl = new URL("/api/telegram/webhook", app).toString(),
     miniappUrl = new URL("/miniapp", app).toString();
   if (mode === "check") {
@@ -72,18 +88,17 @@ async function configure(mode, env = process.env, fetcher = fetch) {
     },
   });
   await api("setMyCommands", {
-    commands: [
-      { command: "start", description: "Открыть Menorah Center" },
-      { command: "subscribe", description: "Получать анонсы" },
-      { command: "unsubscribe", description: "Отключить анонсы" },
-    ],
+    commands,
   });
   return { applied: true, pendingUpdatesDropped: false };
 }
 module.exports = { configure };
 if (require.main === module) {
   const mode = process.argv[2];
-  if (mode === "apply" && !process.argv.includes("--confirm-production")) {
+  if (
+    ["apply", "commands-apply"].includes(mode) &&
+    !process.argv.includes("--confirm-production")
+  ) {
     console.error("apply requires --confirm-production");
     process.exitCode = 1;
   } else

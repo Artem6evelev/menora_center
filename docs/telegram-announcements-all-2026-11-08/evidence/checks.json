@@ -1,0 +1,66 @@
+{
+  "baseHead": "b6ff89d043dfd12ad477bdfcd2598cd647fc873e",
+  "workingTreeChanges": true,
+  "environment": "isolated PGlite, Chromium and synthetic delivery; native production aggregate read-only separately verified",
+  "counts": [
+    {
+      "file": "server/telegram-release-results.json",
+      "pass": 242
+    },
+    {
+      "file": "telegram-tools-results.json",
+      "pass": 7
+    },
+    {
+      "file": "browser/results.json",
+      "pass": 13
+    },
+    {
+      "file": "login-photo/results.json",
+      "pass": 12
+    },
+    {
+      "file": "public-browser/results.json",
+      "pass": 17
+    },
+    {
+      "file": "ru-browser/results.json",
+      "pass": 8
+    },
+    {
+      "file": "journeys/results.json",
+      "pass": 3
+    },
+    {
+      "file": "performance/results.json",
+      "pass": 5
+    },
+    {
+      "file": "public-server/results.json",
+      "pass": 56
+    },
+    {
+      "file": "bundle/bundle.json",
+      "pass": 1
+    },
+    {
+      "file": "bundle/performance-bundle.json",
+      "pass": 6
+    }
+  ],
+  "total": 370,
+  "lint": {
+    "exitCode": 0,
+    "errors": 0,
+    "warnings": 30
+  },
+  "typecheck": {
+    "exitCode": 0
+  },
+  "build": {
+    "exitCode": 0
+  },
+  "schemaChanged": false,
+  "realMessages": 0,
+  "rawEvidence": "/tmp/menora-announcements-all-evidence/"
+}
