@@ -7,6 +7,10 @@ const {
   chromium,
 } = require("/tmp/menora-zmanim-browser-runtime/node_modules/playwright");
 const { parseChabadResponse } = require("../../lib/zmanim/chabad.ts");
+const {
+  holidayCalendarForDate,
+} = require("../../lib/zmanim/holiday-calendar.ts");
+const { validHolidayCalendar } = require("../../lib/zmanim/holiday-display.ts");
 const base = process.env.ZMANIM_BROWSER_BASE || "http://127.0.0.1:3390",
   out =
     process.env.ZMANIM_TEST_OUTPUT || "/tmp/menorah-zmanim-evidence/browser";
@@ -14,7 +18,10 @@ const raw = (n) =>
   JSON.parse(
     fs.readFileSync(path.join(__dirname, "fixtures", n + ".json"), "utf8"),
   );
-const payload = (name, date) => parseChabadResponse(raw(name), date),
+const payload = async (name, date) => ({
+    ...parseChabadResponse(raw(name), date),
+    calendar: await holidayCalendarForDate(date),
+  }),
   checks = [],
   errors = [];
 let browser;
@@ -59,10 +66,12 @@ async function fit(p, width, height) {
   const sizes = await p.evaluate(() => ({
     w: document.documentElement.scrollWidth,
     h: document.documentElement.scrollHeight,
-    rows: [...document.querySelectorAll("[data-zman]")].map((el) => {
-      const r = el.getBoundingClientRect();
-      return { x: r.left, right: r.right, bottom: r.bottom };
-    }),
+    rows: [...document.querySelectorAll("[data-zman], [data-holiday-id]")].map(
+      (el) => {
+        const r = el.getBoundingClientRect();
+        return { x: r.left, right: r.right, bottom: r.bottom };
+      },
+    ),
   }));
   assert.ok(sizes.w <= width + 1, JSON.stringify(sizes));
   if (width >= 1100) {
@@ -82,7 +91,8 @@ async function fit(p, width, height) {
     const r = await fetch(base + "/api/zmanim?date=2026-11-23");
     assert.equal(r.status, 200);
     const d = await r.json();
-    assert.deepEqual(d, payload("winter", "2026-11-23"));
+    assert.deepEqual(d, await payload("winter", "2026-11-23"));
+    assert.equal(validHolidayCalendar(d.calendar), true);
     assert.equal(
       (await fetch(base + "/api/zmanim?date=2026-02-30")).status,
       400,
@@ -231,7 +241,7 @@ async function fit(p, width, height) {
     try {
       let fail = false,
         requests = [];
-      await p.route("**/api/zmanim?**", (r) => {
+      await p.route("**/api/zmanim?**", async (r) => {
         const date = new URL(r.request().url()).searchParams.get("date");
         requests.push(date);
         if (fail)
@@ -239,7 +249,7 @@ async function fit(p, width, height) {
             status: 503,
             json: { error: "Synthetic network outage" },
           });
-        return r.fulfill({ json: payload("winter", date) });
+        return r.fulfill({ json: await payload("winter", date) });
       });
       await ready(p);
       fail = true;
@@ -275,8 +285,8 @@ async function fit(p, width, height) {
       async () => {
         const { c, p } = await setup(1920, 1080, time);
         try {
-          await p.route("**/api/zmanim?**", (r) =>
-            r.fulfill({ json: payload(name, date) }),
+          await p.route("**/api/zmanim?**", async (r) =>
+            r.fulfill({ json: await payload(name, date) }),
           );
           await p.goto(base + "/zmanim");
           await p.locator('[data-zman="LatestShema"]').waitFor();

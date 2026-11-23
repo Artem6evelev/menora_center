@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -30,6 +30,17 @@ import {
   type ZmanimData,
 } from "@/lib/zmanim/shared";
 import styles from "./zmanim-board.module.css";
+import HolidayStrip, { holidayThemeStyle } from "./holiday-strip";
+import HolidayArtwork from "./holiday-art";
+import {
+  HOLIDAYS,
+  CHABAD_CALENDAR_SOURCE,
+  type HolidayCalendar,
+} from "@/lib/zmanim/holiday-catalog";
+import {
+  boardHolidays,
+  validHolidayCalendar,
+} from "@/lib/zmanim/holiday-display";
 
 const columns = [
   {
@@ -54,7 +65,7 @@ const columns = [
     title: "Вечер",
     subtitle: "Завершение дня",
     icon: Moon,
-    keys: ["Shkiah", "Tzeis", "ShabbatEndTime", "ChatzosNight"],
+    keys: ["Shkiah", "Tzeis", "FastEnds", "ShabbatEndTime", "ChatzosNight"],
   },
 ];
 
@@ -82,13 +93,16 @@ function TimeRow({ time, active }: { time: Zman; active: boolean }) {
 
 export default function ZmanimBoard({
   initialData,
+  initialCalendar = null,
   initialNow,
 }: {
   initialData: ZmanimData | null;
+  initialCalendar?: HolidayCalendar | null;
   initialNow: number;
 }) {
   const [now, setNow] = useState(initialNow);
   const [data, setData] = useState(initialData);
+  const [calendar, setCalendar] = useState(initialCalendar);
   const [lastSuccess, setLastSuccess] = useState(
     initialData ? initialNow : null,
   );
@@ -118,6 +132,14 @@ export default function ZmanimBoard({
         clock.minuteOfDay,
       )
     : null;
+  const holidays = useMemo(
+    () =>
+      boardHolidays(calendar, today, clock.minuteOfDay, visible?.times ?? []),
+    [calendar, today, clock.minuteOfDay, visible?.times],
+  );
+  const currentHoliday = holidays.current
+    ? HOLIDAYS[holidays.current.definitionId]
+    : null;
 
   useEffect(() => {
     setNow(Date.now());
@@ -137,8 +159,15 @@ export default function ZmanimBoard({
           cache: "no-store",
           signal: controller.signal,
         });
+        const result: ZmanimData & { calendar?: HolidayCalendar } =
+          await response.json();
+        if (
+          active &&
+          validHolidayCalendar(result.calendar) &&
+          result.calendar.generatedFor === today
+        )
+          setCalendar(result.calendar);
         if (!response.ok) throw new Error("Unavailable");
-        const result: ZmanimData = await response.json();
         if (
           result.date !== today ||
           result.source !== "Chabad.org" ||
@@ -278,10 +307,18 @@ export default function ZmanimBoard({
     ) ?? [];
 
   return (
-    <main className={styles.board} data-zmanim-board lang="ru">
+    <main
+      className={styles.board}
+      style={holidayThemeStyle(holidays.current)}
+      data-zmanim-board
+      data-board-holiday={holidays.current?.definitionId ?? ""}
+      data-board-tone={currentHoliday?.tone ?? ""}
+      lang="ru"
+    >
       <header className={styles.header}>
         <Link
           href="/"
+          prefetch={false}
           className={styles.brand}
           aria-label="Menorah Center — на главную"
         >
@@ -323,9 +360,21 @@ export default function ZmanimBoard({
         aria-label="Ближайший зман"
         data-next-zman={next?.key ?? ""}
       >
-        <div className={styles.nextLabel}>
+        {currentHoliday && (
+          <div className={styles.nextHolidayArt}>
+            <HolidayArtwork art={currentHoliday.art} />
+          </div>
+        )}
+        <div
+          className={`${styles.nextLabel} ${currentHoliday ? styles.nextLabelHoliday : ""}`}
+        >
           <span className={styles.dot} />
           Ближайший зман
+          {currentHoliday && (
+            <small className={styles.currentHolidayTitle}>
+              {currentHoliday.title}
+            </small>
+          )}
         </div>
         <div className={styles.nextName}>
           {next?.label ??
@@ -450,6 +499,13 @@ export default function ZmanimBoard({
         </section>
       )}
 
+      <HolidayStrip
+        events={holidays.upcoming}
+        date={today}
+        minute={clock.minuteOfDay}
+        times={visible?.times ?? []}
+      />
+
       <footer className={styles.footer}>
         <p>
           По обычаям Хабад <span>·</span> Источник:{" "}
@@ -460,6 +516,8 @@ export default function ZmanimBoard({
           >
             Chabad.org
           </a>
+          <span>·</span>
+          <span>Календарь: Hebcal / Chabad</span>
         </p>
         <p
           className={offline ? styles.connectionWarning : styles.connection}
@@ -528,6 +586,27 @@ export default function ZmanimBoard({
           <p>
             Галахические сроки не являются расписанием миньянов. Время молитв в
             центре можно уточнить в общине.
+          </p>
+          <p>
+            Праздники показаны по календарю Израиля. Хабадские даты сверены с{" "}
+            <a
+              className="underline"
+              href={CHABAD_CALENDAR_SOURCE}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              календарём Chabad
+            </a>
+            . Перевод дат и перенесённые посты —{" "}
+            <a
+              className="underline"
+              href="https://www.hebcal.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Hebcal
+            </a>
+            . Расчёт зманим по-прежнему выполняет Chabad.org.
           </p>
           <p>
             Не откладывайте исполнение заповедей до последней минуты. Настройки

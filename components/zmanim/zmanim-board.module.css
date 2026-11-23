@@ -2,6 +2,7 @@
   --navy: #020022;
   --gold: #ffb800;
   --muted: #646475;
+  min-height: 100vh;
   min-height: 100dvh;
   padding: clamp(20px, 2.5vw, 80px);
   background: #f5f3ed;
@@ -169,6 +170,7 @@
   border-radius: clamp(18px, 1.7vw, 65px);
   padding: clamp(20px, 1.65vw, 64px);
   min-width: 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
 }
@@ -332,6 +334,7 @@
 }
 .footer p {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.6em;
 }
@@ -503,19 +506,154 @@
   font-size: 16px;
 }
 
+/* Calendar cards have their own colours; the full board changes only on an active date. */
+.board[data-board-holiday]:not([data-board-holiday=""]) {
+  background: radial-gradient(
+    ellipse at 12% 0%,
+    var(--holiday-wash) 0%,
+    #f5f3ed 72%
+  );
+}
+.board[data-board-holiday]:not([data-board-holiday=""]) .next {
+  background: var(--holiday-deep);
+}
+.board[data-board-holiday]:not([data-board-holiday=""]) .nextTime {
+  color: var(--holiday-accent);
+}
+.board[data-board-holiday]:not([data-board-holiday=""]) .active {
+  background: var(--holiday-wash);
+}
+.board[data-board-holiday]:not([data-board-holiday=""]) .active .rowValue {
+  color: var(--holiday-ink);
+}
+.nextHolidayArt {
+  position: absolute;
+  right: 18%;
+  top: -25%;
+  height: 160%;
+  aspect-ratio: 1;
+  color: var(--holiday-accent);
+  opacity: 0.09;
+  pointer-events: none;
+}
+.nextHolidayArt svg {
+  height: 100%;
+  width: 100%;
+}
+.nextLabelHoliday {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  max-width: 21vw;
+}
+.currentHolidayTitle {
+  grid-column: 1 / -1;
+  font-size: 0.83em;
+  line-height: 1.25;
+  color: var(--holiday-accent);
+  max-width: 20em;
+}
+.holidayStrip {
+  display: flex;
+  align-items: stretch;
+  gap: 1vw;
+  min-width: 0;
+}
+.holidayStripLabel {
+  width: 9.8vw;
+  flex-shrink: 0;
+  align-self: center;
+}
+.holidayStripLabel > span {
+  display: block;
+  font-size: clamp(9px, 0.65vw, 26px);
+  color: var(--muted);
+  margin-bottom: 0.5em;
+}
+.holidayStripLabel h2 {
+  font-size: clamp(15px, 1.05vw, 42px);
+  font-weight: 700;
+  line-height: 1.15;
+}
+.holidayCards {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1vw;
+}
+.holidayCard {
+  display: flex;
+  align-items: center;
+  gap: 0.65vw;
+  min-width: 0;
+  border: 1px solid #e0ddd5;
+  border-radius: clamp(14px, 1.1vw, 42px);
+  padding: 0.8vw;
+  background: var(--holiday-wash);
+  position: relative;
+}
+.holidayCardActive {
+  border-color: var(--holiday-ink);
+  box-shadow: inset 0 0 0 1px var(--holiday-ink);
+}
+.holidayCardArt {
+  color: var(--holiday-ink);
+  width: 3.6vw;
+  flex-shrink: 0;
+}
+.holidayCardArt svg {
+  width: 100%;
+  height: auto;
+}
+.holidayCardCopy {
+  min-width: 0;
+}
+.holidayKind {
+  font-size: clamp(10px, 0.62vw, 25px);
+  line-height: 1.15;
+  color: var(--holiday-ink);
+  font-weight: 700;
+  margin-bottom: 0.35em;
+}
+.holidayCard h3 {
+  font-weight: 700;
+  font-size: clamp(15px, 1.12vw, 44px);
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+.holidayCard p {
+  font-size: clamp(10px, 0.71vw, 28px);
+  line-height: 1.25;
+  color: #575463;
+  margin-top: 0.4em;
+}
+.holidayCard p > span {
+  color: #aaa2a0;
+  margin: 0 0.15em;
+}
+.calendarPending {
+  align-self: center;
+  font-size: clamp(13px, 1vw, 38px);
+  color: var(--muted);
+  grid-column: 1 / -1;
+}
+
 /* 16:9 television: scale with both dimensions, including Full HD and 4K. */
 @media (min-width: 1100px) and (min-aspect-ratio: 4/3) {
   .board {
+    height: 100vh;
     height: 100dvh;
-    padding-top: 3vh;
-    padding-bottom: 2vh;
+    padding-top: 2vh;
+    padding-bottom: 1.6vh;
+    gap: 1.5vh;
     overflow: hidden;
   }
   .header {
-    flex: 0 0 13vh;
+    flex: 0 0 12vh;
   }
   .next {
-    flex: 0 0 13vh;
+    flex: 0 0 12vh;
     padding-top: 1vh;
     padding-bottom: 1vh;
   }
@@ -523,8 +661,8 @@
     flex: 1 1 0;
   }
   .row {
-    padding-top: clamp(8px, 1.35vh, 30px);
-    padding-bottom: clamp(8px, 1.35vh, 30px);
+    padding-top: clamp(8px, 1.1vh, 30px);
+    padding-bottom: clamp(8px, 1.1vh, 30px);
     font-size: min(1.5vw, 2.75vh);
   }
   .columnHead {
@@ -544,11 +682,57 @@
   .footer {
     flex: 0 0 auto;
   }
+  .holidayStrip {
+    flex: 0 0 12vh;
+  }
+  .holidayCard {
+    padding-top: 0.8vh;
+    padding-bottom: 0.8vh;
+  }
 }
 
 @media (max-width: 1099px), (max-aspect-ratio: 4/3) {
   .board {
     gap: 20px;
+  }
+  .holidayStrip {
+    flex-direction: column;
+    gap: 14px;
+  }
+  .holidayStripLabel {
+    width: 100%;
+  }
+  .holidayStripLabel > span {
+    font-size: 11px;
+  }
+  .holidayStripLabel h2 {
+    font-size: 24px;
+  }
+  .holidayStripLabel h2 br {
+    display: none;
+  }
+  .holidayCards {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .holidayCard {
+    padding: 20px;
+    gap: 16px;
+  }
+  .holidayCardArt {
+    width: 64px;
+  }
+  .holidayCard h3 {
+    font-size: 24px;
+  }
+  .holidayKind {
+    font-size: 12px;
+  }
+  .holidayCard p {
+    font-size: 13px;
+  }
+  .nextLabelHoliday {
+    max-width: none;
   }
   .header {
     grid-template-columns: 1fr 1fr;

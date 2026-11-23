@@ -1,0 +1,111 @@
+{
+  "recordedOn": "2026-11-23",
+  "method": "Public read-only GET, Accept application/json, honest MenorahCenter/1.0 User-Agent; unmodified Chabad raw response wrapped with date/source; no credentials",
+  "sources": [
+    {
+      "file": "bonfire.json",
+      "date": "2027-05-25",
+      "url": "https://www.chabad.org/webservices/zmanim/zmanim/Get_Zmanim?locationid=853&locationtype=1&aid=143790&tdate=05-25-2027&startdate=5%2F24%2F2027&enddate=5%2F29%2F2027",
+      "sha256": "e41168d03e303391578ec9fac5b650fad4fddaab4815c7fe400633206200cf12",
+      "location": "1-853"
+    },
+    {
+      "file": "chanukah.json",
+      "date": "2026-12-05",
+      "url": "https://www.chabad.org/webservices/zmanim/zmanim/Get_Zmanim?locationid=853&locationtype=1&aid=143790&tdate=12-05-2026&startdate=12%2F4%2F2026&enddate=12%2F5%2F2026",
+      "sha256": "b60b3524f951751a7d44ae0ee180153e93859431b4d9eae6ecec5a9f334747f2",
+      "location": "1-853"
+    },
+    {
+      "file": "fast.json",
+      "date": "2026-12-20",
+      "url": "https://www.chabad.org/webservices/zmanim/zmanim/Get_Zmanim?locationid=853&locationtype=1&aid=143790&tdate=12-20-2026&startdate=12%2F19%2F2026&enddate=12%2F26%2F2026",
+      "sha256": "46c364e49559e29aaf9b7caa2ad4b1a7b8c3c68dbc2b743b6b9f1c2ad1050c23",
+      "location": "1-853"
+    },
+    {
+      "file": "hoshana-rabba.json",
+      "date": "2026-10-02",
+      "url": "https://www.chabad.org/webservices/zmanim/zmanim/Get_Zmanim?locationid=853&locationtype=1&aid=143790&tdate=10-02-2026&startdate=10%2F1%2F2026&enddate=10%2F3%2F2026",
+      "sha256": "acf757562040bed5a30b8ec368c6465a274c7c6758de5b6fe33f0da165b2a6b2",
+      "location": "1-853"
+    },
+    {
+      "file": "liberation.json",
+      "date": "2026-11-29",
+      "url": "https://www.chabad.org/webservices/zmanim/zmanim/Get_Zmanim?locationid=853&locationtype=1&aid=143790&tdate=11-29-2026&startdate=11%2F28%2F2026&enddate=12%2F5%2F2026",
+      "sha256": "b4b2620243f84eaad3675a346c488b10c9ad8b7b48f37f19f0bec84eaead3319",
+      "location": "1-853"
+    },
+    {
+      "file": "memorial.json",
+      "date": "2026-06-18",
+      "url": "https://www.chabad.org/webservices/zmanim/zmanim/Get_Zmanim?locationid=853&locationtype=1&aid=143790&tdate=06-18-2026&startdate=6%2F17%2F2026&enddate=6%2F20%2F2026",
+      "sha256": "9dbdc27ae307be2e3bbf2d79d4075af35cef876fa895977e07c12e283a816888",
+      "location": "1-853"
+    },
+    {
+      "file": "pesach-seventh.json",
+      "date": "2026-04-08",
+      "url": "https://www.chabad.org/webservices/zmanim/zmanim/Get_Zmanim?locationid=853&locationtype=1&aid=143790&tdate=04-08-2026&startdate=4%2F7%2F2026&enddate=4%2F11%2F2026",
+      "sha256": "12cb476292f17472234cb07f5d1213fed094c9b860069593deb9da3bb10f5c04",
+      "location": "1-853"
+    },
+    {
+      "file": "pesach.json",
+      "date": "2026-04-02",
+      "url": "https://www.chabad.org/webservices/zmanim/zmanim/Get_Zmanim?locationid=853&locationtype=1&aid=143790&tdate=04-02-2026&startdate=4%2F1%2F2026&enddate=4%2F4%2F2026",
+      "sha256": "a9624f013b4357d04647f31a4fe5be65ec973e127ff601a9c7bda72701624eb9",
+      "location": "1-853"
+    },
+    {
+      "file": "purim.json",
+      "date": "2027-03-23",
+      "url": "https://www.chabad.org/webservices/zmanim/zmanim/Get_Zmanim?locationid=853&locationtype=1&aid=143790&tdate=03-23-2027&startdate=3%2F22%2F2027&enddate=3%2F27%2F2027",
+      "sha256": "41478b3800d93ce45f7d6fbc657367d9808999d89920be251a12b608e50c25e1",
+      "location": "1-853"
+    },
+    {
+      "file": "shavuot.json",
+      "date": "2026-05-22",
+      "url": "https://www.chabad.org/webservices/zmanim/zmanim/Get_Zmanim?locationid=853&locationtype=1&aid=143790&tdate=05-22-2026&startdate=5%2F21%2F2026&enddate=5%2F23%2F2026",
+      "sha256": "77514fc05236d2eac947299f493abccf6e443cf016caf6854cc4685a4f9d5a00",
+      "location": "1-853"
+    },
+    {
+      "file": "simchat-torah.json",
+      "date": "2026-10-03",
+      "url": "https://www.chabad.org/webservices/zmanim/zmanim/Get_Zmanim?locationid=853&locationtype=1&aid=143790&tdate=10-03-2026&startdate=10%2F2%2F2026&enddate=10%2F3%2F2026",
+      "sha256": "7f06e18b49468dbde7f51be96386202708c79ffee256ebd1718eab6b97bdf0aa",
+      "location": "1-853"
+    },
+    {
+      "file": "sukkot.json",
+      "date": "2026-09-26",
+      "url": "https://www.chabad.org/webservices/zmanim/zmanim/Get_Zmanim?locationid=853&locationtype=1&aid=143790&tdate=09-26-2026&startdate=9%2F25%2F2026&enddate=9%2F26%2F2026",
+      "sha256": "c734faa45899475233178e0bb8ae0b275506554fe3a1364600079ba342cc137c",
+      "location": "1-853"
+    },
+    {
+      "file": "tree.json",
+      "date": "2027-01-23",
+      "url": "https://www.chabad.org/webservices/zmanim/zmanim/Get_Zmanim?locationid=853&locationtype=1&aid=143790&tdate=01-23-2027&startdate=1%2F22%2F2027&enddate=1%2F23%2F2027",
+      "sha256": "ed240475f68981dac5bbe1309cb99a8b31cd97744ec20e479a27747130d3a43d",
+      "location": "1-853"
+    },
+    {
+      "file": "wedding.json",
+      "date": "2026-11-23",
+      "url": "https://www.chabad.org/webservices/zmanim/zmanim/Get_Zmanim?locationid=853&locationtype=1&aid=143790&tdate=11-23-2026&startdate=11%2F22%2F2026&enddate=11%2F28%2F2026",
+      "sha256": "36b1e0a46076cef622da73945a3f44cf5afc15b67d9a7ed880f9f37d029c6296",
+      "location": "1-853"
+    },
+    {
+      "file": "yom-kippur.json",
+      "date": "2026-09-21",
+      "url": "https://www.chabad.org/webservices/zmanim/zmanim/Get_Zmanim?locationid=853&locationtype=1&aid=143790&tdate=09-21-2026&startdate=9%2F20%2F2026&enddate=9%2F26%2F2026",
+      "sha256": "d6ab455ad20a89a70bc627c8412d4e2871d582549a58e24bb5dbbbd68f04a622",
+      "location": "1-853"
+    }
+  ]
+}

@@ -49,6 +49,7 @@ const labels: Record<string, string> = {
   PlagHaminchah: "Плаг а-Минха",
   Shkiah: "Заход солнца",
   Tzeis: "Выход звёзд",
+  FastEnds: "Окончание поста",
   ChatzosNight: "Галахическая полночь",
   CandleLighting: "Зажигание свечей",
   LastEatingChametzTime: "Хамец: есть до",
@@ -235,6 +236,6 @@ export async function loadChabadZmanim(date: string): Promise<ZmanimData> {
 // Cache only a successfully validated snapshot, keyed by date. Provider errors stay retryable.
 export const getChabadZmanim = unstable_cache(
   loadChabadZmanim,
-  ["rishon-chabad-zmanim-v1"],
+  ["rishon-chabad-zmanim-v2"],
   { revalidate: 3600 },
 );

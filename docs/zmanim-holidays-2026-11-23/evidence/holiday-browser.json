@@ -1,0 +1,98 @@
+{
+  "environment": "Chrome; current code copy; synthetic frozen clocks; actual recorded Chabad 1-853 source; no real DB/env; Hebrew device language and US timezone",
+  "checks": [
+    {
+      "name": "wedding Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "liberation Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "chanukah Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "purim Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "pesach Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "shavuot Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "sukkot Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "simchat-torah Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "yom-kippur Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "fast Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "memorial Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "tree Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "bonfire Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "hoshana-rabba Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "pesach-seventh Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "chanukah 3840x2160 calendar remains inside screen with long Russian titles",
+      "status": "PASS"
+    },
+    {
+      "name": "memorial 3840x2160 calendar remains inside screen with long Russian titles",
+      "status": "PASS"
+    },
+    {
+      "name": "pesach 1280x720 calendar remains inside screen with long Russian titles",
+      "status": "PASS"
+    },
+    {
+      "name": "memorial 1280x720 calendar remains inside screen with long Russian titles",
+      "status": "PASS"
+    },
+    {
+      "name": "simchat-torah 320x844 calendar remains inside screen with long Russian titles",
+      "status": "PASS"
+    },
+    {
+      "name": "wedding 390x844 calendar remains inside screen with long Russian titles",
+      "status": "PASS"
+    },
+    {
+      "name": "sunset turns theme on and nightfall turns it off without reload; next day calendar survives midnight",
+      "status": "PASS"
+    },
+    {
+      "name": "503 keeps calendar but never asserts active holiday or shows yesterday times",
+      "status": "PASS"
+    }
+  ],
+  "errors": []
+}

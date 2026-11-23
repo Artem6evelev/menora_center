@@ -92,6 +92,8 @@ export function formatCalendarDate(date: string, hebrew = false): string {
       тевет: "тевета",
       шват: "швата",
       адар: "адара",
+      "адар i": "адара I",
+      "адар ii": "адара II",
       нисан: "нисана",
       ияр: "ияра",
       сиван: "сивана",

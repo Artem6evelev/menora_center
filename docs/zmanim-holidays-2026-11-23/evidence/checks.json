@@ -1,0 +1,75 @@
+{
+  "base": "7725ce5b155ad9677513e2d6f79e969e6f9ad762",
+  "unit": 45,
+  "baseBrowser": 11,
+  "holidayBrowser": 23,
+  "routing": 1,
+  "compiledSmoke": 4,
+  "totalPassed": 84,
+  "typecheck": {
+    "exitCode": 0
+  },
+  "lint": {
+    "exitCode": 0,
+    "errors": 0,
+    "existingWarnings": 30
+  },
+  "build": {
+    "exitCode": 0,
+    "realEnvCopied": false
+  },
+  "product": [
+    {
+      "file": "app/(display)/zmanim/page.tsx",
+      "sha256": "d9dc9115a47a3da75782f6bc5cfda0bf201a7fdf07fc89c445e0cf97b45c40a5"
+    },
+    {
+      "file": "app/api/zmanim/route.ts",
+      "sha256": "2374751cd8f9cfc77addfdad7aae218025b829d44f88be5963c848e3d971f382"
+    },
+    {
+      "file": "components/zmanim/zmanim-board.module.css",
+      "sha256": "cc2e267a9e569ff45b85da531014e67ae1fb3627aa46bce24f30b8d7a24c628a"
+    },
+    {
+      "file": "components/zmanim/zmanim-board.tsx",
+      "sha256": "fc5e722f6c64d9c06ae0ec7ae8f8ffba40e9f014c48b8f434212cb570e55ec19"
+    },
+    {
+      "file": "lib/zmanim/chabad.ts",
+      "sha256": "969841e73a36ccad71ef202072cb33ed2d90769f7bd304bb7cd69c7ca600f724"
+    },
+    {
+      "file": "lib/zmanim/shared.ts",
+      "sha256": "bf875942334189fa57d59a7853575c22f7ef49e40b69f71129ab39ed9e3afc9a"
+    },
+    {
+      "file": "package-lock.json",
+      "sha256": "c661dc6eebc0c782ff5f0fe8f06b019c95e465ece230d6dd5b59d64ca44cbfbe"
+    },
+    {
+      "file": "package.json",
+      "sha256": "b416715866cebf0a7d8b6b9e992da57d3039037baa22a938b46019e96153875a"
+    },
+    {
+      "file": "components/zmanim/holiday-art.tsx",
+      "sha256": "36e5d8df24319447c95569ced621ed1e8bbef9c962056bf4975d7a8395010517"
+    },
+    {
+      "file": "components/zmanim/holiday-strip.tsx",
+      "sha256": "e031dd5e529fe8dfa58a44ad1c379c3dda00662f3b6daf353c7f300b0de2ad00"
+    },
+    {
+      "file": "lib/zmanim/holiday-calendar.ts",
+      "sha256": "643f36b8b13ffce93fe09abf2796e05806bfe4880e62f5f30993e5ae52ff6ba3"
+    },
+    {
+      "file": "lib/zmanim/holiday-catalog.ts",
+      "sha256": "1a9bc4b0da2908eb8c72e93c10fd043a862cf53592a7ba3a4e06423362eef532"
+    },
+    {
+      "file": "lib/zmanim/holiday-display.ts",
+      "sha256": "ae73544cc6f2b4d69dfc20f9369e337a0ea44b08676763f1d6fbc6b5544f6823"
+    }
+  ]
+}
