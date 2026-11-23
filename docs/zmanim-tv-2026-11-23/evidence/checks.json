@@ -1,0 +1,104 @@
+{
+  "baseCommit": "9545be9f068466f99817881b53852329b7269046",
+  "scope": "public read-only Rishon 853 TV board",
+  "counts": {
+    "unit": 21,
+    "browser": 11,
+    "routingProviderBoundary": 1,
+    "headedFullscreenFlow": 1,
+    "total": 34,
+    "fail": 0
+  },
+  "browser": {
+    "environment": "Chrome; isolated code copy; real public Chabad API and recorded Chabad regression payloads; device timezone America/New_York; no real env or database",
+    "checks": [
+      {
+        "name": "actual anonymous GET pins Rishon 853 and matches the Chabad oracle; invalid date is 400",
+        "status": "PASS"
+      },
+      {
+        "name": "1280x720 television: all times fit without scroll/cutoff, Russian UI, correct Israel clock despite US device, no Clerk dependency",
+        "status": "PASS"
+      },
+      {
+        "name": "1920x1080 television: all times fit without scroll/cutoff, Russian UI, correct Israel clock despite US device, no Clerk dependency",
+        "status": "PASS"
+      },
+      {
+        "name": "3840x2160 television: all times fit without scroll/cutoff, Russian UI, correct Israel clock despite US device, no Clerk dependency",
+        "status": "PASS"
+      },
+      {
+        "name": "320 phone: readable stacked board, no horizontal overflow, source and WhatsApp accessible in settings",
+        "status": "PASS"
+      },
+      {
+        "name": "390 phone: readable stacked board, no horizontal overflow, source and WhatsApp accessible in settings",
+        "status": "PASS"
+      },
+      {
+        "name": "full-screen control, clock ticks, control auto-hide and periodic refresh need no reload",
+        "status": "PASS"
+      },
+      {
+        "name": "midnight outage never shows yesterday as today; online recovery loads the new day automatically",
+        "status": "PASS"
+      },
+      {
+        "name": "holiday TV: special deadlines fit and holiday candles are not mislabeled havdalah",
+        "status": "PASS"
+      },
+      {
+        "name": "pesach TV: special deadlines fit and holiday candles are not mislabeled havdalah",
+        "status": "PASS"
+      },
+      {
+        "name": "evening Hebrew date advances at local sunset without changing the civil-day timetable",
+        "status": "PASS"
+      }
+    ],
+    "errors": []
+  },
+  "headedFullscreen": {
+    "fullscreenEnabled": true,
+    "fullscreen": true,
+    "visible": "visible",
+    "focused": true
+  },
+  "headedExitObserved": true,
+  "lint": {
+    "exitCode": 0,
+    "errors": 0,
+    "existingWarnings": 30
+  },
+  "typecheck": {
+    "exitCode": 0
+  },
+  "build": {
+    "command": "npm run build",
+    "exitCode": 0,
+    "copy": "/tmp/menora-production-build",
+    "currentWorkingTree": true,
+    "realEnvCopied": false,
+    "database": "unavailable synthetic 127.0.0.1:1, no remote writes",
+    "log": "build.log"
+  },
+  "productSourceSHA256": {
+    "app/(display)/zmanim/page.tsx": "510babce34cacad717f50a2c0117b5394253865acf9a68c26a339b773684dd4d",
+    "app/api/zmanim/route.ts": "5f768a8dd874aa0754a34b0870ec9953935075e06e9ae35e7b55a1ed63fb06e6",
+    "app/sitemap.ts": "9c7bc42b023b042e69c30fe622ab06ac9320b8ae6fe8f68c3776104a693ba80a",
+    "components/footer.tsx": "cb89d607f2cdf59f001aac4f5d555324de2f11b135649e099e809d98e0d4361b",
+    "components/navbar/desktop-navbar.tsx": "2fb3d2b88ea84d4c2da4171b8a176955eae7b7a6c7fa2684a93ad69f75fc5580",
+    "components/navbar/index.tsx": "e08118e70c3e8ac7b77bda61beaed47fca44c88ca697d0940d9006a596b621b8",
+    "components/site-providers.tsx": "feb57fb9dcd0e588f6d557e0861e85a715b3dae865109efbb1a03b4e677795c2",
+    "components/zmanim/zmanim-board.module.css": "18801f4a739a807b07f6123e1d6ae8808c82b899aebddb6a76c2b3e831957fae",
+    "components/zmanim/zmanim-board.tsx": "6d145c8419bd6c35a7c22cdaff245e959546e5a1f1794743e3526bb96442ee88",
+    "lib/zmanim/chabad.ts": "124018e1de8cf4ea0d723ad40cf3206aa054355e5a0537ca28d20051b74ac5f8",
+    "lib/zmanim/shared.ts": "800a053af83886151d60c9987bb87a8b988b047149e7c3303e5983ebef4f1b38",
+    "middleware.ts": "423d01136165e4d7dea23abedb03346060aee61a3c2e02fdde2b1e0120f8de71"
+  },
+  "productionBusinessWrites": 0,
+  "remoteDatabaseTouched": false,
+  "secretsRequired": false,
+  "telegramChanges": false
+}

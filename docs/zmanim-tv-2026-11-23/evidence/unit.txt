@@ -1,0 +1,136 @@
+TAP version 13
+# Subtest: real Chabad winter source: city 853, exact published times, no own calculation
+ok 1 - real Chabad winter source: city 853, exact published times, no own calculation
+  ---
+  duration_ms: 5.748333
+  type: 'test'
+  ...
+# Subtest: AM/PM conversion never treats 12 AM as noon or 12 PM as midnight
+ok 2 - AM/PM conversion never treats 12 AM as noon or 12 PM as midnight
+  ---
+  duration_ms: 0.193
+  type: 'test'
+  ...
+# Subtest: summer source preserves Israel DST and the after-midnight day marker
+ok 3 - summer source preserves Israel DST and the after-midnight day marker
+  ---
+  duration_ms: 1.069958
+  type: 'test'
+  ...
+# Subtest: holiday night candle lighting is NOT labelled end of Shabbat or holiday
+ok 4 - holiday night candle lighting is NOT labelled end of Shabbat or holiday
+  ---
+  duration_ms: 3.653792
+  type: 'test'
+  ...
+# Subtest: Pesach source retains eating/burning deadlines and candle lighting
+ok 5 - Pesach source retains eating/burning deadlines and candle lighting
+  ---
+  duration_ms: 0.959583
+  type: 'test'
+  ...
+# Subtest: spring transition uses source local times, never host timezone conversion
+ok 6 - spring transition uses source local times, never host timezone conversion
+  ---
+  duration_ms: 0.523042
+  type: 'test'
+  ...
+# Subtest: fall transition is handled by Asia/Jerusalem, not a fixed +2/+3 offset
+ok 7 - fall transition is handled by Asia/Jerusalem, not a fixed +2/+3 offset
+  ---
+  duration_ms: 13.921209
+  type: 'test'
+  ...
+# Subtest: Israel date rolls at local midnight, independently of a US device timezone
+ok 8 - Israel date rolls at local midnight, independently of a US device timezone
+  ---
+  duration_ms: 0.206875
+  type: 'test'
+  ...
+# Subtest: next zman moves at the minute boundary and uses real chronological order
+ok 9 - next zman moves at the minute boundary and uses real chronological order
+  ---
+  duration_ms: 1.168541
+  type: 'test'
+  ...
+# Subtest: Russian calendar text includes the correct Hebrew date
+ok 10 - Russian calendar text includes the correct Hebrew date
+  ---
+  duration_ms: 0.864541
+  type: 'test'
+  ...
+# Subtest: strict date validation rejects overflow, injection, arrays and unsupported range
+ok 11 - strict date validation rejects overflow, injection, arrays and unsupported range
+  ---
+  duration_ms: 0.111333
+  type: 'test'
+  ...
+# Subtest: fixed upstream URL pins city and type and covers previous night plus Friday/Saturday
+ok 12 - fixed upstream URL pins city and type and covers previous night plus Friday/Saturday
+  ---
+  duration_ms: 0.281791
+  type: 'test'
+  ...
+# Subtest: Saturday keeps Friday candle lighting; Sunday advances to the next Shabbat
+ok 13 - Saturday keeps Friday candle lighting; Sunday advances to the next Shabbat
+  ---
+  duration_ms: 0.379708
+  type: 'test'
+  ...
+# Subtest: wrong location, coordinates, missing day and incomplete data fail closed
+ok 14 - wrong location, coordinates, missing day and incomplete data fail closed
+  ---
+  duration_ms: 4.401167
+  type: 'test'
+  ...
+# Subtest: ambiguous opinions and duplicate days are rejected rather than silently guessed
+ok 15 - ambiguous opinions and duplicate days are rejected rather than silently guessed
+  ---
+  duration_ms: 2.761375
+  type: 'test'
+  ...
+# Subtest: raw item calendar marker is not misinterpreted as the actual clock time
+ok 16 - raw item calendar marker is not misinterpreted as the actual clock time
+  ---
+  duration_ms: 0.998416
+  type: 'test'
+  ...
+# Subtest: server fetch is read-only, bounded and validates the response before caching
+ok 17 - server fetch is read-only, bounded and validates the response before caching
+  ---
+  duration_ms: 3.489583
+  type: 'test'
+  ...
+# Subtest: public GET rejects invalid dates before making any outbound request
+ok 18 - public GET rejects invalid dates before making any outbound request
+  ---
+  duration_ms: 1.131291
+  type: 'test'
+  ...
+# Subtest: Hebrew date is Russian without the English AM era marker
+ok 19 - Hebrew date is Russian without the English AM era marker
+  ---
+  duration_ms: 0.349333
+  type: 'test'
+  ...
+# Subtest: Hebrew date changes at published local sunset; civil timetable keeps its original day
+ok 20 - Hebrew date changes at published local sunset; civil timetable keeps its original day
+  ---
+  duration_ms: 1.343833
+  type: 'test'
+  ...
+# Subtest: evening of Rosh Hashanah advances the Hebrew year using the calendar
+ok 21 - evening of Rosh Hashanah advances the Hebrew year using the calendar
+  ---
+  duration_ms: 0.965791
+  type: 'test'
+  ...
+1..21
+# tests 21
+# suites 0
+# pass 21
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 57.927333

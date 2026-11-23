@@ -46,6 +46,7 @@ export async function NavBar() {
           }
         : null,
     },
+    { title: "Зманим", link: "/zmanim" },
     { title: "О нас", link: "/about" },
   ];
 

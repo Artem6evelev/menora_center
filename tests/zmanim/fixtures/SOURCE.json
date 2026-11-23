@@ -1,0 +1,21 @@
+{
+  "provider": "Chabad.org",
+  "locationId": "1-853",
+  "retrieved": "2026-11-23",
+  "endpoint": "https://www.chabad.org/webservices/zmanim/zmanim/Get_Zmanim",
+  "parameters": {
+    "locationid": 853,
+    "locationtype": 1,
+    "aid": 143790
+  },
+  "reference": "https://ru.chabad.org/calendar/zmanim_cdo/locationid/853/locationtype/1/tdate/11-23-2026/jewish/Halachic-Times.htm",
+  "notes": "Unmodified public JSON responses for seasonal, DST and holiday regression. No user data or credentials. Dates are encoded in each Days[].DisplayDate.",
+  "SHA256": {
+    "dst-end.json": "6a4347069902c0c1b918048f723495cad72027f3c43584a113abc92f037c154e",
+    "dst-start.json": "adb34e91b12393f867d99c6dbd531c5bf3261d6da67dde5c4f7e3440c02254e2",
+    "holiday.json": "ade5e413edb8d3b540d9d4a88412aa860389cda2f8defdfe89c215aae4c7ee5c",
+    "pesach.json": "4b4600bc12d37a6209207d5a66005939f584a5e93d38741de1f17b0efc577eaf",
+    "summer.json": "7cb469211c5fc91a585963dbd5b7564e8390017c139c8ab94bce2e7ecdf53bf2",
+    "winter.json": "48da560395a11a903aed03b3036eadd3ea2c4780adf33f55890d7e43ed80f37b"
+  }
+}

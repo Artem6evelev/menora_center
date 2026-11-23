@@ -155,9 +155,9 @@ export const DesktopNavbar = ({ navItems }: { navItems: any[] }) => {
           "bg-white/95 dark:bg-neutral-900/95 backdrop-blur-lg shadow-lg border border-neutral-200 dark:border-neutral-800",
       )}
     >
-      <div className="flex gap-8 items-center z-10">
+      <div className="flex gap-3 xl:gap-8 items-center z-10">
         <Logo />
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0 xl:gap-1 [&>a]:px-3 xl:[&>a]:px-5">
           {navItems.map((item) => (
             <NavItemWithDropdown key={item.title} item={item} />
           ))}

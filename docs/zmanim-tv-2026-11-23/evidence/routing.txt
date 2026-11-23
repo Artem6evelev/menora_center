@@ -1,0 +1,1 @@
+PASS public GET TV routes bypass SDK; admin/dashboard protection retained; POST and sibling routes use website middleware; website and Mini App provider boundaries retained

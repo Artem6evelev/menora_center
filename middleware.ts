@@ -37,7 +37,7 @@ export default function middleware(
     path === "/api/telegram/webhook" ||
     path === "/api/internal/telegram/broadcast-worker" ||
     path === "/api/telegram/remind" ||
-    (request.method === "GET" && path === "/api/community/cities")
+    (request.method === "GET" && ["/api/community/cities", "/zmanim", "/api/zmanim"].includes(path))
   ) {
     const response = NextResponse.next();
     response.headers.set("Cache-Control", "no-store");

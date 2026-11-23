@@ -9,6 +9,7 @@ export const Footer = () => {
   const links = [
     { name: "О нас (Команда)", href: "/about" },
     { name: "Мероприятия", href: "/events" },
+    { name: "Зманим", href: "/zmanim" },
     { name: "Новости общины", href: "/news" },
     { name: "Услуги центра", href: "/services" },
     { name: "Личный кабинет", href: "/dashboard" },
