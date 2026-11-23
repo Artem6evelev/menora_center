@@ -16,15 +16,26 @@ const base = process.env.ZMANIM_BROWSER_BASE || "http://127.0.0.1:3391",
     process.env.ZMANIM_TEST_OUTPUT ||
     "/tmp/menorah-holidays-evidence/holiday-browser";
 const checks = [],
-  errors = [];
+  errors = [],
+  measurements = [];
 let browser;
 const raw = (n) =>
-  JSON.parse(
-    fs.readFileSync(
-      path.join(__dirname, "holiday-fixtures", n + ".json"),
-      "utf8",
-    ),
-  );
+  n === "rosh-hashanah"
+    ? {
+        date: "2026-09-12",
+        raw: JSON.parse(
+          fs.readFileSync(
+            path.join(__dirname, "fixtures", "holiday.json"),
+            "utf8",
+          ),
+        ),
+      }
+    : JSON.parse(
+        fs.readFileSync(
+          path.join(__dirname, "holiday-fixtures", n + ".json"),
+          "utf8",
+        ),
+      );
 async function payload(name, date) {
   const f = raw(name);
   return {
@@ -73,9 +84,21 @@ async function layout(p, width, height) {
     const board = document.querySelector("[data-zmanim-board]"),
       strip = document.querySelector("[data-upcoming-holidays]"),
       sr = strip.getBoundingClientRect();
+    const shabbat = board.querySelector("[data-shabbat]");
+    const sections = [...board.children]
+      .filter((el) =>
+        el.matches(
+          'header, footer, [data-next-zman], [data-upcoming-holidays], [class*="columns__"]',
+        ),
+      )
+      .map((el) => el.getBoundingClientRect());
     return {
       w: document.documentElement.scrollWidth,
       h: document.documentElement.scrollHeight,
+      shabbatGap:
+        shabbat.getBoundingClientRect().top -
+        shabbat.previousElementSibling.getBoundingClientRect().bottom,
+      sectionGaps: sections.slice(1).map((r, i) => r.top - sections[i].bottom),
       cards: [...strip.querySelectorAll("article")].map((el) => {
         const r = el.getBoundingClientRect();
         return {
@@ -109,7 +132,18 @@ async function layout(p, width, height) {
     };
   });
   assert.ok(data.w <= width + 1, JSON.stringify(data));
+  measurements.push({ width, height, ...data });
   assert.equal(data.cards.length, 3);
+  assert.ok(
+    data.shabbatGap >= (width >= 1100 ? Math.max(10, height * 0.012) : 16),
+    JSON.stringify(data),
+  );
+  assert.ok(
+    data.sectionGaps.every(
+      (gap) => gap >= (width >= 1100 ? Math.max(10, height * 0.012) : 16),
+    ),
+    JSON.stringify(data),
+  );
   if (width >= 1100) {
     assert.ok(data.h <= height + 1, JSON.stringify(data));
     assert.ok(
@@ -130,14 +164,38 @@ async function layout(p, width, height) {
       data.panels.every((r) => r.bottom <= r.stripTop - 8 && !r.overflow),
       JSON.stringify(data),
     );
-    if (width >= 1920) assert.ok(data.font >= 40, data.font);
+    if (width >= 1920 && height >= 1080) assert.ok(data.font >= 40, data.font);
   }
+}
+async function switchToHebrew(p, width, height, name) {
+  await p.clock.fastForward(20000);
+  assert.equal(
+    await p.locator("[data-zmanim-board]").getAttribute("data-language-phase"),
+    "changing",
+  );
+  await p.clock.runFor(400);
+  await p.locator('[data-zmanim-board][lang="he"][dir="rtl"]').waitFor();
+  assert.doesNotMatch(
+    await p.locator("[data-zmanim-board]").innerText(),
+    /[А-Яа-я]/,
+  );
+  assert.equal(await p.getByRole("time").getAttribute("dir"), "ltr");
+  const morning = await p.locator('[data-zmanim-column="0"]').boundingBox(),
+    evening = await p.locator('[data-zmanim-column="2"]').boundingBox();
+  if (width >= 1100)
+    assert.ok(morning.x > evening.x, "Hebrew morning must be on the right");
+  await layout(p, width, height);
+  await p.screenshot({
+    path: out + "/" + name + "-" + width + "x" + height + "-he.png",
+    fullPage: width < 1100,
+  });
 }
 (async () => {
   fs.mkdirSync(out, { recursive: true });
   browser = await chromium.launch({ channel: "chrome", headless: true });
   for (const [name, id] of [
     ["wedding", "rebbe-wedding"],
+    ["rosh-hashanah", "rosh-hashanah"],
     ["liberation", "yud-tes-kislev"],
     ["chanukah", "chanukah"],
     ["purim", "purim"],
@@ -161,7 +219,7 @@ async function layout(p, width, height) {
           name,
           1920,
           1080,
-          name === "wedding" ? "2026-11-23T15:00:00Z" : undefined,
+          name === "wedding" ? "2026-11-23T20:56:00Z" : undefined,
         );
         try {
           await p.waitForFunction(
@@ -202,6 +260,7 @@ async function layout(p, width, height) {
             );
           await p.clock.fastForward(8000);
           await p.screenshot({ path: out + "/" + name + "-1920.png" });
+          await switchToHebrew(p, 1920, 1080, name);
         } finally {
           await c.close();
         }
@@ -211,7 +270,12 @@ async function layout(p, width, height) {
     [3840, 2160, "chanukah"],
     [3840, 2160, "memorial"],
     [1280, 720, "pesach"],
+    [1280, 720, "rosh-hashanah"],
+    [1920, 980, "rosh-hashanah"],
     [1280, 720, "memorial"],
+    [1366, 768, "wedding"],
+    [1920, 980, "wedding"],
+    [3840, 1980, "wedding"],
     [320, 844, "simchat-torah"],
     [390, 844, "wedding"],
   ])
@@ -227,14 +291,15 @@ async function layout(p, width, height) {
           name,
           w,
           h,
-          name === "wedding" ? "2026-11-23T15:00:00Z" : undefined,
+          name === "wedding" ? "2026-11-23T20:56:00Z" : undefined,
         );
         try {
           await layout(p, w, h);
           await p.screenshot({
-            path: out + "/" + name + "-" + w + ".png",
+            path: out + "/" + name + "-" + w + "x" + h + ".png",
             fullPage: true,
           });
+          await switchToHebrew(p, w, h, name);
         } finally {
           await c.close();
         }
@@ -318,6 +383,82 @@ async function layout(p, width, height) {
       await c.close();
     }
   });
+  await test("20-second RU/HE cycle fades smoothly, keeps numeric times, and pauses in settings", async () => {
+    const { p, c } = await open("wedding", 1920, 1080, "2026-11-23T20:56:00Z");
+    try {
+      await p.emulateMedia({ reducedMotion: "no-preference" });
+      let reads = 0;
+      p.on("request", (r) => {
+        if (r.url().includes("/api/zmanim")) reads++;
+      });
+      const values = await p
+        .locator("[data-zman] > div:last-child > span")
+        .allTextContents();
+      await p.clock.runFor(19500);
+      assert.equal(
+        await p.locator("[data-zmanim-board]").getAttribute("lang"),
+        "ru",
+      );
+      await p.clock.runFor(500);
+      assert.equal(
+        await p
+          .locator("[data-zmanim-board]")
+          .getAttribute("data-language-phase"),
+        "changing",
+      );
+      const style = await p
+        .locator("[data-zmanim-board]")
+        .evaluate((el) => ({
+          property: getComputedStyle(el).transitionProperty,
+          duration: getComputedStyle(el).transitionDuration,
+        }));
+      assert.equal(style.property, "opacity");
+      assert.equal(style.duration, "0.32s");
+      await new Promise((r) => setTimeout(r, 150));
+      const opacity = await p
+        .locator("[data-zmanim-board]")
+        .evaluate((el) => Number(getComputedStyle(el).opacity));
+      assert.ok(opacity > 0 && opacity < 1, opacity);
+      await p.clock.runFor(400);
+      await p.locator('[data-zmanim-board][lang="he"]').waitFor();
+      await new Promise((r) => setTimeout(r, 400));
+      assert.deepEqual(
+        await p
+          .locator("[data-zman] > div:last-child > span")
+          .allTextContents(),
+        values,
+      );
+      await p.clock.runFor(20000);
+      await p.locator('[data-zmanim-board][lang="ru"]').waitFor();
+      assert.equal(
+        reads,
+        0,
+        "Language rotation must not reload the page or refetch zmanim",
+      );
+      await switchToHebrew(p, 1920, 1080, "cycle");
+      await p.getByRole("button", { name: "הגדרות הלוח", exact: true }).click();
+      await p.getByRole("dialog", { name: "הגדרות הלוח" }).waitFor();
+      await p.clock.fastForward(45000);
+      assert.equal(
+        await p.locator("[data-zmanim-board]").getAttribute("lang"),
+        "he",
+      );
+      assert.doesNotMatch(await p.getByRole("dialog").innerText(), /[А-Яа-я]/);
+      await p.keyboard.press("Escape");
+      await p.clock.fastForward(20000);
+      await p.clock.runFor(400);
+      await p.locator('[data-zmanim-board][lang="ru"]').waitFor();
+      await p.emulateMedia({ reducedMotion: "reduce" });
+      assert.equal(
+        await p
+          .locator("[data-zmanim-board]")
+          .evaluate((el) => getComputedStyle(el).transitionDuration),
+        "0s",
+      );
+    } finally {
+      await c.close();
+    }
+  });
   assert.deepEqual(errors, []);
   fs.writeFileSync(
     out + "/results.json",
@@ -326,6 +467,7 @@ async function layout(p, width, height) {
         environment:
           "Chrome; current code copy; synthetic frozen clocks; actual recorded Chabad 1-853 source; no real DB/env; Hebrew device language and US timezone",
         checks,
+        measurements,
         errors,
       },
       null,

@@ -1,5 +1,6 @@
 export const ZMANIM_TIME_ZONE = "Asia/Jerusalem";
 export const ZMANIM_LOCATION = "Ришон ле-Цион, Израиль";
+export type BoardLocale = "ru" | "he";
 export const ZMANIM_MIN_DATE = "1900-01-01";
 export const ZMANIM_MAX_DATE = "2100-12-31";
 
@@ -68,9 +69,60 @@ export function chabadSourceUrl(date: string): string {
   return `https://ru.chabad.org/calendar/zmanim_cdo/locationid/853/locationtype/1/tdate/${month}-${day}-${year}/jewish/Halachic-Times.htm`;
 }
 
-export function formatCalendarDate(date: string, hebrew = false): string {
+export function hebrewNumeral(value: number): string {
+  let n = value % 1000;
+  let letters = "";
+  for (const [amount, letter] of [
+    [400, "ת"],
+    [300, "ש"],
+    [200, "ר"],
+    [100, "ק"],
+    [90, "צ"],
+    [80, "פ"],
+    [70, "ע"],
+    [60, "ס"],
+    [50, "נ"],
+    [40, "מ"],
+    [30, "ל"],
+    [20, "כ"],
+    [10, "י"],
+    [9, "ט"],
+    [8, "ח"],
+    [7, "ז"],
+    [6, "ו"],
+    [5, "ה"],
+    [4, "ד"],
+    [3, "ג"],
+    [2, "ב"],
+    [1, "א"],
+  ] as const) {
+    if (n === 15 || n === 16) {
+      letters += n === 15 ? "טו" : "טז";
+      n = 0;
+      break;
+    }
+    while (n >= amount) {
+      letters += letter;
+      n -= amount;
+    }
+  }
+  return letters.length === 1
+    ? letters + "׳"
+    : letters.slice(0, -1) + "״" + letters.slice(-1);
+}
+
+export function formatCalendarDate(
+  date: string,
+  hebrew = false,
+  locale: BoardLocale = "ru",
+  includeYear = true,
+): string {
   const formatter = new Intl.DateTimeFormat(
-    hebrew ? "ru-RU-u-ca-hebrew" : "ru-RU",
+    hebrew
+      ? `${locale === "he" ? "he-IL" : "ru-RU"}-u-ca-hebrew`
+      : locale === "he"
+        ? "he-IL"
+        : "ru-RU",
     {
       timeZone: ZMANIM_TIME_ZONE,
       day: "numeric",
@@ -84,6 +136,8 @@ export function formatCalendarDate(date: string, hebrew = false): string {
     const parts = formatter.formatToParts(value);
     const get = (type: string) =>
       parts.find((part) => part.type === type)!.value;
+    if (locale === "he")
+      return `${hebrewNumeral(Number(get("day")))} ב${get("month")}${includeYear ? " " + hebrewNumeral(Number(get("year"))) : ""}`;
     const month = get("month").toLocaleLowerCase("ru-RU");
     const months: Record<string, string> = {
       тишрей: "тишрея",
@@ -101,7 +155,7 @@ export function formatCalendarDate(date: string, hebrew = false): string {
       ав: "ава",
       элул: "элула",
     };
-    return `${get("day")} ${months[month] ?? month} ${get("year")}`;
+    return `${get("day")} ${months[month] ?? month}${includeYear ? " " + get("year") : ""}`;
   }
   const text = formatter.format(value).replace(/\s*г\.$/, "");
   return text.charAt(0).toLocaleUpperCase("ru-RU") + text.slice(1);

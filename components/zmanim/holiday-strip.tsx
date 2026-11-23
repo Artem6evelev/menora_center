@@ -9,7 +9,8 @@ import {
   holidayHebrewLabel,
   holidayPhase,
 } from "@/lib/zmanim/holiday-display";
-import type { Zman } from "@/lib/zmanim/shared";
+import { boardText, holidayTitle } from "@/lib/zmanim/board-i18n";
+import type { BoardLocale, Zman } from "@/lib/zmanim/shared";
 import HolidayArtwork from "./holiday-art";
 import styles from "./zmanim-board.module.css";
 
@@ -28,27 +29,27 @@ export function holidayThemeStyle(
 
 function HolidayStrip({
   events,
+  locale,
   date,
   minute,
   times,
 }: {
   events: HolidayOccurrence[];
+  locale: BoardLocale;
   date: string;
   minute: number;
   times: Zman[];
 }) {
+  const t = boardText(locale);
   return (
     <section
       className={styles.holidayStrip}
-      aria-label="Ближайшие праздники"
+      aria-label={t.upcoming}
       data-upcoming-holidays
     >
       <div className={styles.holidayStripLabel}>
-        <span>Календарь общины</span>
-        <h2>
-          Ближайшие <br />
-          праздники
-        </h2>
+        <span>{t.communityCalendar}</span>
+        <h2>{t.upcoming}</h2>
       </div>
       <div className={styles.holidayCards}>
         {events.length ? (
@@ -69,34 +70,32 @@ function HolidayStrip({
                 </div>
                 <div className={styles.holidayCardCopy}>
                   <div className={styles.holidayKind}>
-                    {active ? "Сегодня · " : ""}
+                    {active ? t.today + " · " : ""}
                     {definition.kind === "chabad"
                       ? definition.tone === "memorial"
-                        ? "Памятная дата Хабада"
-                        : "Хабадская дата"
+                        ? t.memorial
+                        : t.chabadDate
                       : definition.kind === "fast"
                         ? event.observed
-                          ? "Перенесённый пост"
-                          : "День поста"
+                          ? t.observedFast
+                          : t.fast
                         : definition.kind === "new-month"
-                          ? "Новомесячье"
+                          ? t.newMonth
                           : event.definitionId === "yom-kippur"
-                            ? "День молитвы и поста"
-                            : "Еврейский праздник"}
+                            ? t.kippur
+                            : t.holiday}
                   </div>
-                  <h3>{definition.title}</h3>
+                  <h3>{holidayTitle(event.definitionId, locale)}</h3>
                   <p>
-                    {holidayHebrewLabel(event)} <span>·</span>{" "}
-                    {holidayDateLabel(event)}
+                    {holidayHebrewLabel(event, locale)} <span>·</span>{" "}
+                    {holidayDateLabel(event, locale)}
                   </p>
                 </div>
               </article>
             );
           })
         ) : (
-          <p className={styles.calendarPending}>
-            Календарь обновляется автоматически
-          </p>
+          <p className={styles.calendarPending}>{t.calendarPending}</p>
         )}
       </div>
     </section>

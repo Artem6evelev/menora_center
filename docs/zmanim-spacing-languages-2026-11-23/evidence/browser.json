@@ -1,0 +1,3098 @@
+{
+  "environment": "Chrome; current code copy; synthetic frozen clocks; actual recorded Chabad 1-853 source; no real DB/env; Hebrew device language and US timezone",
+  "checks": [
+    {
+      "name": "wedding Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "rosh-hashanah Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "liberation Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "chanukah Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "purim Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "pesach Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "shavuot Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "sukkot Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "simchat-torah Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "yom-kippur Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "fast Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "memorial Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "tree Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "bonfire Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "hoshana-rabba Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "pesach-seventh Full HD: current theme, own art, 3 cards, all zmanim readable and no clipping",
+      "status": "PASS"
+    },
+    {
+      "name": "chanukah 3840x2160 calendar remains inside screen with long Russian titles",
+      "status": "PASS"
+    },
+    {
+      "name": "memorial 3840x2160 calendar remains inside screen with long Russian titles",
+      "status": "PASS"
+    },
+    {
+      "name": "pesach 1280x720 calendar remains inside screen with long Russian titles",
+      "status": "PASS"
+    },
+    {
+      "name": "rosh-hashanah 1280x720 calendar remains inside screen with long Russian titles",
+      "status": "PASS"
+    },
+    {
+      "name": "rosh-hashanah 1920x980 calendar remains inside screen with long Russian titles",
+      "status": "PASS"
+    },
+    {
+      "name": "memorial 1280x720 calendar remains inside screen with long Russian titles",
+      "status": "PASS"
+    },
+    {
+      "name": "wedding 1366x768 calendar remains inside screen with long Russian titles",
+      "status": "PASS"
+    },
+    {
+      "name": "wedding 1920x980 calendar remains inside screen with long Russian titles",
+      "status": "PASS"
+    },
+    {
+      "name": "wedding 3840x1980 calendar remains inside screen with long Russian titles",
+      "status": "PASS"
+    },
+    {
+      "name": "simchat-torah 320x844 calendar remains inside screen with long Russian titles",
+      "status": "PASS"
+    },
+    {
+      "name": "wedding 390x844 calendar remains inside screen with long Russian titles",
+      "status": "PASS"
+    },
+    {
+      "name": "sunset turns theme on and nightfall turns it off without reload; next day calendar survives midnight",
+      "status": "PASS"
+    },
+    {
+      "name": "503 keeps calendar but never asserts active holiday or shows yesterday times",
+      "status": "PASS"
+    },
+    {
+      "name": "20-second RU/HE cycle fades smoothly, keeps numeric times, and pauses in settings",
+      "status": "PASS"
+    }
+  ],
+  "measurements": [
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Свадьба Ребе и Ребецн",
+          "left": 255.34375,
+          "right": 781.4375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "Новый год хасидизма",
+          "left": 800.625,
+          "right": 1326.71875,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "Ханука",
+          "left": 1345.90625,
+          "right": 1872,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "חתונת הרבי והרבנית",
+          "left": 1138.5625,
+          "right": 1664.65625,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "ראש השנה לחסידות",
+          "left": 593.28125,
+          "right": 1119.375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "חנוכה",
+          "left": 48,
+          "right": 574.09375,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 56.578125,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Рош а-Шана",
+          "left": 255.34375,
+          "right": 781.4375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "Пост Гедалии",
+          "left": 800.625,
+          "right": 1326.71875,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "День памяти ребецн Ханы",
+          "left": 1345.90625,
+          "right": 1872,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 56.578125,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "ראש השנה",
+          "left": 1138.5625,
+          "right": 1664.65625,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "צום גדליה",
+          "left": 593.28125,
+          "right": 1119.375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "יום ההילולא של הרבנית חנה",
+          "left": 48,
+          "right": 574.09375,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Новый год хасидизма",
+          "left": 255.34375,
+          "right": 781.4375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "Ханука",
+          "left": 800.625,
+          "right": 1326.71875,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "Рош ходеш",
+          "left": 1345.90625,
+          "right": 1872,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "ראש השנה לחסידות",
+          "left": 1138.5625,
+          "right": 1664.65625,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "חנוכה",
+          "left": 593.28125,
+          "right": 1119.375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "ראש חודש",
+          "left": 48,
+          "right": 574.09375,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Ханука",
+          "left": 255.34375,
+          "right": 781.4375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "Рош ходеш",
+          "left": 800.625,
+          "right": 1326.71875,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "Хей Тевет · Дидан ноцах",
+          "left": 1345.90625,
+          "right": 1872,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "חנוכה",
+          "left": 1138.5625,
+          "right": 1664.65625,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "ראש חודש",
+          "left": 593.28125,
+          "right": 1119.375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "ה׳ טבת · דידן נצח",
+          "left": 48,
+          "right": 574.09375,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Пурим",
+          "left": 255.34375,
+          "right": 781.4375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "День рождения ребецн Хаи Мушки",
+          "left": 800.625,
+          "right": 1326.71875,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "Рош ходеш",
+          "left": 1345.90625,
+          "right": 1872,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "פורים",
+          "left": 1138.5625,
+          "right": 1664.65625,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "יום הולדת הרבנית חיה מושקא",
+          "left": 593.28125,
+          "right": 1119.375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "ראש חודש",
+          "left": 48,
+          "right": 574.09375,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Песах",
+          "left": 255.34375,
+          "right": 781.4375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "Седьмой день Песаха",
+          "left": 800.625,
+          "right": 1326.71875,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "Рош ходеш",
+          "left": 1345.90625,
+          "right": 1872,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "פסח",
+          "left": 1138.5625,
+          "right": 1664.65625,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "שביעי של פסח",
+          "left": 593.28125,
+          "right": 1119.375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "ראש חודש",
+          "left": 48,
+          "right": 574.09375,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Шавуот",
+          "left": 255.34375,
+          "right": 781.4375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "День памяти Баал-Шем-Това",
+          "left": 800.625,
+          "right": 1326.71875,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "28 Сивана · прибытие Ребе в США",
+          "left": 1345.90625,
+          "right": 1872,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "שבועות",
+          "left": 1138.5625,
+          "right": 1664.65625,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "יום ההילולא של הבעל שם טוב",
+          "left": 593.28125,
+          "right": 1119.375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "כ״ח בסיוון · הגעת הרבי לארצות הברית",
+          "left": 48,
+          "right": 574.09375,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Суккот",
+          "left": 255.34375,
+          "right": 781.4375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "Ошана Раба",
+          "left": 800.625,
+          "right": 1326.71875,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "Шмини Ацерет и Симхат Тора",
+          "left": 1345.90625,
+          "right": 1872,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "סוכות",
+          "left": 1138.5625,
+          "right": 1664.65625,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "הושענא רבה",
+          "left": 593.28125,
+          "right": 1119.375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "שמיני עצרת ושמחת תורה",
+          "left": 48,
+          "right": 574.09375,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Шмини Ацерет и Симхат Тора",
+          "left": 255.34375,
+          "right": 781.4375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "Рош ходеш",
+          "left": 800.625,
+          "right": 1326.71875,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "День рождения Ребе Рашаба",
+          "left": 1345.90625,
+          "right": 1872,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "שמיני עצרת ושמחת תורה",
+          "left": 1138.5625,
+          "right": 1664.65625,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "ראש חודש",
+          "left": 593.28125,
+          "right": 1119.375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "יום הולדת אדמו״ר הרש״ב",
+          "left": 48,
+          "right": 574.09375,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Йом Кипур",
+          "left": 255.34375,
+          "right": 781.4375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "День памяти Ребе Маараша",
+          "left": 800.625,
+          "right": 1326.71875,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "Суккот",
+          "left": 1345.90625,
+          "right": 1872,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "יום הכיפורים",
+          "left": 1138.5625,
+          "right": 1664.65625,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "יום ההילולא של אדמו״ר המהר״ש",
+          "left": 593.28125,
+          "right": 1119.375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "סוכות",
+          "left": 48,
+          "right": 574.09375,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Пост 10 Тевета",
+          "left": 255.34375,
+          "right": 781.4375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "День памяти Алтер Ребе",
+          "left": 800.625,
+          "right": 1326.71875,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "Рош ходеш",
+          "left": 1345.90625,
+          "right": 1872,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "עשרה בטבת",
+          "left": 1138.5625,
+          "right": 1664.65625,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "יום ההילולא של אדמו״ר הזקן",
+          "left": 593.28125,
+          "right": 1119.375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "ראש חודש",
+          "left": 48,
+          "right": 574.09375,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Гимел Тамуз · день памяти Ребе",
+          "left": 255.34375,
+          "right": 781.4375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "Дни освобождения Ребе Раяца",
+          "left": 800.625,
+          "right": 1326.71875,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "Пост 17 Тамуза",
+          "left": 1345.90625,
+          "right": 1872,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "ג׳ תמוז · יום ההילולא של הרבי",
+          "left": 1138.5625,
+          "right": 1664.65625,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "ימי הגאולה של הרבי הריי״צ",
+          "left": 593.28125,
+          "right": 1119.375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "שבעה עשר בתמוז",
+          "left": 48,
+          "right": 574.09375,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Ту би-Шват",
+          "left": 255.34375,
+          "right": 781.4375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "День памяти ребецн Хаи Мушки",
+          "left": 800.625,
+          "right": 1326.71875,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "Рош ходеш",
+          "left": 1345.90625,
+          "right": 1872,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "ט״ו בשבט",
+          "left": 1138.5625,
+          "right": 1664.65625,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "יום ההילולא של הרבנית חיה מושקא",
+          "left": 593.28125,
+          "right": 1119.375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "ראש חודש",
+          "left": 48,
+          "right": 574.09375,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Лаг ба-Омер",
+          "left": 255.34375,
+          "right": 781.4375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "Рош ходеш",
+          "left": 800.625,
+          "right": 1326.71875,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "Шавуот",
+          "left": 1345.90625,
+          "right": 1872,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "ל״ג בעומר",
+          "left": 1138.5625,
+          "right": 1664.65625,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "ראש חודש",
+          "left": 593.28125,
+          "right": 1119.375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "שבועות",
+          "left": 48,
+          "right": 574.09375,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Ошана Раба",
+          "left": 255.34375,
+          "right": 781.4375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "Шмини Ацерет и Симхат Тора",
+          "left": 800.625,
+          "right": 1326.71875,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "Рош ходеш",
+          "left": 1345.90625,
+          "right": 1872,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "הושענא רבה",
+          "left": 1138.5625,
+          "right": 1664.65625,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "שמיני עצרת ושמחת תורה",
+          "left": 593.28125,
+          "right": 1119.375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "ראש חודש",
+          "left": 48,
+          "right": 574.09375,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Седьмой день Песаха",
+          "left": 255.34375,
+          "right": 781.4375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "Рош ходеш",
+          "left": 800.625,
+          "right": 1326.71875,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "День рождения Ребе Маараша",
+          "left": 1345.90625,
+          "right": 1872,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "שביעי של פסח",
+          "left": 1138.5625,
+          "right": 1664.65625,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "ראש חודש",
+          "left": 593.28125,
+          "right": 1119.375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "יום הולדת אדמו״ר המהר״ש",
+          "left": 48,
+          "right": 574.09375,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 3840,
+      "height": 2160,
+      "documentWidth": 3840,
+      "documentHeight": 2160,
+      "shabbatGap": 35.765625,
+      "sectionGaps": [
+        32.390625,
+        32.390625,
+        32.390625,
+        32.390625
+      ],
+      "timeFont": 84.096,
+      "panels": [
+        {
+          "bottom": 1752.53125,
+          "stripTop": 1784.921875,
+          "overflow": false
+        },
+        {
+          "bottom": 1752.53125,
+          "stripTop": 1784.921875,
+          "overflow": false
+        },
+        {
+          "bottom": 1752.53125,
+          "stripTop": 1784.921875,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Ханука",
+          "left": 494.703125,
+          "right": 1557.53125,
+          "bottom": 2044.109375,
+          "overflow": false
+        },
+        {
+          "title": "Рош ходеш",
+          "left": 1595.921875,
+          "right": 2658.765625,
+          "bottom": 2044.109375,
+          "overflow": false
+        },
+        {
+          "title": "Хей Тевет · Дидан ноцах",
+          "left": 2697.15625,
+          "right": 3759.984375,
+          "bottom": 2044.109375,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 3840,
+      "height": 2160,
+      "documentWidth": 3840,
+      "documentHeight": 2160,
+      "shabbatGap": 35.765625,
+      "sectionGaps": [
+        32.390625,
+        32.390625,
+        32.390625,
+        32.390625
+      ],
+      "timeFont": 84.096,
+      "panels": [
+        {
+          "bottom": 1752.53125,
+          "stripTop": 1784.921875,
+          "overflow": false
+        },
+        {
+          "bottom": 1752.53125,
+          "stripTop": 1784.921875,
+          "overflow": false
+        },
+        {
+          "bottom": 1752.53125,
+          "stripTop": 1784.921875,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "חנוכה",
+          "left": 2282.46875,
+          "right": 3345.296875,
+          "bottom": 2044.109375,
+          "overflow": false
+        },
+        {
+          "title": "ראש חודש",
+          "left": 1181.234375,
+          "right": 2244.078125,
+          "bottom": 2044.109375,
+          "overflow": false
+        },
+        {
+          "title": "ה׳ טבת · דידן נצח",
+          "left": 80.015625,
+          "right": 1142.84375,
+          "bottom": 2044.109375,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 3840,
+      "height": 2160,
+      "documentWidth": 3840,
+      "documentHeight": 2160,
+      "shabbatGap": 32.390625,
+      "sectionGaps": [
+        32.390625,
+        32.390625,
+        32.390625,
+        32.390625
+      ],
+      "timeFont": 84.096,
+      "panels": [
+        {
+          "bottom": 1752.53125,
+          "stripTop": 1784.921875,
+          "overflow": false
+        },
+        {
+          "bottom": 1752.53125,
+          "stripTop": 1784.921875,
+          "overflow": false
+        },
+        {
+          "bottom": 1752.53125,
+          "stripTop": 1784.921875,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Гимел Тамуз · день памяти Ребе",
+          "left": 494.703125,
+          "right": 1557.53125,
+          "bottom": 2044.109375,
+          "overflow": false
+        },
+        {
+          "title": "Дни освобождения Ребе Раяца",
+          "left": 1595.921875,
+          "right": 2658.765625,
+          "bottom": 2044.109375,
+          "overflow": false
+        },
+        {
+          "title": "Пост 17 Тамуза",
+          "left": 2697.15625,
+          "right": 3759.984375,
+          "bottom": 2044.109375,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 3840,
+      "height": 2160,
+      "documentWidth": 3840,
+      "documentHeight": 2160,
+      "shabbatGap": 32.390625,
+      "sectionGaps": [
+        32.390625,
+        32.390625,
+        32.390625,
+        32.390625
+      ],
+      "timeFont": 84.096,
+      "panels": [
+        {
+          "bottom": 1752.53125,
+          "stripTop": 1784.921875,
+          "overflow": false
+        },
+        {
+          "bottom": 1752.53125,
+          "stripTop": 1784.921875,
+          "overflow": false
+        },
+        {
+          "bottom": 1752.53125,
+          "stripTop": 1784.921875,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "ג׳ תמוז · יום ההילולא של הרבי",
+          "left": 2282.46875,
+          "right": 3345.296875,
+          "bottom": 2044.109375,
+          "overflow": false
+        },
+        {
+          "title": "ימי הגאולה של הרבי הריי״צ",
+          "left": 1181.234375,
+          "right": 2244.078125,
+          "bottom": 2044.109375,
+          "overflow": false
+        },
+        {
+          "title": "שבעה עשר בתמוז",
+          "left": 80.015625,
+          "right": 1142.84375,
+          "bottom": 2044.109375,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "documentWidth": 1280,
+      "documentHeight": 720,
+      "shabbatGap": 12.078125,
+      "sectionGaps": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "timeFont": 28.032,
+      "panels": [
+        {
+          "bottom": 580.09375,
+          "stripTop": 592.09375,
+          "overflow": false
+        },
+        {
+          "bottom": 580.09375,
+          "stripTop": 592.09375,
+          "overflow": false
+        },
+        {
+          "bottom": 580.09375,
+          "stripTop": 592.09375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Песах",
+          "left": 170.234375,
+          "right": 520.953125,
+          "bottom": 678.484375,
+          "overflow": false
+        },
+        {
+          "title": "Седьмой день Песаха",
+          "left": 533.75,
+          "right": 884.46875,
+          "bottom": 678.484375,
+          "overflow": false
+        },
+        {
+          "title": "Рош ходеш",
+          "left": 897.265625,
+          "right": 1248,
+          "bottom": 678.484375,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "documentWidth": 1280,
+      "documentHeight": 720,
+      "shabbatGap": 12.078125,
+      "sectionGaps": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "timeFont": 28.032,
+      "panels": [
+        {
+          "bottom": 580.09375,
+          "stripTop": 592.09375,
+          "overflow": false
+        },
+        {
+          "bottom": 580.09375,
+          "stripTop": 592.09375,
+          "overflow": false
+        },
+        {
+          "bottom": 580.09375,
+          "stripTop": 592.09375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "פסח",
+          "left": 759.046875,
+          "right": 1109.765625,
+          "bottom": 678.484375,
+          "overflow": false
+        },
+        {
+          "title": "שביעי של פסח",
+          "left": 395.53125,
+          "right": 746.25,
+          "bottom": 678.484375,
+          "overflow": false
+        },
+        {
+          "title": "ראש חודש",
+          "left": 32,
+          "right": 382.734375,
+          "bottom": 678.484375,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "documentWidth": 1280,
+      "documentHeight": 720,
+      "shabbatGap": 27.15625,
+      "sectionGaps": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "timeFont": 28.032,
+      "panels": [
+        {
+          "bottom": 580.09375,
+          "stripTop": 592.09375,
+          "overflow": false
+        },
+        {
+          "bottom": 580.09375,
+          "stripTop": 592.09375,
+          "overflow": false
+        },
+        {
+          "bottom": 580.09375,
+          "stripTop": 592.09375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Рош а-Шана",
+          "left": 170.234375,
+          "right": 520.953125,
+          "bottom": 678.484375,
+          "overflow": false
+        },
+        {
+          "title": "Пост Гедалии",
+          "left": 533.75,
+          "right": 884.46875,
+          "bottom": 678.484375,
+          "overflow": false
+        },
+        {
+          "title": "День памяти ребецн Ханы",
+          "left": 897.265625,
+          "right": 1248,
+          "bottom": 678.484375,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "documentWidth": 1280,
+      "documentHeight": 720,
+      "shabbatGap": 27.15625,
+      "sectionGaps": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "timeFont": 28.032,
+      "panels": [
+        {
+          "bottom": 580.09375,
+          "stripTop": 592.09375,
+          "overflow": false
+        },
+        {
+          "bottom": 580.09375,
+          "stripTop": 592.09375,
+          "overflow": false
+        },
+        {
+          "bottom": 580.09375,
+          "stripTop": 592.09375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "ראש השנה",
+          "left": 759.046875,
+          "right": 1109.765625,
+          "bottom": 678.484375,
+          "overflow": false
+        },
+        {
+          "title": "צום גדליה",
+          "left": 395.53125,
+          "right": 746.25,
+          "bottom": 678.484375,
+          "overflow": false
+        },
+        {
+          "title": "יום ההילולא של הרבנית חנה",
+          "left": 32,
+          "right": 382.734375,
+          "bottom": 678.484375,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 980,
+      "documentWidth": 1920,
+      "documentHeight": 980,
+      "shabbatGap": 27.359375,
+      "sectionGaps": [
+        14.6875,
+        14.6875,
+        14.6875,
+        14.6875
+      ],
+      "timeFont": 39.347,
+      "panels": [
+        {
+          "bottom": 792.890625,
+          "stripTop": 807.578125,
+          "overflow": false
+        },
+        {
+          "bottom": 792.890625,
+          "stripTop": 807.578125,
+          "overflow": false
+        },
+        {
+          "bottom": 792.890625,
+          "stripTop": 807.578125,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Рош а-Шана",
+          "left": 255.34375,
+          "right": 781.4375,
+          "bottom": 925.171875,
+          "overflow": false
+        },
+        {
+          "title": "Пост Гедалии",
+          "left": 800.625,
+          "right": 1326.71875,
+          "bottom": 925.171875,
+          "overflow": false
+        },
+        {
+          "title": "День памяти ребецн Ханы",
+          "left": 1345.90625,
+          "right": 1872,
+          "bottom": 925.171875,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 980,
+      "documentWidth": 1920,
+      "documentHeight": 980,
+      "shabbatGap": 27.359375,
+      "sectionGaps": [
+        14.6875,
+        14.6875,
+        14.6875,
+        14.6875
+      ],
+      "timeFont": 39.347,
+      "panels": [
+        {
+          "bottom": 792.890625,
+          "stripTop": 807.578125,
+          "overflow": false
+        },
+        {
+          "bottom": 792.890625,
+          "stripTop": 807.578125,
+          "overflow": false
+        },
+        {
+          "bottom": 792.890625,
+          "stripTop": 807.578125,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "ראש השנה",
+          "left": 1138.5625,
+          "right": 1664.65625,
+          "bottom": 925.171875,
+          "overflow": false
+        },
+        {
+          "title": "צום גדליה",
+          "left": 593.28125,
+          "right": 1119.375,
+          "bottom": 925.171875,
+          "overflow": false
+        },
+        {
+          "title": "יום ההילולא של הרבנית חנה",
+          "left": 48,
+          "right": 574.09375,
+          "bottom": 925.171875,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "documentWidth": 1280,
+      "documentHeight": 720,
+      "shabbatGap": 12.078125,
+      "sectionGaps": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "timeFont": 28.032,
+      "panels": [
+        {
+          "bottom": 580.09375,
+          "stripTop": 592.09375,
+          "overflow": false
+        },
+        {
+          "bottom": 580.09375,
+          "stripTop": 592.09375,
+          "overflow": false
+        },
+        {
+          "bottom": 580.09375,
+          "stripTop": 592.09375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Гимел Тамуз · день памяти Ребе",
+          "left": 170.234375,
+          "right": 520.953125,
+          "bottom": 678.484375,
+          "overflow": false
+        },
+        {
+          "title": "Дни освобождения Ребе Раяца",
+          "left": 533.75,
+          "right": 884.46875,
+          "bottom": 678.484375,
+          "overflow": false
+        },
+        {
+          "title": "Пост 17 Тамуза",
+          "left": 897.265625,
+          "right": 1248,
+          "bottom": 678.484375,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "documentWidth": 1280,
+      "documentHeight": 720,
+      "shabbatGap": 12.078125,
+      "sectionGaps": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "timeFont": 28.032,
+      "panels": [
+        {
+          "bottom": 580.09375,
+          "stripTop": 592.09375,
+          "overflow": false
+        },
+        {
+          "bottom": 580.09375,
+          "stripTop": 592.09375,
+          "overflow": false
+        },
+        {
+          "bottom": 580.09375,
+          "stripTop": 592.09375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "ג׳ תמוז · יום ההילולא של הרבי",
+          "left": 759.046875,
+          "right": 1109.765625,
+          "bottom": 678.484375,
+          "overflow": false
+        },
+        {
+          "title": "ימי הגאולה של הרבי הריי״צ",
+          "left": 395.53125,
+          "right": 746.25,
+          "bottom": 678.484375,
+          "overflow": false
+        },
+        {
+          "title": "שבעה עשר בתמוז",
+          "left": 32,
+          "right": 382.734375,
+          "bottom": 678.484375,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "documentWidth": 1366,
+      "documentHeight": 768,
+      "shabbatGap": 30.21875,
+      "sectionGaps": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "timeFont": 29.9154,
+      "panels": [
+        {
+          "bottom": 621.5625,
+          "stripTop": 633.5625,
+          "overflow": false
+        },
+        {
+          "bottom": 621.5625,
+          "stripTop": 633.5625,
+          "overflow": false
+        },
+        {
+          "bottom": 621.5625,
+          "stripTop": 633.5625,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Свадьба Ребе и Ребецн",
+          "left": 181.65625,
+          "right": 555.953125,
+          "bottom": 725.71875,
+          "overflow": false
+        },
+        {
+          "title": "Новый год хасидизма",
+          "left": 569.609375,
+          "right": 943.90625,
+          "bottom": 725.71875,
+          "overflow": false
+        },
+        {
+          "title": "Ханука",
+          "left": 957.5625,
+          "right": 1331.859375,
+          "bottom": 725.71875,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "documentWidth": 1366,
+      "documentHeight": 768,
+      "shabbatGap": 30.21875,
+      "sectionGaps": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "timeFont": 29.9154,
+      "panels": [
+        {
+          "bottom": 621.5625,
+          "stripTop": 633.5625,
+          "overflow": false
+        },
+        {
+          "bottom": 621.5625,
+          "stripTop": 633.5625,
+          "overflow": false
+        },
+        {
+          "bottom": 621.5625,
+          "stripTop": 633.5625,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "חתונת הרבי והרבנית",
+          "left": 810.046875,
+          "right": 1184.34375,
+          "bottom": 725.71875,
+          "overflow": false
+        },
+        {
+          "title": "ראש השנה לחסידות",
+          "left": 422.09375,
+          "right": 796.390625,
+          "bottom": 725.71875,
+          "overflow": false
+        },
+        {
+          "title": "חנוכה",
+          "left": 34.140625,
+          "right": 408.4375,
+          "bottom": 725.71875,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 980,
+      "documentWidth": 1920,
+      "documentHeight": 980,
+      "shabbatGap": 20.3125,
+      "sectionGaps": [
+        14.6875,
+        14.6875,
+        14.6875,
+        14.6875
+      ],
+      "timeFont": 39.347,
+      "panels": [
+        {
+          "bottom": 792.890625,
+          "stripTop": 807.578125,
+          "overflow": false
+        },
+        {
+          "bottom": 792.890625,
+          "stripTop": 807.578125,
+          "overflow": false
+        },
+        {
+          "bottom": 792.890625,
+          "stripTop": 807.578125,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Свадьба Ребе и Ребецн",
+          "left": 255.34375,
+          "right": 781.4375,
+          "bottom": 925.171875,
+          "overflow": false
+        },
+        {
+          "title": "Новый год хасидизма",
+          "left": 800.625,
+          "right": 1326.71875,
+          "bottom": 925.171875,
+          "overflow": false
+        },
+        {
+          "title": "Ханука",
+          "left": 1345.90625,
+          "right": 1872,
+          "bottom": 925.171875,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 980,
+      "documentWidth": 1920,
+      "documentHeight": 980,
+      "shabbatGap": 20.3125,
+      "sectionGaps": [
+        14.6875,
+        14.6875,
+        14.6875,
+        14.6875
+      ],
+      "timeFont": 39.347,
+      "panels": [
+        {
+          "bottom": 792.890625,
+          "stripTop": 807.578125,
+          "overflow": false
+        },
+        {
+          "bottom": 792.890625,
+          "stripTop": 807.578125,
+          "overflow": false
+        },
+        {
+          "bottom": 792.890625,
+          "stripTop": 807.578125,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "חתונת הרבי והרבנית",
+          "left": 1138.5625,
+          "right": 1664.65625,
+          "bottom": 925.171875,
+          "overflow": false
+        },
+        {
+          "title": "ראש השנה לחסידות",
+          "left": 593.28125,
+          "right": 1119.375,
+          "bottom": 925.171875,
+          "overflow": false
+        },
+        {
+          "title": "חנוכה",
+          "left": 48,
+          "right": 574.09375,
+          "bottom": 925.171875,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 3840,
+      "height": 1980,
+      "documentWidth": 3840,
+      "documentHeight": 1980,
+      "shabbatGap": 49.21875,
+      "sectionGaps": [
+        29.6875,
+        29.6875,
+        29.6875,
+        29.6875
+      ],
+      "timeFont": 79.497,
+      "panels": [
+        {
+          "bottom": 1602.40625,
+          "stripTop": 1632.09375,
+          "overflow": false
+        },
+        {
+          "bottom": 1602.40625,
+          "stripTop": 1632.09375,
+          "overflow": false
+        },
+        {
+          "bottom": 1602.40625,
+          "stripTop": 1632.09375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Свадьба Ребе и Ребецн",
+          "left": 494.703125,
+          "right": 1557.53125,
+          "bottom": 1869.6875,
+          "overflow": false
+        },
+        {
+          "title": "Новый год хасидизма",
+          "left": 1595.921875,
+          "right": 2658.765625,
+          "bottom": 1869.6875,
+          "overflow": false
+        },
+        {
+          "title": "Ханука",
+          "left": 2697.15625,
+          "right": 3759.984375,
+          "bottom": 1869.6875,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 3840,
+      "height": 1980,
+      "documentWidth": 3840,
+      "documentHeight": 1980,
+      "shabbatGap": 49.21875,
+      "sectionGaps": [
+        29.6875,
+        29.6875,
+        29.6875,
+        29.6875
+      ],
+      "timeFont": 79.497,
+      "panels": [
+        {
+          "bottom": 1602.40625,
+          "stripTop": 1632.09375,
+          "overflow": false
+        },
+        {
+          "bottom": 1602.40625,
+          "stripTop": 1632.09375,
+          "overflow": false
+        },
+        {
+          "bottom": 1602.40625,
+          "stripTop": 1632.09375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "חתונת הרבי והרבנית",
+          "left": 2282.46875,
+          "right": 3345.296875,
+          "bottom": 1869.6875,
+          "overflow": false
+        },
+        {
+          "title": "ראש השנה לחסידות",
+          "left": 1181.234375,
+          "right": 2244.078125,
+          "bottom": 1869.6875,
+          "overflow": false
+        },
+        {
+          "title": "חנוכה",
+          "left": 80.015625,
+          "right": 1142.84375,
+          "bottom": 1869.6875,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "documentHeight": 2848,
+      "shabbatGap": 20,
+      "sectionGaps": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "timeFont": 27,
+      "panels": [
+        {
+          "bottom": 1019.046875,
+          "stripTop": 2090,
+          "overflow": false
+        },
+        {
+          "bottom": 1451.484375,
+          "stripTop": 2090,
+          "overflow": false
+        },
+        {
+          "bottom": 2070,
+          "stripTop": 2090,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Шмини Ацерет и Симхат Тора",
+          "left": 20,
+          "right": 300,
+          "bottom": 2345.6875,
+          "overflow": false
+        },
+        {
+          "title": "Рош ходеш",
+          "left": 20,
+          "right": 300,
+          "bottom": 2482.234375,
+          "overflow": false
+        },
+        {
+          "title": "День рождения Ребе Рашаба",
+          "left": 20,
+          "right": 300,
+          "bottom": 2672.53125,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "documentHeight": 2720,
+      "shabbatGap": 20,
+      "sectionGaps": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "timeFont": 27,
+      "panels": [
+        {
+          "bottom": 1019.046875,
+          "stripTop": 2029.984375,
+          "overflow": false
+        },
+        {
+          "bottom": 1451.484375,
+          "stripTop": 2029.984375,
+          "overflow": false
+        },
+        {
+          "bottom": 2009.984375,
+          "stripTop": 2029.984375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "שמיני עצרת ושמחת תורה",
+          "left": 20,
+          "right": 300,
+          "bottom": 2245,
+          "overflow": false
+        },
+        {
+          "title": "ראש חודש",
+          "left": 20,
+          "right": 300,
+          "bottom": 2381.546875,
+          "overflow": false
+        },
+        {
+          "title": "יום הולדת אדמו״ר הרש״ב",
+          "left": 20,
+          "right": 300,
+          "bottom": 2544.96875,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "documentHeight": 2737,
+      "shabbatGap": 20,
+      "sectionGaps": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "timeFont": 27,
+      "panels": [
+        {
+          "bottom": 1052.046875,
+          "stripTop": 2079.515625,
+          "overflow": false
+        },
+        {
+          "bottom": 1532.5625,
+          "stripTop": 2079.515625,
+          "overflow": false
+        },
+        {
+          "bottom": 2059.515625,
+          "stripTop": 2079.515625,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "Свадьба Ребе и Ребецн",
+          "left": 20,
+          "right": 370,
+          "bottom": 2278.28125,
+          "overflow": false
+        },
+        {
+          "title": "Новый год хасидизма",
+          "left": 20,
+          "right": 370,
+          "bottom": 2425.453125,
+          "overflow": false
+        },
+        {
+          "title": "Ханука",
+          "left": 20,
+          "right": 370,
+          "bottom": 2562,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "documentHeight": 2625,
+      "shabbatGap": 20,
+      "sectionGaps": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "timeFont": 27,
+      "panels": [
+        {
+          "bottom": 1019.046875,
+          "stripTop": 2046.515625,
+          "overflow": false
+        },
+        {
+          "bottom": 1499.5625,
+          "stripTop": 2046.515625,
+          "overflow": false
+        },
+        {
+          "bottom": 2026.515625,
+          "stripTop": 2046.515625,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "חתונת הרבי והרבנית",
+          "left": 20,
+          "right": 370,
+          "bottom": 2218.40625,
+          "overflow": false
+        },
+        {
+          "title": "ראש השנה לחסידות",
+          "left": 20,
+          "right": 370,
+          "bottom": 2338.703125,
+          "overflow": false
+        },
+        {
+          "title": "חנוכה",
+          "left": 20,
+          "right": 370,
+          "bottom": 2475.25,
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "documentWidth": 1920,
+      "documentHeight": 1080,
+      "shabbatGap": 16.1875,
+      "sectionGaps": [
+        16.1875,
+        16.1875,
+        16.1875,
+        16.1875
+      ],
+      "timeFont": 42.048,
+      "panels": [
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        },
+        {
+          "bottom": 876.296875,
+          "stripTop": 892.484375,
+          "overflow": false
+        }
+      ],
+      "cards": [
+        {
+          "title": "חתונת הרבי והרבנית",
+          "left": 1138.5625,
+          "right": 1664.65625,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "ראש השנה לחסידות",
+          "left": 593.28125,
+          "right": 1119.375,
+          "bottom": 1022.078125,
+          "overflow": false
+        },
+        {
+          "title": "חנוכה",
+          "left": 48,
+          "right": 574.09375,
+          "bottom": 1022.078125,
+          "overflow": false
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

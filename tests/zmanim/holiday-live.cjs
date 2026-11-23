@@ -45,6 +45,7 @@ const checks = [],
   browser = await chromium.launch({ channel: "chrome", headless: true });
   for (const [w, h] of [
     [1920, 1080],
+    [1920, 980],
     [3840, 2160],
     [390, 844],
   ]) {
@@ -83,30 +84,109 @@ const checks = [],
       state.upcoming.map((e) => e.definitionId),
     );
     assert.equal(await p.locator("nav").count(), 0);
-    const dimensions = await p.evaluate(() => ({
-      w: document.documentElement.scrollWidth,
-      h: document.documentElement.scrollHeight,
-      cards: [...document.querySelectorAll("[data-holiday-id]")].map((el) => ({
-        r: el.getBoundingClientRect().right,
-        b: el.getBoundingClientRect().bottom,
-        overflow: el.scrollHeight > el.clientHeight + 2,
-      })),
-    }));
+    const measure = () => {
+      const board = document.querySelector("[data-zmanim-board]");
+      const shabbat = board.querySelector("[data-shabbat]");
+      const sections = [...board.children]
+        .filter((el) =>
+          el.matches(
+            'header, footer, [data-next-zman], [data-upcoming-holidays], [class*="columns__"]',
+          ),
+        )
+        .map((el) => el.getBoundingClientRect());
+      return {
+        w: document.documentElement.scrollWidth,
+        h: document.documentElement.scrollHeight,
+        shabbatGap:
+          shabbat.getBoundingClientRect().top -
+          shabbat.previousElementSibling.getBoundingClientRect().bottom,
+        sectionGaps: sections
+          .slice(1)
+          .map((r, i) => r.top - sections[i].bottom),
+        panels: [...board.querySelectorAll('[class*="column__"]')].map(
+          (el) => ({ overflow: el.scrollHeight > el.clientHeight + 2 }),
+        ),
+        cards: [...document.querySelectorAll("[data-holiday-id]")].map(
+          (el) => ({
+            r: el.getBoundingClientRect().right,
+            b: el.getBoundingClientRect().bottom,
+            overflow: el.scrollHeight > el.clientHeight + 2,
+          }),
+        ),
+      };
+    };
+    const dimensions = await p.evaluate(measure);
     assert.ok(dimensions.w <= w + 1, JSON.stringify(dimensions));
+    assert.ok(
+      dimensions.shabbatGap >= (w >= 1100 ? Math.max(10, h * 0.012) : 16),
+      JSON.stringify(dimensions),
+    );
+    assert.ok(
+      dimensions.sectionGaps.every(
+        (gap) => gap >= (w >= 1100 ? Math.max(10, h * 0.012) : 16),
+      ),
+      JSON.stringify(dimensions),
+    );
     if (w >= 1100) {
       assert.ok(dimensions.h <= h + 1, JSON.stringify(dimensions));
       assert.ok(
         dimensions.cards.every((r) => r.r <= w + 1 && r.b < h && !r.overflow),
         JSON.stringify(dimensions),
       );
+      assert.ok(
+        dimensions.panels.every((panel) => !panel.overflow),
+        JSON.stringify(dimensions),
+      );
     }
-    await p.screenshot({ path: out + "/" + w + ".png", fullPage: w < 1100 });
+    await p.screenshot({
+      path: out + "/" + w + "x" + h + ".png",
+      fullPage: w < 1100,
+    });
     checks.push(
       w +
         "x" +
         h +
         ": current theme, 3 matching upcoming dates, Russian standalone board, no overflow",
     );
+    if (w === 1920 && h === 1080) {
+      const before = await p
+        .locator("[data-zman] > div:last-child > span")
+        .allTextContents();
+      await p
+        .locator('[data-zmanim-board][lang="he"][dir="rtl"]')
+        .waitFor({ timeout: 25000 });
+      await p.waitForFunction(
+        () =>
+          Number(
+            getComputedStyle(document.querySelector("[data-zmanim-board]"))
+              .opacity,
+          ) > 0.99,
+      );
+      assert.doesNotMatch(
+        await p.locator("[data-zmanim-board]").innerText(),
+        /[А-Яа-я]/,
+      );
+      assert.deepEqual(
+        await p
+          .locator("[data-zman] > div:last-child > span")
+          .allTextContents(),
+        before,
+      );
+      const he = await p.evaluate(measure);
+      assert.ok(
+        he.w <= w + 1 && he.h <= h + 1 && he.panels.every((p) => !p.overflow),
+        JSON.stringify(he),
+      );
+      assert.ok(
+        he.shabbatGap >= h * 0.012 &&
+          he.sectionGaps.every((g) => g >= h * 0.012),
+        JSON.stringify(he),
+      );
+      await p.screenshot({ path: out + "/" + w + "x" + h + "-he.png" });
+      checks.push(
+        "real 20-second RU to HE transition; RTL, unchanged numeric times, readable separated sections, no reload",
+      );
+    }
     await c.close();
   }
   assert.deepEqual(errors, []);

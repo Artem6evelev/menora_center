@@ -1,0 +1,50 @@
+{
+  "environment": "Chrome; isolated code copy; real public Chabad API and recorded Chabad regression payloads; device timezone America/New_York; no real env or database",
+  "checks": [
+    {
+      "name": "actual anonymous GET pins Rishon 853 and matches the Chabad oracle; invalid date is 400",
+      "status": "PASS"
+    },
+    {
+      "name": "1280x720 television: all times fit without scroll/cutoff, Russian UI, correct Israel clock despite US device, no Clerk dependency",
+      "status": "PASS"
+    },
+    {
+      "name": "1920x1080 television: all times fit without scroll/cutoff, Russian UI, correct Israel clock despite US device, no Clerk dependency",
+      "status": "PASS"
+    },
+    {
+      "name": "3840x2160 television: all times fit without scroll/cutoff, Russian UI, correct Israel clock despite US device, no Clerk dependency",
+      "status": "PASS"
+    },
+    {
+      "name": "320 phone: readable stacked board, no horizontal overflow, source and WhatsApp accessible in settings",
+      "status": "PASS"
+    },
+    {
+      "name": "390 phone: readable stacked board, no horizontal overflow, source and WhatsApp accessible in settings",
+      "status": "PASS"
+    },
+    {
+      "name": "full-screen control, clock ticks, control auto-hide and periodic refresh need no reload",
+      "status": "PASS"
+    },
+    {
+      "name": "midnight outage never shows yesterday as today; online recovery loads the new day automatically",
+      "status": "PASS"
+    },
+    {
+      "name": "holiday TV: special deadlines fit and holiday candles are not mislabeled havdalah",
+      "status": "PASS"
+    },
+    {
+      "name": "pesach TV: special deadlines fit and holiday candles are not mislabeled havdalah",
+      "status": "PASS"
+    },
+    {
+      "name": "evening Hebrew date advances at local sunset without changing the civil-day timetable",
+      "status": "PASS"
+    }
+  ],
+  "errors": []
+}

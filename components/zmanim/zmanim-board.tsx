@@ -25,11 +25,18 @@ import {
   israelClock,
   israelDate,
   nextZman,
-  ZMANIM_LOCATION,
+  type BoardLocale,
   type Zman,
   type ZmanimData,
 } from "@/lib/zmanim/shared";
 import styles from "./zmanim-board.module.css";
+import {
+  boardText,
+  holidayTitle,
+  zmanLabel,
+  zmanNote,
+  durationLabel,
+} from "@/lib/zmanim/board-i18n";
 import HolidayStrip, { holidayThemeStyle } from "./holiday-strip";
 import HolidayArtwork from "./holiday-art";
 import {
@@ -69,23 +76,34 @@ const columns = [
   },
 ];
 
-function TimeRow({ time, active }: { time: Zman; active: boolean }) {
+function TimeRow({
+  time,
+  active,
+  locale,
+}: {
+  time: Zman;
+  active: boolean;
+  locale: BoardLocale;
+}) {
   return (
     <div
       className={`${styles.row} ${active ? styles.active : ""}`}
       data-zman={time.key}
     >
       <div className={styles.rowLabel}>
-        {time.label}
+        {zmanLabel(time, locale)}
         {time.note && (
-          <span className={styles.noteMark} title={time.note}>
+          <span
+            className={styles.noteMark}
+            title={zmanNote(time, locale) ?? undefined}
+          >
             *
           </span>
         )}
       </div>
-      <div className={styles.rowValue}>
+      <div className={styles.rowValue} dir="ltr">
         <span>{time.time}</span>
-        {time.dayOffset === 1 && <small>завтра</small>}
+        {time.dayOffset === 1 && <small>{boardText(locale).tomorrow}</small>}
       </div>
     </div>
   );
@@ -100,6 +118,9 @@ export default function ZmanimBoard({
   initialCalendar?: HolidayCalendar | null;
   initialNow: number;
 }) {
+  const [locale, setLocale] = useState<BoardLocale>("ru");
+  const [changingLanguage, setChangingLanguage] = useState(false);
+  const t = boardText(locale);
   const [now, setNow] = useState(initialNow);
   const [data, setData] = useState(initialData);
   const [calendar, setCalendar] = useState(initialCalendar);
@@ -111,7 +132,7 @@ export default function ZmanimBoard({
   const [controls, setControls] = useState(true);
   const [settings, setSettings] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
-  const [screenMessage, setScreenMessage] = useState("");
+  const [screenMessage, setScreenMessage] = useState(false);
   const wakeLock = useRef<WakeLockSentinel | null>(null);
   const settingsDialog = useRef<HTMLDialogElement>(null);
   const today = israelDate(now),
@@ -140,6 +161,23 @@ export default function ZmanimBoard({
   const currentHoliday = holidays.current
     ? HOLIDAYS[holidays.current.definitionId]
     : null;
+
+  useEffect(() => {
+    setChangingLanguage(false);
+    if (settings) return;
+    let switchTimer: ReturnType<typeof setTimeout>;
+    const timer = setInterval(() => {
+      setChangingLanguage(true);
+      switchTimer = setTimeout(() => {
+        setLocale((previous) => (previous === "ru" ? "he" : "ru"));
+        setChangingLanguage(false);
+      }, 320);
+    }, 20000);
+    return () => {
+      clearInterval(timer);
+      clearTimeout(switchTimer);
+    };
+  }, [settings]);
 
   useEffect(() => {
     setNow(Date.now());
@@ -202,7 +240,7 @@ export default function ZmanimBoard({
 
   useEffect(() => {
     if (!screenMessage) return;
-    const timer = setTimeout(() => setScreenMessage(""), 10000);
+    const timer = setTimeout(() => setScreenMessage(false), 10000);
     return () => clearTimeout(timer);
   }, [screenMessage]);
 
@@ -285,20 +323,18 @@ export default function ZmanimBoard({
       if (document.fullscreenElement) await document.exitFullscreen();
       else if (document.documentElement.requestFullscreen)
         await document.documentElement.requestFullscreen();
-      else
-        setScreenMessage(
-          "Включите полноэкранный режим в меню браузера телевизора.",
-        );
+      else setScreenMessage(true);
     } catch {
-      setScreenMessage(
-        "Включите полноэкранный режим в меню браузера телевизора.",
-      );
+      setScreenMessage(true);
     }
   }
 
-  const minchaNote = visible?.times.find(
+  const minchaTime = visible?.times.find(
     (time) => time.key === "MinchahGedolah",
-  )?.note;
+  );
+  const minchaNote = minchaTime ? zmanNote(minchaTime, locale) : null;
+  const columnTitles = [t.morning, t.day, t.evening];
+  const columnSubtitles = [t.morningSubtitle, t.daySubtitle, t.eveningSubtitle];
   const special =
     visible?.times.filter((time) =>
       ["CandleLighting", "LastEatingChametzTime", "BurnChametzTime"].includes(
@@ -313,14 +349,16 @@ export default function ZmanimBoard({
       data-zmanim-board
       data-board-holiday={holidays.current?.definitionId ?? ""}
       data-board-tone={currentHoliday?.tone ?? ""}
-      lang="ru"
+      lang={locale}
+      dir={locale === "he" ? "rtl" : "ltr"}
+      data-language-phase={changingLanguage ? "changing" : "steady"}
     >
       <header className={styles.header}>
         <Link
           href="/"
           prefetch={false}
           className={styles.brand}
-          aria-label="Menorah Center — на главную"
+          aria-label={t.home}
         >
           <Image
             src="/logos/menora-logo-dark.svg"
@@ -331,33 +369,39 @@ export default function ZmanimBoard({
             className={styles.logo}
           />
           <div>
-            <span className={styles.brandTitle}>Menorah Center</span>
-            <span className={styles.location}>{ZMANIM_LOCATION}</span>
+            <span className={styles.brandTitle}>{t.brand}</span>
+            <span className={styles.location}>{t.location}</span>
           </div>
         </Link>
         <div className={styles.calendar}>
-          <h1>Зманим{hebrewDate !== today ? " · после захода солнца" : ""}</h1>
-          <p>{formatCalendarDate(hebrewDate, true)}</p>
-          <div className={styles.gregorian}>{formatCalendarDate(today)}</div>
+          <h1>
+            {t.title}
+            {hebrewDate !== today ? " · " + t.afterSunset : ""}
+          </h1>
+          <p>{formatCalendarDate(hebrewDate, true, locale)}</p>
+          <div className={styles.gregorian}>
+            {formatCalendarDate(today, false, locale)}
+          </div>
         </div>
         <div className={styles.clockBlock}>
           <time
             className={styles.clock}
             dateTime={new Date(now).toISOString()}
-            aria-label={`Время в Израиле ${clock.hours}:${clock.minutes}:${clock.seconds}`}
+            dir="ltr"
+            aria-label={`${t.israelTime} ${clock.hours}:${clock.minutes}:${clock.seconds}`}
           >
             {clock.hours}
             <span className={styles.colon}>:</span>
             {clock.minutes}
             <small>{clock.seconds}</small>
           </time>
-          <span className={styles.clockCaption}>Местное время Израиля</span>
+          <span className={styles.clockCaption}>{t.localTime}</span>
         </div>
       </header>
 
       <section
         className={styles.next}
-        aria-label="Ближайший зман"
+        aria-label={t.next}
         data-next-zman={next?.key ?? ""}
       >
         {currentHoliday && (
@@ -369,20 +413,19 @@ export default function ZmanimBoard({
           className={`${styles.nextLabel} ${currentHoliday ? styles.nextLabelHoliday : ""}`}
         >
           <span className={styles.dot} />
-          Ближайший зман
+          {t.next}
           {currentHoliday && (
             <small className={styles.currentHolidayTitle}>
-              {currentHoliday.title}
+              {holidayTitle(holidays.current!.definitionId, locale)}
             </small>
           )}
         </div>
         <div className={styles.nextName}>
-          {next?.label ??
-            (visible ? "Все зманим дня завершены" : "Обновляем время дня")}
+          {next ? zmanLabel(next, locale) : visible ? t.finished : t.updating}
         </div>
-        <div className={styles.nextTime}>
+        <div className={styles.nextTime} dir="ltr">
           {next?.time ?? "—"}
-          {next?.dayOffset === 1 && <small>завтра</small>}
+          {next?.dayOffset === 1 && <small>{boardText(locale).tomorrow}</small>}
         </div>
       </section>
 
@@ -390,15 +433,16 @@ export default function ZmanimBoard({
         <div className={styles.columns}>
           {columns.map((column, index) => (
             <section
-              className={`${styles.column} ${index === 1 && special.length > 1 ? styles.busyColumn : ""}`}
+              className={`${styles.column} ${index === 1 && special.length > 1 ? styles.busyColumn : ""} ${index === 2 && visible.shabbat.ending?.note ? styles.notedColumn : ""}`}
               key={column.title}
-              aria-label={column.title}
+              aria-label={columnTitles[index]}
+              data-zmanim-column={index}
             >
               <div className={styles.columnHead}>
                 <column.icon aria-hidden="true" />
                 <div>
-                  <h2>{column.title}</h2>
-                  <p>{column.subtitle}</p>
+                  <h2>{columnTitles[index]}</h2>
+                  <p>{columnSubtitles[index]}</p>
                 </div>
                 <span className={styles.sectionNumber}>0{index + 1}</span>
               </div>
@@ -409,6 +453,7 @@ export default function ZmanimBoard({
                     ? [
                         <TimeRow
                           key={key}
+                          locale={locale}
                           time={time}
                           active={next?.key === key}
                         />,
@@ -419,6 +464,7 @@ export default function ZmanimBoard({
                   special.map((time) => (
                     <TimeRow
                       key={time.key}
+                      locale={locale}
                       time={time}
                       active={next?.key === time.key}
                     />
@@ -429,16 +475,21 @@ export default function ZmanimBoard({
                   {minchaNote && <p>* {minchaNote}</p>}
                   {visible.proportionalHour && (
                     <p>
-                      Галахический час: <b>{visible.proportionalHour}</b>
+                      {t.proportionalHour}:{" "}
+                      <b>{durationLabel(visible.proportionalHour, locale)}</b>
                     </p>
                   )}
                 </div>
               )}
               {index === 2 && (
-                <div className={styles.shabbat} aria-label="Шаббат и праздники">
+                <div
+                  className={styles.shabbat}
+                  aria-label={t.shabbat}
+                  data-shabbat
+                >
                   <h3>
                     <Flame aria-hidden="true" />
-                    Шаббат и праздники
+                    {t.shabbat}
                   </h3>
                   {[
                     {
@@ -453,23 +504,26 @@ export default function ZmanimBoard({
                     <div className={styles.shabbatRow} key={entry.date}>
                       <div>
                         <span>
-                          {entry.time?.label ?? "Подробнее на Chabad.org"}
+                          {entry.time ? zmanLabel(entry.time, locale) : t.more}
                         </span>
                         <small>
-                          {new Intl.DateTimeFormat("ru-RU", {
-                            timeZone: "Asia/Jerusalem",
-                            day: "numeric",
-                            month: "long",
-                            weekday: "short",
-                          }).format(new Date(entry.date + "T12:00:00Z"))}
+                          {new Intl.DateTimeFormat(
+                            locale === "he" ? "he-IL" : "ru-RU",
+                            {
+                              timeZone: "Asia/Jerusalem",
+                              day: "numeric",
+                              month: "long",
+                              weekday: "short",
+                            },
+                          ).format(new Date(entry.date + "T12:00:00Z"))}
                         </small>
                       </div>
-                      <strong>{entry.time?.time ?? "—"}</strong>
+                      <strong dir="ltr">{entry.time?.time ?? "—"}</strong>
                     </div>
                   ))}
                   {visible.shabbat.ending?.note && (
                     <p className={styles.festivalNote}>
-                      {visible.shabbat.ending.note}
+                      {zmanNote(visible.shabbat.ending, locale)}
                     </p>
                   )}
                 </div>
@@ -484,22 +538,20 @@ export default function ZmanimBoard({
           ) : (
             <RefreshCw aria-hidden="true" />
           )}
-          <h2>{offline ? "Ожидаем данные Chabad.org" : "Загружаем зманим"}</h2>
-          <p>
-            Обновление происходит автоматически. Время за другую дату не
-            показываем.
-          </p>
+          <h2>{offline ? t.waiting : t.loading}</h2>
+          <p>{t.retry}</p>
           <a
             href={chabadSourceUrl(today)}
             target="_blank"
             rel="noopener noreferrer"
           >
-            Посмотреть время на Chabad.org <ArrowUpRight size={20} />
+            {t.viewSource} <ArrowUpRight size={20} />
           </a>
         </section>
       )}
 
       <HolidayStrip
+        locale={locale}
         events={holidays.upcoming}
         date={today}
         minute={clock.minuteOfDay}
@@ -508,7 +560,7 @@ export default function ZmanimBoard({
 
       <footer className={styles.footer}>
         <p>
-          По обычаям Хабад <span>·</span> Источник:{" "}
+          {t.customs} <span>·</span> {t.source}:{" "}
           <a
             href={chabadSourceUrl(today)}
             target="_blank"
@@ -517,7 +569,7 @@ export default function ZmanimBoard({
             Chabad.org
           </a>
           <span>·</span>
-          <span>Календарь: Hebcal / Chabad</span>
+          <span>{t.calendarCredit}</span>
         </p>
         <p
           className={offline ? styles.connectionWarning : styles.connection}
@@ -526,12 +578,12 @@ export default function ZmanimBoard({
           {offline ? (
             <>
               <WifiOff />
-              Нет связи · повторяем автоматически
+              {t.offline}
             </>
           ) : (
             <>
               <Check />
-              Обновлено{" "}
+              {t.updated}{" "}
               {lastSuccess
                 ? `${israelClock(lastSuccess).hours}:${israelClock(lastSuccess).minutes}`
                 : "—"}
@@ -545,14 +597,14 @@ export default function ZmanimBoard({
       >
         <button
           type="button"
-          aria-label={fullscreen ? "Выйти из полного экрана" : "На весь экран"}
+          aria-label={fullscreen ? t.exitFullscreen : t.fullscreen}
           onClick={() => void toggleFullscreen()}
         >
           {fullscreen ? <Minimize /> : <Maximize />}
         </button>
         <button
           type="button"
-          aria-label="Настройки табло"
+          aria-label={t.settings}
           onClick={() => setSettings(true)}
         >
           <Settings2 />
@@ -560,44 +612,38 @@ export default function ZmanimBoard({
       </div>
       {screenMessage && (
         <p className={styles.screenMessage} role="status">
-          {screenMessage}
+          {t.fullscreenHelp}
         </p>
       )}
       {settings && (
         <dialog
           ref={settingsDialog}
           className={styles.settings}
-          aria-label="Настройки табло"
+          aria-label={t.settings}
           onCancel={() => setSettings(false)}
         >
           <button
             autoFocus
             className={styles.close}
-            aria-label="Закрыть настройки"
+            aria-label={t.closeSettings}
             onClick={() => setSettings(false)}
           >
             <X />
           </button>
-          <h2>Табло для синагоги</h2>
+          <h2>{t.settingsTitle}</h2>
+          <p>{t.settingsLocation}</p>
+          <p>{t.minyan}</p>
           <p>
-            Время и дата обновляются автоматически. Местонахождение: Ришон
-            ле-Цион, Израиль. Расчёты Chabad.org, по обычаям Хабад.
-          </p>
-          <p>
-            Галахические сроки не являются расписанием миньянов. Время молитв в
-            центре можно уточнить в общине.
-          </p>
-          <p>
-            Праздники показаны по календарю Израиля. Хабадские даты сверены с{" "}
+            {t.calendarBefore}{" "}
             <a
               className="underline"
               href={CHABAD_CALENDAR_SOURCE}
               target="_blank"
               rel="noopener noreferrer"
             >
-              календарём Chabad
+              {t.calendarLink}
             </a>
-            . Перевод дат и перенесённые посты —{" "}
+            {t.calendarBetween}{" "}
             <a
               className="underline"
               href="https://www.hebcal.com"
@@ -606,16 +652,14 @@ export default function ZmanimBoard({
             >
               Hebcal
             </a>
-            . Расчёт зманим по-прежнему выполняет Chabad.org.
+            {t.calendarAfter}
           </p>
-          <p>
-            Не откладывайте исполнение заповедей до последней минуты. Настройки
-            сна телевизора регулируются на самом устройстве.
-          </p>
+          <p>{t.tvHelp}</p>
+          <p>{t.rotationHelp}</p>
           <div className={styles.settingActions}>
             <button onClick={() => void toggleFullscreen()}>
               <Maximize />
-              На весь экран
+              {t.fullscreen}
             </button>
             <button
               onClick={() => {
@@ -624,16 +668,16 @@ export default function ZmanimBoard({
               }}
             >
               <RefreshCw />
-              Обновить данные
+              {t.refresh}
             </button>
             <a
               href={communityContact.url}
               target="_blank"
               rel="noopener noreferrer"
             >
-              Связаться с общиной · WhatsApp
+              {t.contact}
             </a>
-            <Link href="/">Вернуться на сайт</Link>
+            <Link href="/">{t.website}</Link>
           </div>
         </dialog>
       )}

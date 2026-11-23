@@ -8,6 +8,7 @@ import {
   isZmanimDate,
   shiftDate,
   type Zman,
+  type BoardLocale,
 } from "./shared";
 
 export function validHolidayCalendar(value: unknown): value is HolidayCalendar {
@@ -109,29 +110,36 @@ export function boardHolidays(
   };
 }
 
-export function holidayDateLabel(event: HolidayOccurrence): string {
+export function holidayDateLabel(
+  event: HolidayOccurrence,
+  locale: BoardLocale = "ru",
+): string {
   const definition = HOLIDAYS[event.definitionId];
   const start =
     definition.start === "sunset"
       ? shiftDate(event.startDate, -1)
       : event.startDate;
-  const text = new Intl.DateTimeFormat("ru-RU", {
+  const text = new Intl.DateTimeFormat(locale === "he" ? "he-IL" : "ru-RU", {
     timeZone: "Asia/Jerusalem",
     day: "numeric",
     month: "long",
   }).format(new Date(start + "T12:00:00Z"));
+  if (locale === "he")
+    return definition.start === "sunset"
+      ? `מהערב של ${text}`
+      : `${text} · מעלות השחר`;
   return definition.start === "sunset"
     ? `С вечера ${text}`
     : `${text} · с рассвета`;
 }
-export function holidayHebrewLabel(event: HolidayOccurrence): string {
-  const start = formatCalendarDate(event.startDate, true).replace(
-    / \d{4}$/,
-    "",
-  );
+export function holidayHebrewLabel(
+  event: HolidayOccurrence,
+  locale: BoardLocale = "ru",
+): string {
+  const start = formatCalendarDate(event.startDate, true, locale, false);
   if (event.startDate === event.endDate) return start;
-  const end = formatCalendarDate(event.endDate, true).replace(/ \d{4}$/, "");
-  if (start.replace(/^\d+ /, "") === end.replace(/^\d+ /, ""))
+  const end = formatCalendarDate(event.endDate, true, locale, false);
+  if (start.replace(/^[^ ]+ /, "") === end.replace(/^[^ ]+ /, ""))
     return `${start.split(" ")[0]}–${end}`;
   return `${start} — ${end}`;
 }

@@ -1,0 +1,310 @@
+TAP version 13
+# Subtest: every holiday has an explicit Hebrew title; Russian titles stay unchanged
+ok 1 - every holiday has an explicit Hebrew title; Russian titles stay unchanged
+  ---
+  duration_ms: 1.90075
+  type: 'test'
+  ...
+# Subtest: all Hebrew board UI strings are translated without Russian leakage
+ok 2 - all Hebrew board UI strings are translated without Russian leakage
+  ---
+  duration_ms: 0.214583
+  type: 'test'
+  ...
+# Subtest: Hebrew day/year numerals use proper 15/16 forms and punctuation
+ok 3 - Hebrew day/year numerals use proper 15/16 forms and punctuation
+  ---
+  duration_ms: 20.707166
+  type: 'test'
+  ...
+# Subtest: Hebrew holiday date ranges retain civil start and same Hebrew dates
+ok 4 - Hebrew holiday date ranges retain civil start and same Hebrew dates
+  ---
+  duration_ms: 110.136625
+  type: 'test'
+  ...
+# Subtest: all real Chabad fixture labels and notes translate without changing the times or candle meaning
+ok 5 - all real Chabad fixture labels and notes translate without changing the times or candle meaning
+  ---
+  duration_ms: 31.652
+  type: 'test'
+  ...
+# Subtest: next Chabad dates are 14 Kislev wedding and 19–20 Kislev liberation, not fixed civil dates
+ok 6 - next Chabad dates are 14 Kislev wedding and 19–20 Kislev liberation, not fixed civil dates
+  ---
+  duration_ms: 143.886208
+  type: 'test'
+  ...
+# Subtest: Chanukah uses the eight actual Hebrew days, not the prior candle-count evenings
+ok 7 - Chanukah uses the eight actual Hebrew days, not the prior candle-count evenings
+  ---
+  duration_ms: 1.349583
+  type: 'test'
+  ...
+# Subtest: a short Kislev still produces eight Chanukah days across Tevet
+ok 8 - a short Kislev still produces eight Chanukah days across Tevet
+  ---
+  duration_ms: 5.452958
+  type: 'test'
+  ...
+# Subtest: Israel Pesach has seven days, Shavuot one, Simchat Torah and Atzeret one combined day
+ok 9 - Israel Pesach has seven days, Shavuot one, Simchat Torah and Atzeret one combined day
+  ---
+  duration_ms: 5.806958
+  type: 'test'
+  ...
+# Subtest: Sukkot includes its seventh day; Hoshana Rabba has its own presentation
+ok 10 - Sukkot includes its seventh day; Hoshana Rabba has its own presentation
+  ---
+  duration_ms: 6.7595
+  type: 'test'
+  ...
+# Subtest: seventh Pesach theme supersedes parent without deleting the seven-day range
+ok 11 - seventh Pesach theme supersedes parent without deleting the seven-day range
+  ---
+  duration_ms: 3.621042
+  type: 'test'
+  ...
+# Subtest: leap-year Purim is Adar II and Purim Katan is Adar I
+ok 12 - leap-year Purim is Adar II and Purim Katan is Adar I
+  ---
+  duration_ms: 0.370542
+  type: 'test'
+  ...
+# Subtest: Chabad Rebbetzin birthday is in both Adars in leap year; once in ordinary year
+ok 13 - Chabad Rebbetzin birthday is in both Adars in leap year; once in ordinary year
+  ---
+  duration_ms: 2.422209
+  type: 'test'
+  ...
+# Subtest: all 24 sourced Chabad dates recur in future Hebrew years
+ok 14 - all 24 sourced Chabad dates recur in future Hebrew years
+  ---
+  duration_ms: 4.508292
+  type: 'test'
+  ...
+# Subtest: calendar excludes diaspora, modern state holidays, Shushan Purim, BeHaB and special Shabbat entries
+ok 15 - calendar excludes diaspora, modern state holidays, Shushan Purim, BeHaB and special Shabbat entries
+  ---
+  duration_ms: 0.385166
+  type: 'test'
+  ...
+# Subtest: postponed Tisha BAv and Tammuz fast follow the actual observed dates
+ok 16 - postponed Tisha BAv and Tammuz fast follow the actual observed dates
+  ---
+  duration_ms: 4.176708
+  type: 'test'
+  ...
+# Subtest: Esther fast advanced before Shabbat is not confused with Purim
+ok 17 - Esther fast advanced before Shabbat is not confused with Purim
+  ---
+  duration_ms: 1.978166
+  type: 'test'
+  ...
+# Subtest: theme starts at real Chabad sunset, not civil midnight or device timezone
+ok 18 - theme starts at real Chabad sunset, not civil midnight or device timezone
+  ---
+  duration_ms: 1.7265
+  type: 'test'
+  ...
+# Subtest: last day remains active past sunset until Chabad nightfall, then moves to next date
+ok 19 - last day remains active past sunset until Chabad nightfall, then moves to next date
+  ---
+  duration_ms: 1.252
+  type: 'test'
+  ...
+# Subtest: minor fast starts at source dawn and ends at the explicit FastEnds time
+ok 20 - minor fast starts at source dawn and ends at the explicit FastEnds time
+  ---
+  duration_ms: 4.066334
+  type: 'test'
+  ...
+# Subtest: major festival wins over simultaneous memorial, without losing either calendar record
+ok 21 - major festival wins over simultaneous memorial, without losing either calendar record
+  ---
+  duration_ms: 2.846667
+  type: 'test'
+  ...
+# Subtest: fasts and yahrzeits never use festive tone
+ok 22 - fasts and yahrzeits never use festive tone
+  ---
+  duration_ms: 0.113458
+  type: 'test'
+  ...
+# Subtest: no invented active theme when Chabad times are missing; future calendar remains usable
+ok 23 - no invented active theme when Chabad times are missing; future calendar remains usable
+  ---
+  duration_ms: 0.125666
+  type: 'test'
+  ...
+# Subtest: exactly three chronological upcoming dates before evening, stable after sunset
+ok 24 - exactly three chronological upcoming dates before evening, stable after sunset
+  ---
+  duration_ms: 1.224708
+  type: 'test'
+  ...
+# Subtest: expired or backwards unrelated calendar is hidden until refreshed
+ok 25 - expired or backwards unrelated calendar is hidden until refreshed
+  ---
+  duration_ms: 0.066916
+  type: 'test'
+  ...
+# Subtest: calendar payload rejects malformed/unknown dates and oversized responses
+ok 26 - calendar payload rejects malformed/unknown dates and oversized responses
+  ---
+  duration_ms: 0.442666
+  type: 'test'
+  ...
+# Subtest: strict input date prevents parser normalization and unsupported payloads
+ok 27 - strict input date prevents parser normalization and unsupported payloads
+  ---
+  duration_ms: 0.200334
+  type: 'test'
+  ...
+# Subtest: host timezone never shifts Hebrew holidays by a Gregorian day
+ok 28 - host timezone never shifts Hebrew holidays by a Gregorian day
+  ---
+  duration_ms: 1136.680792
+  type: 'test'
+  ...
+# Subtest: all recorded official snapshots remain parseable including festival and fast end keys
+ok 29 - all recorded official snapshots remain parseable including festival and fast end keys
+  ---
+  duration_ms: 9.848416
+  type: 'test'
+  ...
+# Subtest: real Chabad winter source: city 853, exact published times, no own calculation
+ok 30 - real Chabad winter source: city 853, exact published times, no own calculation
+  ---
+  duration_ms: 10.938959
+  type: 'test'
+  ...
+# Subtest: AM/PM conversion never treats 12 AM as noon or 12 PM as midnight
+ok 31 - AM/PM conversion never treats 12 AM as noon or 12 PM as midnight
+  ---
+  duration_ms: 0.189125
+  type: 'test'
+  ...
+# Subtest: summer source preserves Israel DST and the after-midnight day marker
+ok 32 - summer source preserves Israel DST and the after-midnight day marker
+  ---
+  duration_ms: 2.177375
+  type: 'test'
+  ...
+# Subtest: holiday night candle lighting is NOT labelled end of Shabbat or holiday
+ok 33 - holiday night candle lighting is NOT labelled end of Shabbat or holiday
+  ---
+  duration_ms: 11.754083
+  type: 'test'
+  ...
+# Subtest: Pesach source retains eating/burning deadlines and candle lighting
+ok 34 - Pesach source retains eating/burning deadlines and candle lighting
+  ---
+  duration_ms: 3.64225
+  type: 'test'
+  ...
+# Subtest: spring transition uses source local times, never host timezone conversion
+ok 35 - spring transition uses source local times, never host timezone conversion
+  ---
+  duration_ms: 1.414542
+  type: 'test'
+  ...
+# Subtest: fall transition is handled by Asia/Jerusalem, not a fixed +2/+3 offset
+ok 36 - fall transition is handled by Asia/Jerusalem, not a fixed +2/+3 offset
+  ---
+  duration_ms: 22.179292
+  type: 'test'
+  ...
+# Subtest: Israel date rolls at local midnight, independently of a US device timezone
+ok 37 - Israel date rolls at local midnight, independently of a US device timezone
+  ---
+  duration_ms: 0.247458
+  type: 'test'
+  ...
+# Subtest: next zman moves at the minute boundary and uses real chronological order
+ok 38 - next zman moves at the minute boundary and uses real chronological order
+  ---
+  duration_ms: 1.997958
+  type: 'test'
+  ...
+# Subtest: Russian calendar text includes the correct Hebrew date
+ok 39 - Russian calendar text includes the correct Hebrew date
+  ---
+  duration_ms: 1.132583
+  type: 'test'
+  ...
+# Subtest: strict date validation rejects overflow, injection, arrays and unsupported range
+ok 40 - strict date validation rejects overflow, injection, arrays and unsupported range
+  ---
+  duration_ms: 0.086666
+  type: 'test'
+  ...
+# Subtest: fixed upstream URL pins city and type and covers previous night plus Friday/Saturday
+ok 41 - fixed upstream URL pins city and type and covers previous night plus Friday/Saturday
+  ---
+  duration_ms: 0.292625
+  type: 'test'
+  ...
+# Subtest: Saturday keeps Friday candle lighting; Sunday advances to the next Shabbat
+ok 42 - Saturday keeps Friday candle lighting; Sunday advances to the next Shabbat
+  ---
+  duration_ms: 0.4135
+  type: 'test'
+  ...
+# Subtest: wrong location, coordinates, missing day and incomplete data fail closed
+ok 43 - wrong location, coordinates, missing day and incomplete data fail closed
+  ---
+  duration_ms: 3.873541
+  type: 'test'
+  ...
+# Subtest: ambiguous opinions and duplicate days are rejected rather than silently guessed
+ok 44 - ambiguous opinions and duplicate days are rejected rather than silently guessed
+  ---
+  duration_ms: 1.917333
+  type: 'test'
+  ...
+# Subtest: raw item calendar marker is not misinterpreted as the actual clock time
+ok 45 - raw item calendar marker is not misinterpreted as the actual clock time
+  ---
+  duration_ms: 1.050583
+  type: 'test'
+  ...
+# Subtest: server fetch is read-only, bounded and validates the response before caching
+ok 46 - server fetch is read-only, bounded and validates the response before caching
+  ---
+  duration_ms: 4.648916
+  type: 'test'
+  ...
+# Subtest: public GET rejects invalid dates before making any outbound request
+ok 47 - public GET rejects invalid dates before making any outbound request
+  ---
+  duration_ms: 1.228208
+  type: 'test'
+  ...
+# Subtest: Hebrew date is Russian without the English AM era marker
+ok 48 - Hebrew date is Russian without the English AM era marker
+  ---
+  duration_ms: 0.314125
+  type: 'test'
+  ...
+# Subtest: Hebrew date changes at published local sunset; civil timetable keeps its original day
+ok 49 - Hebrew date changes at published local sunset; civil timetable keeps its original day
+  ---
+  duration_ms: 0.927584
+  type: 'test'
+  ...
+# Subtest: evening of Rosh Hashanah advances the Hebrew year using the calendar
+ok 50 - evening of Rosh Hashanah advances the Hebrew year using the calendar
+  ---
+  duration_ms: 0.743916
+  type: 'test'
+  ...
+1..50
+# tests 50
+# suites 0
+# pass 50
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1901.669417

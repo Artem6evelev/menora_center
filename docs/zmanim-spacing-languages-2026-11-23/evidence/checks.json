@@ -1,0 +1,47 @@
+{
+  "base": "5772e0b45e879ed6845ab1d1e944de67b7409b8e",
+  "unitPassed": 50,
+  "bilingualBrowserPassed": 30,
+  "existingBrowserPassed": 11,
+  "routingPassed": 1,
+  "compiledPassed": 6,
+  "totalPassed": 98,
+  "lint": {
+    "exitCode": 0,
+    "errors": 0,
+    "existingWarnings": 30
+  },
+  "typecheck": {
+    "exitCode": 0
+  },
+  "build": {
+    "exitCode": 0,
+    "realEnvCopied": false
+  },
+  "product": [
+    {
+      "file": "components/zmanim/holiday-strip.tsx",
+      "sha256": "15e6c7b98423f57e5745a66bd8af11cadb6da7827b7dbb7b8167365347c38b81"
+    },
+    {
+      "file": "components/zmanim/zmanim-board.module.css",
+      "sha256": "3ab653b9978945ecf53e4d28522d3381146fee635722df0a52d4e5fe8f05dc28"
+    },
+    {
+      "file": "components/zmanim/zmanim-board.tsx",
+      "sha256": "45e14630e2ebe5a277da73c32763c7bf8ce5f547c011153dbe1d034983b763cd"
+    },
+    {
+      "file": "lib/zmanim/holiday-display.ts",
+      "sha256": "1ba81027d6372ee901dcb116bee8d85a26abe5a6622d8a87317d0c6c9a69270a"
+    },
+    {
+      "file": "lib/zmanim/shared.ts",
+      "sha256": "1cde06dae8a0f75fa083e99f110b4eda534a369ed2f02adf03944a0b949d3977"
+    },
+    {
+      "file": "lib/zmanim/board-i18n.ts",
+      "sha256": "ad33b4621502bfbf5638647e6b31b813b4bcfc64df286eb6417bd41c89db3ee5"
+    }
+  ]
+}

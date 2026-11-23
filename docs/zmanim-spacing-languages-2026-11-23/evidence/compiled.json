@@ -1,0 +1,14 @@
+{
+  "base": "http://127.0.0.1:3392",
+  "date": "2026-11-23",
+  "checks": [
+    "actual API times equal fresh official Chabad source; calendar equals server calendar",
+    "1920x1080: current theme, 3 matching upcoming dates, Russian standalone board, no overflow",
+    "real 20-second RU to HE transition; RTL, unchanged numeric times, readable separated sections, no reload",
+    "1920x980: current theme, 3 matching upcoming dates, Russian standalone board, no overflow",
+    "3840x2160: current theme, 3 matching upcoming dates, Russian standalone board, no overflow",
+    "390x844: current theme, 3 matching upcoming dates, Russian standalone board, no overflow"
+  ],
+  "errors": [],
+  "readOnly": true
+}
